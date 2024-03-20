@@ -25,7 +25,7 @@
            </form>
         </div>
     </div>
-</div>
+
 <table id="dataTable" class="" cellSpacing="0" width="100%">
         <thead>
             <tr>
@@ -80,20 +80,15 @@
                 { data: 'product_duration', name: 'product_duration' },
                 { data: 'company_name', name: 'company_name' },
                 { data: 'sales_agent', name: 'sales_agent' },
-                { data: 'referenceId', name: 'product_duration' },
                 { data: 'cps_transaction_id', name: 'cps_transaction_id' },
+                { data: 'referenceId', name: 'product_duration' },
                 { data: 'recursive_charging_date', name: 'recursive_charging_date' },
                 { data: 'subscription_time', name: 'subscription_time' },
                 { data: 'grace_period_time', name: 'grace_period_time' },
 
             ],
-            dom: 'Blfrtip',
-            buttons: [
-            { extend: 'copyHtml5', className: 'btn btn-outline-primary' },
-            { extend: 'excelHtml5', className: 'btn btn-outline-success' },
-            { extend: 'csvHtml5', className: 'btn btn-outline-info' },
-            { extend: 'pdfHtml5', className: 'btn btn-outline-danger' }
-        ]
+
+
         });
 
         // Initialize datepicker

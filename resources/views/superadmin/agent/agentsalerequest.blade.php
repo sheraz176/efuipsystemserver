@@ -25,7 +25,7 @@
             </form>
          </div>
     </div>
-</div>
+
 <table id="dataTable" class="" cellSpacing="0" width="100%">
         <thead>
             <tr>
@@ -82,13 +82,7 @@
 
 
             ],
-            dom: 'Blfrtip',
-            buttons: [
-            { extend: 'copyHtml5', className: 'btn btn-outline-primary' },
-            { extend: 'excelHtml5', className: 'btn btn-outline-success' },
-            { extend: 'csvHtml5', className: 'btn btn-outline-info' },
-            { extend: 'pdfHtml5', className: 'btn btn-outline-danger' }
-        ]
+
         });
 
         // Initialize datepicker

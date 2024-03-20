@@ -57,8 +57,8 @@ class ExportController extends Controller
         $item->product_duration,
         $item->company_name,
         $item->sales_agent,
-        $item->referenceId,
         $item->cps_transaction_id,
+        $item->referenceId,
         $item->recursive_charging_date,
         $item->subscription_time,
         $item->grace_period_time,
@@ -118,8 +118,8 @@ class ExportController extends Controller
         $item->product_duration,
         $item->company_name,
         $item->sales_agent,
-        $item->referenceId,
         $item->cps_transaction_id,
+        $item->referenceId,
         $item->recursive_charging_date,
         $item->subscription_time,
         $item->grace_period_time,
@@ -590,6 +590,72 @@ public function agents_get_data_export(Request $request)
 
 
     }
+
+    public function companies_failed_data_export(Request $request)
+{
+    $query = FailedSubscription::select([
+        'insufficient_balance_customers.request_id', // Select all columns from customer_subscriptions table
+        'insufficient_balance_customers.transactionId', // Select all columns from customer_subscriptions table
+        'insufficient_balance_customers.referenceId', // Select all columns from customer_subscriptions table
+        'insufficient_balance_customers.timeStamp', // Select all columns from customer_subscriptions table
+        'insufficient_balance_customers.accountNumber', // Select all columns from customer_subscriptions table
+        'insufficient_balance_customers.resultDesc', // Select all columns from customer_subscriptions table
+        'insufficient_balance_customers.failedReason', // Select all columns from customer_subscriptions table
+        'insufficient_balance_customers.amount', // Select all columns from customer_subscriptions table
+        'plans.plan_name', // Select the plan_name column from the plans table
+        'products.product_name', // Select the product_name column from the products table
+        'company_profiles.company_name', // Select the company_name column from the company_profiles table
+    ])
+    ->join('plans', 'insufficient_balance_customers.planId', '=', 'plans.plan_id')
+    ->join('products', 'insufficient_balance_customers.product_id', '=', 'products.product_id')
+    ->join('company_profiles', 'insufficient_balance_customers.company_id', '=', 'company_profiles.id')
+    ->with(['plan', 'product', 'companyProfile']); // Eager load related models
+
+    if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+        $dateRange = explode(' to ', $request->input('dateFilter'));
+        $startDate = $dateRange[0];
+        $endDate = $dateRange[1];
+
+        $query->whereBetween('insufficient_balance_customers.sale_request_time', [$startDate, $endDate]);
+    }
+
+    $data = $query->get();
+        //   dd($data);
+               // Define headers
+               $headers = ['Request ID', 'Transaction ID', 'Refernce ID', 'Sale Request Time', 'Customer Number','Failed Message', 'Failed Information',
+               'Amount','Product ID', 'Plan ID','Company']; // Replace with your actual column names
+                // Prepare the data with headers
+              $rows[] = $headers;
+              foreach ($data as $item) {
+               $rows[] = [
+                  $item->request_id,
+                  $item->transactionId,
+                  $item->referenceId,
+                  $item->timeStamp,
+                  $item->accountNumber,
+                  $item->resultDesc,
+                  $item->failedReason,
+                  $item->amount,
+                  $item->plan_name,
+                  $item->product_name,
+                  $item->company_name,
+
+              ];
+             }
+
+             // Generate XLS file
+             $filePath = storage_path('app/exported_data.xls');
+             $file = fopen($filePath, 'w');
+             foreach ($rows as $row) {
+              fputcsv($file, $row, "\t"); // Tab-delimited for Excel
+              }
+              fclose($file);
+
+             // Download the file
+             return response()->download($filePath)->deleteFileAfterSend(true);
+
+}
+
 
 
 

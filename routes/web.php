@@ -113,6 +113,8 @@ Route::prefix('super-admin')->group(function () {
             Route::post('export/getDataCompanyExport', [ExportController::class, 'getDataCompanyExport'])->name('superadmin.getDataCompanyExport');
             Route::post('export/agents/get/data', [ExportController::class, 'agents_get_data_export'])->name('superadmin.agents-get-data-export');
             Route::post('export/agents/sale/data', [ExportController::class, 'agents_sales_data_export'])->name('superadmin.agents-sale-data-export');
+            Route::post('export/companies/failed_data_export', [ExportController::class, 'companies_failed_data_export'])->name('superadmin.companies-failed-data-export');
+
 
             //END Export all Data
 

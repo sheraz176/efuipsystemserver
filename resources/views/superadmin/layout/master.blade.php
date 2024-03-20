@@ -65,11 +65,11 @@
     <!-- Add these links to your HTML file or layout file -->
 
     <!-- Data Tables -->
-    
-    
 
 
-   
+
+
+
 
     <!-- Vendors CSS -->
     <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css')}}" />
@@ -80,12 +80,12 @@
 
     <!-- Helpers -->
     <script src="{{ asset('/assets/vendor/js/helpers.js')}}"></script>
-   
+
 
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="{{ asset('/assets/js/config.js')}}"></script>
-    
+
   </head>
 
   <body>
@@ -110,7 +110,7 @@
           <li class="menu-header small text-uppercase"><span class="menu-header-text">Side MenuBar</span></li>
           <ul class="menu-inner py-1">
             <!-- Dashboard -->
-            <li class="menu-item">
+            <li class="menu-item {{ Request::is('super-admin/dashboard') ? 'active' : '' }}">
               <a href="{{ route('superadmin.dashboard') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-home-circle"></i>
                 <div data-i18n="Analytics">Dashboard</div>
@@ -119,70 +119,70 @@
 
             <li class="menu-header small text-uppercase"><span class="menu-header-text">Companies Management</span></li>
             <!-- Cards -->
-            <li class="menu-item">
+            <li class="menu-item {{ Request::is('super-admin/company/create') ? 'active' : '' }}">
               <a href="{{ route('company.create') }}" id = "salespagebutton" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Create New Company</div>
               </a>
             </li>
-            <li class="menu-item">
+            <li class="menu-item {{ Request::is('super-admin/company') ? 'active' : '' }}">
               <a href="{{ route('company.index') }}" id = "salespagebutton" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Check Company Status</div>
               </a>
             </li>
-            
+
 
             <!-- Layouts -->
-            
+
 
                        <!-- Components -->
             <li class="menu-header small text-uppercase"><span class="menu-header-text">Sales Agent Management</span></li>
             <!-- Cards -->
-            <li class="menu-item">
+            <li class="menu-item {{ Request::is('super-admin/telesales-agents/create') ? 'active' : '' }}">
               <a href="{{ route('telesales-agents.create') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Create New Agent</div>
               </a>
             </li>
-            <li class="menu-item">
+            <li class="menu-item {{ Request::is('super-admin/telesales-agents') ? 'active' : '' }}">
               <a href="{{ route('telesales-agents.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-file"></i>
                 <div data-i18n="Basic">Check Agent Status</div>
               </a>
             </li>
-            
+
             <!-- User interface -->
-           
+
             <li class="menu-header small text-uppercase"><span class="menu-header-text">IPS System Reports</span></li>
             <!-- Forms -->
-            <li class="menu-item">
+            <li class="menu-item {{ Request::is('super-admin/datatable') ? 'active' : '' }}">
               <a href="{{ route('superadmin.datatable') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Net Enrollments (Total Sales)</div>
               </a>
             </li>
-            <li class="menu-item">
+            <li class="menu-item {{ Request::is('super-admin/datatable-failed') ? 'active' : '' }}">
               <a href="{{ route('superadmin.datatable-failed') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Failed Sales Request</div>
               </a>
             </li>
-            <li class="menu-item">
+            <li class="menu-item {{ Request::is('super-admin/complete-active-subscriptions') ? 'active' : '' }}">
               <a href="{{ route('superadmin.complete-active-subscriptions') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Total Active Subscription</div>
               </a>
             </li>
 
-            <li class="menu-item">
+            <li class="menu-item {{ Request::is('super-admin/companies-cancelled-reports') ? 'active' : '' }}">
               <a href="{{ route('superadmin.companies-cancelled-reports') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Cancelled Subscriptions</div>
               </a>
             </li>
 
-            <li class="menu-item">
+            <li class="menu-item  {{ Request::is('super-admin/refunds-reports') ? 'active' : '' }}">
               <a href="{{ route('superadmin.refunds-reports') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Refunds Transactions</div>
@@ -190,13 +190,13 @@
             </li>
             <!-- Misc -->
             <li class="menu-header small text-uppercase"><span class="menu-header-text">Refund Manager</span></li>
-            <li class="menu-item">
+            <li class="menu-item {{ Request::is('super-admin/manage-refunds') ? 'active' : '' }}">
               <a href="{{ route('superadmin.manage-refunds') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Manage Refunds</div>
               </a>
             </li>
-            <li class="menu-item">
+            <li class="menu-item {{ Request::is('super-admin/refunds-reports') ? 'active' : '' }}">
               <a href="{{ route('superadmin.refunds-reports') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Refund Report</div>
@@ -211,20 +211,20 @@
             </li>
 
             <li class="menu-header small text-uppercase"><span class="menu-header-text">Companies Reports</span></li>
-            <li class="menu-item">
+            <li class="menu-item {{ Request::is('super-admin/companies-reports') ? 'active' : '' }}">
               <a href="{{ route('superadmin.companies-reports') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Net Enrollement Reports (Total Sales)</div>
               </a>
             </li>
-            <li class="menu-item">
+            <li class="menu-item {{ Request::is('super-admin/companies-cancelled-reports') ? 'active' : '' }}">
               <a href="{{ route('superadmin.companies-cancelled-reports') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Unsubscription Reports</div>
               </a>
             </li>
 
-            <li class="menu-item">
+            <li class="menu-item {{ Request::is('super-admin/companies-failed-reports') ? 'active' : '' }}">
               <a href="{{ route('superadmin.companies-failed-reports') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Failed Sale Reports</div>
@@ -232,13 +232,13 @@
             </li>
 
             <li class="menu-header small text-uppercase"><span class="menu-header-text">Agents Reports</span></li>
-            <li class="menu-item">
+            <li class="menu-item {{ Request::is('super-admin/agents-reports') ? 'active' : '' }}">
               <a href="{{ route('superadmin.agents-reports') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Total Sales Reports</div>
               </a>
             </li>
-            <li class="menu-item">
+            <li class="menu-item {{ Request::is('super-admin/agents-sales-request') ? 'active' : '' }}">
               <a href="{{ route('superadmin.agents-sales-request') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Totla M-PIN Request</div>
@@ -329,7 +329,7 @@
                         <span class="align-middle">Settings</span>
                       </a>
                     </li>
-                   
+
                     <li>
                       <div class="dropdown-divider"></div>
                     </li>
@@ -342,7 +342,7 @@
 
                   </ul>
                 </li>
-                
+
 <form id="logout-form" action="{{ route('superadmin.logout') }}" method="POST" style="display: none;">
     @csrf
 </form>
@@ -361,17 +361,17 @@
               <!-- Layout Demo -->
               <div class="">
                 <div class="">
-                  
+
                 <!-- Here we Have to Put our Things Jahangir khan  -->
-                         
+
                 <!-- Start -->
-                  
+
                 @yield('content')
 
                 <!-- End -->
-                
+
               <!-- Buttons -->
-             
+
             </div>
 
 
@@ -395,7 +395,7 @@
                 </div>
                 <div>
                   <a href="#" class="footer-link me-4" target="_blank">License</a>
-                 
+
 
                   <a
                     href="#"
@@ -438,7 +438,7 @@
 
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/core.js -->
-   
+
     <!-- <script src="{{asset ('/assets/vendor/libs/jquery/jquery.js')}}"></script> -->
     <script src="{{asset ('/assets/vendor/libs/popper/popper.js')}}"></script>
     <script src="{{asset ('/assets/vendor/js/bootstrap.js')}}"></script>
@@ -457,13 +457,13 @@
     <!-- Place this tag in your head or just before your close body tag. -->
     <!-- <script async defer src="https://buttons.github.io/buttons.js"></script> -->
 
-    
-  
+
+
 
   <script>
   let table = new DataTable('#subscription');
   </script>
-  
+
 
   </body>
 </html>

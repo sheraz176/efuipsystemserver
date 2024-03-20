@@ -105,13 +105,7 @@
                     }
                 },
             ],
-            dom: 'Bfrtip',
-            buttons: [
-                { extend: 'copyHtml5', className: 'btn btn-outline-primary' },
-                { extend: 'excelHtml5', className: 'btn btn-outline-success' },
-                { extend: 'csvHtml5', className: 'btn btn-outline-info' },
-                { extend: 'pdfHtml5', className: 'btn btn-outline-danger' }
-            ]
+
         });
 
         $('#dateFilter').daterangepicker({

@@ -15,9 +15,15 @@
             </select>
         </div>
         <div class="col-md-4">
+            <form method="POST" action="{{ route('superadmin.companies-failed-data-export') }}">
+                @csrf
             <label for="dateFilter">Filter by Date:</label>
-            <input type="text" id="dateFilter" class="form-control" placeholder="Select date range">
+            <input type="text" id="dateFilter" name="dateFilter" class="form-control" placeholder="Select date range">
     </div>
+    <div class="col-md-4 mt-4" style="marign-top:10%;">
+        <button type="submit" class="btn btn-primary btn-sm"><i class='bx bx-down-arrow-alt'></i>Export</button>
+    </div>
+  </form>
 </div>
 <table id="dataTable" class="" cellSpacing="0" width="100%">
         <thead>
@@ -73,13 +79,7 @@
 
 
             ],
-            dom: 'Bfrtip',
-            buttons: [
-            { extend: 'copyHtml5', className: 'btn btn-outline-primary' },
-            { extend: 'excelHtml5', className: 'btn btn-outline-success' },
-            { extend: 'csvHtml5', className: 'btn btn-outline-info' },
-            { extend: 'pdfHtml5', className: 'btn btn-outline-danger' }
-        ]
+
         });
 
         // Initialize datepicker
