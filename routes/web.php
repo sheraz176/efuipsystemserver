@@ -114,6 +114,7 @@ Route::prefix('super-admin')->group(function () {
             Route::post('export/agents/get/data', [ExportController::class, 'agents_get_data_export'])->name('superadmin.agents-get-data-export');
             Route::post('export/agents/sale/data', [ExportController::class, 'agents_sales_data_export'])->name('superadmin.agents-sale-data-export');
             Route::post('export/companies/failed_data_export', [ExportController::class, 'companies_failed_data_export'])->name('superadmin.companies-failed-data-export');
+            Route::post('export/export-recusive-charging-data', [ExportController::class, 'export_recusive_charing_data'])->name('superadmin.export-recusive-charging-data');
 
 
             //END Export all Data
@@ -131,6 +132,11 @@ Route::prefix('super-admin')->group(function () {
 
         Route::resource('company', CompanyProfileController::class);
         Route::resource('telesales-agents', TelesalesAgentController::class);
+
+
+        //RecusiveChargingData Report
+        Route::get('recusive/chargingdataindex', [SuperAdminReports::class, 'recusive_charging_data_index'])->name('superadmin.recusive-charging-data-index');
+        Route::get('recusive/getchargingdataindex', [SuperAdminReports::class, 'get_recusive_charging_data'])->name('superadmin.get-recusive-charging-data');
 
         //Company Route Controller
         Route::get('companies-reports', [SuperAdminReports::class, 'companies_reports'])->name('superadmin.companies-reports');

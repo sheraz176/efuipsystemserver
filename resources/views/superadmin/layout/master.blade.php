@@ -188,6 +188,13 @@
                 <div data-i18n="Basic">Refunds Transactions</div>
               </a>
             </li>
+
+             <li class="menu-item  {{ Request::is('super-admin/recusive/chargingdataindex') ? 'active' : '' }}">
+                <a href="{{ route('superadmin.recusive-charging-data-index') }}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-collection"></i>
+                  <div data-i18n="Basic">Recusive Charging Data</div>
+                </a>
+              </li>
             <!-- Misc -->
             <li class="menu-header small text-uppercase"><span class="menu-header-text">Refund Manager</span></li>
             <li class="menu-item {{ Request::is('super-admin/manage-refunds') ? 'active' : '' }}">

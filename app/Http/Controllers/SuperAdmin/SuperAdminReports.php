@@ -9,7 +9,7 @@ use App\Models\Subscription\CustomerSubscription;
 use App\Models\Subscription\FailedSubscription;
 use App\Models\Company\CompanyProfile;
 use App\Models\Unsubscription\CustomerUnSubscription;
-
+use App\Models\RecusiveChargingData;
 
 
 class SuperAdminReports extends Controller
@@ -36,15 +36,15 @@ class SuperAdminReports extends Controller
             $dateRange = explode(' to ', $request->input('dateFilter'));
             $startDate = $dateRange[0];
             $endDate = $dateRange[1];
-        
+
             $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
         }
-    
+
         $data = $query->get();
-    
+
         return DataTables::of($data)->make(true);
-    } 
-    
+    }
+
     public function failed_transactions()
     {
         return view('superadmin.completefailed');
@@ -52,7 +52,7 @@ class SuperAdminReports extends Controller
 
     public function getFailedData(Request $request)
     {
-         
+
 
         $query = FailedSubscription::select([
             'insufficient_balance_customers.*',
@@ -66,21 +66,21 @@ class SuperAdminReports extends Controller
              ->join('company_profiles', 'insufficient_balance_customers.company_id', '=', 'company_profiles.id')
              ->join('tele_sales_agents', 'insufficient_balance_customers.agent_id', '=', 'tele_sales_agents.agent_id')
              ->with(['plan','product','companyProfile','teleSalesAgent']);
-             
+
         if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
             $dateRange = explode(' to ', $request->input('dateFilter'));
             $startDate = $dateRange[0];
             $endDate = $dateRange[1];
-        
+
             $query->whereBetween('insufficient_balance_customers.sale_request_time', [$startDate, $endDate]);
         }
-    
+
         // $query = $query->get();
-    
+
         // return DataTables::of($query)->make(true);
 
         return DataTables::eloquent($query)->toJson();
-    } 
+    }
 
 
     public function companies_reports()
@@ -113,7 +113,7 @@ class SuperAdminReports extends Controller
     //     $dateRange = explode(' to ', $request->input('dateFilter'));
     //     $startDate = date('Y-m-d H:i:s', strtotime($dateRange[0] . ' 00:00:00'));
     //     $endDate = date('Y-m-d H:i:s', strtotime($dateRange[1] . ' 23:59:59'));
-    
+
     //     $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
     // }
 
@@ -121,13 +121,13 @@ class SuperAdminReports extends Controller
         $dateRange = explode(' to ', $request->input('dateFilter'));
         $startDate = $dateRange[0];
         $endDate = $dateRange[1];
-    
+
         $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
     }
 
     $data = $query->get();
 
-        
+
 
 
     return DataTables::of($data)->make(true);
@@ -159,7 +159,7 @@ public function companies_failed_data(Request $request)
     ->join('products', 'insufficient_balance_customers.product_id', '=', 'products.product_id')
     ->join('company_profiles', 'insufficient_balance_customers.company_id', '=', 'company_profiles.id')
     ->with(['plan', 'product', 'companyProfile']); // Eager load related models
-    
+
 
     // Apply filters if provided
     if ($request->has('companyFilter') && $request->input('companyFilter') != '') {
@@ -170,7 +170,7 @@ public function companies_failed_data(Request $request)
     //     $dateRange = explode(' to ', $request->input('dateFilter'));
     //     $startDate = date('Y-m-d H:i:s', strtotime($dateRange[0] . ' 00:00:00'));
     //     $endDate = date('Y-m-d H:i:s', strtotime($dateRange[1] . ' 23:59:59'));
-    
+
     //     $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
     // }
 
@@ -178,7 +178,7 @@ public function companies_failed_data(Request $request)
         $dateRange = explode(' to ', $request->input('dateFilter'));
         $startDate = $dateRange[0];
         $endDate = $dateRange[1];
-    
+
         $query->whereBetween('insufficient_balance_customers.sale_request_time', [$startDate, $endDate]);
     }
 
@@ -221,9 +221,9 @@ public function companies_cancelled_data(Request $request)
         $dateRange = explode(' to ', $request->input('dateFilter'));
         $startDate = $dateRange[0];
         $endDate = $dateRange[1];
-    
+
         $query->whereBetween('unsubscriptions.unsubscription_datetime', [$startDate, $endDate]);
-        
+
         $query->addSelect([
             \DB::raw('TIMESTAMPDIFF(SECOND, customer_subscriptions.subscription_time, unsubscriptions.unsubscription_datetime) as subscription_duration')
         ]);
@@ -262,15 +262,49 @@ public function get_active_subscription_data(Request $request)
         //     $dateRange = explode(' to ', $request->input('dateFilter'));
         //     $startDate = $dateRange[0];
         //     $endDate = $dateRange[1];
-        
+
         //     $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
         // }
-    
+
         $data = $query->get();
-    
+
         return DataTables::of($data)->make(true);
-    } 
+    }
+
+    public function recusive_charging_data_index()
+    {
+
+    return view('superadmin.recusive-charging.index');
+    }
 
 
-        
+    public function get_recusive_charging_data(Request $request)
+    {
+
+        // RecusiveChargingData
+
+        $query = RecusiveChargingData::select([
+            'recusive_charging_data.*', // Select all columns from recusive_charging_data table
+            'plans.plan_name', // Select the plan_name column from the plans table
+            'products.product_name', // Select the product_name column from the products table
+        ])
+        ->join('plans', 'recusive_charging_data.plan_id', '=', 'plans.plan_id')
+        ->join('products', 'recusive_charging_data.product_id', '=', 'products.product_id')
+        ->with(['plan', 'product']); // Eager load related models
+
+
+        if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+            $dateRange = explode(' to ', $request->input('dateFilter'));
+            $startDate = $dateRange[0];
+            $endDate = $dateRange[1];
+
+            $query->whereBetween('recusive_charging_data.created_at', [$startDate, $endDate]);
+        }
+
+        $data = $query->get();
+
+        return DataTables::of($data)->make(true);
+    }
+
+
 }

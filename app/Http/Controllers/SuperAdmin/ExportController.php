@@ -10,6 +10,7 @@ use App\Models\Refund\RefundedCustomer;
 use Barryvdh\DomPDF\Facade as PDF;
 use Barryvdh\DomPDF\Facade;
 use Carbon\Carbon;
+use App\Models\RecusiveChargingData;
 use App\Models\Unsubscription\CustomerUnSubscription;
 use Illuminate\Support\Facades\DB;
 
@@ -656,8 +657,61 @@ public function agents_get_data_export(Request $request)
 
 }
 
+public function export_recusive_charing_data(Request $request)
+{
+
+    $query = RecusiveChargingData::select([
+        'recusive_charging_data.*', // Select all columns from recusive_charging_data table
+        'plans.plan_name', // Select the plan_name column from the plans table
+        'products.product_name', // Select the product_name column from the products table
+    ])
+    ->join('plans', 'recusive_charging_data.plan_id', '=', 'plans.plan_id')
+    ->join('products', 'recusive_charging_data.product_id', '=', 'products.product_id')
+    ->with(['plan', 'product']); // Eager load related models
 
 
+     if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+         $dateRange = explode(' to ', $request->input('dateFilter'));
+         $startDate = $dateRange[0];
+         $endDate = $dateRange[1];
 
+         $query->whereBetween('recusive_charging_data.created_at', [$startDate, $endDate]);
+     }
+
+    $data = $query->get();
+        //  dd($data);
+               // Define headers
+               $headers = ['Subscription ID', 'Customer MSISDN', 'Plan Name', 'Product Name', 'Transaction ID','Reference ID', 'Amount',
+               'Cps Response','Next Charging Date', 'Duration',]; // Replace with your actual column names
+                // Prepare the data with headers
+              $rows[] = $headers;
+              foreach ($data as $item) {
+               $rows[] = [
+                  $item->subscription_id,
+                  $item->customer_msisdn,
+                  $item->plan_name,
+                  $item->product_name,
+                  $item->tid,
+                  $item->reference_id,
+                  $item->amount,
+                  $item->cps_response,
+                  $item->charging_date,
+                  $item->duration,
+
+
+              ];
+             }
+
+             // Generate XLS file
+             $filePath = storage_path('app/exported_data.xls');
+             $file = fopen($filePath, 'w');
+             foreach ($rows as $row) {
+              fputcsv($file, $row, "\t"); // Tab-delimited for Excel
+              }
+              fclose($file);
+
+             // Download the file
+             return response()->download($filePath)->deleteFileAfterSend(true);
+}
 
 }
