@@ -4,6 +4,8 @@ namespace App\Http\Controllers\SuperAdmin;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Subscription\CustomerSubscription;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class SuperAdminAuth extends Controller
@@ -24,7 +26,7 @@ class SuperAdminAuth extends Controller
 
         if (Auth::guard('super_admin')->attempt($request->only('username', 'password'))) {
             $Superadmin = Auth::guard('super_admin')->user();
-           
+
             session(['Superadmin' => $Superadmin]);
             return redirect()->route('superadmin.dashboard');
 
@@ -35,7 +37,41 @@ class SuperAdminAuth extends Controller
 
     public function showDashboard()
     {
-        return view('superadmin.dashboard');
+
+        // Count of today's subscriptions
+        $todaySubscriptionCount = CustomerSubscription::whereDate('created_at', Carbon::today())
+            ->count();
+
+        // Count of current month's subscriptions
+        $currentMonthSubscriptionCount = CustomerSubscription::whereYear('created_at', Carbon::now()->year)
+            ->whereMonth('created_at', Carbon::now()->month)
+            ->count();
+
+        // Count of current year's subscriptions
+        $currentYearSubscriptionCount = CustomerSubscription::whereYear('created_at', Carbon::now()->year)
+            ->count();
+
+            $dailyTransactionSum = CustomerSubscription::whereDate('created_at', Carbon::today())
+            ->sum('transaction_amount');
+
+        // Sum of monthly transaction amounts
+        $monthlyTransactionSum = CustomerSubscription::whereYear('created_at', Carbon::now()->year)
+            ->whereMonth('created_at', Carbon::now()->month)
+            ->sum('transaction_amount');
+
+        // Sum of yearly transaction amounts
+        $yearlyTransactionSum = CustomerSubscription::whereYear('created_at', Carbon::now()->year)
+            ->sum('transaction_amount');
+
+        return view('superadmin.dashboard', [
+            'todaySubscriptionCount' => $todaySubscriptionCount,
+            'currentMonthSubscriptionCount' => $currentMonthSubscriptionCount,
+            'currentYearSubscriptionCount' => $currentYearSubscriptionCount,
+            'dailyTransactionSum' => $dailyTransactionSum,
+            'monthlyTransactionSum' => $monthlyTransactionSum,
+            'yearlyTransactionSum' => $yearlyTransactionSum,
+        ]);
+
     }
 
     public function logout()
