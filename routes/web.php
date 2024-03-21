@@ -17,6 +17,8 @@ use App\Http\Controllers\SuperAdmin\AgentsReports\AgentReportsController;
 use App\Http\Controllers\SuperAdmin\Charts;
 use App\Http\Controllers\Agent\TeleSalesAgentController;
 use App\Http\Controllers\CompanyManager\CompanyManagerAuthController;
+use App\Http\Controllers\CompanyManager\CompanyManagerReportController;
+use App\Http\Controllers\CompanyManager\CMExportController;
 use App\Http\Controllers\CompanyManager\DashboardController;
 use App\Http\Controllers\BasicAgent\AgentAuthController as AgentAuthController2;
 use App\Http\Controllers\BasicAgent\AgentSalesController as AgentSalesController2;
@@ -186,6 +188,58 @@ Route::prefix('company-manager')->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('company-manager-dashboard');
         Route::post('logout', [CompanyManagerAuthController::class, 'logout'])->name('company.manager.logout');
         Route::get('subscription-chart-data/{timeRange}', [SubscriptionChartController::class, 'getSubscriptionChartData'])->name('company-manager.subscription-chart-data');
+
+         //Complete Sales for Company Manager
+         Route::get('CompleteSalesindex', [CompanyManagerReportController::class, 'complete_sales_index'])->name('companymanager.CompleteSalesindex');
+         Route::get('CompleteSalesindex/getData', [CompanyManagerReportController::class, 'getData'])->name('companymanager.getData');
+
+          //Complete Failed Report
+         Route::get('datatable-failed', [CompanyManagerReportController::class, 'failed_transactions'])->name('company-manager.datatable-failed');
+         Route::get('datatable-failed/getFailedData', [CompanyManagerReportController::class, 'getFailedData'])->name('company-manager.getFailedData');
+
+         //Complete Active Customers
+         Route::get('complete-active-subscriptions', [CompanyManagerReportController::class, 'complete_active_subscription'])->name('company-manager.complete-active-subscriptions');
+         Route::get('complete-activecustomerdataget', [CompanyManagerReportController::class, 'activecustomerdataget'])->name('company-manager.activecustomerdataget');
+
+          //Complete Cancelled Report
+         Route::get('companies-cancelled-reports', [CompanyManagerReportController::class, 'companies_unsubscribed_reports'])->name('company-manager.companies-cancelled-reports');
+         Route::get('companies-cancelled-reports/companies-cancelled-data', [CompanyManagerReportController::class, 'companies_cancelled_data'])->name('company-manager.companies-cancelled-data');
+
+        //Complete Refund Report
+         Route::get('refunds-reports', [CompanyManagerReportController::class, 'refundReports'])->name('company-manager.refunds-reports');
+         Route::get('manage-refunds/getRefundedData', [CompanyManagerReportController::class, 'getRefundedData'])->name('company-manager.getRefundedData');
+
+         //Complete Manage Refund Report
+         Route::get('manage-refunds', [CompanyManagerReportController::class, 'manage_refund_index'])->name('company-manager.manage-refunds');
+         Route::get('manage-refunds/getRefundData', [CompanyManagerReportController::class, 'getRefundData'])->name('company-manager.manage-refunds.getRefundData');
+
+         //Complete Agent Report
+         Route::get('agents-reports', [CompanyManagerReportController::class, 'agents_Subscriptions'])->name('company-manager.agents-reports');
+         Route::get('companies-reports/agents-get-data', [CompanyManagerReportController::class, 'agents_get_data'])->name('company-manager.agents-get-data');
+
+        //Complete Sale Report
+         Route::get('agents-sales-request', [CompanyManagerReportController::class, 'agents_sales_request'])->name('company-manager.agents-sales-request');
+         Route::get('companies-reports/agents-sales-data', [CompanyManagerReportController::class, 'agents_sales_data'])->name('company-manager.companies-reports.agents-sales-data');
+
+         //Complete Tesales Agents
+         Route::get('check-agent-status', [CompanyManagerReportController::class, 'check_agent_status'])->name('company-manager.check-agent-status');
+
+           //Export all Data
+           Route::post('export/active/subription', [CMExportController::class, 'exportactivesubription'])->name('company-manager.export-active-subription');
+           Route::post('export/complete/sale', [CMExportController::class, 'exportcomplatesale'])->name('company-manager.export-complete.sale');\
+           Route::post('export/failed/data', [CMExportController::class, 'exportgetFailedData'])->name('company-manager.export.failed-data');
+           Route::post('export/companies/cancelled_data_export', [CMExportController::class, 'companies_cancelled_data_export'])->name('company-manager.companies.cancelled-data-export');
+           Route::post('export/RefundedDataExport', [CMExportController::class, 'RefundedDataExport'])->name('company-manager.RefundedDataExport');
+           Route::post('export/ManageRefundedDataExport', [CMExportController::class, 'ManageRefundedDataExport'])->name('company-manager.ManageRefundedDataExport');
+           Route::post('export/getDataCompanyExport', [CMExportController::class, 'getDataCompanyExport'])->name('company-manager.getDataCompanyExport');
+           Route::post('export/agents/get/data', [CMExportController::class, 'agents_get_data_export'])->name('company-manager.agents-get-data-export');
+           Route::post('export/agents/sale/data', [CMExportController::class, 'agents_sales_data_export'])->name('company-manager.agents-sale-data-export');
+           Route::post('export/companies/failed_data_export', [CMExportController::class, 'companies_failed_data_export'])->name('company-manager.companies-failed-data-export');
+           Route::post('export/export-recusive-charging-data', [CMExportController::class, 'export_recusive_charing_data'])->name('company-manager.export-recusive-charging-data');
+
+           //END Export all Data
+
+
     });
 });
 

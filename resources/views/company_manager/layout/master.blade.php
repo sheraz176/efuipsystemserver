@@ -22,6 +22,12 @@
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="/assets/img/favicon/favicon.ico" />
 
+     <!-- Datatable -->
+ <link href="https://cdn.datatables.net/v/dt/dt-1.13.6/datatables.min.css" rel="stylesheet">
+ <link href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap.min.css" rel="stylesheet">
+ <link href="https://cdn.datatables.net/fixedheader/3.3.2/css/fixedHeader.bootstrap.min.css" rel="stylesheet">
+ <link href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap.min.css" rel="stylesheet">
+
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 
     <!-- Include DataTables JavaScript -->
@@ -65,11 +71,11 @@
     <!-- Add these links to your HTML file or layout file -->
 
     <!-- Data Tables -->
-    
-    
 
 
-   
+
+
+
 
     <!-- Vendors CSS -->
     <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css')}}" />
@@ -80,12 +86,12 @@
 
     <!-- Helpers -->
     <script src="{{ asset('/assets/vendor/js/helpers.js')}}"></script>
-   
+
 
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="{{ asset('/assets/js/config.js')}}"></script>
-    
+
   </head>
 
   <body>
@@ -110,91 +116,91 @@
           <li class="menu-header small text-uppercase"><span class="menu-header-text">Side MenuBar</span></li>
           <ul class="menu-inner py-1">
             <!-- Dashboard -->
-            <li class="menu-item">
-              <a href="{{ route('superadmin.dashboard') }}" class="menu-link">
+            <li class="menu-item {{ Request::is('company-manager/dashboard') ? 'active' : '' }}">
+              <a href="{{ route('company-manager-dashboard') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-home-circle"></i>
                 <div data-i18n="Analytics">Dashboard</div>
               </a>
             </li>
 
-          
+
 
             <!-- Layouts -->
-            
+
 
                        <!-- Components -->
             <li class="menu-header small text-uppercase"><span class="menu-header-text">Sales Agent Management</span></li>
             <!-- Cards -->
-            <li class="menu-item">
-              <a href="{{ route('telesales-agents.index') }}" class="menu-link">
+            <li class="menu-item {{ Request::is('company-manager/check-agent-status') ? 'active' : '' }}">
+              <a href="{{ route('company-manager.check-agent-status') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-file"></i>
                 <div data-i18n="Basic">Check Agent Status</div>
               </a>
             </li>
-            
+
             <!-- User interface -->
-           
+
             <li class="menu-header small text-uppercase"><span class="menu-header-text">IPS System Reports</span></li>
             <!-- Forms -->
-            <li class="menu-item">
-              <a href="{{ route('superadmin.datatable') }}" class="menu-link">
+            <li class="menu-item {{ Request::is('company-manager/CompleteSalesindex') ? 'active' : '' }}">
+              <a href="{{ route('companymanager.CompleteSalesindex') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Net Enrollmeents</div>
               </a>
             </li>
-            <li class="menu-item">
-              <a href="{{ route('superadmin.datatable-failed') }}" class="menu-link">
+            <li class="menu-item {{ Request::is('company-manager/datatable-failed') ? 'active' : '' }}">
+              <a href="{{ route('company-manager.datatable-failed') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">UnSucessful Sales</div>
               </a>
             </li>
-            <li class="menu-item">
-              <a href="{{ route('superadmin.complete-active-subscriptions') }}" class="menu-link">
+            <li class="menu-item {{ Request::is('company-manager/complete-active-subscriptions') ? 'active' : '' }}">
+              <a href="{{ route('company-manager.complete-active-subscriptions') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Total Active Subscription</div>
               </a>
             </li>
 
-            <li class="menu-item">
-              <a href="{{ route('superadmin.companies-cancelled-reports') }}" class="menu-link">
+            <li class="menu-item {{ Request::is('company-manager/companies-cancelled-reports') ? 'active' : '' }}">
+              <a href="{{ route('company-manager.companies-cancelled-reports') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Cancelled Subscriptions</div>
               </a>
             </li>
 
-            <li class="menu-item">
-              <a href="{{ route('superadmin.refunds-reports') }}" class="menu-link">
+            <li class="menu-item {{ Request::is('company-manager/refunds-reports') ? 'active' : '' }}">
+              <a href="{{ route('company-manager.refunds-reports') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Refunds Customers</div>
               </a>
             </li>
             <!-- Misc -->
             <li class="menu-header small text-uppercase"><span class="menu-header-text">Refund Manager</span></li>
-            <li class="menu-item">
-              <a href="{{ route('superadmin.manage-refunds') }}" class="menu-link">
+            <li class="menu-item {{ Request::is('company-manager/manage-refunds') ? 'active' : '' }}">
+              <a href="{{ route('company-manager.manage-refunds') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Manage Refunds</div>
               </a>
             </li>
-            <li class="menu-item">
-              <a href="{{ route('superadmin.refunds-reports') }}" class="menu-link">
+            <li class="menu-item {{ Request::is('company-manager/refunds-reports') ? 'active' : '' }}">
+              <a href="{{ route('company-manager.refunds-reports') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Refund Report</div>
               </a>
             </li>
 
 
-        
+
 
             <li class="menu-header small text-uppercase"><span class="menu-header-text">Agents Reports</span></li>
-            <li class="menu-item">
-              <a href="{{ route('superadmin.agents-reports') }}" class="menu-link">
+            <li class="menu-item {{ Request::is('company-manager/agents-reports') ? 'active' : '' }}">
+              <a href="{{ route('company-manager.agents-reports') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Total Sales Reports</div>
               </a>
             </li>
-            <li class="menu-item">
-              <a href="{{ route('superadmin.agents-sales-request') }}" class="menu-link">
+            <li class="menu-item {{ Request::is('company-manager/agents-sales-request') ? 'active' : '' }}">
+              <a href="{{ route('company-manager.agents-sales-request') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Totla Calls Reports</div>
               </a>
@@ -284,7 +290,7 @@
                         <span class="align-middle">Settings</span>
                       </a>
                     </li>
-                   
+
                     <li>
                       <div class="dropdown-divider"></div>
                     </li>
@@ -297,7 +303,7 @@
 
                   </ul>
                 </li>
-                
+
 <form id="logout-form" action="{{ route('company.manager.logout') }}" method="POST" style="display: none;">
     @csrf
 </form>
@@ -316,17 +322,17 @@
               <!-- Layout Demo -->
               <div class="">
                 <div class="">
-                  
+
                 <!-- Here we Have to Put our Things Jahangir khan  -->
-                         
+
                 <!-- Start -->
-                  
+
                 @yield('content')
 
                 <!-- End -->
-                
+
               <!-- Buttons -->
-             
+
             </div>
 
 
@@ -350,7 +356,7 @@
                 </div>
                 <div>
                   <a href="#" class="footer-link me-4" target="_blank">License</a>
-                 
+
 
                   <a
                     href="#"
@@ -393,7 +399,7 @@
 
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/core.js -->
-   
+
     <!-- <script src="{{asset ('/assets/vendor/libs/jquery/jquery.js')}}"></script> -->
     <script src="{{asset ('/assets/vendor/libs/popper/popper.js')}}"></script>
     <script src="{{asset ('/assets/vendor/js/bootstrap.js')}}"></script>
@@ -412,13 +418,13 @@
     <!-- Place this tag in your head or just before your close body tag. -->
     <!-- <script async defer src="https://buttons.github.io/buttons.js"></script> -->
 
-    
-  
+
+
 
   <script>
   let table = new DataTable('#subscription');
   </script>
-  
+
 
   </body>
 </html>
