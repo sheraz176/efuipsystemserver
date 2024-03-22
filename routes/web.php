@@ -11,6 +11,7 @@ use App\Http\Controllers\SMS\SmsDelivery;
 use App\Http\Controllers\SuperAdmin\SuperAdminAuth;
 use App\Http\Controllers\SuperAdmin\SuperAdminReports;
 use App\Http\Controllers\SuperAdmin\Refunds\ManageRefunds;
+use App\Http\Controllers\SuperAdmin\UserManageController;
 use App\Http\Controllers\Company\CompanyProfileController;
 use App\Http\Controllers\UnSubscription\ManagerUnSubscription;
 use App\Http\Controllers\SuperAdmin\AgentsReports\AgentReportsController;
@@ -134,6 +135,15 @@ Route::prefix('super-admin')->group(function () {
 
         Route::resource('company', CompanyProfileController::class);
         Route::resource('telesales-agents', TelesalesAgentController::class);
+
+          //User Managements Company Manager
+          Route::get('company_manager/create', [UserManageController::class, 'company_manager_create'])->name('superadmin.company_manager_create');
+          Route::get('company_manager/index', [UserManageController::class, 'company_manager_index'])->name('superadmin.company_manager_index');
+          Route::post('company_manager/store', [UserManageController::class, 'company_manager_store'])->name('superadmin.company_manager_store');
+         //User Managements Super Agent
+         Route::get('super_agent/create', [UserManageController::class, 'super_agent_create'])->name('superadmin.super_agent_create');
+         Route::get('super_agent/index', [UserManageController::class, 'super_agent_index'])->name('superadmin.super_agent_index');
+         Route::post('super_agent/store', [UserManageController::class, 'super_agent_store'])->name('superadmin.super_agent_store');
 
 
         //RecusiveChargingData Report

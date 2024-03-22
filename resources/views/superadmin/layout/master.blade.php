@@ -152,6 +152,43 @@
               </a>
             </li>
 
+
+
+                       <!-- Components  Manager -->
+            <li class="menu-header small text-uppercase"><span class="menu-header-text">Company Manager </span></li>
+            <!-- Cards -->
+            <li class="menu-item {{ Request::is('super-admin/company_manager/create') ? 'active' : '' }}">
+              <a href="{{ route('superadmin.company_manager_create') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-collection"></i>
+                <div data-i18n="Basic">Create New Company Manager</div>
+              </a>
+            </li>
+            <li class="menu-item {{ Request::is('super-admin/company_manager/index') ? 'active' : '' }}">
+              <a href="{{ route('superadmin.company_manager_index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-file"></i>
+                <div data-i18n="Basic">Check Company Managers</div>
+              </a>
+            </li>
+
+
+                       <!-- Super Agent -->
+            <li class="menu-header small text-uppercase"><span class="menu-header-text">Super Agent Management</span></li>
+            <!-- Cards -->
+            <li class="menu-item {{ Request::is('super-admin/super_agent/create') ? 'active' : '' }}">
+              <a href="{{ route('superadmin.super_agent_create') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-collection"></i>
+                <div data-i18n="Basic">Create New Super Agent</div>
+              </a>
+            </li>
+            <li class="menu-item {{ Request::is('super-admin/super_agent/index') ? 'active' : '' }}">
+              <a href="{{ route('superadmin.super_agent_index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-file"></i>
+                <div data-i18n="Basic">Check Super Agents</div>
+              </a>
+            </li>
+
+
+
             <!-- User interface -->
 
             <li class="menu-header small text-uppercase"><span class="menu-header-text">IPS System Reports</span></li>
