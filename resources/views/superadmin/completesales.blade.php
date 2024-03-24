@@ -17,7 +17,7 @@
     </div>
 </div>
 
-<table id="dataTable" class="" cellSpacing="0" width="100%">
+<table id="dataTable2" class="" cellSpacing="0" width="100%">
         <thead>
             <tr>
                 <th>Subscription ID</th>
@@ -37,21 +37,15 @@
         </thead>
     </table>
 
+
+
+
 <script>
     $(document).ready(function() {
-        let dataTable = $('#dataTable').DataTable({
+       let dataTable2 = $('#dataTable2').DataTable({
             "autoWidth": false,
-            "columnDefs": [
-                { "width": "1%", "targets": 0 },
-                { "width": "10%", "targets": 1 },
-                { "width": "20%", "targets": 2 },
-                { "width": "20%", "targets": 3 },
-                { "width": "10%", "targets": 4 },
-                { "width": "15%", "targets": 5 },
-                { "width": "15%", "targets": 12 },
-            ],
-            "lengthMenu": [10, 25, 50, 100,-1], // Set the available page lengths
-            "pageLength": 10, // Set the default page length
+            "lengthMenu": [10, 25, 50, 100,], // Set the available page lengths
+            "pageLength": 10,
             processing: true,
             serverSide: true,
             ajax: {
@@ -61,7 +55,7 @@
                 }
             },
             columns: [
-                { data: 'subscription_id', name: 'subscription_id' },
+                 { data: 'subscription_id', name: 'subscription_id' },
                 { data: 'subscriber_msisdn', name: 'subscriber_msisdn' },
                 { data: 'plan_name', name: 'plan_name' },
                 { data: 'product_name', name: 'product_name' },
@@ -78,7 +72,7 @@
 
         });
 
-        $('#dateFilter').daterangepicker({
+         $('#dateFilter').daterangepicker({
             opens: 'left',
             locale: {
                 format: 'YYYY-MM-DD',
@@ -93,10 +87,13 @@
 
         // Apply the filters on change
         $('#dateFilter').on('change', function () {
-            dataTable.ajax.reload();
+            dataTable2.ajax.reload();
         });
     });
-</script>
+
+    </script>
+
+
 
 
 

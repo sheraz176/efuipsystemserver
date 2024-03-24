@@ -17,7 +17,7 @@
     </div>
 </div>
 
-<table id="dataTable" class="" cellSpacing="0" width="100%">
+<table id="dataTable3" class="" cellSpacing="0" width="100%">
         <thead>
             <tr>
                 <th>Subscription ID</th>
@@ -39,19 +39,10 @@
 
 <script>
     $(document).ready(function() {
-        let dataTable = $('#dataTable').DataTable({
+       let dataTable3 = $('#dataTable3').DataTable({
             "autoWidth": false,
-            "columnDefs": [
-                { "width": "1%", "targets": 0 },
-                { "width": "10%", "targets": 1 },
-                { "width": "20%", "targets": 2 },
-                { "width": "20%", "targets": 3 },
-                { "width": "10%", "targets": 4 },
-                { "width": "15%", "targets": 5 },
-                { "width": "15%", "targets": 12 },
-            ],
-            "lengthMenu": [10, 25, 50, 100,-1], // Set the available page lengths
-            "pageLength": 10, // Set the default page length
+            "lengthMenu": [10, 25, 50, 100,], // Set the available page lengths
+            "pageLength": 10,
             processing: true,
             serverSide: true,
             ajax: {
@@ -78,7 +69,7 @@
 
         });
 
-        $('#dateFilter').daterangepicker({
+         $('#dateFilter').daterangepicker({
             opens: 'left',
             locale: {
                 format: 'YYYY-MM-DD',
@@ -93,10 +84,13 @@
 
         // Apply the filters on change
         $('#dateFilter').on('change', function () {
-            dataTable.ajax.reload();
+            dataTable3.ajax.reload();
         });
     });
-</script>
+
+    </script>
+
+
 
 
 
