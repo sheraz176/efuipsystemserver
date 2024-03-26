@@ -30,19 +30,17 @@ class SuperAdminReports extends Controller
         ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
         ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
         ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-        ->with(['plan', 'product', 'companyProfile']); // Eager load related models
+        ->with(['plan', 'product', 'companyProfile'])
+        ->where('customer_subscriptions.policy_status', '=', '1'); // Eager load related models
 
-        if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
-            $dateRange = explode(' to ', $request->input('dateFilter'));
+         if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+             $dateRange = explode(' to ', $request->input('dateFilter'));
             $startDate = $dateRange[0];
-            $endDate = $dateRange[1];
-
-            $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
-        }
+             $endDate = $dateRange[1];
+             $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+          }
         return DataTables::eloquent($query)->toJson();
-        // $data = $query->get();
 
-        // return DataTables::of($data)->make(true);
     }
 
     public function failed_transactions()
@@ -75,9 +73,6 @@ class SuperAdminReports extends Controller
             $query->whereBetween('insufficient_balance_customers.sale_request_time', [$startDate, $endDate]);
         }
 
-        // $query = $query->get();
-
-        // return DataTables::of($query)->make(true);
 
         return DataTables::eloquent($query)->toJson();
     }
@@ -102,8 +97,8 @@ class SuperAdminReports extends Controller
     ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
     ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
     ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-    ->with(['plan', 'product', 'companyProfile']); // Eager load related models
-
+    ->with(['plan', 'product', 'companyProfile'])
+    ->where('customer_subscriptions.policy_status', '=', '1'); // Eager load related models
     // Apply filters if provided
     if ($request->has('companyFilter') && $request->input('companyFilter') != '') {
         $query->where('customer_subscriptions.company_id', $request->input('companyFilter'));
@@ -124,13 +119,8 @@ class SuperAdminReports extends Controller
 
         $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
     }
+    return DataTables::eloquent($query)->toJson();
 
-    $data = $query->get();
-
-
-
-
-    return DataTables::of($data)->make(true);
 }
 
 
@@ -181,9 +171,7 @@ public function companies_failed_data(Request $request)
 
         $query->whereBetween('insufficient_balance_customers.sale_request_time', [$startDate, $endDate]);
     }
-
-    $data = $query->get();
-    return DataTables::of($data)->make(true);
+    return DataTables::eloquent($query)->toJson();
 }
 
 public function companies_unsubscribed_reports()
@@ -229,9 +217,7 @@ public function companies_cancelled_data(Request $request)
         ]);
     }
 
-    $data = $query->get();
-    return DataTables::of($data)->make(true);
-
+    return DataTables::eloquent($query)->toJson();
 
 
 }
@@ -255,19 +241,17 @@ public function get_active_subscription_data(Request $request)
         ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
         ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
         ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-        ->with(['plan', 'product', 'companyProfile'])
-        ->where('customer_subscriptions.policy_status', '=', '1'); // Eager load related models
+        ->with(['plan', 'product', 'companyProfile']); // Eager load related models
 
-         if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
-             $dateRange = explode(' to ', $request->input('dateFilter'));
+        if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+            $dateRange = explode(' to ', $request->input('dateFilter'));
             $startDate = $dateRange[0];
-             $endDate = $dateRange[1];
-             $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
-          }
-        return DataTables::eloquent($query)->toJson();
-        // $data = $query->get();
+            $endDate = $dateRange[1];
 
-        // return DataTables::of($data)->make(true);
+            $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+        }
+        return DataTables::eloquent($query)->toJson();
+
     }
 
     public function recusive_charging_data_index()
@@ -299,10 +283,8 @@ public function get_active_subscription_data(Request $request)
 
             $query->whereBetween('recusive_charging_data.created_at', [$startDate, $endDate]);
         }
+        return DataTables::eloquent($query)->toJson();
 
-        $data = $query->get();
-
-        return DataTables::of($data)->make(true);
     }
 
 

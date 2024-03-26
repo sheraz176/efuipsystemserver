@@ -31,8 +31,7 @@ class CMExportController extends Controller
         ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
         ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
         ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-        ->with(['plan', 'product', 'companyProfile'])
-        ->where('customer_subscriptions.policy_status', '=', '1'); // Eager load related models
+        ->with(['plan', 'product', 'companyProfile']); // Eager load related models
          if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
              $dateRange = explode(' to ', $request->input('dateFilter'));
              $startDate = $dateRange[0];
@@ -41,7 +40,7 @@ class CMExportController extends Controller
          }
 
         $data = $query->get();
-        //  dd($data[0]);
+        //   dd($data);
 
       // Define headers
      $headers = ['Subscription ID', 'Customer MSISDN', 'Plan Name', 'Product Name', 'Amount', 'Duration',
@@ -94,7 +93,8 @@ class CMExportController extends Controller
         ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
         ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
         ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-        ->with(['plan', 'product', 'companyProfile']); // Eager load related models
+        ->with(['plan', 'product', 'companyProfile'])
+        ->where('customer_subscriptions.policy_status', '=', '1'); // Eager load related models
 
         if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
             $dateRange = explode(' to ', $request->input('dateFilter'));
@@ -487,8 +487,8 @@ public function agents_get_data_export(Request $request)
         ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
         ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
         ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-        ->with(['plan', 'product', 'companyProfile']); // Eager load related models
-
+        ->with(['plan', 'product', 'companyProfile']) // Eager load related models
+        ->where('customer_subscriptions.policy_status', '=', '1'); // Eager load related models
 
         if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
             $dateRange = explode(' to ', $request->input('dateFilter'));

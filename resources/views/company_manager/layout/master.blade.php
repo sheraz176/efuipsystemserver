@@ -157,7 +157,7 @@
             <li class="menu-item {{ Request::is('company-manager/complete-active-subscriptions') ? 'active' : '' }}">
               <a href="{{ route('company-manager.complete-active-subscriptions') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Total Active Subscription</div>
+                <div data-i18n="Basic">Total Subscription</div>
               </a>
             </li>
 
@@ -196,13 +196,13 @@
             <li class="menu-item {{ Request::is('company-manager/agents-reports') ? 'active' : '' }}">
               <a href="{{ route('company-manager.agents-reports') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Total Sales Reports</div>
+                <div data-i18n="Basic">Total Enrollment Report</div>
               </a>
             </li>
             <li class="menu-item {{ Request::is('company-manager/agents-sales-request') ? 'active' : '' }}">
               <a href="{{ route('company-manager.agents-sales-request') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Totla Calls Reports</div>
+                <div data-i18n="Basic">Total Sales Request Report</div>
               </a>
             </li>
           </ul>
@@ -269,7 +269,10 @@
                             </div>
                           </div>
                           <div class="flex-grow-1">
+                            @if (!empty(session('Superadmin')->firstnam))
                             <span class="fw-semibold d-block">{{ session('Superadmin')->firstname }}</span>
+                            @endif
+
                             <small class="text-muted">Marketing Captain</small>
                           </div>
                         </div>

@@ -69,6 +69,9 @@
                 { data: 'username', name: 'username' },
                 { data: 'source', name: 'source' },
             ],
+            "columnDefs": [
+            { "searchable": false, "targets": [0,2,3,4,5,6,7,9,10,11,12] } // Disable search for columns 2 and 3 (plan_name and product_name)
+          ]
 
         });
 

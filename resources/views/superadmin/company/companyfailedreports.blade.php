@@ -30,14 +30,14 @@
             <tr>
                 <th>Request ID</th>
                 <th>Transaction ID</th>
+                <th>Plan Name</th>
+                <th>Product Name</th>
                 <th>Refernce ID</th>
                 <th>Sale Request Time</th>
                 <th>Customer Number</th>
                 <th>Failed Message</th>
                 <th>Failed Information</th>
                 <th>Amount</th>
-                <th>Product ID</th>
-                <th>Plan ID</th>
                 <th>Company</th>
             </tr>
         </thead>
@@ -48,13 +48,6 @@
     $(document).ready(function() {
        let dataTable= $('#dataTable').DataTable({
             "autoWidth": false,
-            "columnDefs": [
-                    { "width": "15%", "targets": 3 },
-                    { "width": "10%", "targets": 5 },
-                    { "width": "40%", "targets": 6 },
-                    { "width": "15%", "targets": 8 },
-                    { "width": "20%", "targets": 9 },
-                ],
             processing: true,
             serverSide: true,
              ajax: {
@@ -67,18 +60,19 @@
             columns: [
             { data: 'request_id', name: 'insufficient_balance_customers.request_id' },
             { data: 'transactionId', name: 'insufficient_balance_customers.transactionId' },
+            { data: 'plan_name', name: 'plans.plan_name' },
+            { data: 'product_name', name: 'products.product_name' },
             { data: 'referenceId', name: 'insufficient_balance_customers.referenceId' },
             { data: 'timeStamp', name: 'insufficient_balance_customers.timeStamp' },
             { data: 'accountNumber', name: 'insufficient_balance_customers.accountNumber' },
             { data: 'resultDesc', name: 'insufficient_balance_customers.resultDesc' },
             { data: 'failedReason', name: 'insufficient_balance_customers.failedReason' },
             { data: 'amount', name: 'insufficient_balance_customers.amount' },
-            { data: 'plan_name', name: 'plans.plan_name' },
-            { data: 'product_name', name: 'products.product_name' },
             { data: 'company_name', name: 'company_profiles.company_name' },
-
-
             ],
+            "columnDefs": [
+            { "searchable": false, "targets": [0,2,3,4,5,6,7,9,10] } // Disable search for columns 2 and 3 (plan_name and product_name)
+          ]
 
         });
 

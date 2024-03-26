@@ -29,30 +29,30 @@ class AgentReportsController extends Controller
         ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
         ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
         ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-        ->with(['plan', 'product', 'companyProfile']); // Eager load related models
-        
-    
+        ->with(['plan', 'product', 'companyProfile']) // Eager load related models
+        ->where('customer_subscriptions.policy_status', '=', '1'); // Eager load related models
+
         // Apply filters if provided
         if ($request->has('companyFilter') && $request->input('companyFilter') != '') {
             $query->where('customer_subscriptions.sales_agent', $request->input('companyFilter'));
         }
-    
+
         // if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
         //     $dateRange = explode(' to ', $request->input('dateFilter'));
         //     $startDate = date('Y-m-d H:i:s', strtotime($dateRange[0] . ' 00:00:00'));
         //     $endDate = date('Y-m-d H:i:s', strtotime($dateRange[1] . ' 23:59:59'));
-        
+
         //     $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
         // }
-    
+
         if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
             $dateRange = explode(' to ', $request->input('dateFilter'));
             $startDate = $dateRange[0];
             $endDate = $dateRange[1];
-        
+
             $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
         }
-    
+
         return DataTables::eloquent($query)->toJson();
     }
 
@@ -82,29 +82,29 @@ class AgentReportsController extends Controller
         ->join('products', 'insufficient_balance_customers.product_id', '=', 'products.product_id')
         ->join('company_profiles', 'insufficient_balance_customers.company_id', '=', 'company_profiles.id')
         ->with(['plan', 'product', 'companyProfile']); // Eager load related models
-        
-    
+
+
         // Apply filters if provided
         if ($request->has('companyFilter') && $request->input('companyFilter') != '') {
             $query->where('insufficient_balance_customers.agent_id', $request->input('companyFilter'));
         }
-    
+
         // if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
         //     $dateRange = explode(' to ', $request->input('dateFilter'));
         //     $startDate = date('Y-m-d H:i:s', strtotime($dateRange[0] . ' 00:00:00'));
         //     $endDate = date('Y-m-d H:i:s', strtotime($dateRange[1] . ' 23:59:59'));
-        
+
         //     $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
         // }
-    
+
         if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
             $dateRange = explode(' to ', $request->input('dateFilter'));
             $startDate = $dateRange[0];
             $endDate = $dateRange[1];
-        
+
             $query->whereBetween('insufficient_balance_customers.sale_request_time', [$startDate, $endDate]);
         }
-    
+
         return DataTables::eloquent($query)->toJson();
     }
 

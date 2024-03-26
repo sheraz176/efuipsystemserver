@@ -82,7 +82,9 @@
 
 
             ],
-
+            "columnDefs": [
+            { "searchable": false, "targets": [0,1,2,3,4,5,6,7,9,10] } // Disable search for columns 2 and 3 (plan_name and product_name)
+          ]
         });
 
         // Initialize datepicker

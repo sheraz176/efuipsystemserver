@@ -24,7 +24,6 @@ class CompanyManagerReportController extends Controller
     public function getData(Request $request)
     {
         $companyId = Auth::guard('company_manager')->user()->company_id;
-        //   dd($companyId);
         $query = CustomerSubscription::select([
             'customer_subscriptions.*', // Select all columns from customer_subscriptions table
             'plans.plan_name', // Select the plan_name column from the plans table
@@ -35,8 +34,8 @@ class CompanyManagerReportController extends Controller
         ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
         ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
         ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-        ->with(['plan', 'product', 'companyProfile']); // Eager load related models
-
+        ->with(['plan', 'product', 'companyProfile'])
+        ->where('customer_subscriptions.policy_status', '=', '1'); // Eager load related models
          if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
              $dateRange = explode(' to ', $request->input('dateFilter'));
              $startDate = $dateRange[0];
@@ -44,12 +43,9 @@ class CompanyManagerReportController extends Controller
 
              $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
          }
-
-        $data = $query->get();
-
-        // dd($data);
-
-        return DataTables::of($data)->make(true);
+         return DataTables::eloquent($query)->toJson();
+        // $data = $query->get();
+        // return DataTables::of($data)->make(true);
     }
 
     public function failed_transactions()
@@ -83,10 +79,6 @@ class CompanyManagerReportController extends Controller
             $query->whereBetween('insufficient_balance_customers.sale_request_time', [$startDate, $endDate]);
         }
 
-        // $query = $query->get();
-
-        // return DataTables::of($query)->make(true);
-
         return DataTables::eloquent($query)->toJson();
     }
 
@@ -100,6 +92,7 @@ class CompanyManagerReportController extends Controller
 public function activecustomerdataget(Request $request)
     {
         $companyId = Auth::guard('company_manager')->user()->company_id;
+          //   dd($companyId);
         $query = CustomerSubscription::select([
             'customer_subscriptions.*', // Select all columns from customer_subscriptions table
             'plans.plan_name', // Select the plan_name column from the plans table
@@ -110,8 +103,7 @@ public function activecustomerdataget(Request $request)
         ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
         ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
         ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-        ->with(['plan', 'product', 'companyProfile'])
-        ->where('customer_subscriptions.policy_status', '=', '1'); // Eager load related models
+        ->with(['plan', 'product', 'companyProfile']); // Eager load related models
 
          if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
              $dateRange = explode(' to ', $request->input('dateFilter'));
@@ -120,15 +112,13 @@ public function activecustomerdataget(Request $request)
 
              $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
          }
-
-        $data = $query->get();
-
-        return DataTables::of($data)->make(true);
+         return DataTables::eloquent($query)->toJson();
     }
 
     public function companies_unsubscribed_reports()
    {
-    $companies = CompanyProfile::all();
+    $companyId = Auth::guard('company_manager')->user()->company_id;
+    $companies = CompanyProfile::where('company_id',$companyId)->get();
     return view('company_manager.reports.companycancelledreports',compact('companies'));
    }
 
@@ -170,9 +160,7 @@ public function activecustomerdataget(Request $request)
             \DB::raw('TIMESTAMPDIFF(SECOND, customer_subscriptions.subscription_time, unsubscriptions.unsubscription_datetime) as subscription_duration')
         ]);
     }
-
-    $data = $query->get();
-    return DataTables::of($data)->make(true);
+    return DataTables::eloquent($query)->toJson();
 
     }
 
@@ -213,11 +201,6 @@ public function activecustomerdataget(Request $request)
                 $refundData->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
             }
 
-            // $refundData = $refundData->get();
-
-            // return DataTables::of($refundData)
-
-            // ->make(true);
 
             return DataTables::eloquent($refundData)->toJson();
     }
@@ -283,8 +266,8 @@ public function activecustomerdataget(Request $request)
         ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
         ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
         ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-        ->with(['plan', 'product', 'companyProfile']); // Eager load related models
-
+        ->with(['plan', 'product', 'companyProfile']) // Eager load related models
+        ->where('customer_subscriptions.policy_status', '=', '1'); // Eager load related models
 
         // Apply filters if provided
         if ($request->has('companyFilter') && $request->input('companyFilter') != '') {

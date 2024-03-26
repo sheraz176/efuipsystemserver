@@ -21,7 +21,6 @@ class ExportController extends Controller
     public function exportactivesubription(Request $request)
     {
 
-        //  dd($request->all());
         $query = CustomerSubscription::select([
             'customer_subscriptions.*', // Select all columns from customer_subscriptions table
             'plans.plan_name', // Select the plan_name column from the plans table
@@ -31,17 +30,17 @@ class ExportController extends Controller
         ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
         ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
         ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-        ->with(['plan', 'product', 'companyProfile'])
-        ->where('customer_subscriptions.policy_status', '=', '1'); // Eager load related models
-         if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
-             $dateRange = explode(' to ', $request->input('dateFilter'));
-             $startDate = $dateRange[0];
-             $endDate = $dateRange[1];
-             $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
-         }
+        ->with(['plan', 'product', 'companyProfile']); // Eager load related models
 
+        if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+            $dateRange = explode(' to ', $request->input('dateFilter'));
+            $startDate = $dateRange[0];
+            $endDate = $dateRange[1];
+
+            $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+        }
         $data = $query->get();
-        //  dd($data[0]);
+        //   dd($data);
 
       // Define headers
      $headers = ['Subscription ID', 'Customer MSISDN', 'Plan Name', 'Product Name', 'Amount', 'Duration',
@@ -93,15 +92,16 @@ class ExportController extends Controller
         ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
         ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
         ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-        ->with(['plan', 'product', 'companyProfile']); // Eager load related models
+        ->with(['plan', 'product', 'companyProfile'])
+        ->where('customer_subscriptions.policy_status', '=', '1'); // Eager load related models
 
-        if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
-            $dateRange = explode(' to ', $request->input('dateFilter'));
+         if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+             $dateRange = explode(' to ', $request->input('dateFilter'));
             $startDate = $dateRange[0];
-            $endDate = $dateRange[1];
+             $endDate = $dateRange[1];
+             $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+          }
 
-            $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
-        }
            $data = $query->get();
     //   dd($data);
              // Define headers
@@ -412,7 +412,8 @@ public function getDataCompanyExport(Request $request)
     ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
     ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
     ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-    ->with(['plan', 'product', 'companyProfile']); // Eager load related models
+    ->with(['plan', 'product', 'companyProfile'])
+    ->where('customer_subscriptions.policy_status', '=', '1');
 
     if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
         $dateRange = explode(' to ', $request->input('dateFilter'));
@@ -474,8 +475,8 @@ public function agents_get_data_export(Request $request)
         ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
         ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
         ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-        ->with(['plan', 'product', 'companyProfile']); // Eager load related models
-
+        ->with(['plan', 'product', 'companyProfile']) // Eager load related models
+        ->where('customer_subscriptions.policy_status', '=', '1');
 
         if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
             $dateRange = explode(' to ', $request->input('dateFilter'));
@@ -623,22 +624,22 @@ public function agents_get_data_export(Request $request)
     $data = $query->get();
         //   dd($data);
                // Define headers
-               $headers = ['Request ID', 'Transaction ID', 'Refernce ID', 'Sale Request Time', 'Customer Number','Failed Message', 'Failed Information',
-               'Amount','Product ID', 'Plan ID','Company']; // Replace with your actual column names
+               $headers = ['Request ID', 'Transaction ID','Plan name','Product name','Refernce ID', 'Sale Request Time', 'Customer Number','Failed Message', 'Failed Information',
+               'Amount','Company']; // Replace with your actual column names
                 // Prepare the data with headers
               $rows[] = $headers;
               foreach ($data as $item) {
                $rows[] = [
                   $item->request_id,
                   $item->transactionId,
+                  $item->plan_name,
+                  $item->product_name,
                   $item->referenceId,
                   $item->timeStamp,
                   $item->accountNumber,
                   $item->resultDesc,
                   $item->failedReason,
                   $item->amount,
-                  $item->plan_name,
-                  $item->product_name,
                   $item->company_name,
 
               ];

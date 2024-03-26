@@ -208,7 +208,7 @@
             <li class="menu-item {{ Request::is('super-admin/complete-active-subscriptions') ? 'active' : '' }}">
               <a href="{{ route('superadmin.complete-active-subscriptions') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Total Active Subscription</div>
+                <div data-i18n="Basic">Total Subscription</div>
               </a>
             </li>
 
@@ -222,7 +222,7 @@
             <li class="menu-item  {{ Request::is('super-admin/refunds-reports') ? 'active' : '' }}">
               <a href="{{ route('superadmin.refunds-reports') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Refunds Transactions</div>
+                <div data-i18n="Basic">Refunded Transactions</div>
               </a>
             </li>
 
@@ -243,7 +243,7 @@
             <li class="menu-item {{ Request::is('super-admin/refunds-reports') ? 'active' : '' }}">
               <a href="{{ route('superadmin.refunds-reports') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Refund Report</div>
+                <div data-i18n="Basic">Refunded Report</div>
               </a>
             </li>
 
@@ -279,13 +279,13 @@
             <li class="menu-item {{ Request::is('super-admin/agents-reports') ? 'active' : '' }}">
               <a href="{{ route('superadmin.agents-reports') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Total Sales Reports</div>
+                <div data-i18n="Basic">Total Enrollment Report</div>
               </a>
             </li>
             <li class="menu-item {{ Request::is('super-admin/agents-sales-request') ? 'active' : '' }}">
               <a href="{{ route('superadmin.agents-sales-request') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Totla M-PIN Request</div>
+                <div data-i18n="Basic">Total Sales Request Report</div>
               </a>
             </li>
           </ul>

@@ -32,28 +32,28 @@ class ManageRefunds extends Controller
             ->with(['plan', 'product', 'companyProfile'])
             ->where('grace_period_time', '>=', $todayDate) // Eager load related models
             ->where('policy_status', '=', 1);
-    
+
         if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
             $dateRange = explode(' to ', $request->input('dateFilter'));
             $startDate = $dateRange[0];
             $endDate = $dateRange[1];
-    
+
             $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
         }
-    
+
         // Add custom search functionality for numeric columns
         if ($request->has('msisdn') && !empty($request->input('msisdn'))) {
             $msisdn = $request->input('msisdn');
             $query->where('customer_subscriptions.subscriber_msisdn', 'like', '%' . $msisdn . '%');
         }
-    
+
         // Use DataTables for pagination and server-side processing
         return DataTables::eloquent($query)->toJson();
     }
 
 
-    
-    
+
+
 
 
     public function refundReports(Request $request)
@@ -82,20 +82,14 @@ class ManageRefunds extends Controller
             ->leftJoin('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
             ->leftJoin('products', 'customer_subscriptions.productId', '=', 'products.product_id')
             ->leftjoin('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id');// Assuming you pass refunded_id as a parameter
-            
+
             if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
                 $dateRange = explode(' to ', $request->input('dateFilter'));
                 $startDate = $dateRange[0];
                 $endDate = $dateRange[1];
-            
+
                 $refundData->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
             }
-        
-            // $refundData = $refundData->get();
-
-            // return DataTables::of($refundData)
-
-            // ->make(true);
 
             return DataTables::eloquent($refundData)->toJson();
     }
