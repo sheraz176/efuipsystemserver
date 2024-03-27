@@ -40,8 +40,8 @@ class CompanyManagerReportController extends Controller
              $dateRange = explode(' to ', $request->input('dateFilter'));
              $startDate = $dateRange[0];
              $endDate = $dateRange[1];
-
-             $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+             $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
+             ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
          }
          return DataTables::eloquent($query)->toJson();
         // $data = $query->get();
@@ -76,7 +76,8 @@ class CompanyManagerReportController extends Controller
             $startDate = $dateRange[0];
             $endDate = $dateRange[1];
 
-            $query->whereBetween('insufficient_balance_customers.sale_request_time', [$startDate, $endDate]);
+            $query->whereDate('insufficient_balance_customers.sale_request_time', '>=', $startDate)
+            ->whereDate('insufficient_balance_customers.sale_request_time', '<=', $endDate);
         }
 
         return DataTables::eloquent($query)->toJson();
@@ -109,8 +110,9 @@ public function activecustomerdataget(Request $request)
              $dateRange = explode(' to ', $request->input('dateFilter'));
              $startDate = $dateRange[0];
              $endDate = $dateRange[1];
+             $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
+             ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
 
-             $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
          }
          return DataTables::eloquent($query)->toJson();
     }
@@ -154,7 +156,8 @@ public function activecustomerdataget(Request $request)
         $startDate = $dateRange[0];
         $endDate = $dateRange[1];
 
-        $query->whereBetween('unsubscriptions.unsubscription_datetime', [$startDate, $endDate]);
+        $query->whereDate('unsubscriptions.unsubscription_datetime', '>=', $startDate)
+        ->whereDate('unsubscriptions.unsubscription_datetime', '<=', $endDate);
 
         $query->addSelect([
             \DB::raw('TIMESTAMPDIFF(SECOND, customer_subscriptions.subscription_time, unsubscriptions.unsubscription_datetime) as subscription_duration')
@@ -198,7 +201,8 @@ public function activecustomerdataget(Request $request)
                 $startDate = $dateRange[0];
                 $endDate = $dateRange[1];
 
-                $refundData->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+                $refundData->whereDate('unsubscriptions.unsubscription_datetime', '>=', $startDate)
+                ->whereDate('unsubscriptions.unsubscription_datetime', '<=', $endDate);
             }
 
 
@@ -212,6 +216,7 @@ public function activecustomerdataget(Request $request)
 
     public function getRefundData(Request $request)
     {
+        // dd($request->all);
         $todayDate = Carbon::now()->toDateString();
         $companyId = Auth::guard('company_manager')->user()->company_id;
         $query = CustomerSubscription::select([
@@ -232,8 +237,12 @@ public function activecustomerdataget(Request $request)
             $dateRange = explode(' to ', $request->input('dateFilter'));
             $startDate = $dateRange[0];
             $endDate = $dateRange[1];
+        //    dd($startDate);
+        // $results = YourModel::whereBetween('created_at', [$start_date, $end_date])
+            // $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
 
-            $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+            $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
+            ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
         }
 
         // Add custom search functionality for numeric columns
@@ -241,6 +250,8 @@ public function activecustomerdataget(Request $request)
             $msisdn = $request->input('msisdn');
             $query->where('customer_subscriptions.subscriber_msisdn', 'like', '%' . $msisdn . '%');
         }
+
+
 
         // Use DataTables for pagination and server-side processing
         return DataTables::eloquent($query)->toJson();
@@ -287,7 +298,8 @@ public function activecustomerdataget(Request $request)
             $startDate = $dateRange[0];
             $endDate = $dateRange[1];
 
-            $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+            $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
+            ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
         }
 
         return DataTables::eloquent($query)->toJson();
@@ -340,7 +352,8 @@ public function activecustomerdataget(Request $request)
             $startDate = $dateRange[0];
             $endDate = $dateRange[1];
 
-            $query->whereBetween('insufficient_balance_customers.sale_request_time', [$startDate, $endDate]);
+            $query->whereDate('insufficient_balance_customers.sale_request_time', '>=', $startDate)
+            ->whereDate('insufficient_balance_customers.sale_request_time', '<=', $endDate);
         }
 
         return DataTables::eloquent($query)->toJson();

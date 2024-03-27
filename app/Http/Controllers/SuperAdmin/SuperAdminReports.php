@@ -37,7 +37,8 @@ class SuperAdminReports extends Controller
              $dateRange = explode(' to ', $request->input('dateFilter'));
             $startDate = $dateRange[0];
              $endDate = $dateRange[1];
-             $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+             $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
+             ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
           }
         return DataTables::eloquent($query)->toJson();
 
@@ -69,8 +70,10 @@ class SuperAdminReports extends Controller
             $dateRange = explode(' to ', $request->input('dateFilter'));
             $startDate = $dateRange[0];
             $endDate = $dateRange[1];
+            $query->whereDate('insufficient_balance_customers.sale_request_time', '>=', $startDate)
+            ->whereDate('insufficient_balance_customers.sale_request_time', '<=', $endDate);
+            // $query->whereBetween('insufficient_balance_customers.sale_request_time', [$startDate, $endDate]);
 
-            $query->whereBetween('insufficient_balance_customers.sale_request_time', [$startDate, $endDate]);
         }
 
 
@@ -117,7 +120,8 @@ class SuperAdminReports extends Controller
         $startDate = $dateRange[0];
         $endDate = $dateRange[1];
 
-        $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+        $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
+        ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
     }
     return DataTables::eloquent($query)->toJson();
 
@@ -168,8 +172,9 @@ public function companies_failed_data(Request $request)
         $dateRange = explode(' to ', $request->input('dateFilter'));
         $startDate = $dateRange[0];
         $endDate = $dateRange[1];
-
-        $query->whereBetween('insufficient_balance_customers.sale_request_time', [$startDate, $endDate]);
+        $query->whereDate('insufficient_balance_customers.sale_request_time', '>=', $startDate)
+        ->whereDate('insufficient_balance_customers.sale_request_time', '<=', $endDate);
+        // $query->whereBetween('insufficient_balance_customers.sale_request_time', [$startDate, $endDate]);
     }
     return DataTables::eloquent($query)->toJson();
 }
@@ -209,8 +214,9 @@ public function companies_cancelled_data(Request $request)
         $dateRange = explode(' to ', $request->input('dateFilter'));
         $startDate = $dateRange[0];
         $endDate = $dateRange[1];
-
-        $query->whereBetween('unsubscriptions.unsubscription_datetime', [$startDate, $endDate]);
+        $query->whereDate('unsubscriptions.unsubscription_datetime', '>=', $startDate)
+        ->whereDate('unsubscriptions.unsubscription_datetime', '<=', $endDate);
+        // $query->whereBetween('unsubscriptions.unsubscription_datetime', [$startDate, $endDate]);
 
         $query->addSelect([
             \DB::raw('TIMESTAMPDIFF(SECOND, customer_subscriptions.subscription_time, unsubscriptions.unsubscription_datetime) as subscription_duration')
@@ -247,8 +253,8 @@ public function get_active_subscription_data(Request $request)
             $dateRange = explode(' to ', $request->input('dateFilter'));
             $startDate = $dateRange[0];
             $endDate = $dateRange[1];
-
-            $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+            $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
+            ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
         }
         return DataTables::eloquent($query)->toJson();
 
@@ -280,8 +286,8 @@ public function get_active_subscription_data(Request $request)
             $dateRange = explode(' to ', $request->input('dateFilter'));
             $startDate = $dateRange[0];
             $endDate = $dateRange[1];
-
-            $query->whereBetween('recusive_charging_data.created_at', [$startDate, $endDate]);
+            $query->whereDate('recusive_charging_data.created_at', '>=', $startDate)
+            ->whereDate('recusive_charging_data.created_at', '<=', $endDate);
         }
         return DataTables::eloquent($query)->toJson();
 

@@ -37,7 +37,8 @@ class ExportController extends Controller
             $startDate = $dateRange[0];
             $endDate = $dateRange[1];
 
-            $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+            $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
+            ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
         }
         $data = $query->get();
         //   dd($data);
@@ -99,7 +100,8 @@ class ExportController extends Controller
              $dateRange = explode(' to ', $request->input('dateFilter'));
             $startDate = $dateRange[0];
              $endDate = $dateRange[1];
-             $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+             $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
+             ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
           }
 
            $data = $query->get();
@@ -158,8 +160,9 @@ class ExportController extends Controller
                 $dateRange = explode(' to ', $request->input('dateFilter'));
                 $startDate = $dateRange[0];
                 $endDate = $dateRange[1];
+                $query->whereDate('insufficient_balance_customers.sale_request_time', '>=', $startDate)
+                ->whereDate('insufficient_balance_customers.sale_request_time', '<=', $endDate);
 
-                $query->whereBetween('insufficient_balance_customers.sale_request_time', [$startDate, $endDate]);
             }
         $data = $query->get();
 
@@ -231,7 +234,8 @@ class ExportController extends Controller
         $startDate = $dateRange[0];
         $endDate = $dateRange[1];
 
-        $query->whereBetween('unsubscriptions.unsubscription_datetime', [$startDate, $endDate]);
+        $query->whereDate('unsubscriptions.unsubscription_datetime', '>=', $startDate)
+        ->whereDate('unsubscriptions.unsubscription_datetime', '<=', $endDate);
 
         $query->addSelect([
             \DB::raw('TIMESTAMPDIFF(SECOND, customer_subscriptions.subscription_time, unsubscriptions.unsubscription_datetime) as subscription_duration')
@@ -299,8 +303,9 @@ public function RefundedDataExport(Request $request)
             $dateRange = explode(' to ', $request->input('dateFilter'));
             $startDate = $dateRange[0];
             $endDate = $dateRange[1];
+            $refundData->whereDate('unsubscriptions.unsubscription_datetime', '>=', $startDate)
+            ->whereDate('unsubscriptions.unsubscription_datetime', '<=', $endDate);
 
-            $refundData->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
         }
 
         $data = $refundData->get();
@@ -361,7 +366,8 @@ public function ManageRefundedDataExport(Request $request)
         $startDate = $dateRange[0];
         $endDate = $dateRange[1];
 
-        $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+        $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
+            ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
     }
 
         $data = $query->get();
@@ -420,7 +426,8 @@ public function getDataCompanyExport(Request $request)
         $startDate = $dateRange[0];
         $endDate = $dateRange[1];
 
-        $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+        $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
+        ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
     }
 
     $data = $query->get();
@@ -482,8 +489,9 @@ public function agents_get_data_export(Request $request)
             $dateRange = explode(' to ', $request->input('dateFilter'));
             $startDate = $dateRange[0];
             $endDate = $dateRange[1];
-
-            $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+            $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
+            ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
+            // $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
         }
         $data = $query->get();
 
@@ -551,8 +559,8 @@ public function agents_get_data_export(Request $request)
             $dateRange = explode(' to ', $request->input('dateFilter'));
             $startDate = $dateRange[0];
             $endDate = $dateRange[1];
-
-            $query->whereBetween('insufficient_balance_customers.sale_request_time', [$startDate, $endDate]);
+            $query->whereDate('insufficient_balance_customers.sale_request_time', '>=', $startDate)
+            ->whereDate('insufficient_balance_customers.sale_request_time', '<=', $endDate);
         }
 
         $data = $query->get();
@@ -617,8 +625,9 @@ public function agents_get_data_export(Request $request)
         $dateRange = explode(' to ', $request->input('dateFilter'));
         $startDate = $dateRange[0];
         $endDate = $dateRange[1];
+        $query->whereDate('insufficient_balance_customers.sale_request_time', '>=', $startDate)
+        ->whereDate('insufficient_balance_customers.sale_request_time', '<=', $endDate);
 
-        $query->whereBetween('insufficient_balance_customers.sale_request_time', [$startDate, $endDate]);
     }
 
     $data = $query->get();
@@ -675,8 +684,9 @@ public function export_recusive_charing_data(Request $request)
          $dateRange = explode(' to ', $request->input('dateFilter'));
          $startDate = $dateRange[0];
          $endDate = $dateRange[1];
+         $query->whereDate('recusive_charging_data.created_at', '>=', $startDate)
+         ->whereDate('recusive_charging_data.created_at', '<=', $endDate);
 
-         $query->whereBetween('recusive_charging_data.created_at', [$startDate, $endDate]);
      }
 
     $data = $query->get();

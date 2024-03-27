@@ -49,8 +49,9 @@ class AgentReportsController extends Controller
             $dateRange = explode(' to ', $request->input('dateFilter'));
             $startDate = $dateRange[0];
             $endDate = $dateRange[1];
-
-            $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+            $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
+            ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
+            // $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
         }
 
         return DataTables::eloquent($query)->toJson();
@@ -101,8 +102,9 @@ class AgentReportsController extends Controller
             $dateRange = explode(' to ', $request->input('dateFilter'));
             $startDate = $dateRange[0];
             $endDate = $dateRange[1];
-
-            $query->whereBetween('insufficient_balance_customers.sale_request_time', [$startDate, $endDate]);
+            $query->whereDate('insufficient_balance_customers.sale_request_time', '>=', $startDate)
+            ->whereDate('insufficient_balance_customers.sale_request_time', '<=', $endDate);
+            // $query->whereBetween('insufficient_balance_customers.sale_request_time', [$startDate, $endDate]);
         }
 
         return DataTables::eloquent($query)->toJson();

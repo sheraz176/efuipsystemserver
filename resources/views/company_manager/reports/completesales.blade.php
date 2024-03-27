@@ -20,7 +20,7 @@
 <table id="dataTable" class="" cellSpacing="0" width="100%">
         <thead>
             <tr>
-                <th>Subscription ID</th>
+                <th>Subscription ID </th>
                 <th>Customer MSISDN</th>
                 <th>Plan Name</th>
                 <th>Product Name</th>

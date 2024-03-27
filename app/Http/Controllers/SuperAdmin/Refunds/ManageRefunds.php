@@ -37,8 +37,9 @@ class ManageRefunds extends Controller
             $dateRange = explode(' to ', $request->input('dateFilter'));
             $startDate = $dateRange[0];
             $endDate = $dateRange[1];
-
-            $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+            $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
+            ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
+            // $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
         }
 
         // Add custom search functionality for numeric columns
@@ -88,8 +89,12 @@ class ManageRefunds extends Controller
                 $startDate = $dateRange[0];
                 $endDate = $dateRange[1];
 
-                $refundData->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+                // $refundData->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+                $refundData->whereDate('unsubscriptions.unsubscription_datetime', '>=', $startDate)
+                ->whereDate('unsubscriptions.unsubscription_datetime', '<=', $endDate);
             }
+
+
 
             return DataTables::eloquent($refundData)->toJson();
     }
