@@ -14,6 +14,10 @@
             <button type="submit" class="btn btn-primary btn-sm"><i class='bx bx-down-arrow-alt'></i>Export</button>
       </div>
          </form>
+         <div class="col-md-4">
+            <label for="msisdn">Search by Mobile Number:</label>
+            <input type="text" id="msisdn" class="form-control" placeholder="Enter Customer MSISDN">
+        </div>
     </div>
 
 <table id="refunded_table" class="" cellSpacing="0" width="100%">
@@ -39,6 +43,7 @@
     $(document).ready(function() {
        let dataTable= $('#refunded_table').DataTable({
             "autoWidth": false,
+            "searching": false,
             "columnDefs": [
                     { "width": "1%", "targets": 0 },
                     { "width": "10%", "targets": 1 },
@@ -57,6 +62,7 @@
                 url: "{{ route('manage-refunds.getRefundedData') }}",
                 data: function (d) {
                     d.dateFilter = $('#dateFilter').val();
+                    d.msisdn = $('#msisdn').val();
                 }
 
             },
@@ -93,7 +99,7 @@
         });
 
         // Apply the filters on change
-        $('#dateFilter').on('change', function () {
+        $('#dateFilter, #msisdn').on('change', function () {
             dataTable.ajax.reload();
         });
 

@@ -205,6 +205,12 @@ public function activecustomerdataget(Request $request)
                 ->whereDate('unsubscriptions.unsubscription_datetime', '<=', $endDate);
             }
 
+                    // Add custom search functionality for numeric columns
+           if ($request->has('msisdn') && !empty($request->input('msisdn'))) {
+            $msisdn = $request->input('msisdn');
+            $refundData->where('customer_subscriptions.subscriber_msisdn', 'like', '%' . $msisdn . '%');
+            }
+
 
             return DataTables::eloquent($refundData)->toJson();
     }

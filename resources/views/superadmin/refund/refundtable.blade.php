@@ -66,6 +66,7 @@
     $(document).ready(function() {
         let dataTable_new = $('#dataTable').DataTable({
             "autoWidth": false,
+            "searching": false,
             "columnDefs": [
                 { "width": "0%", "targets": 0 },
                 { "width": "5%", "targets": 1 },
