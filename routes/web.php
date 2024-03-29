@@ -28,6 +28,10 @@ use App\Http\Controllers\SuperAgent\SuperAgentAuthController;
 use App\Http\Controllers\SuperAgent\SuperAgentDashboardController;
 use App\Http\Controllers\SuperAgent\CustomerData;
 use App\Http\Controllers\SuperAdmin\ExportController;
+use App\Http\Controllers\SuperAgentL\SuperAgentAuthLController;
+use App\Http\Controllers\SuperAgentL\SuperAgentDashboardLController;
+use App\Http\Controllers\SuperAgentL\CustomerDataL;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -269,6 +273,22 @@ Route::prefix('super-agent')->group(function () {
     });
 });
 
+
+Route::prefix('super-agent-l')->group(function () {
+    Route::get('/login', [SuperAgentAuthLController::class, 'showLoginForm'])->name('super_agent_l.login');
+    Route::post('/login', [SuperAgentAuthLController::class, 'login'])->name('super_agent_l.login.submit');
+    Route::post('/logout', [SuperAgentAuthLController::class, 'logout'])->name('super_agent_l.logout');
+
+    // Route group for SuperAgent L dashboard requiring authentication
+    Route::middleware(['super_agent_auth'])->group(function () {
+        Route::get('/dashboard', [SuperAgentDashboardLController::class, 'index'])->name('super_agent_l.dashboard');
+        Route::get('/customer-form', [CustomerDataL::class, 'showForm'])->name('super_agent_l.showForm');;
+        Route::post('/fetch-customer-data', [CustomerDataL::class, 'fetchCustomerData'])->name('super_agent_l.fetch_customer_data');
+
+
+
+    });
+});
 
 
 

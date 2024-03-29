@@ -8,6 +8,7 @@ use App\Http\Controllers\API\UserController;
 
 use App\Http\Controllers\API\AutoDebitSubscriptionController;
 use App\Http\Controllers\API\LandingPageSubscription;
+use App\Http\Controllers\SuperAgentL\CustomApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,3 +79,4 @@ Route::prefix('v1')->group(function () {
 });
 
 
+Route::post('/InterestedCustomerStatusUpdate', [CustomApiController::class, 'status_update'])->name('InterestedCustomerStatusUpdate');
