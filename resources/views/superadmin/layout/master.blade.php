@@ -196,7 +196,7 @@
             <li class="menu-item {{ Request::is('super-admin/datatable') ? 'active' : '' }}">
               <a href="{{ route('superadmin.datatable') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Net Enrollments (Total Sales)</div>
+                <div data-i18n="Basic">Net Enrollment Report</div>
               </a>
             </li>
             <li class="menu-item {{ Request::is('super-admin/datatable-failed') ? 'active' : '' }}">
@@ -229,7 +229,7 @@
              <li class="menu-item  {{ Request::is('super-admin/recusive/chargingdataindex') ? 'active' : '' }}">
                 <a href="{{ route('superadmin.recusive-charging-data-index') }}" class="menu-link">
                   <i class="menu-icon tf-icons bx bx-collection"></i>
-                  <div data-i18n="Basic">Recusive Charging Data</div>
+                  <div data-i18n="Basic">Recursive Charging Report</div>
                 </a>
               </li>
             <!-- Misc -->
@@ -258,20 +258,20 @@
             <li class="menu-item {{ Request::is('super-admin/companies-reports') ? 'active' : '' }}">
               <a href="{{ route('superadmin.companies-reports') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Net Enrollement Reports (Total Sales)</div>
+                <div data-i18n="Basic">Net Enrollment Report</div>
               </a>
             </li>
             <li class="menu-item {{ Request::is('super-admin/companies-cancelled-reports') ? 'active' : '' }}">
               <a href="{{ route('superadmin.companies-cancelled-reports') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Unsubscription Reports</div>
+                <div data-i18n="Basic">Unsubscription Report</div>
               </a>
             </li>
 
             <li class="menu-item {{ Request::is('super-admin/companies-failed-reports') ? 'active' : '' }}">
               <a href="{{ route('superadmin.companies-failed-reports') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Failed Sale Reports</div>
+                <div data-i18n="Basic">Failed Sale Report</div>
               </a>
             </li>
 
@@ -279,7 +279,7 @@
             <li class="menu-item {{ Request::is('super-admin/agents-reports') ? 'active' : '' }}">
               <a href="{{ route('superadmin.agents-reports') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Total Enrollment Report</div>
+                <div data-i18n="Basic">Net Enrollment Report</div>
               </a>
             </li>
             <li class="menu-item {{ Request::is('super-admin/agents-sales-request') ? 'active' : '' }}">
