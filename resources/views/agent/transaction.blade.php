@@ -296,6 +296,7 @@ function copyMobileNumber() {
                         document.querySelectorAll('.step button').forEach(button => {
                             button.disabled = true;
                         });
+                        document.getElementById('product').disabled = true;
                         
 
                     } else {
@@ -304,6 +305,8 @@ function copyMobileNumber() {
                         document.querySelectorAll('.step button').forEach(button => {
                             button.disabled = false;
                         });
+                        document.getElementById('product').disabled = false;
+                        
                     }
                 })
                 .catch(error => {
