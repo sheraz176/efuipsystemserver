@@ -187,7 +187,8 @@ public function activecustomerdataget(Request $request)
             'plans.plan_name',
             'products.product_name',
             'company_profiles.company_name',
-            'refunded_customers.medium'
+            'refunded_customers.medium',
+            'customer_subscriptions.subscription_time'
         )
             ->where('customer_subscriptions.company_id', '=', $companyId)
             ->join('customer_subscriptions', 'refunded_customers.subscription_id', '=', 'customer_subscriptions.subscription_id')

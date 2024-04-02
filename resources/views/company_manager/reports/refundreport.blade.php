@@ -33,6 +33,7 @@
                 <th>Product Name</th>
                 <th>Company Name</th>
                 <th>Medium</th>
+                <th>Subscription Date</th>
                 <th>Unsubscription Date</th>
             </tr>
         </thead>
@@ -77,6 +78,7 @@
                 { data: 'product_name', name: 'product_name' },
                 { data: 'company_name', name: 'company_name' },
                 { data: 'medium', name: 'medium' },
+                { data: 'subscription_time', name: 'subscription_time' },
                 { data: 'unsubscription_datetime', name: 'unsubscription_datetime' },
 
             ],

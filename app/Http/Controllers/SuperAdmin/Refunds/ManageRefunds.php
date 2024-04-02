@@ -76,7 +76,8 @@ class ManageRefunds extends Controller
             'plans.plan_name',
             'products.product_name',
             'company_profiles.company_name',
-            'refunded_customers.medium'
+            'refunded_customers.medium',
+            'customer_subscriptions.subscription_time'
         )
             ->join('customer_subscriptions', 'refunded_customers.subscription_id', '=', 'customer_subscriptions.subscription_id')
             ->join('unsubscriptions', 'customer_subscriptions.subscription_id', '=', 'unsubscriptions.subscription_id')

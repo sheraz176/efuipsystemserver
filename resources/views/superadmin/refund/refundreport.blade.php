@@ -33,6 +33,7 @@
                 <th>Product Name</th>
                 <th>Company Name</th>
                 <th>Medium</th>
+               <th>Subscription Date</th>
                 <th>Unsubscription Date</th>
             </tr>
         </thead>
@@ -77,11 +78,12 @@
                 { data: 'product_name', name: 'product_name' },
                 { data: 'company_name', name: 'company_name' },
                 { data: 'medium', name: 'medium' },
+                { data: 'subscription_time', name: 'subscription_time' },
                 { data: 'unsubscription_datetime', name: 'unsubscription_datetime' },
 
             ],
             "columnDefs": [
-            { "searchable": false, "targets": [0,2,3,4,5,6,7,9,10] } // Disable search for columns 2 and 3 (plan_name and product_name)
+            { "searchable": false, "targets": [0,2,3,4,5,6,7,9] } // Disable search for columns 2 and 3 (plan_name and product_name)
           ]
         });
 

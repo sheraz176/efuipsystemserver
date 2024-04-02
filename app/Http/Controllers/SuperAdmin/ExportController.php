@@ -291,7 +291,8 @@ public function RefundedDataExport(Request $request)
         'plans.plan_name',
         'products.product_name',
         'company_profiles.company_name',
-        'refunded_customers.medium'
+        'refunded_customers.medium',
+        'customer_subscriptions.subscription_time',
     )
         ->join('customer_subscriptions', 'refunded_customers.subscription_id', '=', 'customer_subscriptions.subscription_id')
         ->join('unsubscriptions', 'customer_subscriptions.subscription_id', '=', 'unsubscriptions.subscription_id')
@@ -312,7 +313,7 @@ public function RefundedDataExport(Request $request)
         //   dd($data);
            // Define headers
            $headers = ['Refunded ID', 'Customer MSISDN', 'Plan Name', 'Product Name', 'Amount', 'Company Name',
-           'Transaction ID', 'Reference ID', 'Subscription Date', 'UnSubscriotion Date']; // Replace with your actual column names
+           'Transaction ID', 'Reference ID', 'Medium','Subscription Date', 'UnSubscriotion Date']; // Replace with your actual column names
             // Prepare the data with headers
           $rows[] = $headers;
           foreach ($data as $item) {
@@ -326,6 +327,7 @@ public function RefundedDataExport(Request $request)
               $item->transaction_id,
               $item->reference_id,
               $item->medium,
+              $item->subscription_time,
               $item->unsubscription_datetime,
 
           ];
