@@ -21,6 +21,7 @@ use App\Http\Controllers\CompanyManager\CompanyManagerAuthController;
 use App\Http\Controllers\CompanyManager\CompanyManagerReportController;
 use App\Http\Controllers\CompanyManager\CMExportController;
 use App\Http\Controllers\CompanyManager\DashboardController;
+use App\Http\Controllers\CompanyManager\SubscriptionChartController;
 use App\Http\Controllers\BasicAgent\AgentAuthController as AgentAuthController2;
 use App\Http\Controllers\BasicAgent\AgentSalesController as AgentSalesController2;
 use App\Http\Controllers\BasicAgent\CustomerController;
@@ -201,7 +202,10 @@ Route::prefix('company-manager')->group(function () {
     Route::middleware(['auth.company_manager'])->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('company-manager-dashboard');
         Route::post('logout', [CompanyManagerAuthController::class, 'logout'])->name('company.manager.logout');
-        Route::get('subscription-chart-data/{timeRange}', [SubscriptionChartController::class, 'getSubscriptionChartData'])->name('company-manager.subscription-chart-data');
+
+          // Company Manager Graphic
+        Route::get('getMonthlyActiveSubscriptionChartData', [SubscriptionChartController::class, 'getMonthlyActiveSubscriptionChartData'])->name('companymanager.getMonthlyActiveSubscriptionChartData');
+        Route::get('get-subscription-chart-data', [SubscriptionChartController::class, 'getSubscriptionChartData'])->name('companymanager.get-subscription-chart-data');
 
          //Complete Sales for Company Manager
          Route::get('CompleteSalesindex', [CompanyManagerReportController::class, 'complete_sales_index'])->name('companymanager.CompleteSalesindex');

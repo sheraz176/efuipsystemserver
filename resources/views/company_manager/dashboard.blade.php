@@ -59,8 +59,8 @@
                     </div>
                 </div>
 
-                
-               
+
+
             </div>
         </div>
         <div class="col-12 col-md-8 col-lg-4 order-3 order-md-2">
@@ -112,8 +112,8 @@
                     </div>
                 </div>
 
-                
-               
+
+
             </div>
         </div>
         <div class="col-12 col-md-8 col-lg-4 order-3 order-md-2">
@@ -165,19 +165,19 @@
                     </div>
                 </div>
 
-                
-               
+
+
             </div>
         </div>
     </div>
-    
+
 
 </div>
-<h4 class=""><span class="text-muted fw-light">Company Performance/</span> (Graphs)</h4>
+<h4 class=""><span class="text-muted fw-light">Company (Manager) Performance/</span> (Graphs)</h4>
 
 <div class=row>
 
-<div class="col-xl-6 col-12 mb-4">
+    <div class="col-xl-6 col-12 mb-4">
         <div class="card">
             <div class="card-header header-elements">
                 <h5 class="card-title mb-0">Net Enrollments </h5>
@@ -233,37 +233,131 @@
         </div>
     </div>
 
-    </div>
 
-<h4 class=""><span class="text-muted fw-light">Agent Performance/</span> (Top 10 Agents)</h4>
+</div>
+
+{{-- <h4 class=""><span class="text-muted fw-light">Agent Performance/</span> (Top 10 Agents)</h4>
+ --}}
 
 <script>
 
-$(document).ready(function() {
-    // Event listener for dropdown item clicks
-    $('.dropdown-item').on('click', function() {
-        var range = $(this).data('range');
-        updateChart(range);
+    $(document).ready(function () {
+        // Initial fetch for current month data
+        fetchChartData('current_month');
+
+        // Dropdown click event handler
+        $('.dropdown-menu .dropdown-item').click(function() {
+            var timeRange = $(this).data('range');
+            fetchChartData(timeRange);
+        });
     });
 
-    // Function to update the chart with data from the server
-    function updateChart(range) {
+    function fetchChartData(timeRange) {
+        // AJAX request to fetch data based on the selected time range
         $.ajax({
-            url: '/company-manager.subscription-chart-data', // Endpoint to fetch data
+            url: '{{ route('companymanager.get-subscription-chart-data') }}',
             type: 'GET',
-            data: { range: range }, // Send selected range to the server
-            success: function(data) {
-                // Assuming data is in the format { labels: [...], data: [...] }
-                // Update chart using received data
-                // Example: updateChartJS(data.labels, data.data);
+            data: { time_range: timeRange }, // Pass the time range parameter
+            dataType: 'json',
+            success: function (data) {
+                // Update the chart with the fetched data
+                updateChart(data);
             },
-            error: function(xhr, status, error) {
-                console.error(xhr.responseText);
+            error: function (error) {
+                console.error('Error fetching data:', error);
             }
         });
     }
-});
 
+
+    var barChart = null; // Declare barChart variable outside the updateChart function
+
+    function updateChart(data) {
+        // Check if a previous Chart instance exists and destroy it
+        if (barChart) {
+            barChart.destroy();
+        }
+
+        // Extract necessary data from the fetched response
+        var labels = data.labels;  // Array of date labels
+        var values = data.values;  // Array of corresponding subscription counts
+
+        // Get the chart canvas
+        var ctx = document.getElementById('barChart').getContext('2d');
+
+        // Create a new bar chart
+        barChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Monthly Subscription Counts',
+                    data: values,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',  // Example color
+                    borderColor: 'rgba(75, 192, 192, 1)',       // Example color
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+
+
+
+
+            $(document).ready(function() {
+                // Fetch data from the server
+                $.ajax({
+                    url: '{{ route('companymanager.getMonthlyActiveSubscriptionChartData') }}'
+                    , type: 'GET'
+                    , dataType: 'json'
+                    , success: function(data) {
+                        // Update the chart with the fetched data
+                        updateChart_2(data, 'barChart_1'); // Pass chart ID as an argument
+                    }
+                    , error: function(error) {
+                        console.error('Error fetching data:', error);
+                    }
+                });
+            });
+
+            function updateChart_2(data, chartId) {
+                // Extract necessary data from the fetched response
+                var labels = data.labels; // Array of month names
+                var values = data.values; // Array of corresponding active subscription counts
+
+                // Get the chart canvas
+                var ctx = document.getElementById(chartId).getContext('2d');
+
+                // Create a new bar chart
+                var barChart = new Chart(ctx, {
+                    type: 'bar'
+                    , data: {
+                        labels: labels
+                        , datasets: [{
+                            label: 'Monthly Active Subscriptions'
+                            , data: values
+                            , backgroundColor: 'rgba(75, 192, 192, 0.2)', // Example color
+                            borderColor: 'rgba(75, 192, 192, 1)', // Example color
+                            borderWidth: 1
+                        }]
+                    }
+                    , options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
 </script>
 
 
