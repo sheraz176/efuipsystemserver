@@ -8,6 +8,7 @@ use App\Http\Controllers\API\UserController;
 
 use App\Http\Controllers\API\AutoDebitSubscriptionController;
 use App\Http\Controllers\API\LandingPageSubscription;
+use App\Http\Controllers\API\ProductApiController;
 use App\Http\Controllers\SuperAgentL\CustomApiController;
 
 /*
@@ -78,5 +79,8 @@ Route::prefix('v1')->group(function () {
     });
 });
 
+   // Status Update Auto Debit Button Super Agent L Pannel
+   Route::post('/InterestedCustomerStatusUpdate', [CustomApiController::class, 'status_update'])->name('InterestedCustomerStatusUpdate');
 
-Route::post('/InterestedCustomerStatusUpdate', [CustomApiController::class, 'status_update'])->name('InterestedCustomerStatusUpdate');
+   //  Products Fatch Through Plan Id
+   Route::post('/GetProductsData', [ProductApiController::class, 'fatch_products'])->name('GetProductsData');
