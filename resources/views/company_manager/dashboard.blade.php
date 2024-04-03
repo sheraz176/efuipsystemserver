@@ -30,7 +30,7 @@
                                 </div>
                             </div>
                             <span class="d-block mb-1">Current Year Lifes Secured</span>
-                            <h3 class="card-title text-nowrap mb-2">{{ $currentYearSubscriptionCount }}</h3>
+                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($currentYearSubscriptionCount, 0, '.', ',') }}</h3>
                             <small class="text-danger fw-medium"><i class="bx bx-down-arrow-alt"></i> -14.82%</small>
                         </div>
                     </div>
@@ -53,7 +53,7 @@
                                 </div>
                             </div>
                             <span class="fw-medium d-block mb-1">Current Month Total Lifes Secured</span>
-                            <h3 class="card-title mb-2">{{$currentMonthSubscriptionCount}}</h3>
+                            <h3 class="card-title mb-2">{{ number_format($currentMonthSubscriptionCount, 0, '.', ',') }}</h3>
                             <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +28.14%</small>
                         </div>
                     </div>
@@ -83,7 +83,7 @@
                                 </div>
                             </div>
                             <span class="d-block mb-1">Today's Total Lifes Secured</span>
-                            <h3 class="card-title text-nowrap mb-2">{{$todaySubscriptionCount}}</h3>
+                            <h3 class="card-title text-nowrap mb-2">{{ number_format($todaySubscriptionCount, 0, '.', ',') }}</h3>
                             <small class="text-danger fw-medium"><i class="bx bx-down-arrow-alt"></i> -14.82%</small>
                         </div>
                     </div>
@@ -106,7 +106,7 @@
                                 </div>
                             </div>
                             <span class="fw-medium d-block mb-1">Current Year Total Sales(Company)</span>
-                            <h3 class="card-title mb-2">{{$yearlyTransactionSum}}</h3>
+                            <h3 class="card-title mb-2">{{ number_format($yearlyTransactionSum, 0, '.', ',') }}</h3>
                             <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +28.14%</small>
                         </div>
                     </div>
@@ -136,7 +136,7 @@
                                 </div>
                             </div>
                             <span class="d-block mb-1">Current Month's Total Sales(Company)</span>
-                            <h3 class="card-title text-nowrap mb-2">{{$monthlyTransactionSum}}</h3>
+                            <h3 class="card-title text-nowrap mb-2">{{ number_format($monthlyTransactionSum, 0, '.', ',') }}</h3>
                             <small class="text-danger fw-medium"><i class="bx bx-down-arrow-alt"></i> -14.82%</small>
                         </div>
                     </div>
@@ -159,7 +159,7 @@
                                 </div>
                             </div>
                             <span class="fw-medium d-block mb-1">Today's Total Sales (Company)</span>
-                            <h3 class="card-title mb-2">{{$dailyTransactionSum}}</h3>
+                            <h3 class="card-title mb-2">{{ number_format($dailyTransactionSum, 0, '.', ',') }}</h3>
                             <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +28.14%</small>
                         </div>
                     </div>
@@ -211,20 +211,20 @@
             <div class="card-header header-elements">
                 <h5 class="card-title mb-0">Active Customers</h5>
                 <div class="card-action-element ms-auto py-0">
-                    <div class="dropdown">
+                    {{-- <div class="dropdown">
                         <button type="button" class="btn dropdown-toggle px-0" data-bs-toggle="dropdown" aria-expanded="false"><i class="bx bx-calendar"></i></button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Today</a></li>
-                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Yesterday</a></li>
-                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 7 Days</a></li>
-                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 30 Days</a></li>
+                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center" data-range="today">Today</a></li>
+                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center" data-range="yesterday">Yesterday</a></li>
+                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center" data-range="last_7_days">Last 7 Days</a></li>
+                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center" data-range="last_30_days">Last 30 Days</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Current Month</a></li>
-                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last Month</a></li>
+                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center" data-range="current_month">Current Month</a></li>
+                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center" data-range="last_month">Last Month</a></li>
                         </ul>
-                    </div>
+                    </div> --}}
                 </div>
             </div>
             <div class="card-body">
@@ -233,6 +233,21 @@
         </div>
     </div>
 
+        <!-- Line Charts -->
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header header-elements">
+                    <div>
+                        <h5 class="card-title mb-0">Monthly Subscription and UnSubscription</h5>
+                        <small class="text-muted">Different Between Subscription and UnSubscription Trends</small>
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <canvas id="lineChart" class="chartjs" data-height="500" height="625" width="1391" style="display: block; box-sizing: border-box; height: 500px; width: 1112px;"></canvas>
+                </div>
+            </div>
+        </div>
 
 </div>
 
@@ -358,6 +373,66 @@
                     }
                 });
             }
+
+ // Update the Line Chart
+
+            $(document).ready(function() {
+            // Fetch data from the server
+            $.ajax({
+                url: '{{ route('companymanager.getMonthlySubscriptionUnsubscriptionChartData') }}'
+                , type: 'GET'
+                , dataType: 'json'
+                , success: function(data) {
+                    // Update the chart with the fetched data
+                    updateLineChart(data);
+                }
+                , error: function(error) {
+                    console.error('Error fetching data:', error);
+                }
+            });
+        });
+
+        function updateLineChart(data) {
+            // Extract necessary data from the fetched response
+            var labels = data.labels; // Array of month names
+            var subscriptions = data.subscriptions; // Array of corresponding subscription counts
+            var unsubscriptions = data.unsubscriptions; // Array of corresponding unsubscription counts
+
+            // Get the chart canvas
+            var ctx = document.getElementById('lineChart').getContext('2d');
+
+            // Create a new line chart
+            var lineChart = new Chart(ctx, {
+                type: 'line'
+                , data: {
+                    labels: labels
+                    , datasets: [{
+                        label: 'Subscriptions'
+                        , data: subscriptions
+                        , borderColor: 'rgba(75, 192, 192, 1)', // Example color for subscriptions
+                        borderWidth: 2
+                        , fill: false
+                    }, {
+                        label: 'Unsubscriptions'
+                        , data: unsubscriptions
+                        , borderColor: 'rgba(255, 99, 132, 1)', // Example color for unsubscriptions
+                        borderWidth: 2
+                        , fill: false
+                    }]
+                }
+                , options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+ // End the Line Chart
+
+
 </script>
 
 

@@ -31,7 +31,7 @@
                                 </div> --}}
                             </div>
                             <span class="d-block mb-1">Current Year Lifes Secured</span>
-                            <h3 class="card-title text-nowrap mb-2">{{ $currentYearSubscriptionCount }}</h3>
+                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($currentYearSubscriptionCount, 0, '.', ',') }}</h3>
                             {{-- <small class="text-danger fw-medium"><i class="bx bx-down-arrow-alt"></i> -14.82%</small> --}}
                         </div>
                     </div>
@@ -54,7 +54,7 @@
                                 </div> --}}
                             </div>
                             <span class="fw-medium d-block mb-1">Current Month Total Lifes Secured</span>
-                            <h3 class="card-title mb-2">{{$currentMonthSubscriptionCount}}</h3>
+                            <h3 class="card-title mb-2">{{ number_format($currentMonthSubscriptionCount, 0, '.', ',') }}</h3>
                             {{-- <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +28.14%</small> --}}
                         </div>
                     </div>
@@ -84,7 +84,7 @@
                                 </div> --}}
                             </div>
                             <span class="d-block mb-1">Today's Total Lifes Secured</span>
-                            <h3 class="card-title text-nowrap mb-2">{{$todaySubscriptionCount}}</h3>
+                            <h3 class="card-title text-nowrap mb-2">{{ number_format($todaySubscriptionCount, 0, '.', ',') }}</h3>
                             {{-- <small class="text-danger fw-medium"><i class="bx bx-down-arrow-alt"></i> -14.82%</small> --}}
                         </div>
                     </div>
@@ -107,7 +107,7 @@
                                 </div> --}}
                             </div>
                             <span class="fw-medium d-block mb-1">Current Year Total Sales(Company)</span>
-                            <h3 class="card-title mb-2">{{$yearlyTransactionSum}}</h3>
+                            <h3 class="card-title mb-2">{{ number_format($yearlyTransactionSum, 0, '.', ',') }}</h3>
                             {{-- <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +28.14%</small> --}}
                         </div>
                     </div>
@@ -134,7 +134,7 @@
                                 </div> --}}
                             </div>
                             <span class="d-block mb-1">Current Months Total Sales</span>
-                            <h3 class="card-title text-nowrap mb-2">{{$monthlyTransactionSum}}</h3>
+                            <h3 class="card-title text-nowrap mb-2">{{ number_format($monthlyTransactionSum, 0, '.', ',') }}</h3>
                             {{-- <small class="text-danger fw-medium"><i class="bx bx-down-arrow-alt"></i> -14.82%</small> --}}
                         </div>
                     </div>
@@ -157,7 +157,7 @@
                                 </div> --}}
                             </div>
                             <span class="fw-medium d-block mb-1">Today's Total Sales (Company)</span>
-                            <h3 class="card-title mb-2">{{$dailyTransactionSum}}</h3>
+                            <h3 class="card-title mb-2">{{ number_format($dailyTransactionSum, 0, '.', ',') }}</h3>
                             {{-- <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +28.14%</small> --}}
                         </div>
                     </div>
