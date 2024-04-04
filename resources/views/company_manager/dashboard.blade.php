@@ -233,26 +233,52 @@
         </div>
     </div>
 
+    <div class=row>
         <!-- Line Charts -->
-        <div class="col-12 mb-4">
+        <div class="col-xl-6 col-12 mb-4">
             <div class="card">
                 <div class="card-header header-elements">
                     <div>
-                        <h5 class="card-title mb-0">Monthly Subscription and UnSubscription</h5>
-                        <small class="text-muted">Different Between Subscription and UnSubscription Trends</small>
+                        <h5 class="card-title mb-0">Last 30(Days) Total Enrollments</h5>
+
                     </div>
 
                 </div>
                 <div class="card-body">
-                    <canvas id="lineChart" class="chartjs" data-height="500" height="625" width="1391" style="display: block; box-sizing: border-box; height: 500px; width: 1112px;"></canvas>
+                    <canvas id="EnrollmentlineChart" class="chartjs" data-height="500" height="625" width="1391" style="display: block; box-sizing: border-box; height: 500px; width: 1112px;"></canvas>
                 </div>
             </div>
         </div>
 
+        <div class="col-xl-6 col-12 mb-4">
+            <div class="card">
+                <div class="card-header header-elements">
+                    <div>
+                        <h5 class="card-title mb-0">Last 30(Days) Total  Refunded</h5>
+
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="lineChartRefunded" class="chartjs" data-height="500" height="625" width="1391" style="display: block; box-sizing: border-box; height: 500px; width: 1112px;"></canvas>
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
 </div>
 
-{{-- <h4 class=""><span class="text-muted fw-light">Agent Performance/</span> (Top 10 Agents)</h4>
- --}}
+
+
+
+
+
+
+
+
+
+
 
 <script>
 
@@ -374,47 +400,57 @@
                 });
             }
 
- // Update the Line Chart
+</script>
+<script>
+    // Enrollment Line Chart Start
+    var CustomerSubscriptionData = <?php echo json_encode($CustomerSubscriptionData); ?>;
 
-            $(document).ready(function() {
-            // Fetch data from the server
-            $.ajax({
-                url: '{{ route('companymanager.getMonthlySubscriptionUnsubscriptionChartData') }}'
-                , type: 'GET'
-                , dataType: 'json'
-                , success: function(data) {
-                    // Update the chart with the fetched data
-                    updateLineChart(data);
-                }
-                , error: function(error) {
-                    console.error('Error fetching data:', error);
-                }
-            });
-        });
+    // Get labels and data for the chart
+    var Enrollmentlabels = Object.keys(CustomerSubscriptionData);
+    var Enrollmentdata = Object.values(CustomerSubscriptionData);
 
-        function updateLineChart(data) {
-            // Extract necessary data from the fetched response
-            var labels = data.labels; // Array of month names
-            var subscriptions = data.subscriptions; // Array of corresponding subscription counts
-            var unsubscriptions = data.unsubscriptions; // Array of corresponding unsubscription counts
-
-            // Get the chart canvas
-            var ctx = document.getElementById('lineChart').getContext('2d');
-
-            // Create a new line chart
-            var lineChart = new Chart(ctx, {
+    // Render the chart
+    var ctx = document.getElementById('EnrollmentlineChart').getContext('2d');
+      // Create a new line chart
+      var EnrollmentlineChart = new Chart(ctx, {
                 type: 'line'
                 , data: {
-                    labels: labels
+                    labels: Enrollmentlabels
                     , datasets: [{
-                        label: 'Subscriptions'
-                        , data: subscriptions
+                        label: 'Enrollments'
+                        , data: Enrollmentdata
                         , borderColor: 'rgba(75, 192, 192, 1)', // Example color for subscriptions
                         borderWidth: 2
                         , fill: false
-                    }, {
-                        label: 'Unsubscriptions'
-                        , data: unsubscriptions
+                    }]
+                }
+                , options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+  // Get Refunded Line Chart
+
+    var RefundedCustomersData = <?php echo json_encode($RefundedCustomersData); ?>;
+    // Get labels and data for the chart
+
+    var Refundedlabels = Object.keys(RefundedCustomersData);
+    var Refundeddata = Object.values(RefundedCustomersData);
+
+    // Render the chart
+    var ctx = document.getElementById('lineChartRefunded').getContext('2d');
+      // Create a new line chart
+      var lineChartRefunded = new Chart(ctx, {
+                type: 'line'
+                , data: {
+                    labels: Refundedlabels
+                    , datasets: [ {
+                        label: 'Refunded'
+                        , data: Refundeddata
                         , borderColor: 'rgba(255, 99, 132, 1)', // Example color for unsubscriptions
                         borderWidth: 2
                         , fill: false
@@ -428,12 +464,8 @@
                     }
                 }
             });
-        }
-
- // End the Line Chart
 
 
 </script>
-
 
 @endsection()

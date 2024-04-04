@@ -266,7 +266,8 @@ public function activecustomerdataget(Request $request)
 
     public function agents_Subscriptions()
     {
-        $agents = TeleSalesAgent::all();
+        $companyId = Auth::guard('company_manager')->user()->company_id;
+        $agents = TelesalesAgent::where('company_id', $companyId)->get();
         return view('company_manager.reports.agentwisereports',compact('agents'));
     }
 

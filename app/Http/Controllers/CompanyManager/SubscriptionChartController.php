@@ -137,32 +137,6 @@ class SubscriptionChartController extends Controller
         return response()->json(['labels' => $labels, 'values' => $values]);
     }
 
-    public function getMonthlySubscriptionUnsubscriptionChartData()
-    {
-        $companyId = Auth::guard('company_manager')->user()->company_id;
-        // Fetch data from the database based on monthly subscription and unsubscription counts
-        $data = CustomerSubscription::selectRaw('MONTH(subscription_time) as month,
-                                        SUM(CASE WHEN policy_status = 1 THEN 1 ELSE 0 END) as subscriptions,
-                                        SUM(CASE WHEN policy_status = 0 THEN 1 ELSE 0 END) as unsubscriptions')
-                                        ->where('company_id', $companyId)
-            ->groupBy('month')
-            ->get();
-
-        // Format the data for the chart
-        $labels = [];
-        $subscriptionValues = [];
-        $unsubscriptionValues = [];
-
-        // Loop through months and set counts
-        for ($month = 1; $month <= 12; $month++) {
-            $monthData = $data->where('month', $month)->first();
-            $labels[] = Carbon::create()->month($month)->format('F'); // Month name
-            $subscriptionValues[] = $monthData ? $monthData->subscriptions : 0;
-            $unsubscriptionValues[] = $monthData ? $monthData->unsubscriptions : 0;
-        }
-
-        return response()->json(['labels' => $labels, 'subscriptions' => $subscriptionValues, 'unsubscriptions' => $unsubscriptionValues]);
-    }
 
 
 

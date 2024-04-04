@@ -206,7 +206,6 @@ Route::prefix('company-manager')->group(function () {
           // Company Manager Graphic
         Route::get('getMonthlyActiveSubscriptionChartData', [SubscriptionChartController::class, 'getMonthlyActiveSubscriptionChartData'])->name('companymanager.getMonthlyActiveSubscriptionChartData');
         Route::get('get-subscription-chart-data', [SubscriptionChartController::class, 'getSubscriptionChartData'])->name('companymanager.get-subscription-chart-data');
-        Route::get('getMonthlySubscriptionUnsubscriptionChartData', [SubscriptionChartController::class, 'getMonthlySubscriptionUnsubscriptionChartData'])->name('companymanager.getMonthlySubscriptionUnsubscriptionChartData');
 
          //Complete Sales for Company Manager
          Route::get('CompleteSalesindex', [CompanyManagerReportController::class, 'complete_sales_index'])->name('companymanager.CompleteSalesindex');
