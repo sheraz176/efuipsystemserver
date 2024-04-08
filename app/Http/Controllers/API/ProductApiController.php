@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Plans\ProductModel;
+use App\Models\HealthProductBenefits;
 use Auth;
 use Validator;
 
@@ -12,7 +13,7 @@ class ProductApiController extends Controller
 {
     public function fatch_products(Request $request)
     {
-
+        //   dd('hi');
         $validator = Validator::make($request->all(), [
             'plan_id' => 'required',
          ]);
@@ -48,12 +49,30 @@ class ProductApiController extends Controller
                 'other_key_details' => $product->other_key_details,
                 'exclusions' => $product->exclusions,
                ];
+
+               $HealthProductBenefits = HealthProductBenefits::where('product_id', $product->product_id)->get();
+            //    dd($HealthProductBenefits);
+            $HealthProductBenefitsData = [];
+            foreach($HealthProductBenefits as  $HealthProductBenefits)
+            {
+            $HealthProductBenefitsData[] = [
+                'id' => $HealthProductBenefits->product_id,
+                'product_id' => $HealthProductBenefits->product_id,
+                'benefits' => $HealthProductBenefits->benefits,
+                'silver' => $HealthProductBenefits->silver,
+                'gold' => $HealthProductBenefits->gold,
+                'platinum' => $HealthProductBenefits->platinum,
+
+               ];
+            }
+
             }
 
             $data = array(
               'status' => 'Success',
               'message' => 'Your Products Get Successfully',
               'Products' => $productData,
+              'HealthProductBenefitsData' => $HealthProductBenefitsData,
             );
             return response()->json($data ,200);
 
