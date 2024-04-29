@@ -9,6 +9,7 @@ use App\Models\TeleSalesAgent;
 use App\Models\Plans\PlanModel;
 use App\Models\Plans\ProductModel;
 use App\Models\Company\CompanyProfile;
+use Carbon\Carbon;
 
 class CustomerDataL extends Controller
 {
@@ -30,6 +31,7 @@ class CustomerDataL extends Controller
         // dd($request->all());
         $customer = InterestedCustomer::with(['agent', 'company', 'plan', 'product'])
         ->where('customer_msisdn', $request->customer_msisdn)
+        ->whereDate('created_at', Carbon::today())
         ->where('deduction_applied', 0)
         ->first();
 

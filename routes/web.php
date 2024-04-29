@@ -203,6 +203,10 @@ Route::prefix('company-manager')->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('company-manager-dashboard');
         Route::post('logout', [CompanyManagerAuthController::class, 'logout'])->name('company.manager.logout');
 
+        // Company Manager Intersted Customer
+        Route::get('today/customer', [DashboardController::class, 'today_interested_customer'])->name('company-manager.today-interested-customer');
+        Route::get('today/deduction/customer', [DashboardController::class, 'today_deduction_interested_customer'])->name('company-manager.deduction-interested-customer');
+
           // Company Manager Graphic
         Route::get('getMonthlyActiveSubscriptionChartData', [SubscriptionChartController::class, 'getMonthlyActiveSubscriptionChartData'])->name('companymanager.getMonthlyActiveSubscriptionChartData');
         Route::get('get-subscription-chart-data', [SubscriptionChartController::class, 'getSubscriptionChartData'])->name('companymanager.get-subscription-chart-data');

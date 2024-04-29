@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Refund\RefundedCustomer;
+use App\Models\InterestedCustomers\InterestedCustomer;
 use App\Models\Subscription\CustomerSubscription;
 use Carbon\Carbon;
 
@@ -52,7 +53,8 @@ class DashboardController extends Controller
              ->where('policy_status', '1')->where('company_id', $companyId)->get();
              $CustomerSubscriptionData = [];
             foreach ($Customer_Subscriptions as $CustomerSubscription) {
-                $date = $CustomerSubscription->created_at->toDateString();
+
+                $date = Carbon::parse($CustomerSubscription->created_at)->toDateString();
 
                 if (!isset($CustomerSubscriptionData[$date])) {
                     $CustomerSubscriptionData[$date] = 0;
@@ -70,7 +72,7 @@ class DashboardController extends Controller
             ->get();
             $RefundedCustomersData = [];
             foreach ($Refunded_Customers as $RefundedCustomer) {
-                $date = $RefundedCustomer->created_at->toDateString();
+                $date = Carbon::parse($RefundedCustomer->created_at)->toDateString();
 
                 if (!isset($RefundedCustomersData[$date])) {
                     $RefundedCustomersData[$date] = 0;
@@ -91,4 +93,24 @@ class DashboardController extends Controller
             'RefundedCustomersData' =>$RefundedCustomersData,
         ]);
     }
+
+    public function today_interested_customer(Request $request)
+    {
+        $companyId = Auth::guard('company_manager')->user()->company_id;
+        $customer = InterestedCustomer::whereDate('created_at', Carbon::today())
+        ->where('company_id' , $companyId)->get();
+        // dd($customer);
+        return view('company_manager.interested-customer.today_interested_customer',compact('customer'));
+    }
+    public function today_deduction_interested_customer(Request $request)
+    {
+        $companyId = Auth::guard('company_manager')->user()->company_id;
+        $customer = InterestedCustomer::whereDate('created_at', Carbon::today())
+        ->where('company_id' , $companyId)->where('deduction_applied', 1)->get();
+        // dd($customer);
+        return view('company_manager.interested-customer.today_deduction_interested_customer',compact('customer'));
+
+    }
+
+
 }

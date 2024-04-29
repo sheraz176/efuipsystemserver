@@ -9,6 +9,7 @@ use App\Models\TeleSalesAgent;
 use App\Models\Plans\PlanModel;
 use App\Models\Plans\ProductModel;
 use App\Models\Company\CompanyProfile;
+use Carbon\Carbon;
 
 class CustomerData extends Controller
 {
@@ -20,7 +21,7 @@ class CustomerData extends Controller
     // public function fetchCustomerData(Request $request)
     // {
     //     $customer = InterestedCustomer::where('customer_msisdn', $request->customer_msisdn)->first();
-    
+
     //     return response()->json($customer);
     // }
 
@@ -28,6 +29,7 @@ class CustomerData extends Controller
     {
         $customer = InterestedCustomer::with(['agent', 'company', 'plan', 'product'])
         ->where('customer_msisdn', $request->customer_msisdn)
+        ->whereDate('created_at', Carbon::today())
         ->where('deduction_applied', 0)
         ->first();
 
@@ -47,7 +49,7 @@ class CustomerData extends Controller
         $customer->company_name = $company->company_name ?? null;
         $customer->plan_name = $plan->plan_name ?? null;
         $customer->product_name = $product->product_name ?? null;
-        
+
         return response()->json($customer);
     }
 }

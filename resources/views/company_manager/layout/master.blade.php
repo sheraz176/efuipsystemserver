@@ -205,6 +205,20 @@
                 <div data-i18n="Basic">Total Sales Request Report</div>
               </a>
             </li>
+
+            <li class="menu-item {{ Request::is('company-manager/today/customer') ? 'active' : '' }}">
+                <a href="{{ route('company-manager.today-interested-customer') }}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-collection"></i>
+                  <div data-i18n="Basic">Today Interested Customer</div>
+                </a>
+              </li>
+              <li class="menu-item {{ Request::is('company-manager/today/deduction/customer') ? 'active' : '' }}">
+                <a href="{{ route('company-manager.deduction-interested-customer') }}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-collection"></i>
+                  <div data-i18n="Basic">Today Deduction</div>
+                </a>
+              </li>
+
           </ul>
         </aside>
         <!-- / Menu -->
