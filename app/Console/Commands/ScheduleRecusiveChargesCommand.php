@@ -10,21 +10,21 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\JsonResponse;
 
-class RecusiveCharging extends Command
+class ScheduleRecusiveChargesCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'recusive:charging';
+    protected $signature = 'schedule:recusive-charges';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Update Recusive Charging table at 4 AM and 9 PM';
 
     /**
      * Create a new command instance.
@@ -44,6 +44,23 @@ class RecusiveCharging extends Command
     public function handle()
     {
 
+        $this->schedule->cron('0 4 * * *', function () {
+            // Logic to  data at 4 AM
+            $this->RecusiveChargingData();
+            $this->info('Recusive Charging Update  successfully at 4 AM');
+        });
+
+        $this->schedule->cron('0 21 * * *', function () {
+            // Logic to  data at 9 PM
+            $this->RecusiveChargingData();
+            $this->info('Recusive Charging Update successfully at 9 PM');
+        });
+        return 'success';
+    }
+
+    private function RecusiveChargingData()
+    {
+        // Implement your logic
 
             // Get today's date in 'YYYY-MM-DD' format
             $today = Carbon::now()->toDateString();
@@ -54,7 +71,7 @@ class RecusiveCharging extends Command
                 ->whereDate('recursive_charging_date', $today)
                 ->where('policy_status', 1)->whereIn('transaction_amount',[4, 133])
                 ->get();
-            //  dd($subscriptions);
+              //dd($subscriptions);
             // Iterate over subscriptions
             foreach ($subscriptions as $subscription) {
 
@@ -176,7 +193,7 @@ class RecusiveCharging extends Command
                            $recusive_charging_data->plan_id = $subscription->plan_id;
                            $recusive_charging_data->product_id = $subscription->productId;
                            $recusive_charging_data->cps_response = !empty($data['resultDesc'])?$data['resultDesc']: $data['failedReason'];
-                           $recusive_charging_data->charging_date = $subscription->recursive_charging_date;
+                           $recusive_charging_data->charging_date = $nextChargingDate;
                            $recusive_charging_data->customer_msisdn = $subscription->subscriber_msisdn;
                            $recusive_charging_data->duration = $subscription->product_duration;
                            $recusive_charging_data->save();
@@ -216,7 +233,7 @@ class RecusiveCharging extends Command
                         $recusive_charging_data->plan_id = $subscription->plan_id;
                         $recusive_charging_data->product_id = $subscription->productId;
                         $recusive_charging_data->cps_response = !empty($data['resultDesc'])?$data['resultDesc']: $data['failedReason'];
-                        $recusive_charging_data->charging_date = $subscription->recursive_charging_date;
+                        $recusive_charging_data->charging_date = $nextChargingDate;
                         $recusive_charging_data->customer_msisdn = $subscription->subscriber_msisdn;
                         $recusive_charging_data->duration = $subscription->product_duration;
                         $recusive_charging_data->save();
@@ -237,9 +254,6 @@ class RecusiveCharging extends Command
 
 
     }
-
-
-
 
 
 }

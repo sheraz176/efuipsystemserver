@@ -7,14 +7,14 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-class UpdateRecusiveDate extends Command
+class UpdateRecusiveDates extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'update:recusivedate';
+    protected $signature = 'update:recusivedates';
 
     /**
      * The console command description.
@@ -42,11 +42,11 @@ class UpdateRecusiveDate extends Command
     {
         // $today = Carbon::now()->toDateString();
         //  dd($today);
-         $today = "2024-05-05";
+         $today = "2024-05-07";
         $subscriptions = DB::table('recusive_charging_data')
-        ->where('amount',4)
+        ->where('amount',4)->where('charging_date', '>=','2024-05-06')
         ->get();
-
+        dd($subscriptions);
         foreach($subscriptions as $subscription){
           $find_sub = RecusiveChargingData::find($subscription->id);
           $find_sub->charging_date = $today;

@@ -279,6 +279,7 @@ public function get_active_subscription_data(Request $request)
         ])
         ->join('plans', 'recusive_charging_data.plan_id', '=', 'plans.plan_id')
         ->join('products', 'recusive_charging_data.product_id', '=', 'products.product_id')
+        ->orderBy('created_at', 'desc')
         ->with(['plan', 'product']); // Eager load related models
 
 
