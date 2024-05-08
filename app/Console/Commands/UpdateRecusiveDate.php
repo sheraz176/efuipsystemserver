@@ -46,7 +46,7 @@ class UpdateRecusiveDate extends Command
         ->where('policy_status', 1)
         ->where('transaction_amount',4)->where('recursive_charging_date', '>=','2024-05-05')
         ->get();
-         dd($subscriptions);
+        
         foreach($subscriptions as $subscription){
           $find_sub = CustomerSubscription::find($subscription->subscription_id);
           $find_sub->recursive_charging_date = $today;

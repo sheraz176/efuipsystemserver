@@ -54,7 +54,7 @@ class RecusiveCharging extends Command
                 ->whereDate('recursive_charging_date', $today)
                 ->where('policy_status', 1)->whereIn('transaction_amount',[4, 133])
                 ->get();
-            //  dd($subscriptions);
+              //dd($subscriptions);
             // Iterate over subscriptions
             foreach ($subscriptions as $subscription) {
 
@@ -176,7 +176,7 @@ class RecusiveCharging extends Command
                            $recusive_charging_data->plan_id = $subscription->plan_id;
                            $recusive_charging_data->product_id = $subscription->productId;
                            $recusive_charging_data->cps_response = !empty($data['resultDesc'])?$data['resultDesc']: $data['failedReason'];
-                           $recusive_charging_data->charging_date = $subscription->recursive_charging_date;
+                           $recusive_charging_data->charging_date = $nextChargingDate;
                            $recusive_charging_data->customer_msisdn = $subscription->subscriber_msisdn;
                            $recusive_charging_data->duration = $subscription->product_duration;
                            $recusive_charging_data->save();
@@ -198,7 +198,7 @@ class RecusiveCharging extends Command
                         }
 
                           // Update date records
-                        $nextChargingDate = Carbon::parse($subscription->recursive_charging_date)->addDays($subscription->product_duration)->toDateString();
+                        $nextChargingDate = Carbon::parse($subscription->recursive_charging_date)->addDays($subscription->product_duration)->toDateString();                       
                         DB::table('customer_subscriptions')
                         ->where('subscription_id', $subscription->subscription_id)
                         ->update([
@@ -216,7 +216,7 @@ class RecusiveCharging extends Command
                         $recusive_charging_data->plan_id = $subscription->plan_id;
                         $recusive_charging_data->product_id = $subscription->productId;
                         $recusive_charging_data->cps_response = !empty($data['resultDesc'])?$data['resultDesc']: $data['failedReason'];
-                        $recusive_charging_data->charging_date = $subscription->recursive_charging_date;
+                        $recusive_charging_data->charging_date = $nextChargingDate;
                         $recusive_charging_data->customer_msisdn = $subscription->subscriber_msisdn;
                         $recusive_charging_data->duration = $subscription->product_duration;
                         $recusive_charging_data->save();
