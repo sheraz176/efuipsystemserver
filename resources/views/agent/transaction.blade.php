@@ -19,7 +19,7 @@
                               <span class="bs-stepper-circle">1</span>
                               <span class="bs-stepper-label mt-1">
                                 <span class="bs-stepper-title">Subscriber Information </span>
-                  
+
                               </span>
                             </button>
                           </div>
@@ -31,7 +31,7 @@
                               <span class="bs-stepper-circle">2</span>
                               <span class="bs-stepper-label mt-1">
                                 <span class="bs-stepper-title">Beneficinary Information</span>
-                               
+
                               </span>
                             </button>
                           </div>
@@ -43,7 +43,7 @@
                               <span class="bs-stepper-circle">3</span>
                               <span class="bs-stepper-label mt-1">
                                 <span class="bs-stepper-title">Sale Preview</span>
-                                
+
                               </span>
                             </button>
                           </div>
@@ -73,13 +73,13 @@
                                 <div class="col-md-6">
                                   <label class="form-label" for="plan-modern">Active Plans <span class="text-danger">*</span></label>
                                   <select class="form-select" name="plan" id="plan" required>
-                                    
-                  
+
+
                                   @foreach($plan_information as $plan)
                                   <option value="{{ $plan->plan_id }}">{{ $plan->plan_name}}</option>
                                   @endforeach
-                                    
-              
+
+
                                   </select>
                                 </div>
 
@@ -87,12 +87,12 @@
                                   <label class="form-label" for="products-modern">Active Products <span class="text-danger">*</span></label>
                                   <select class="form-select"  name="product" id="product" onchange="copyplancode()" required>
 
-                                  {{-- The product options will be populated dynamically using JavaScript --}}  
-                                    
+                                  {{-- The product options will be populated dynamically using JavaScript --}}
+
                                   </select>
                                 </div>
-                                
-                                
+
+
                               <div class="col-12 d-flex justify-content-between">
                                   <button class="btn btn-label-secondary btn-prev" disabled> <i class="bx bx-chevron-left bx-sm ms-sm-n2"></i>
                                     <span class="align-middle d-sm-inline-block d-none">Previous</span>
@@ -106,7 +106,7 @@
                                       <p>You have to Enter the Number and Press the Check Button Will Return You Green Signal to Process If Red Text Appear Customer is already Subscribed</p>
                                       <button class="btn btn-primary">Check Customer Subscription & Balance for TERM TAKAFUL</button>
                                   </div>
-                              </div>  
+                              </div>
                             </div>
                             <!-- Personal Info -->
                             <div id="personal-info-modern" class="content">
@@ -127,7 +127,7 @@
                                 <div class="col-md-6">
                                   <label class="form-label" for="relationship-modern">Relationship <span class="text-danger">*</span></label>
                                   <select class="form-select" id="relationship-modern" required>
-                                    
+
                                     <option>Brother</option>
                                     <option>Sister</option>
                                     <option>Father</option>
@@ -142,7 +142,7 @@
                                   <input type="text" id="beneficiary-cnic" class="form-control" placeholder="6110185205253" required/>
                                   <div id="cnicError-Beneficinary" class="error"></div>
                                 </div>
-                                
+
                                 <div class="col-12 d-flex justify-content-between">
                                   <button class="btn btn-primary btn-prev"> <i class="bx bx-chevron-left bx-sm ms-sm-n2"></i>
                                     <span class="align-middle d-sm-inline-block d-none">Previous</span>
@@ -159,12 +159,12 @@
                               </div>
                               <div class="row g-3">
                               <div class="">
-                      
+
                       <div class="demo-inline-spacing mt-3">
                         <div class="list-group">
                           <label class="list-group-item">
                             <input class="form-check-input me-1" type="checkbox" checked value="" />
-                            I confirm that the customer has granted consent to proceed with the product subscription. The M-PIN is being pushed at the customer's explicit approval to finalize the transaction and deduct the amount from their JazzCash account. Additionally, I have accurately briefed the customer about the product benefits and coverage to ensure a transparent understanding. </label>  
+                            I confirm that the customer has granted consent to proceed with the product subscription. The M-PIN is being pushed at the customer's explicit approval to finalize the transaction and deduct the amount from their JazzCash account. Additionally, I have accurately briefed the customer about the product benefits and coverage to ensure a transparent understanding. </label>
                         </div>
                       </div>
                     </div>
@@ -181,7 +181,7 @@
                         </div>
 
 
-        
+
 <div class="modal fade" id="backDropModal" data-bs-backdrop="static" tabindex="-1">
   <div class="modal-dialog" style="max-width: 50%;">
     <form class="modal-content">
@@ -201,7 +201,7 @@
             <label for="product" class="form-label">PLAN CODE</label>
             <input type="text" id="planCode" class="form-control" readonly />
           </div>
-  
+
         </div>
 
         <div class="row g-2" style="padding-top: 3%;">
@@ -209,14 +209,14 @@
           <span id="countdown" style="font-weight: bold;"></span>
           <div id="error-message" style="color: red; display: none;">M-PIN Expired Generate New M-PIN After 00:60 Second</div>
           <pre id="json-display"></pre>
-                  
+
           </div>
         </div>
-        
+
             <div class="row g-2">
               <div class="col mb-0">
                 <span id="Subscription_Information" style="font-weight: bold;"></span>
-                <div id="error-message" style="color: red;"></div>      
+                <div id="error-message" style="color: red;"></div>
               </div>
             </div>
 
@@ -297,7 +297,7 @@ function copyMobileNumber() {
                             button.disabled = true;
                         });
                         document.getElementById('product').disabled = true;
-                        
+
 
                     } else {
                         mobileError.innerHTML = "<span style='color: green;'>Customer is not subscribed. Please Proceed With Sale Pitch.</span>";
@@ -306,7 +306,7 @@ function copyMobileNumber() {
                             button.disabled = false;
                         });
                         document.getElementById('product').disabled = false;
-                        
+
                     }
                 })
                 .catch(error => {
@@ -332,12 +332,12 @@ function copyplancode() {
     }
 
 
-    
+
 }
 
 
 
-//Plans and Products 
+//Plans and Products
 const plansAndProducts = {!! json_encode($plansAndProducts) !!};
 var product_amount = 100; // Replace with your actual amount
 var product_productID = '123'; // Replace with your actual productID
@@ -354,7 +354,7 @@ function updateProductsDropdown(planId) {
         plansAndProducts[planId].products.forEach(product => {
             if (product.status === 1) { // Only add active products
                 const option = document.createElement('option');
-                option.value = product.product_id;  
+                option.value = product.product_id;
                 option.textContent = product.product_code;
                 productDropdown.appendChild(option);
             }
@@ -398,7 +398,7 @@ document.getElementById('plan').addEventListener('change', function () {
 document.getElementById('product').addEventListener('change', handleProductSelection);
 
 
-// Next Button Disabled 
+// Next Button Disabled
 
 function checkFormValidity() {
         const mobileNumber = document.getElementById('mobile-number').value;
@@ -435,7 +435,7 @@ function checkFormValidity() {
     updateNextButton();
 
 
-  // Beneficinary Button Control 
+  // Beneficinary Button Control
   function checkBeneficiaryFormValidity() {
         const beneficiaryName = document.getElementById('beneficiary-name').value;
         //const beneficiaryMobile = document.getElementById('beneficiary-mobile').value;
@@ -473,14 +473,14 @@ function checkFormValidity() {
     //CNIC Validator
 
 
-    //Count Down 
+    //Count Down
 
 
-//Transaction 
+//Transaction
 //session('agent')->agent_id
 
 function makeAjaxRequest() {
-    
+
     // Disable the button to prevent multiple submissions
     $('#proceedBtn').prop('disabled', true);
     var selectedPlanId = document.getElementById('plan').value;
@@ -501,7 +501,7 @@ function makeAjaxRequest() {
         agent_id: {{ session('agent')->agent_id }},
         company_id: {{ session('agent')->company_id }},
         duration: duration,
-        planID: selectedPlanId 
+        planID: selectedPlanId
         };
 
     $.ajaxSetup({
@@ -539,9 +539,9 @@ function makeAjaxRequest() {
                             ////////
                             var subscription_Information = $('#Subscription_Information');
                             $('#proceedBtn').prop('disabled', true);
-                            
+
                             var error_message = $('#error-message');
-                            
+
                             // Update the content of the span with the new information
                            subscription_Information.html('Transaction Information: ' + TransactionID + '<br>JazzCash Response: <span style="color: #66c732;">' + resultDesc + '</span>');
                             // Display error message (if any)
@@ -551,29 +551,29 @@ function makeAjaxRequest() {
                               // Clear error message if there is no error
                               error_message.text('');
                             }
-                            
-                            
-                            
+
+
+
                             ///
         } else {
             // Display failed reason
             countdownElement.text('Failed: ' + failedReason); // Or handle as needed
             var subscription_Information = $('#Subscription_Information');
                             var error_message = $('#error-message');
-                            
+
                             countdownElement.html('<span style="color: #697a8d; font-size: 25px;">Transaction Status: </span><span style="color: #ff9999; font-size: 25px;">Failed :(</span><br><span style="color: #697a8d; font-size: 25px;">Sale Status: </span><span style="color: #ff9999; font-size: 25px;">Failed</span>');
                             ////////
                             $('#proceedBtn').prop('disabled', true);
                             var subscription_Information = $('#Subscription_Information');
                             var error_message = $('#error-message');
-                            
+
                             // Update the content of the span with the new information
-                           
+
                           subscription_Information.html('Transaction Information: ' + TransactionID + '<br>Failed Reason: <span style="color: #ff9999;">' + failedReason + '</span>');
 
 
                         // Start the countdown immediately
-                        startCountdownMpin(); 
+                        startCountdownMpin();
                             // Display error message (if any)
                             if (failedReason) {
                               error_message.text('Error: ' + failedReason);
@@ -581,8 +581,8 @@ function makeAjaxRequest() {
                               // Clear error message if there is no error
                               error_message.text('');
                             }
-        }      
-        
+        }
+
         },
           error: function (xhr, status, error) {
           console.error(xhr.responseText);
@@ -590,11 +590,11 @@ function makeAjaxRequest() {
 
           // Stop the counter and display the error message in the modal
           stopTimer();
-          
+
           // Extract the error message from the response
           var errorMessage = (xhr.responseJSON && xhr.responseJSON.error) ? xhr.responseJSON.error : 'Unknown error';
-          
-            $('#countdown').text('System Error');
+
+            $('#countdown').text('MPIN Request Limit Exceed');
           errorMessageElement.text('Error: ' + errorMessage);
           errorMessageElement.show();
         },
@@ -627,10 +627,10 @@ function makeAjaxRequest() {
     });
 }
 
-       
-        
+
+
         // Start the timer
-       
+
 
 function startTimer(duration) {
     var timer = duration, minutes, seconds;
@@ -663,7 +663,7 @@ function resetForm() {
     // Optionally, hide any error messages or reset other elements
     $('#countdown').text('');
     $('#mobile-number').val('');
-    
+
     $('#error-message').hide();
     $('#Subscription_Information').text('');
     $('#proceedBtn').prop('disabled', false);
@@ -671,10 +671,10 @@ function resetForm() {
     var mobileError = document.getElementById("mobile-error");
     mobileError.innerHTML = "";
 
-    
+
     modernStepper.to(0);
-    
-    
+
+
 }
 
 
@@ -707,7 +707,7 @@ function startCountdownMpin() {
 document.getElementById('beneficiary-mobile').addEventListener('input', function () {
         validateMobileNumberBeneficinary();
          // Update the "Next" button based on form validity
-    }); 
+    });
 
     function validateMobileNumberBeneficinary() {
         var mobileNumberInput_b = document.getElementById('beneficiary-mobile');
@@ -728,7 +728,7 @@ document.getElementById('beneficiary-mobile').addEventListener('input', function
     document.getElementById('mobile-number').addEventListener('input', function () {
         validateMobileNumber();
          // Update the "Next" button based on form validity
-    }); 
+    });
 
 function validateMobileNumber() {
         var mobileNumberInput = document.getElementById('mobile-number');
@@ -738,7 +738,7 @@ function validateMobileNumber() {
         if (mobileNumberInput.value.length > 11) {
         mobileNumberInput.value = mobileNumberInput.value.slice(0, 11); // Truncate to 11 characters
     }
-        
+
 
         if (mobileNumberRegex.test(mobileNumberInput.value)) {
             mobileNumberError.textContent = '';
@@ -753,11 +753,11 @@ document.getElementById('cnic').addEventListener('input', function () {
          // Update the "Next" button based on form validity
     });
 
-function validateCNIC() 
+function validateCNIC()
     {
           var cnicInput = document.getElementById('cnic');
           var cnicError = document.getElementById('cnic-error');
-          var cnicRegex = /^[0-9]{13}$/;  
+          var cnicRegex = /^[0-9]{13}$/;
 
           if (cnicInput.value.length > 11) {
             cnicInput.value = cnicInput.value.slice(0, 13); // Truncate to 11 characters
@@ -769,8 +769,8 @@ function validateCNIC()
               cnicError.textContent = 'Invalid CNIC format. Please use the format: 6110185205235';
           }
     }
-    
-    //Benficinary Cnic 
+
+    //Benficinary Cnic
 
     document.getElementById('beneficiary-cnic').addEventListener('input', function() {
         validateCNIC_B();
