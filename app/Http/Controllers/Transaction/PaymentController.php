@@ -194,8 +194,11 @@ class PaymentController extends Controller
             }
 
             else {
-                return response()->json(['error' => 'Invalid response format'], 500 );
-}
+                return response()->json([
+                    'errorjs' => 'Timeout & Delayed Response from JazzCash', // Custom error code
+                    'error' => 'Kindly Check Your Internet Connection, There is Timeout Error Appearing While Requesting the M-PIN Request',
+                ], 500);
+               }
 
 
 
@@ -210,7 +213,10 @@ class PaymentController extends Controller
 
     else{
 
-        return response()->json(['error' => 'As Per Jazzcash, You Have Exceeds the Number of M-PINs Request to This Number, Kindly Try Again After 24 Hours.'], 500);
+        return response()->json([
+            'errorjs' => 'MPIN Request Limit Exceed', // Custom error code
+            'error' => 'As Per Jazzcash, You Have Exceeds the Number of M-PINs Request to This Number, Kindly Try Again After 24 Hours.',
+        ], 500);
                 //  dd('request limited exited');
     }
 

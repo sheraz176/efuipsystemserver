@@ -584,7 +584,7 @@ function makeAjaxRequest() {
         }
 
         },
-          error: function (xhr, status, error) {
+          error: function (xhr, status, error ,errorjs) {
           console.error(xhr.responseText);
           // Handle error response from the controller
 
@@ -593,8 +593,9 @@ function makeAjaxRequest() {
 
           // Extract the error message from the response
           var errorMessage = (xhr.responseJSON && xhr.responseJSON.error) ? xhr.responseJSON.error : 'Unknown error';
+          var errorJs = (xhr.responseJSON && xhr.responseJSON.errorjs) ? xhr.responseJSON.errorjs : 'Unknown error';
 
-            $('#countdown').text('MPIN Request Limit Exceed');
+            $('#countdown').text(errorJs);
           errorMessageElement.text('Error: ' + errorMessage);
           errorMessageElement.show();
         },
