@@ -7,6 +7,7 @@ use App\Models\InterestedCustomers\InterestedCustomer;
 use Illuminate\Http\Request;
 use Auth;
 use Validator;
+use Carbon\Carbon;
 
 class CustomApiController extends Controller
 {
@@ -24,7 +25,9 @@ class CustomApiController extends Controller
          }
         $customer_msisdn = $request->customer_msisdn;
         //  dd($customer_msisdn);
-        $interested_customer = InterestedCustomer::where('customer_msisdn', $customer_msisdn)->where('deduction_applied', 0)
+        $interested_customer = InterestedCustomer::where('customer_msisdn', $customer_msisdn)
+        ->whereDate('created_at', Carbon::today())
+        ->where('deduction_applied', 0)
         ->first();
         //  dd($interested_customer);
         if ($interested_customer) {

@@ -93,19 +93,11 @@
             <li class="menu-item {{ Request::is('super-agent-l/dashboard') ? 'active' : '' }}">
               <a href="{{ route('super_agent_l.dashboard') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-home-circle"></i>
-                <div data-i18n="Analytics">Dashboard (SuperAgentL)</div>
+                <div data-i18n="Analytics">Auto Debit</div>
               </a>
             </li>
 
-            <li class="menu-header small text-uppercase"><span class="menu-header-text">Insurance Products</span></li>
-            <!-- Cards -->
-            <li class="menu-item {{ Request::is('super-agent-l/customer-form') ? 'active' : '' }}">
-              <a href="{{ route('super_agent_l.showForm') }}" id = "salespagebutton" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Auto Debit Section</div>
-              </a>
-            </li>
-
+                   
 
 
 
