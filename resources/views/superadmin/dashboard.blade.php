@@ -167,6 +167,121 @@
     </div>
 </div>
 
+
+
+<div class="container-xxl flex-grow-1 container-p-y">
+    <div class="row">
+        <div class="col-12 col-md-8 col-lg-4 order-3 order-md-2">
+            <div class="row">
+                <div class="col-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title d-flex align-items-start justify-content-between">
+                                <div class="avatar flex-shrink-0">
+                                    <img src="{{ asset('/assets/img/icons/unicons/wallet.png')}}" alt="Credit Card" class="rounded" />
+                                </div>
+
+                            </div>
+                            <span class="d-block mb-1">Total Tsm Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($totalTsm, 0, '.', ',') }}</h3>
+                            <span class="d-block mb-1">Active Tsm Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($activeTsm, 0, '.', ',') }}</h3>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title d-flex align-items-start justify-content-between">
+                                <div class="avatar flex-shrink-0">
+                                    <img src="{{ asset('/assets/img/icons/unicons/wallet.png')}}" alt="Credit Card" class="rounded" />
+                                </div>
+                            </div>
+                            <span class="d-block mb-1">Total Ibex  Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($totalIbex, 0, '.', ',') }}</h3>
+                            <span class="d-block mb-1">Active Ibex  Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($activeIbex, 0, '.', ',') }}</h3>
+                        </div>
+                    </div>
+                </div>
+
+
+
+
+            </div>
+        </div>
+
+        <div class="col-12 col-md-8 col-lg-4 order-3 order-md-2">
+            <div class="row">
+
+
+                <div class="col-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title d-flex align-items-start justify-content-between">
+                                <div class="avatar flex-shrink-0">
+                                    <img src="{{ asset('/assets/img/icons/unicons/wallet.png')}}" alt="Credit Card" class="rounded" />
+                                </div>
+                            </div>
+                            <span class="d-block mb-1">Total Sybrid  Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($totalSybrid, 0, '.', ',') }}</h3>
+                            <span class="d-block mb-1">Active Sybrid  Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($activeSybrid, 0, '.', ',') }}</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title d-flex align-items-start justify-content-between">
+                                <div class="avatar flex-shrink-0">
+                                    <img src="{{ asset('/assets/img/icons/unicons/wallet.png')}}" alt="Credit Card" class="rounded" />
+                                </div>
+                            </div>
+                            <span class="d-block mb-1">Total Abacus Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($totalAbacus, 0, '.', ',') }}</h3>
+                            <span class="d-block mb-1">Active Abacus Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($activeAbacus, 0, '.', ',') }}</h3>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div class="col-12 col-md-8 col-lg-4 order-3 order-md-2">
+            <div class="row">
+                <div class="col-6 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title d-flex align-items-start justify-content-between">
+                                <div class="avatar flex-shrink-0">
+                                    <img src="{{ asset('/assets/img/icons/unicons/wallet.png')}}" alt="Credit Card" class="rounded" />
+                                </div>
+                            </div>
+                            <span class="d-block mb-1">Total JazzIVR Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($totalJazzIVR, 0, '.', ',') }}</h3>
+                            <span class="d-block mb-1">Active JazzIVR Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($activeJazzIVR, 0, '.', ',') }}</h3>
+                        </div>
+                    </div>
+                </div>
+
+
+
+            </div>
+        </div>
+
+
+
+    </div>
+</div>
+
 <div class="row">
     <!-- Bar Charts -->
     <div class="col-xl-6 col-12 mb-4">
