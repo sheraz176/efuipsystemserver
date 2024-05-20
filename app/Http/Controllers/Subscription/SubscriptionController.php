@@ -8,13 +8,13 @@ use App\Models\Subscription\CustomerSubscription;
 
 class SubscriptionController extends Controller
 {
-    public static function saveSubscriptionData($msisdn,$amount,$transactionId,$referenceId, $duration,$agent_id, $planID,$product_id,$resultCode,$resultDesc,$failedReason,$Beneficinary_name,$company_id) 
+    public static function saveSubscriptionData($msisdn,$amount,$transactionId,$referenceId, $duration,$agent_id, $planID,$product_id,$resultCode,$resultDesc,$failedReason,$Beneficinary_name,$company_id)
     {
-        
+
         date_default_timezone_set('Asia/Karachi');
         //Grace Period
         $grace_period='14';
-        
+
         $current_time = time(); // Get the current Unix timestamp
         $future_time = strtotime('+14 days', $current_time); // Add 14 days to the current time
 
@@ -23,12 +23,12 @@ class SubscriptionController extends Controller
         $grace_period_time = date('Y-m-d H:i:s', $future_time);
 
 
-        //Recusive Charging Date 
+        //Recusive Charging Date
 
         $future_time_recursive = strtotime("+" . $duration . " days", $current_time);
         $future_time_recursive_formatted = date('Y-m-d H:i:s', $future_time_recursive);
-        
-        
+
+
         // Use the Subscription model to save data to the subscription_data table
         CustomerSubscription::create([
             'customer_id'=> 1,
@@ -66,7 +66,7 @@ class SubscriptionController extends Controller
         date_default_timezone_set('Asia/Karachi');
         //Grace Period
         $grace_period='14';
-        
+
         $current_time = time(); // Get the current Unix timestamp
         $future_time = strtotime('+14 days', $current_time); // Add 14 days to the current time
 
@@ -75,11 +75,11 @@ class SubscriptionController extends Controller
         $grace_period_time = date('Y-m-d H:i:s', $future_time);
 
 
-        //Recusive Charging Date 
+        //Recusive Charging Date
 
         $future_time_recursive = strtotime("+" . $duration . " days", $current_time);
         $future_time_recursive_formatted = date('Y-m-d H:i:s', $future_time_recursive);
-            
+
         $CustomerSubscriptionData = CustomerSubscriptionModel::create([
             'customer_id'=> -1,
             'payer_cnic' => -1,
@@ -107,16 +107,21 @@ class SubscriptionController extends Controller
 
         $CustomerSubscriptionDataID=$CustomerSubscriptionData->id;
         return response()->json(['code'=>2003,'policy_subscription_id'=>$CustomerSubscriptionDataID,'message'=>'Customer Subscribed Sucessfully','Status Code'=>200]);
-    
+
 
     }
 
     public function checkSubscription(Request $request)
     {
+
+        //  dd($request->all());
          $msisdn = $request->input('msisdn');
+         $planid = $request->input('planid');
 
         // // Retrieve records with Plan ID 1 for the given msisdn
-        $SubscriptionData = CustomerSubscription::where('subscriber_msisdn', $msisdn)->where('policy_status', 1)->exists();
+        $SubscriptionData = CustomerSubscription::where('subscriber_msisdn', $msisdn)->where('plan_id', $planid)->where('policy_status', 1)->first();
+
+        //  dd($SubscriptionData);
         // // Return the data as JSON to the frontend
         if ($SubscriptionData) {
             return response()->json(['success' => true]); // Record exists
@@ -124,6 +129,6 @@ class SubscriptionController extends Controller
             return response()->json(['success' => false]); // Record does not exist
         }
     }
-    
+
 
 }

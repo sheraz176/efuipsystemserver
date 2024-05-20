@@ -11,6 +11,7 @@
 @section('content')
 
 
+   {{-- <button onclick="smscheck()" type="button" > send testing </button> --}}
 
 <div class="bs-stepper wizard-modern wizard-modern-example">
                         <div class="bs-stepper-header" style="padding-left: 101px; padding-right: 103px;">
@@ -59,7 +60,7 @@
                               <div class="row g-3">
                                 <div class="col-md-6">
                                 <label class="form-label" for="username-modern">Mobile Number <span class="text-danger">*</span></label>
-                                <input type="text" id="mobile-number" class="form-control" oninput="copyMobileNumber()" placeholder="03115014142" required/>
+                                <input type="text" id="mobile-number" class="form-control" oninput="mobilenumber()" placeholder="03115014142" required/>
 				                        <div id="mobile-error" class="text-danger">
 				                      </div>
                                 </div>
@@ -72,7 +73,7 @@
 
                                 <div class="col-md-6">
                                   <label class="form-label" for="plan-modern">Active Plans <span class="text-danger">*</span></label>
-                                  <select class="form-select" name="plan" id="plan" required>
+                                  <select onchange="plannumber()" class="form-select" name="plan" id="plan" required>
 
 
                                   @foreach($plan_information as $plan)
@@ -272,17 +273,63 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-function copyMobileNumber() {
-    // Get the value from the source input field
+function smscheck(){
+    // alert('hi');
+    var plantext = $('#plan :selected').text();
+    var msisdn = "03008758478";
+    var amount = "1950";
+
+    fetch('{{ route("sms-delivery-route") }}', {
+                    method: 'POST',
+                    body: JSON.stringify({ msisdn: msisdn , plantext: plantext ,amount:amount }),
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                });
+
+     }
+
+function mobilenumber(){
     var customerValue = document.getElementById('mobile-number').value;
     document.getElementById('m-number').value = customerValue;
     var mobileError = document.getElementById("mobile-error");
 
+    var plancheck = $('#plan').val();
+    if (customerValue.length === 11 && plancheck.length > 0) {
+        checkmobileagenistpackage();
 
+    }
+
+
+
+}
+function plannumber(){
+    var customerValue = document.getElementById('mobile-number').value;
+    document.getElementById('m-number').value = customerValue;
+    var mobileError = document.getElementById("mobile-error");
+
+    var plancheck = $('#plan').val();
+    if (customerValue.length === 11 && plancheck.length > 0) {
+        checkmobileagenistpackage();
+
+    }
+
+
+}
+
+function checkmobileagenistpackage(){
+
+    var customerValue = document.getElementById('mobile-number').value;
+    document.getElementById('m-number').value = customerValue;
+    var mobileError = document.getElementById("mobile-error");
+    var planid = $('#plan').val();
+     var plantext = $('#plan :selected').text();
+    //  alert(plantext);
       if (customerValue.length === 11) {
                 fetch('{{ route("check-subscription") }}', {
                     method: 'POST',
-                    body: JSON.stringify({ msisdn: customerValue }),
+                    body: JSON.stringify({ msisdn: customerValue , planid: planid }),
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -291,7 +338,7 @@ function copyMobileNumber() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        mobileError.innerHTML = "Customer is Already Subscribed to the Term Takaful (1600) Product";
+                        mobileError.innerHTML = "Customer is Already Subscribed to the  " +plantext ;
                         document.querySelector('.btn-next').disabled = true;
                         document.querySelectorAll('.step button').forEach(button => {
                             button.disabled = true;
@@ -315,8 +362,54 @@ function copyMobileNumber() {
             } else {
                 mobileError.innerHTML = "Mobile number should be 11 digits.";
             }
-
 }
+
+
+// function copyMobileNumber() {
+//     // Get the value from the source input field
+//     var customerValue = document.getElementById('mobile-number').value;
+//     document.getElementById('m-number').value = customerValue;
+//     var mobileError = document.getElementById("mobile-error");
+
+
+//       if (customerValue.length === 11) {
+//                 fetch('{{ route("check-subscription") }}', {
+//                     method: 'POST',
+//                     body: JSON.stringify({ msisdn: customerValue }),
+//                     headers: {
+//                         'Content-Type': 'application/json',
+//                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
+//                     }
+//                 })
+//                 .then(response => response.json())
+//                 .then(data => {
+//                     if (data.success) {
+//                         mobileError.innerHTML = "Customer is Already Subscribed to the Term Takaful (1600) Product";
+//                         document.querySelector('.btn-next').disabled = true;
+//                         document.querySelectorAll('.step button').forEach(button => {
+//                             button.disabled = true;
+//                         });
+//                         document.getElementById('product').disabled = true;
+
+
+//                     } else {
+//                         mobileError.innerHTML = "<span style='color: green;'>Customer is not subscribed. Please Proceed With Sale Pitch.</span>";
+//                         document.querySelector('.btn-next').disabled = false;
+//                         document.querySelectorAll('.step button').forEach(button => {
+//                             button.disabled = false;
+//                         });
+//                         document.getElementById('product').disabled = false;
+
+//                     }
+//                 })
+//                 .catch(error => {
+//                     mobileError.innerHTML = "Error occurred while checking subscription status.";
+//                 });
+//             } else {
+//                 mobileError.innerHTML = "Mobile number should be 11 digits.";
+//             }
+
+// }
 
 
 function copyplancode() {
@@ -484,6 +577,7 @@ function makeAjaxRequest() {
     // Disable the button to prevent multiple submissions
     $('#proceedBtn').prop('disabled', true);
     var selectedPlanId = document.getElementById('plan').value;
+    var plantext = $('#plan :selected').text();
     console.log(product_amount);
 
     var countdownElement = $('#countdown');
@@ -613,6 +707,7 @@ function makeAjaxRequest() {
                     referenceId: referenceId,
                     SelectedPlan :selectedPlanId,
                     amount:product_amount,
+                    plantext : plantext,
                 },
                 success: function (data) {
                     // Handle success (optional)

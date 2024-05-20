@@ -19,7 +19,7 @@
                               <span class="bs-stepper-circle">1</span>
                               <span class="bs-stepper-label mt-1">
                                 <span class="bs-stepper-title">Subscriber Information </span>
-                  
+
                               </span>
                             </button>
                           </div>
@@ -31,7 +31,7 @@
                               <span class="bs-stepper-circle">2</span>
                               <span class="bs-stepper-label mt-1">
                                 <span class="bs-stepper-title">Beneficinary Information</span>
-                               
+
                               </span>
                             </button>
                           </div>
@@ -43,7 +43,7 @@
                               <span class="bs-stepper-circle">3</span>
                               <span class="bs-stepper-label mt-1">
                                 <span class="bs-stepper-title">Sale Preview</span>
-                                
+
                               </span>
                             </button>
                           </div>
@@ -59,7 +59,7 @@
                               <div class="row g-3">
                                 <div class="col-md-6">
                                 <label class="form-label" for="username-modern">Mobile Number <span class="text-danger">*</span></label>
-                                <input type="text" id="mobile-number" class="form-control" oninput="copyMobileNumber()" placeholder="03115014142" required/>
+                                <input type="text" id="mobile-number" class="form-control" oninput="mobilenumber()" placeholder="03115014142" required/>
 				                        <div id="mobile-error" class="text-danger">
 				                      </div>
                                 </div>
@@ -72,14 +72,14 @@
 
                                 <div class="col-md-6">
                                   <label class="form-label" for="plan-modern">Active Plans <span class="text-danger">*</span></label>
-                                  <select class="form-select" name="plan" id="plan" required>
-                                    
-                  
+                                  <select onchange="plannumber()" class="form-select" name="plan" id="plan" required>
+
+
                                   @foreach($plan_information as $plan)
                                   <option value="{{ $plan->plan_id }}">{{ $plan->plan_name}}</option>
                                   @endforeach
-                                    
-              
+
+
                                   </select>
                                 </div>
 
@@ -87,12 +87,12 @@
                                   <label class="form-label" for="products-modern">Active Products <span class="text-danger">*</span></label>
                                   <select class="form-select"  name="product" id="product" onchange="copyplancode()" required>
 
-                                  {{-- The product options will be populated dynamically using JavaScript --}}  
-                                    
+                                  {{-- The product options will be populated dynamically using JavaScript --}}
+
                                   </select>
                                 </div>
-                                
-                                
+
+
                               <div class="col-12 d-flex justify-content-between">
                                   <button class="btn btn-label-secondary btn-prev" disabled> <i class="bx bx-chevron-left bx-sm ms-sm-n2"></i>
                                     <span class="align-middle d-sm-inline-block d-none">Previous</span>
@@ -106,7 +106,7 @@
                                       <p>You have to Enter the Number and Press the Check Button Will Return You Green Signal to Process If Red Text Appear Customer is already Subscribed</p>
                                       <button class="btn btn-primary">Check Customer Subscription & Balance for TERM TAKAFUL</button>
                                   </div>
-                              </div>  
+                              </div>
                             </div>
                             <!-- Personal Info -->
                             <div id="personal-info-modern" class="content">
@@ -127,7 +127,7 @@
                                 <div class="col-md-6">
                                   <label class="form-label" for="relationship-modern">Relationship <span class="text-danger">*</span></label>
                                   <select class="form-select" id="relationship-modern" required>
-                                    
+
                                     <option>Brother</option>
                                     <option>Sister</option>
                                     <option>Father</option>
@@ -142,7 +142,7 @@
                                   <input type="text" id="beneficiary-cnic" class="form-control" placeholder="6110185205253" required/>
                                   <div id="cnicError-Beneficinary" class="error"></div>
                                 </div>
-                                
+
                                 <div class="col-12 d-flex justify-content-between">
                                   <button class="btn btn-primary btn-prev"> <i class="bx bx-chevron-left bx-sm ms-sm-n2"></i>
                                     <span class="align-middle d-sm-inline-block d-none">Previous</span>
@@ -159,12 +159,12 @@
                               </div>
                               <div class="row g-3">
                               <div class="">
-                      
+
                       <div class="demo-inline-spacing mt-3">
                         <div class="list-group">
                           <label class="list-group-item">
                             <input class="form-check-input me-1" type="checkbox" checked value="" />
-                            I confirm that the customer has granted consent to proceed with the product subscription. I have accurately briefed the customer about the product benefits and coverage to ensure a transparent understanding. </label>  
+                            I confirm that the customer has granted consent to proceed with the product subscription. I have accurately briefed the customer about the product benefits and coverage to ensure a transparentï¿½understanding. </label>
                         </div>
                       </div>
                     </div>
@@ -254,17 +254,48 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 
-function copyMobileNumber() {
-    // Get the value from the source input field
+function mobilenumber(){
+    //  alert('hi');
     var customerValue = document.getElementById('mobile-number').value;
-    //document.getElementById('m-number').value = customerValue;
+    // document.getElementById('m-number').value = customerValue;
     var mobileError = document.getElementById("mobile-error");
 
+    var plancheck = $('#plan').val();
+    if (customerValue.length === 11 && plancheck.length > 0) {
+        checkmobileagenistpackage();
 
+    }
+
+
+
+}
+function plannumber(){
+    // alert('hi');
+    var customerValue = document.getElementById('mobile-number').value;
+    // document.getElementById('m-number').value = customerValue;
+    var mobileError = document.getElementById("mobile-error");
+
+    var plancheck = $('#plan').val();
+    if (customerValue.length === 11 && plancheck.length > 0) {
+        checkmobileagenistpackage();
+
+    }
+
+
+}
+
+function checkmobileagenistpackage(){
+    // alert('hi');
+    var customerValue = document.getElementById('mobile-number').value;
+    // document.getElementById('m-number').value = customerValue;
+    var mobileError = document.getElementById("mobile-error");
+    var planid = $('#plan').val();
+     var plantext = $('#plan :selected').text();
+    //  alert(plantext);
       if (customerValue.length === 11) {
                 fetch('{{ route("check-subscription") }}', {
                     method: 'POST',
-                    body: JSON.stringify({ msisdn: customerValue }),
+                    body: JSON.stringify({ msisdn: customerValue , planid: planid }),
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -273,13 +304,13 @@ function copyMobileNumber() {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        mobileError.innerHTML = "Customer is Already Subscribed to the Term Takaful (1600) Product";
+                        mobileError.innerHTML = "Customer is Already Subscribed to the  " +plantext ;
                         document.querySelector('.btn-next').disabled = true;
                         document.querySelectorAll('.step button').forEach(button => {
                             button.disabled = true;
                         });
                         document.getElementById('product').disabled = true;
-                        
+
 
                     } else {
                         mobileError.innerHTML = "<span style='color: green;'>Customer is not subscribed. Please Proceed With Sale Pitch.</span>";
@@ -288,6 +319,7 @@ function copyMobileNumber() {
                             button.disabled = false;
                         });
                         document.getElementById('product').disabled = false;
+
                     }
                 })
                 .catch(error => {
@@ -296,8 +328,52 @@ function copyMobileNumber() {
             } else {
                 mobileError.innerHTML = "Mobile number should be 11 digits.";
             }
-
 }
+
+// function copyMobileNumber() {
+//     // Get the value from the source input field
+//     var customerValue = document.getElementById('mobile-number').value;
+//     //document.getElementById('m-number').value = customerValue;
+//     var mobileError = document.getElementById("mobile-error");
+
+
+//       if (customerValue.length === 11) {
+//                 fetch('{{ route("check-subscription") }}', {
+//                     method: 'POST',
+//                     body: JSON.stringify({ msisdn: customerValue }),
+//                     headers: {
+//                         'Content-Type': 'application/json',
+//                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
+//                     }
+//                 })
+//                 .then(response => response.json())
+//                 .then(data => {
+//                     if (data.success) {
+//                         mobileError.innerHTML = "Customer is Already Subscribed to the Term Takaful (1600) Product";
+//                         document.querySelector('.btn-next').disabled = true;
+//                         document.querySelectorAll('.step button').forEach(button => {
+//                             button.disabled = true;
+//                         });
+//                         document.getElementById('product').disabled = true;
+
+
+//                     } else {
+//                         mobileError.innerHTML = "<span style='color: green;'>Customer is not subscribed. Please Proceed With Sale Pitch.</span>";
+//                         document.querySelector('.btn-next').disabled = false;
+//                         document.querySelectorAll('.step button').forEach(button => {
+//                             button.disabled = false;
+//                         });
+//                         document.getElementById('product').disabled = false;
+//                     }
+//                 })
+//                 .catch(error => {
+//                     mobileError.innerHTML = "Error occurred while checking subscription status.";
+//                 });
+//             } else {
+//                 mobileError.innerHTML = "Mobile number should be 11 digits.";
+//             }
+
+// }
 
 
 function copyplancode() {
@@ -313,12 +389,12 @@ function copyplancode() {
     }
 
 
-    
+
 }
 
 
 
-//Plans and Products 
+//Plans and Products
 const plansAndProducts = {!! json_encode($plansAndProducts) !!};
 var product_amount = 100; // Replace with your actual amount
 var product_productID = '123'; // Replace with your actual productID
@@ -335,7 +411,7 @@ function updateProductsDropdown(planId) {
         plansAndProducts[planId].products.forEach(product => {
             if (product.status === 1) { // Only add active products
                 const option = document.createElement('option');
-                option.value = product.product_id;  
+                option.value = product.product_id;
                 option.textContent = product.product_code;
                 productDropdown.appendChild(option);
             }
@@ -379,7 +455,7 @@ document.getElementById('plan').addEventListener('change', function () {
 document.getElementById('product').addEventListener('change', handleProductSelection);
 
 
-// Next Button Disabled 
+// Next Button Disabled
 
 function checkFormValidity() {
         const mobileNumber = document.getElementById('mobile-number').value;
@@ -416,7 +492,7 @@ function checkFormValidity() {
     updateNextButton();
 
 
-  // Beneficinary Button Control 
+  // Beneficinary Button Control
   function checkBeneficiaryFormValidity() {
         const beneficiaryName = document.getElementById('beneficiary-name').value;
         //const beneficiaryMobile = document.getElementById('beneficiary-mobile').value;
@@ -454,10 +530,10 @@ function checkFormValidity() {
     //CNIC Validator
 
 
-    //Count Down 
+    //Count Down
 
 
-//Transaction 
+//Transaction
 //session('agent')->agent_id
 
 // Inside the makeAjaxRequest function
@@ -503,10 +579,10 @@ function makeAjaxRequest() {
 }
 
 
-       
-        
+
+
         // Start the timer
-       
+
 
 
 
@@ -515,7 +591,7 @@ function resetForm() {
     // Optionally, hide any error messages or reset other elements
     $('#countdown').text('');
     $('#mobile-number').val('');
-    
+
     $('#error-message').hide();
     $('#Subscription_Information').text('');
     $('#proceedBtn').prop('disabled', false);
@@ -523,10 +599,10 @@ function resetForm() {
     var mobileError = document.getElementById("mobile-error");
     mobileError.innerHTML = "";
 
-    
+
     modernStepper.to(0);
-    
-    
+
+
 }
 
 
@@ -537,7 +613,7 @@ function resetForm() {
 document.getElementById('beneficiary-mobile').addEventListener('input', function () {
         validateMobileNumberBeneficinary();
          // Update the "Next" button based on form validity
-    }); 
+    });
 
     function validateMobileNumberBeneficinary() {
         var mobileNumberInput_b = document.getElementById('beneficiary-mobile');
@@ -555,27 +631,25 @@ document.getElementById('beneficiary-mobile').addEventListener('input', function
         }
     }
 
-    document.getElementById('mobile-number').addEventListener('input', function () {
+     document.getElementById('mobile-number').addEventListener('input', function () {
         validateMobileNumber();
-         // Update the "Next" button based on form validity
-    }); 
+    //      // Update the "Next" button based on form validity
+     });
 
-function validateMobileNumber() {
-        var mobileNumberInput = document.getElementById('mobile-number');
-        var mobileNumberError = document.getElementById('mobile-error');
-        var mobileNumberRegex = /^\d{11}$/;
+ function validateMobileNumber() {
+         var mobileNumberInput = document.getElementById('mobile-number');
+        var mobileNumberError = document.getElementById('mobile-error');         var mobileNumberRegex = /^\d{11}$/;
 
         if (mobileNumberInput.value.length > 11) {
         mobileNumberInput.value = mobileNumberInput.value.slice(0, 11); // Truncate to 11 characters
     }
-        
 
-        if (mobileNumberRegex.test(mobileNumberInput.value)) {
+         if (mobileNumberRegex.test(mobileNumberInput.value)) {
             mobileNumberError.textContent = '';
         } else {
             mobileNumberError.textContent = 'Invalid mobile number. Please enter 11 digits.';
         }
-	copyMobileNumber();
+
     }
 
 document.getElementById('cnic').addEventListener('input', function () {
@@ -583,11 +657,11 @@ document.getElementById('cnic').addEventListener('input', function () {
          // Update the "Next" button based on form validity
     });
 
-function validateCNIC() 
+function validateCNIC()
     {
           var cnicInput = document.getElementById('cnic');
           var cnicError = document.getElementById('cnic-error');
-          var cnicRegex = /^[0-9]{13}$/;  
+          var cnicRegex = /^[0-9]{13}$/;
 
           if (cnicInput.value.length > 11) {
             cnicInput.value = cnicInput.value.slice(0, 13); // Truncate to 11 characters
@@ -599,8 +673,8 @@ function validateCNIC()
               cnicError.textContent = 'Invalid CNIC format. Please use the format: 6110185205235';
           }
     }
-    
-    //Benficinary Cnic 
+
+    //Benficinary Cnic
 
     document.getElementById('beneficiary-cnic').addEventListener('input', function() {
         validateCNIC_B();
