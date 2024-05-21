@@ -20,6 +20,13 @@ class  SmsDelivery extends Controller
     $amount= $request->input('amount');
     $plantext = $request->input('plantext');
 
+
+    if($plantext == 'EFU Term Takaful Plus Plan'){
+        $link = "https://bit.ly/439oH0L";
+    }
+    else{
+        $link = "https://bit.ly/3KagW3u";
+    }
   //  dd($plantext);
     //return $data
 
@@ -28,7 +35,7 @@ class  SmsDelivery extends Controller
     $payload = [
         'MobileNo' => $msisdn,
         'sender' => 'EFU-LIFE',
-        'SMS' => "Dear Customer, You have successfully subscribed {$plantext}. for Rs .{$amount}. T&Cs: https://bit.ly/439oH0L",
+        'SMS' => "Dear Customer, You have successfully subscribed {$plantext}. for Rs .{$amount}. T&Cs:{$link} ",
     ];
 
     $headers = [
