@@ -24,10 +24,8 @@ class ProductApiController extends Controller
         $plan_id = $request->plan_id;
         //   dd($plan_id );
         $products = ProductModel::where('plan_id', $plan_id)->get();
-        //    dd($products);
-
-
-           if ($products->isNotEmpty()) {
+        //   dd($products);
+        if ($products) {
 
             $productData = [];
             foreach($products as  $product)
@@ -52,12 +50,29 @@ class ProductApiController extends Controller
                 'exclusions' => $product->exclusions,
                ];
 
+               $HealthProductBenefits = HealthProductBenefits::where('product_id', $product->product_id)->get();
+            //    dd($HealthProductBenefits);
+            $HealthProductBenefitsData = [];
+            foreach($HealthProductBenefits as  $HealthProductBenefits)
+            {
+            $HealthProductBenefitsData[] = [
+                'id' => $HealthProductBenefits->product_id,
+                'product_id' => $HealthProductBenefits->product_id,
+                'benefits' => $HealthProductBenefits->benefits,
+                'silver' => $HealthProductBenefits->silver,
+                'gold' => $HealthProductBenefits->gold,
+                'platinum' => $HealthProductBenefits->platinum,
+
+               ];
+            }
+
             }
 
             $data = array(
               'status' => 'Success',
               'message' => 'Your Products Get Successfully',
               'Products' => $productData,
+              'HealthProductBenefitsData' => $HealthProductBenefitsData,
             );
             return response()->json($data ,200);
 
