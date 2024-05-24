@@ -5,6 +5,7 @@ namespace App\Models\Subscription;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Company\CompanyProfile;
+use App\Models\InterestedCustomers\InterestedCustomer;
 use App\Models\Plans\ProductModel;
 use App\Models\Plans\PlanModel;
 
@@ -54,4 +55,19 @@ class CustomerSubscription extends Model
     {
         return $this->belongsTo(CompanyProfile::class, 'id');
     }
+
+    public function company()
+    {
+        return $this->belongsTo(CompanyProfile::class);
+    }
+    public function products()
+    {
+        return $this->belongsTo(ProductModel::class ,'productId');
+    }
+
+    public function interested_customers()
+    {
+        return $this->hasMany(InterestedCustomer::class, "customer_msisdn", "subscriber_msisdn");
+    }
+
 }

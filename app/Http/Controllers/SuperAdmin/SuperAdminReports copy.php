@@ -2,17 +2,15 @@
 
 namespace App\Http\Controllers\SuperAdmin;
 
-
+use DataTables;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Subscription\CustomerSubscription;
 use App\Models\Subscription\FailedSubscription;
 use App\Models\Company\CompanyProfile;
-use App\Models\InterestedCustomers\InterestedCustomer;
 use App\Models\Unsubscription\CustomerUnSubscription;
 use App\Models\RecusiveChargingData;
-use Illuminate\Support\Str;
-use Yajra\DataTables\DataTables;
+
 
 class SuperAdminReports extends Controller
 {
@@ -22,55 +20,29 @@ class SuperAdminReports extends Controller
     }
 
     public function getData(Request $request)
-{
-    if ($request->ajax()) {
+    {
+        $query = CustomerSubscription::select([
+            'customer_subscriptions.*', // Select all columns from customer_subscriptions table
+            'plans.plan_name', // Select the plan_name column from the plans table
+            'products.product_name', // Select the product_name column from the products table
+            'company_profiles.company_name', // Select the company_name column from the company_profiles table
+        ])
+        ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
+        ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
+        ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
+        ->with(['plan', 'product', 'companyProfile'])
+        ->where('customer_subscriptions.policy_status', '=', '1'); // Eager load related models
 
-
-        // Start building the query
-        $query = CustomerSubscription::select('*')->where('policy_status' , '1');
-
-        // Apply date filters if provided
-              // Apply date filters if provided
-        if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
-            $dateRange = explode(' to ', $request->input('dateFilter'));
+         if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+             $dateRange = explode(' to ', $request->input('dateFilter'));
             $startDate = $dateRange[0];
-            $endDate = $dateRange[1];
-            $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
-                  ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
-        }
+             $endDate = $dateRange[1];
+             $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
+             ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
+          }
+        return DataTables::eloquent($query)->toJson();
 
-        return Datatables::of($query)->addIndexColumn()
-
-            ->addColumn('company_name', function($data){
-                return $data->company->company_name;
-            })
-            ->addColumn('plan_name', function($data){
-                return $data->plan->plan_name;
-            })
-            ->addColumn('product_name', function($data){
-                return $data->products->product_name;
-            })
-
-            ->addColumn('consistent_provider', function($data){
-
-                  $data_count = count($data->interested_customers);
-                //   return  $data_count;
-                if($data_count > 0) {
-                    return "(DTMF)." . $data->interested_customers[$data_count - 1]->consistent_provider . "";
-                } else {
-                    return "";
-                }
-             })
-
-
-
-            ->rawColumns(['action', 'company_name', 'plan_name', 'product_name','consistent_provider'])
-            ->make(true);
     }
-}
-
-
-
 
     public function failed_transactions()
     {
