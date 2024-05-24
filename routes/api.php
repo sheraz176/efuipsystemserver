@@ -37,6 +37,23 @@ Route::prefix('v1')->group(function () {
     });
 });
 
+
+Route::prefix('v1')->group(function () {
+    Route::prefix('ussd')->group(function () {
+        Route::post("/subscription", [USSDSubscriptionController::class, 'ivr_subscription'])
+            ->name('subscription'); // Example route name
+
+        Route::get("/getPlans", [USSDSubscriptionController::class, 'getPlans'])
+            ->name('get_plans'); // Example route name
+
+        Route::post("/getProducts", [USSDSubscriptionController::class, 'getProducts'])
+            ->name('get_products'); // Example route name
+
+        // Other routes related to ussd can be added here
+    });
+});
+
+
 Route::prefix('v1')->group(function () {
     Route::prefix('auto-debit')->group(function () {
         Route::post("/auto-subscription", [AutoDebitSubscriptionController::class, 'AutoDebitSubscription'])
