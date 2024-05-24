@@ -9,8 +9,9 @@ use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\API\AutoDebitSubscriptionController;
 use App\Http\Controllers\API\LandingPageSubscription;
 use App\Http\Controllers\API\ProductApiController;
+use App\Http\Controllers\API\NetEntrollmentApiController;
+use App\Http\Controllers\API\USSDSubscriptionController;
 use App\Http\Controllers\SuperAgentL\CustomApiController;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -38,16 +39,19 @@ Route::prefix('v1')->group(function () {
 });
 
 
-Route::prefix('v1')->group(function () {
+Route::prefix('v2')->group(function () {
     Route::prefix('ussd')->group(function () {
-        Route::post("/subscription", [USSDSubscriptionController::class, 'ivr_subscription'])
-            ->name('subscription'); // Example route name
+        Route::post("Ussdsub", [USSDSubscriptionController::class, 'ivr_subscription'])
+            ->name('Ussdsub'); // Example route name
 
-        Route::get("/getPlans", [USSDSubscriptionController::class, 'getPlans'])
-            ->name('get_plans'); // Example route name
+        Route::get("Ussdplan", [USSDSubscriptionController::class, 'getPlans'])
+            ->name('Ussdplan'); // Example route name
 
-        Route::post("/getProducts", [USSDSubscriptionController::class, 'getProducts'])
-            ->name('get_products'); // Example route name
+        Route::post("Ussdproducts", [USSDSubscriptionController::class, 'getProducts'])
+            ->name('Ussdproducts'); // Example route name
+
+    Route::POST("Ussdunsub",[USSDSubscriptionController::class,'unsubscribeactiveplan'])
+    ->name('Ussdunsub');
 
         // Other routes related to ussd can be added here
     });
@@ -101,3 +105,7 @@ Route::prefix('v1')->group(function () {
 
    //  Products Fatch Through Plan Id
    Route::post('/GetProductsData', [ProductApiController::class, 'fatch_products'])->name('GetProductsData');
+
+   //  Api NetEnrollment Report
+   Route::post('/NetEnrollment', [NetEntrollmentApiController::class, 'NetEnrollment'])->name('NetEnrollment');
+

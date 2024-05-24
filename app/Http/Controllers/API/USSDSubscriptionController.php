@@ -6,9 +6,14 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Plans\PlanModel;
 use App\Models\Plans\ProductModel;
+use App\Models\User;
+use App\Models\Refund\RefundedCustomer;
+use Illuminate\Support\Facades\Hash;
 use App\Models\Subscription\CustomerSubscription;
+use App\Models\Unsubscription\CustomerUnSubscription;
 use App\Http\Controllers\Subscription\FailedSubscriptionsController;
 use Illuminate\Support\Facades\Validator;
+use Carbon\Carbon;
 
 class USSDSubscriptionController extends Controller
 {
@@ -28,15 +33,15 @@ class USSDSubscriptionController extends Controller
 
         $planId = $request->input('plan_id');
 
-    // Retrieve active products associated with the specified plan ID
-    $products = ProductModel::where('plan_id', $planId)
+      // Retrieve active products associated with the specified plan ID
+       $products = ProductModel::where('plan_id', $planId)
                             ->where('status', 1)
                             ->get();
 
-    return response()->json([
+      return response()->json([
         'status' => 'success',
         'data' => $products,
-    ])->setStatusCode(200);
+       ])->setStatusCode(200);
 
     }
 
@@ -323,4 +328,125 @@ class USSDSubscriptionController extends Controller
 
 
     }
+
+
+    public function unsubscribeactiveplan(Request $request)
+    {
+
+        // dd($request->all());
+        $subscriber_msisdn = $request->input("subscriber_msisdn");
+        $subscriptionId = $request->input("id");
+
+        //Get Grace Period Time
+	    $subscription = CustomerSubscription::where('policy_status', 1)->where('subscription_id', $subscriptionId)->first();
+
+                 dd($subscription);
+        if (!$subscription) {
+            return response()->json(['error' => 'Subscription not found.'], 404);
+        }
+
+        $grace_period_time=$subscription->grace_period_time;
+        $transaction_amount=$subscription->transaction_amount;
+        $planCode=$subscription->planCode;
+        $Subscription_id=$subscription->subscription_id;
+
+
+	    $product_id = $subscription->productId;
+
+
+        // Retrieve the planCode using the product_id
+        $product = ProductModel::where('product_id', $product_id)->first();
+        $planCode = $product->product_code;
+
+
+
+
+
+        $current_time=date('Y-m-d H:i:s');
+        $grace_period_datetime = new \DateTime($grace_period_time);
+        $current_datetime = new \DateTime($current_time);
+
+        if ($grace_period_datetime < $current_datetime) {
+
+            $current_datetime = new \DateTime($current_time);
+
+            $subscription->update(['policy_status' => 0]);
+
+        if ($subscription) {
+            return response()->json(['status_code' => 200, 'refund' => 'false','message' => 'Package Unsubscribe Sucessfullly and Your are Not Eligible for Refund Because Grace Period is Over']);
+        } else {
+            return response()->json(['error' => 'No records updated.'], 404);
+        }
+
+        } elseif ($grace_period_datetime > $current_datetime)
+        {
+
+            $current_datetime = new \DateTime($current_time);
+
+
+            $refundedCustomer=RefundedCustomer::create([
+        'subscription_id' => $subscription->subscription_id,
+        'unsubscription_id' => 2,
+        'transaction_id' => -1,
+        'reference_id' => -1,
+        'cps_response' => -1,
+        'result_description' => -1,
+        'result_code' => 0,
+        'refunded_by' => $subscriber_msisdn,
+        'medium' => 'USSD',
+        ]);
+
+
+        CustomerUnSubscription::create([
+            'unsubscription_datetime' => now(),
+            'medium' => "USSD",
+            'subscription_id' => $subscription->subscription_id,
+            'refunded_id' => $refundedCustomer->refund_id,
+        ]);
+
+     	$subscription->update(['policy_status' => 0]);
+     	$currentDateTime = date('Y-m-d H:i:s');
+        if ($refundedCustomer) {
+
+     	$refundRow = [
+        'subscriber_msisdn' => $subscriber_msisdn,
+        'refund_amount' => $transaction_amount,
+        'plan_code' => $planCode,
+        'refund_status' => 0,
+        'RefundDate' => [
+            'date' => $currentDateTime,
+            'timezone_type' => 3,
+            'timezone' => 'Asia/Karachi'
+        ],
+        'IsAmountTransfer' => 0,
+        'subscription_id' => $subscription->subscription_id,
+        'updated_at' => $currentDateTime,
+        'created_at' => $currentDateTime,
+        'id' => $subscription->subscription_id
+    	];
+
+            return response()->json([
+                'message' => 'Package Unsubscribe Sucessfullly, and You are Eligible for Refund',
+                'status_code' => 200,
+                'refund' => 'true',
+                'data_for_refund' => [
+                    'Refund API Data'=>$refundRow,
+                    'refund_api' => 'https://jazzcash-ips.efulife.com/mgmt/public/api/v1/closeRefundCase',
+                ]
+            ]);
+
+        } else {
+            return response()->json(['error' => 'No records updated.'], 404);
+        }
+
+
+        }
+
+        else {
+            return response()->json("Grace period time is the same as the current time.");
+        }
+
+
+    }
+
 }
