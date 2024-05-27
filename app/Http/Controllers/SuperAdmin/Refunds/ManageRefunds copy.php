@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Subscription\CustomerSubscription;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use App\Models\Unsubscription\CustomerUnSubscription;
 use App\Models\Refund\RefundedCustomer;
 use App\Models\Company\CompanyProfile;
 
@@ -64,58 +63,44 @@ class ManageRefunds extends Controller
         return view('superadmin.refund.refundreport', compact('companies'));
     }
 
-  public function getRefundedData(Request $request)
-{
-    if ($request->ajax()) {
-        // Start building the query
-        $query = RefundedCustomer::with(['customer_subscription.plan', 'customer_subscription.products', 'customer_subscription.company', 'customer_unsubscription']);
+    public function getRefundedData(Request $request)
+    {
+        $refundData = RefundedCustomer::select(
+            'refunded_customers.refund_id as refund_id',
+            'customer_subscriptions.subscriber_msisdn',
+            'customer_subscriptions.transaction_amount',
+            'unsubscriptions.unsubscription_datetime',
+            'refunded_customers.transaction_id',
+            'refunded_customers.reference_id',
+            'refunded_customers.refunded_by',
+            'plans.plan_name',
+            'products.product_name',
+            'company_profiles.company_name',
+            'refunded_customers.medium',
+            'customer_subscriptions.subscription_time'
+        )
+            ->join('customer_subscriptions', 'refunded_customers.subscription_id', '=', 'customer_subscriptions.subscription_id')
+            ->join('unsubscriptions', 'customer_subscriptions.subscription_id', '=', 'unsubscriptions.subscription_id')
+            ->leftJoin('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
+            ->leftJoin('products', 'customer_subscriptions.productId', '=', 'products.product_id')
+            ->leftjoin('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id');// Assuming you pass refunded_id as a parameter
 
-        if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
-            $dateRange = explode(' to ', $request->input('dateFilter'));
-            $startDate = $dateRange[0];
-            $endDate = $dateRange[1];
+            if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+                $dateRange = explode(' to ', $request->input('dateFilter'));
+                $startDate = $dateRange[0];
+                $endDate = $dateRange[1];
 
-            // Apply the date filter
-            $query->whereHas('customer_unsubscription', function ($query) use ($startDate, $endDate) {
-                $query->whereDate('unsubscription_datetime', '>=', $startDate)
-                      ->whereDate('unsubscription_datetime', '<=', $endDate);
-            });
-        }
+                // $refundData->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+                $refundData->whereDate('unsubscriptions.unsubscription_datetime', '>=', $startDate)
+                ->whereDate('unsubscriptions.unsubscription_datetime', '<=', $endDate);
+            }
+               // Add custom search functionality for numeric columns
+           if ($request->has('msisdn') && !empty($request->input('msisdn'))) {
+            $msisdn = $request->input('msisdn');
+            $refundData->where('customer_subscriptions.subscriber_msisdn', 'like', '%' . $msisdn . '%');
+            }
 
-        return Datatables::of($query)->addIndexColumn()
-            ->addColumn('subscriber_msisdn', function ($data) {
-                return $data->customer_subscription->subscriber_msisdn;
-            })
-            ->addColumn('transaction_amount', function ($data) {
-                return $data->customer_subscription->transaction_amount;
-            })
-            ->addColumn('plan_name', function ($data) {
-                return $data->customer_subscription->plan->plan_name;
-            })
-            ->addColumn('product_name', function ($data) {
-                return $data->customer_subscription->products->product_name;
-            })
-            ->addColumn('company_name', function ($data) {
-                return $data->customer_subscription->company->company_name;
-            })
-            ->addColumn('subscription_time', function ($data) {
-                return $data->customer_subscription->subscription_time;
-            })
-            ->addColumn('unsubscription_datetime', function ($data) {
-                $data_count = count($data->customer_unsubscription);
-                if ($data_count > 0) {
-                    return $data->customer_unsubscription[$data_count - 1]->unsubscription_datetime;
-                } else {
-                    return "";
-                }
-            })
-            ->rawColumns(['subscriber_msisdn', 'transaction_amount', 'plan_name', 'product_name', 'company_name', 'subscription_time', 'unsubscription_datetime'])
-            ->make(true);
+
+            return DataTables::eloquent($refundData)->toJson();
     }
-}
-
-
-
-
-
 }

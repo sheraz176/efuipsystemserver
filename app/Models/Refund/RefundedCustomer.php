@@ -4,6 +4,11 @@ namespace App\Models\Refund;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Subscription\CustomerSubscription;
+use App\Models\Unsubscription\CustomerUnSubscription;
+use App\Models\Plans\ProductModel;
+use App\Models\Plans\PlanModel;
+use App\Models\Company\CompanyProfile;
 
 class RefundedCustomer extends Model
 {
@@ -23,4 +28,16 @@ class RefundedCustomer extends Model
         'refunded_by',
         'medium',
     ];
+
+    public function customer_subscription()
+    {
+        return $this->belongsTo(CustomerSubscription::class ,'subscription_id');
+    }
+
+
+    public function customer_unsubscription()
+    {
+        return $this->hasMany(CustomerUnSubscription::class, "subscription_id", "subscription_id");
+    }
+
 }
