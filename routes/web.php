@@ -58,6 +58,14 @@ Route::get('/', function () {
 | contains the "web" middleware group. Now create something great!
 |
 */
+// Cache Routes
+Route::get('/clear', function () {
+    Artisan::call('config:cache');
+ Artisan::call('cache:clear');
+ Artisan::call('route:clear');
+ Artisan::call('view:clear');
+   return 'All cache cleared';
+});
 
 Route::prefix('agent')->group(function () {
     Route::get('/login', [AgentAuthController::class, 'showLoginForm'])->name('agent.login');
