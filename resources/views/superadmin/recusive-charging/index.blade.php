@@ -17,7 +17,7 @@
     </div>
 </div>
 
-<table id="dataTable" class="" cellSpacing="0" width="100%">
+<table id="myTables" class="display myTables" cellSpacing="0" width="100%">
         <thead>
             <tr>
                 <th>Subscription ID</th>
@@ -36,23 +36,55 @@
         </thead>
     </table>
 
-    <script>
-        $(document).ready(function() {
-            let dataTable = $('#dataTable').DataTable({
-                "autoWidth": false,
 
-                "lengthMenu": [10, 25, 50, 100,-1], // Set the available page lengths
-                "pageLength": 10, // Set the default page length
-                processing: true,
-                serverSide: true,
-                ajax: {
-                    url: "{{ route('superadmin.get-recusive-charging-data') }}",
-                    data: function (d) {
-                        d.dateFilter = $('#dateFilter').val();
+<script type="text/javascript">
+    $(function () {
+        // Initialize the date range picker
+        $('#dateFilter').daterangepicker({
+            opens: 'left',
+            autoUpdateInput: false,
+            locale: {
+                format: 'YYYY-MM-DD',
+                separator: ' to ',
+                applyLabel: 'Apply',
+                cancelLabel: 'Clear',
+                fromLabel: 'From',
+                toLabel: 'To',
+                customRangeLabel: 'Custom'
+            }
+        });
+
+        // Update the input field when date range is applied
+        $('#dateFilter').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' to ' + picker.endDate.format('YYYY-MM-DD'));
+            table.ajax.reload();
+        });
+
+        // Clear the input field when date range is canceled
+        $('#dateFilter').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+            table.ajax.reload();
+        });
+
+        var table = $('#myTables').DataTable({
+            responsive: true,
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: "{{ route('superadmin.get-recusive-charging-data') }}",
+                data: function (d) {
+                    var dateFilter = $('#dateFilter').val();
+                    if (dateFilter) {
+                        d.dateFilter = dateFilter;
                     }
-                },
-                columns: [
-                    { data: 'subscription_id', name: 'subscription_id' },
+                    var companyFilter = $('#companyFilter').val();
+                    if (companyFilter) {
+                        d.companyFilter = companyFilter;
+                    }
+                }
+            },
+            columns: [
+                { data: 'subscription_id', name: 'subscription_id' },
                      { data: 'customer_msisdn', name: 'customer_msisdn' },
                      { data: 'plan_name', name: 'plan_name' },
                      { data: 'product_name', name: 'product_name' },
@@ -62,33 +94,19 @@
                      { data: 'cps_response', name: 'cps_response' },
                      { data: 'charging_date', name: 'charging_date' },
                      { data: 'duration', name: 'duration' },
-                ],
-                "columnDefs": [
-            { "searchable": false, "targets": [0,1,2,3,4,5,6,7,9] } // Disable search for columns 2 and 3 (plan_name and product_name)
-          ]
-            });
 
-            $('#dateFilter').daterangepicker({
-                opens: 'left',
-                locale: {
-                    format: 'YYYY-MM-DD',
-                    separator: ' to ',
-                    applyLabel: 'Apply',
-                    cancelLabel: 'Clear',
-                    fromLabel: 'From',
-                    toLabel: 'To',
-                    customRangeLabel: 'Custom'
-                }
-            });
-
-            // Apply the filters on change
-            $('#dateFilter').on('change', function () {
-                dataTable.ajax.reload();
-            });
+            ]
         });
-    </script>
 
-
+        $('#companyFilter').on('change', function () {
+            table.ajax.reload();
+        });
+        var search_input = document.querySelectorAll('.dataTables_filter input');
+        search_input.forEach(Element => {
+            Element.placeholder = 'Search by name';
+        });
+    });
+</script>
 
 
 

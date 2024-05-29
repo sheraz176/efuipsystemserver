@@ -25,7 +25,7 @@
         </div>
       </form>
 </div>
-<table id="dataTable" class="" cellSpacing="0" width="100%">
+<table id="myTables" class="display myTables" cellSpacing="0" width="100%">
         <thead>
             <tr>
                 <th>Cacellation ID</th>
@@ -44,58 +44,14 @@
     </table>
 </div>
 
-    <script>
-    $(document).ready(function() {
-       let dataTable= $('#dataTable').DataTable({
-            "autoWidth": false,
-            "columnDefs": [
-                    { "width": "25%", "targets": 2 },
-                    { "width": "25%", "targets": 3 },
-                    { "width": "10%", "targets": 6 },
-                    { "width": "15%", "targets": 8 },
-                    { "width": "20%", "targets": 9 },
-                ],
-	    "lengthMenu": [10, 25, 50, 100,-1], // Set the available page lengths
-            "pageLength": 10,
-            processing: true,
-            serverSide: true,
-             ajax: {
-                url: "{{ route('superadmin.companies-cancelled-data') }}",
-                data: function (d) {
-                    d.companyFilter = $('#companyFilter').val();
-                    d.dateFilter = $('#dateFilter').val();
-                }
-            },
-            columns: [
-            { data: 'unsubscription_id', name: 'unsubscriptions.unsubscription_id' },
-            { data: 'subscriber_msisdn', name: 'unsubscriptions.subscriber_msisdn' },
-            { data: 'plan_name', name: 'plans.plan_name' },
-            { data: 'product_name', name: 'products.product_name' },
-            { data: 'transaction_amount', name: 'customer_subscriptions.transaction_amount' },
-            { data: 'company_name', name: 'company_profiles.company_name' },
-            { data: 'cps_transaction_id', name: 'customer_subscriptions.cps_transaction_id' },
-            { data: 'referenceId', name: 'customer_subscriptions.referenceId' },
-            { data: 'subscription_time', name: 'customer_subscriptions.subscription_time' },
-            { data: 'unsubscription_datetime', name: 'unsubscriptions.unsubscription_datetime' },
-            {
-                data: 'subscription_duration',
-                name: 'subscription_duration',
-                render: function (data, type, row) {
-                    // Convert seconds to a human-readable format (you may need additional logic)
-                    var duration = moment.duration(data, 'seconds');
-                    return duration.humanize();
-                }
-            },
 
-            ],
-            "columnDefs": [
-            { "searchable": false, "targets": [0,1,2,3,4,5,6,7,9,10] } // Disable search for columns 2 and 3 (plan_name and product_name)
-          ]
-        });
 
-        // Initialize datepicker
+<script type="text/javascript">
+    $(function () {
+        // Initialize the date range picker
         $('#dateFilter').daterangepicker({
-            opens: 'left', // Adjust the placement as needed
+            opens: 'left',
+            autoUpdateInput: false,
             locale: {
                 format: 'YYYY-MM-DD',
                 separator: ' to ',
@@ -107,15 +63,69 @@
             }
         });
 
-        // Apply the filters on change
-        $('#companyFilter, #dateFilter').on('change', function () {
-            dataTable.ajax.reload();
+        // Update the input field when date range is applied
+        $('#dateFilter').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' to ' + picker.endDate.format('YYYY-MM-DD'));
+            table.ajax.reload();
+        });
+
+        // Clear the input field when date range is canceled
+        $('#dateFilter').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+            table.ajax.reload();
+        });
+
+        var table = $('#myTables').DataTable({
+            responsive: true,
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: "{{ route('superadmin.companies-cancelled-data') }}",
+                data: function (d) {
+                    var dateFilter = $('#dateFilter').val();
+                    if (dateFilter) {
+                        d.dateFilter = dateFilter;
+                    }
+                    var companyFilter = $('#companyFilter').val();
+                    if (companyFilter) {
+                        d.companyFilter = companyFilter;
+                    }
+                }
+            },
+            columns: [
+            { data: 'unsubscription_id', name: 'unsubscription_id' },
+            { data: 'subscriber_msisdn', name: 'subscriber_msisdn' },
+            { data: 'plan_name', name: 'plan_name' },
+            { data: 'product_name', name: 'product_name' },
+            { data: 'transaction_amount', name: 'transaction_amount' },
+            { data: 'company_name', name: 'company_name' },
+            { data: 'cps_transaction_id', name: 'cps_transaction_id' },
+            { data: 'referenceId', name: 'referenceId' },
+            { data: 'subscription_time', name: 'subscription_time' },
+            { data: 'unsubscription_datetime', name: 'unsubscription_datetime' },
+            {
+                data: 'subscription_duration',
+                name: 'subscription_duration',
+                render: function (data, type, row) {
+                    // Convert seconds to a human-readable format (you may need additional logic)
+                    var duration = moment.duration(data, 'seconds');
+                    return duration.humanize();
+                }
+            },
+
+            ]
+        });
+
+        $('#companyFilter').on('change', function () {
+            table.ajax.reload();
+        });
+        var search_input = document.querySelectorAll('.dataTables_filter input');
+        search_input.forEach(Element => {
+            Element.placeholder = 'Search by name';
         });
     });
+</script>
 
-
-
-    </script>
 
 
  @endsection()

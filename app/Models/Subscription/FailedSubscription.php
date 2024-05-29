@@ -29,26 +29,32 @@ class FailedSubscription extends Model
     'agent_id',
     'company_id',
     'source',
-    'sale_request_time',  
+    'sale_request_time',
         ];
 
         public function plan()
         {
             return $this->belongsTo(PlanModel::class, 'planId');
         }
-    
+
         public function product()
         {
             return $this->belongsTo(ProductModel::class, 'product_id');
         }
-    
+
         public function companyProfile()
         {
             return $this->belongsTo(CompanyProfile::class, 'id');
         }
-    
+
         public function teleSalesAgent()
         {
             return $this->belongsTo(TeleSalesAgent::class, 'agent_id');
         }
+        public function company()
+        {
+            return $this->belongsTo(CompanyProfile::class);
+        }
+
+
 }

@@ -21,4 +21,10 @@ class RecusiveChargingData extends Model
     {
         return $this->belongsTo(ProductModel::class, 'product_id');
     }
+
+    public function plans()
+    {
+        return $this->belongsTo(PlanModel::class,'plan_id');
+    }
+
 }
