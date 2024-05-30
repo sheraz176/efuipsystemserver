@@ -564,9 +564,12 @@ public function agents_get_data_export(Request $request)
             $query->whereDate('insufficient_balance_customers.sale_request_time', '>=', $startDate)
             ->whereDate('insufficient_balance_customers.sale_request_time', '<=', $endDate);
         }
+        if ($request->has('companyFilter') && $request->input('companyFilter') != '') {
+            $query->where('insufficient_balance_customers.agent_id', $request->input('companyFilter'));
+        }
 
         $data = $query->get();
-            //   dd($data);
+            //    dd($data);
                // Define headers
                $headers = ['Request ID', 'Transaction ID', 'Refernce ID', 'Sale Request Time', 'Customer Number','Failed Message', 'Failed Information',
                'Amount','Product ID', 'Plan ID','Company']; // Replace with your actual column names

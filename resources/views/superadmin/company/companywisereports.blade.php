@@ -26,7 +26,7 @@
         </div>
     </div>
 
-<table id="dataTable" class="" cellSpacing="0" width="100%">
+<table id="myTables" class="display myTables"  cellSpacing="0" width="100%">
         <thead>
             <tr>
                 <th>Subscription ID</th>
@@ -47,20 +47,53 @@
     </table>
 </div>
 
-    <script>
-    $(document).ready(function() {
-       let dataTable= $('#dataTable').DataTable({
-            "autoWidth": false,
 
-	    "lengthMenu": [10, 25, 50, 100,-1], // Set the available page lengths
-            "pageLength": 10,
+
+<script>
+    $(function () {
+        // Initialize the date range picker
+        $('#dateFilter').daterangepicker({
+            opens: 'left',
+            autoUpdateInput: false,
+            locale: {
+                format: 'YYYY-MM-DD',
+                separator: ' to ',
+                applyLabel: 'Apply',
+                cancelLabel: 'Clear',
+                fromLabel: 'From',
+                toLabel: 'To',
+                customRangeLabel: 'Custom'
+            }
+        });
+
+        // Update the input field when date range is applied
+        $('#dateFilter').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' to ' + picker.endDate.format('YYYY-MM-DD'));
+            table.ajax.reload();
+        });
+
+        // Clear the input field when date range is canceled
+        $('#dateFilter').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+            table.ajax.reload();
+        });
+
+        var table = $('#myTables').DataTable({
+            responsive: true,
+
             processing: true,
             serverSide: true,
-             ajax: {
+            ajax: {
                 url: "{{ route('companies-reports.getDataCompany') }}",
                 data: function (d) {
-                    d.companyFilter = $('#companyFilter').val();
-                    d.dateFilter = $('#dateFilter').val();
+                    var dateFilter = $('#dateFilter').val();
+                    if (dateFilter) {
+                        d.dateFilter = dateFilter;
+                    }
+                    var companyFilter = $('#companyFilter').val();
+                    if (companyFilter) {
+                        d.companyFilter = companyFilter;
+                    }
                 }
             },
             columns: [
@@ -79,34 +112,17 @@
                 { data: 'grace_period_time', name: 'grace_period_time' },
 
             ],
-            "columnDefs": [
-            { "searchable": false, "targets": [0,2,3,4,5,6,7,9,10,11,12] } // Disable search for columns 2 and 3 (plan_name and product_name)
-          ]
         });
-
-        // Initialize datepicker
-        $('#dateFilter').daterangepicker({
-            opens: 'left', // Adjust the placement as needed
-            locale: {
-                format: 'YYYY-MM-DD',
-                separator: ' to ',
-                applyLabel: 'Apply',
-                cancelLabel: 'Clear',
-                fromLabel: 'From',
-                toLabel: 'To',
-                customRangeLabel: 'Custom'
-            }
+        $('#companyFilter').on('change', function () {
+            table.ajax.reload();
         });
-
-        // Apply the filters on change
-        $('#companyFilter, #dateFilter').on('change', function () {
-            dataTable.ajax.reload();
+        var search_input = document.querySelectorAll('.dataTables_filter input');
+        search_input.forEach(Element => {
+            Element.placeholder = 'Search by name';
         });
     });
+</script>
 
-
-
-    </script>
 
 
  @endsection()

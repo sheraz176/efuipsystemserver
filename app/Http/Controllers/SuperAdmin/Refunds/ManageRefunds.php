@@ -20,37 +20,45 @@ class ManageRefunds extends Controller
 
     public function getRefundData(Request $request)
     {
-        $todayDate = Carbon::now()->toDateString();
-        $query = CustomerSubscription::select([
-            'customer_subscriptions.*', // Select all columns from customer_subscriptions table
-            'plans.plan_name', // Select the plan_name column from the plans table
-            'products.product_name', // Select the product_name column from the products table
-            'company_profiles.company_name', // Select the company_name column from the company_profiles table
-        ])
-            ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
-            ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
-            ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-            ->with(['plan', 'product', 'companyProfile'])
-            ->where('grace_period_time', '>=', $todayDate) // Eager load related models
-            ->where('policy_status', '=', 1);
 
-        if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
-            $dateRange = explode(' to ', $request->input('dateFilter'));
-            $startDate = $dateRange[0];
-            $endDate = $dateRange[1];
-            $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
-            ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
-            // $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+        if ($request->ajax()) {
+            $todayDate = Carbon::now()->toDateString();
+            // Start building the query
+            $query = CustomerSubscription::where('grace_period_time', '>=', $todayDate)->where('policy_status', 1);
+
+            if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+                $dateRange = explode(' to ', $request->input('dateFilter'));
+                $startDate = $dateRange[0];
+                $endDate = $dateRange[1];
+                $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
+                ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
+                // $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+            }
+
+            // Add custom search functionality for numeric columns
+            if ($request->has('msisdn') && !empty($request->input('msisdn'))) {
+                $msisdn = $request->input('msisdn');
+                $query->where('customer_subscriptions.subscriber_msisdn', 'like', '%' . $msisdn . '%');
+            }
+
+
+            return Datatables::of($query)->addIndexColumn()
+
+                ->addColumn('plan_name', function ($data) {
+                    return $data->plan->plan_name;
+                })
+                ->addColumn('product_name', function ($data) {
+                    return $data->products->product_name;
+                })
+                ->addColumn('company_name', function ($data) {
+                    return $data->company->company_name;
+                })
+
+                ->rawColumns(['plan_name', 'product_name', 'company_name'])
+                ->make(true);
         }
 
-        // Add custom search functionality for numeric columns
-        if ($request->has('msisdn') && !empty($request->input('msisdn'))) {
-            $msisdn = $request->input('msisdn');
-            $query->where('customer_subscriptions.subscriber_msisdn', 'like', '%' . $msisdn . '%');
-        }
 
-        // Use DataTables for pagination and server-side processing
-        return DataTables::eloquent($query)->toJson();
     }
 
 

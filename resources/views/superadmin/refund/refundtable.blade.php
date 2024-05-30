@@ -44,7 +44,7 @@
     </div>
 </div>
 
-<table id="dataTable" class="table" cellspacing="0" width="100%">
+<table id="myTables" class="display myTables"  cellspacing="0" width="100%">
     <thead>
         <tr>
             <th>Subscription ID</th>
@@ -62,29 +62,52 @@
     </thead>
 </table>
 
+
+
 <script>
-    $(document).ready(function() {
-        let dataTable_new = $('#dataTable').DataTable({
-            "autoWidth": false,
-            "searching": false,
-            "columnDefs": [
-                { "width": "0%", "targets": 0 },
-                { "width": "5%", "targets": 1 },
-                { "width": "10%", "targets": 2 },
-                { "width": "15%", "targets": 3 },
-                { "width": "10%", "targets": 5 },
-                { "width": "15%", "targets": 7 },
-                { "width": "15%", "targets": 8 },
-                { "width": "15%", "targets": 9 },
-                { "width": "15%", "targets": 9 },
-            ],
+    $(function () {
+        // Initialize the date range picker
+        $('#dateFilter').daterangepicker({
+            opens: 'left',
+            autoUpdateInput: false,
+            locale: {
+                format: 'YYYY-MM-DD',
+                separator: ' to ',
+                applyLabel: 'Apply',
+                cancelLabel: 'Clear',
+                fromLabel: 'From',
+                toLabel: 'To',
+                customRangeLabel: 'Custom'
+            }
+        });
+
+        // Update the input field when date range is applied
+        $('#dateFilter').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' to ' + picker.endDate.format('YYYY-MM-DD'));
+            table.ajax.reload();
+        });
+
+        // Clear the input field when date range is canceled
+        $('#dateFilter').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+            table.ajax.reload();
+        });
+
+        var table = $('#myTables').DataTable({
+            responsive: true,
             processing: true,
             serverSide: true,
             ajax: {
                 url: "{{ route('manage-refunds.getRefundData') }}",
-                data: function(d) {
-                    d.dateFilter = $('#dateFilter').val();
-                    d.msisdn = $('#msisdn').val();
+                data: function (d) {
+                    var dateFilter = $('#dateFilter').val();
+                    if (dateFilter) {
+                        d.dateFilter = dateFilter;
+                    }
+                    var msisdn = $('#msisdn').val();
+                    if (msisdn) {
+                        d.msisdn = msisdn;
+                    }
                 }
             },
             columns: [
@@ -106,41 +129,16 @@
                     }
                 },
             ],
-            "columnDefs": [
-            { "searchable": false, "targets": [0,1,2,3,4,5,6,7,9,10] } // Disable search for columns 2 and 3 (plan_name and product_name)
-          ]
-
         });
-
-        $('#dateFilter').daterangepicker({
-            opens: 'left', // Adjust the placement as needed
-            startDate: moment().startOf('month'),
-            endDate: moment(),
-            maxDate: moment(), // Disable future dates
-            locale: {
-                format: 'YYYY-MM-DD',
-                separator: ' to ',
-                applyLabel: 'Apply',
-                cancelLabel: 'Clear',
-                fromLabel: 'From',
-                toLabel: 'To',
-                customRangeLabel: 'Custom'
-            }
+        $('#msisdn').on('change', function () {
+            table.ajax.reload();
         });
-
-        // Apply the filters on change
-        $('#dateFilter, #msisdn').on('change', function() {
-            dataTable_new.ajax.reload();
+        var search_input = document.querySelectorAll('.dataTables_filter input');
+        search_input.forEach(Element => {
+            Element.placeholder = 'Search by name';
         });
-    });
-
-    // Manually trigger the toast
-    $(document).ready(function() {
-        $('.bs-toast').toast('show');
-    });
-    $(document).ready(function() {
-        $('.btn-close-2').toast('show');
     });
 </script>
+
 
 @endsection

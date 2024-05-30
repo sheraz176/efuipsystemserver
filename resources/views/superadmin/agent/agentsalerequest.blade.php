@@ -3,7 +3,10 @@
 @section('content')
 
 <div>
+    <form method="POST" action="{{ route('superadmin.agents-sale-data-export') }}">
+        @csrf
     <div class="row mb-3">
+
         <div class="col-md-4">
             <label for="companyFilter">Filter by Registered Agents:</label>
             <select id="companyFilter" class="form-select" style="max-height: 150px; overflow-y: auto;">
@@ -15,18 +18,18 @@
             </select>
         </div>
         <div class="col-md-4">
-            <form method="POST" action="{{ route('superadmin.agents-sale-data-export') }}">
-                @csrf
+
             <label for="dateFilter">Filter by Date:</label>
             <input type="text" id="dateFilter" name="dateFilter" class="form-control" placeholder="Select date range">
         </div>
         <div class="col-md-4 mt-4" style="marign-top:10%;">
             <button type="submit" class="btn btn-primary btn-sm"><i class='bx bx-down-arrow-alt'></i>Export</button>
-            </form>
+
          </div>
     </div>
+</form>
 
-<table id="dataTable" class="" cellSpacing="0" width="100%">
+<table id="myTables" class="display myTables" cellSpacing="0" width="100%">
         <thead>
             <tr>
                 <th>Request ID</th>
@@ -45,26 +48,52 @@
     </table>
 </div>
 
-    <script>
-    $(document).ready(function() {
-       let dataTable= $('#dataTable').DataTable({
-            "autoWidth": false,
-            "columnDefs": [
-                    { "width": "15%", "targets": 3 },
-                    { "width": "10%", "targets": 5 },
-                    { "width": "40%", "targets": 6 },
-                    { "width": "15%", "targets": 8 },
-                    { "width": "20%", "targets": 9 },
-                ],
-            "lengthMenu": [10, 25, 50, 100,-1], // Set the available page lengths
-            "pageLength": 10,
+
+<script>
+    $(function () {
+        // Initialize the date range picker
+        $('#dateFilter').daterangepicker({
+            opens: 'left',
+            autoUpdateInput: false,
+            locale: {
+                format: 'YYYY-MM-DD',
+                separator: ' to ',
+                applyLabel: 'Apply',
+                cancelLabel: 'Clear',
+                fromLabel: 'From',
+                toLabel: 'To',
+                customRangeLabel: 'Custom'
+            }
+        });
+
+        // Update the input field when date range is applied
+        $('#dateFilter').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('YYYY-MM-DD') + ' to ' + picker.endDate.format('YYYY-MM-DD'));
+            table.ajax.reload();
+        });
+
+        // Clear the input field when date range is canceled
+        $('#dateFilter').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+            table.ajax.reload();
+        });
+
+        var table = $('#myTables').DataTable({
+            responsive: true,
+
             processing: true,
             serverSide: true,
-             ajax: {
+            ajax: {
                 url: "{{ route('companies-reports.agents-sales-data') }}",
                 data: function (d) {
-                    d.companyFilter = $('#companyFilter').val();
-                    d.dateFilter = $('#dateFilter').val();
+                    var dateFilter = $('#dateFilter').val();
+                    if (dateFilter) {
+                        d.dateFilter = dateFilter;
+                    }
+                    var companyFilter = $('#companyFilter').val();
+                    if (companyFilter) {
+                        d.companyFilter = companyFilter;
+                    }
                 }
             },
             columns: [
@@ -82,35 +111,15 @@
 
 
             ],
-            "columnDefs": [
-            { "searchable": false, "targets": [0,1,2,3,4,5,6,7,9,10] } // Disable search for columns 2 and 3 (plan_name and product_name)
-          ]
-
         });
-
-        // Initialize datepicker
-        $('#dateFilter').daterangepicker({
-            opens: 'left', // Adjust the placement as needed
-            locale: {
-                format: 'YYYY-MM-DD',
-                separator: ' to ',
-                applyLabel: 'Apply',
-                cancelLabel: 'Clear',
-                fromLabel: 'From',
-                toLabel: 'To',
-                customRangeLabel: 'Custom'
-            }
+        $('#companyFilter').on('change', function () {
+            table.ajax.reload();
         });
-
-        // Apply the filters on change
-        $('#companyFilter, #dateFilter').on('change', function () {
-            dataTable.ajax.reload();
+        var search_input = document.querySelectorAll('.dataTables_filter input');
+        search_input.forEach(Element => {
+            Element.placeholder = 'Search by name';
         });
     });
-
-
-
-    </script>
-
+</script>
 
  @endsection()
