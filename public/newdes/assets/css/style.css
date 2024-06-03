@@ -1893,70 +1893,7 @@ a.ms-confirm-trigger:hover {
   }
 }
 
-/* Footer */
-/* Dropdowns */
-.dropdown-menu {
-  display: block;
-  -webkit-transition: 0.3s;
-  transition: 0.3s;
-  visibility: hidden;
-  top: 0;
-  opacity: 0;
-  -webkit-box-shadow: 0 1px 24px rgba(0, 0, 0, 0.1);
-  -moz-box-shadow: 0 1px 24px rgba(0, 0, 0, 0.1);
-  box-shadow: 0 1px 24px rgba(0, 0, 0, 0.1);
-}
 
-.dropdown-menu.show {
-  visibility: visible;
-  opacity: 1;
-  top: 100%;
-}
-
-.dropdown-menu-right {
-  right: 0;
-  left: auto;
-}
-
-.ms-dropdown-list {
-  max-height: 18rem;
-}
-
-.dropdown-header {
-  padding: .5rem;
-}
-
-.media {
-  justify-content: space-between;
-  align-items: center;
-  -webkit-transition: 0s;
-  transition: 0s;
-}
-
-.dropdown-menu .media:hover {
-  background: #e9ecef;
-}
-
-.dropdown-toggle::after {
-  vertical-align: 0.155em;
-}
-
-.user-dropdown.dropdown-menu {
-  min-width: 200px;
-}
-
-.dropdown-menu .media img {
-  width: 40px;
-}
-
-.dropdown-menu.dropright .dropdown-menu,
-.dropdown-menu.dropleft .dropdown-menu {
-  top: 0;
-}
-
-.dropdown-menu.dropleft li a:not(.dropdown-toggle) {
-  justify-content: flex-end;
-}
 
 @media (max-width: 768px) {
   .ms-nav-list .dropdown {
@@ -8415,7 +8352,7 @@ table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before, table.dataT
   color: white !important;
   font-size: 16px;
   font-weight: 500;
-  
+
 }
 .control-btns{
   position:absolute;
@@ -8440,7 +8377,7 @@ table.dataTable > thead .sorting::after, table.dataTable > thead .sorting_asc::a
   opacity: 0.7 !important;
 }
 table.dataTable > thead .sorting::before, table.dataTable > thead .sorting_asc::before, table.dataTable > thead .sorting_desc::before, table.dataTable > thead .sorting_asc_disabled::before, table.dataTable > thead .sorting_desc_disabled::before {
-  right: 1em !important; 
+  right: 1em !important;
   content: "↑" !important;
 }
 table.dataTable tr td , table.dataTable tr th{
@@ -8453,7 +8390,7 @@ table.dataTable tr td:first-child , table.dataTable tr th:first-child{
 }
 
 table.dataTable.display tbody tr:hover>.sorting_1, table.dataTable.order-column.hover tbody tr:hover>.sorting_1 {
-  box-shadow: none !important; 
+  box-shadow: none !important;
   box-shadow: none !important;
 }
 table.dataTable.display>tbody>tr.even>.sorting_1, table.dataTable.order-column.stripe>tbody>tr.even>.sorting_1 {
@@ -8472,13 +8409,13 @@ table.dataTable tr.odd{
   background-color: #F8F9FA !important;
 }
 table.dataTable tr:not(:first-child):hover{
-  background-color: #F8F9FA !important; 
+  background-color: #F8F9FA !important;
 }
 table.dataTable tr{
   cursor: pointer;
 }
 table.dataTable tr.even:hover{
-  background-color: #F8F9FA !important; 
+  background-color: #F8F9FA !important;
   box-shadow: none !important;
 }
 table.dataTable tr.even .dtr-control.sorting_1{
@@ -8518,7 +8455,7 @@ border: none !important;
 .dataTables_wrapper .dataTables_paginate .paginate_button:hover{
   border-radius: 6px !important;
     background: #F3A951 !important;
-   
+
 }
 .dataTables_paginate.paging_simple_numbers span .paginate_button.current:hover{
   color: white !important;
@@ -8549,7 +8486,7 @@ margin-top: 16px !important;
   .ms-card.ms-card-fh {
     height: auto;
   }
-  
+
 
   .ms-todo-options {
     justify-content: center;
@@ -9209,7 +9146,7 @@ body:not(.ms-settings-open) .ms-settings-toggle:hover {
 }
 
 /*  Dates table */
-.table-date {
+/* .table-date {
   cursor: default;
   color: #2b2b2b;
   height: 26px;
@@ -9238,7 +9175,7 @@ body:not(.ms-settings-open) .ms-settings-toggle:hover {
 
 .event-date.active-date {
   background: #009efb;
-}
+} */
 
 /* input dialog */
 .dialog {
@@ -9484,70 +9421,6 @@ body:not(.ms-settings-open) .ms-settings-toggle:hover {
   transition: all 0.7s ease;
 }
 
-.events {
-  height: 75px;
-  padding: 7px 0;
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-
-.events.in {
-  -webkit-animation: fadeIn .3s ease both;
-  -moz-animation: fadeIn .3s ease both;
-  animation: fadeIn .3s ease both;
-}
-
-.events.in {
-  -webkit-animation-delay: .3s;
-  -moz-animation-delay: .3s;
-  animation-delay: .3s;
-}
-
-.details.out .events {
-  -webkit-animation: fadeOutShrink .4s ease both;
-  -moz-animation: fadeOutShink .4s ease both;
-  animation: fadeOutShink .4s ease both;
-}
-
-.events.out {
-  -webkit-animation: fadeOut .3s ease both;
-  -moz-animation: fadeOut .3s ease both;
-  animation: fadeOut .3s ease both;
-}
-
-.event {
-  font-size: 16px;
-  line-height: 22px;
-  letter-spacing: .5px;
-  padding: 2px 16px;
-  vertical-align: top;
-  color: red;
-}
-
-.event.empty span {
-  color: #282a31;
-}
-
-.event-category {
-  height: 10px;
-  width: 10px;
-  display: inline-block;
-  margin: 6px 0 0;
-  vertical-align: top;
-}
-
-.event span {
-  display: inline-block;
-  padding: 0 0 0 7px;
-}
-
-.event .add__event {
-  display: block;
-  color: #009efb;
-  font-size: 18px;
-  font-weight: 700;
-  padding: 5px 0 0 7px;
-}
 
 .legend {
   display: none;
@@ -10524,7 +10397,7 @@ font-weight: 400;
 line-height: normal;
 display: -webkit-box;
 -webkit-line-clamp: 1;
--webkit-box-orient: vertical;  
+-webkit-box-orient: vertical;
 overflow: hidden;
 }
 .procedure-lg-small-lg{
@@ -10534,34 +10407,9 @@ font-style: normal;
 font-weight: 400;
 line-height: normal;
 }
-.bootstrap-tagsinput .tag.label.label-info {
-  background-color: #5bc0de !important;
-  color: white !important;
-  display: inline;
-  padding: 0.2em 0.6em 0.3em;
-  font-size: 75%;
-  font-weight: 700;
-  line-height: 1;
-  color: #fff;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: baseline;
-  border-radius: 0.25em;
-}
 
-.bootstrap-tagsinput {
-  width: 100%;
-}
 
-.custom-name {
-  margin-bottom: 0px;
-}
 
-.bootstrap-tagsinput .tag [data-role="remove"]:after {
-  content: "x";
-  padding: 0px 2px;
-  color: white;
-}
 
 .custom-name {
   font-weight: bold;
@@ -10569,7 +10417,7 @@ line-height: normal;
 
 /* Tablets and smaller */
 @media only screen and (max-width: 780px) {
-  
+
 
   .content {
     overflow: visible;
@@ -10601,115 +10449,4 @@ border-radius: 50%;
     display: none;
   }
 
-}
-
-/* Small phone screens */
-@media only screen and (max-width: 400px) {
-  .content, .events-container, .year-header, .calendar-container {
-    width: 100%;
-  }
-
-  .dialog {
-    width: 100%;
-  }
-
-  .months-table {
-    display: block;
-    margin: 0 auto;
-    width: 100%;
-  }
-
-  .event-card {
-    width: 100%;
-    margin: 0px;
-  }
-
-  .day {
-    padding: 0 7px;
-  }
-
-  .month {
-    width: 100%;
-    display: inline-block;
-    padding: 10px 0px;
-    font-size: 0.7rem;
-  }
-
-  .table-date {
-    width: 20px;
-    height: 20px;
-    line-height: 20px;
-  }
-
-  .event-name, .event-count, .event-cancelled {
-    font-size: .8rem;
-  }
-
-  .add-button {
-    bottom: 10px;
-    right: 10px;
-    padding: 0.5rem 1.5rem;
-  }
-}
-
-/* /End Calender css */
-
-
-@media(max-width:991px) {
-  .ms-modal-content-width {
-    width: 70%;
-    margin-left: 9%;
-    border-bottom-right-radius: 0px;
-    margin-top: 23px;
-    margin-bottom: 25px;
-    border: none;
-  }
-}
-
-@media(max-width:767px) {
-  .ms-modal-content-width {
-    width: 60%;
-    margin-left: 11%;
-    border-bottom-right-radius: 0px;
-    margin-top: 23px;
-    margin-bottom: 25px;
-    border: none;
-    text-align: left;
-  }
-}
-
-@media(max-width:700px) {
-  .ms-modal-content-width {
-    width: 60%;
-    margin-left: 11%;
-    border-bottom-right-radius: 0px;
-    margin-top: 23px;
-    margin-bottom: 25px;
-    border: none;
-    text-align: left;
-  }
-}
-
-
-@media(max-width:767px) {
-  .ms-inline li.ms-nav-item.ms-d-none {
-    display: none;
-  }
-
-  .flex-direction-column {
-    flex-direction: column;
-
-  }
-
-  .text-md-center {
-    text-align: center !important;
-  }
-
-}
-
-@media(min-width:576px) {
-  .modal-dialog.ms-modal-dialog-width {
-    max-width: 1000px;
-    margin: auto;
-  }
 }

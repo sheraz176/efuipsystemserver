@@ -1,49 +1,83 @@
 @extends('superadmin.layout.master')
-
+@include('superadmin.partials.style')
 @section('content')
 
-<div>
-    <div class="row mb-3">
-        <div class="col-md-4">
-            <label for="companyFilter">Filter by Company:</label>
-            <select id="companyFilter" class="form-select">
-                <option value="">All Companies</option>
 
-                @foreach($companies as $company)
-                    <option value="{{ $company->id }}">{{ $company->company_name }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="col-md-4">
-            <form method="POST" action="{{ route('superadmin.companies.cancelled-data-export') }}">
-                @csrf
-            <label for="dateFilter">Filter by Date:</label>
-            <input type="text" id="dateFilter" name="dateFilter" class="form-control" placeholder="Select date range">
-        </div>
-        <div class="col-md-4 mt-4" style="marign-top:10%;">
-            <button type="submit" class="btn btn-primary btn-sm"><i class='bx bx-down-arrow-alt'></i>Export</button>
-        </div>
-      </form>
-</div>
-<table id="myTables" class="display myTables" cellSpacing="0" width="100%">
-        <thead>
-            <tr>
-                <th>Cacellation ID</th>
-                <th>Customer MSISDN</th>
-                <th>Plan Name</th>
-                <th>Product Name</th>
-                <th>Amount</th>
-                <th>Company Name</th>
-                <th>Transaction ID</th>
-                <th>Reference ID</th>
-                <th>Subscription Date</th>
-                <th>UnSubscriotion Date</th>
-                <th>Duration</th>
-            </tr>
-        </thead>
-    </table>
-</div>
+<div class="ms-content-wrapper">
+    <div class="row">
+        <div class="col-md-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb pl-0">
+                    <li class="breadcrumb-item"><a href="{{ route('superadmin.dashboard') }}"><i class="material-icons"></i>Home</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('superadmin.dashboard') }}">Deshboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Cancelled Report List</li>
+                </ol>
+            </nav>
+            <div class="ms-panel">
 
+                <form method="POST" action="{{ route('superadmin.companies.cancelled-data-export') }}">
+                    @csrf
+                <div class="ms-panel-header ms-panel-custome align-items-center">
+                    <div class="row mb-3">
+                    </div>
+                    <div class="col-md-2">
+
+
+                    </div>
+                        <div class="col-md-4">
+                            <label for="companyFilter">Filter by Company:</label>
+                            <select id="companyFilter" class="form-select">
+                                <option value="">All Companies</option>
+
+                                @foreach($companies as $company)
+                                    <option value="{{ $company->id }}">{{ $company->company_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    <div class="col-md-4">
+
+                        <label for="dateFilter">Filter by Date:</label>
+                        <input type="text" id="dateFilter" name="dateFilter" class="form-control " placeholder="Select date range">
+                    </div>
+
+                    <div class="col-md-2 mt-8" style="margin-top: 2%">
+                        <button type="submit" class="btn btn-primary btn-sm"><i class='bx bx-down-arrow-alt'></i>Export</button>
+
+                    </div>
+
+
+
+                </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-xl-12 col-md-12">
+            <div class="ms-card">
+                <div class="ms-card-body">
+
+                    <table id="myTables" class="display myTables" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Cacellation ID</th>
+                                <th>Customer MSISDN</th>
+                                <th>Plan Name</th>
+                                <th>Product Name</th>
+                                <th>Amount</th>
+                                <th>Company Name</th>
+                                <th>Transaction ID</th>
+                                <th>Reference ID</th>
+                                <th>Subscription Date</th>
+                                <th>UnSubscriotion Date</th>
+                            </tr>
+                        </thead>
+
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
 
 
 <script type="text/javascript">
@@ -103,15 +137,6 @@
             { data: 'referenceId', name: 'referenceId' },
             { data: 'subscription_time', name: 'subscription_time' },
             { data: 'unsubscription_datetime', name: 'unsubscription_datetime' },
-            {
-                data: 'subscription_duration',
-                name: 'subscription_duration',
-                render: function (data, type, row) {
-                    // Convert seconds to a human-readable format (you may need additional logic)
-                    var duration = moment.duration(data, 'seconds');
-                    return duration.humanize();
-                }
-            },
 
             ]
         });
@@ -126,6 +151,6 @@
     });
 </script>
 
-
+@include('superadmin.partials.script')
 
  @endsection()

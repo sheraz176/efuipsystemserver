@@ -1,43 +1,70 @@
 @extends('superadmin.layout.master')
-
+@include('superadmin.partials.style')
 @section('content')
-    <div>
-        <div class="row mb-3">
-            <div class="col-md-4">
-                <form method="POST" action="{{ route('superadmin.RefundedDataExport') }}">
-                    @csrf
-                    <label for="dateFilter">Filter by Date:</label>
-                    <input type="text" id="dateFilter" name="dateFilter" class="form-control" placeholder="Select date range">
-            </div>
-            <div class="col-md-4 mt-4" style="marign-top:10%;">
-                <button type="submit" class="btn btn-primary btn-sm"><i class='bx bx-down-arrow-alt'></i>Export</button>
-            </div>
-            </form>
-            {{-- <div class="col-md-4">
-                <label for="msisdn">Search by Mobile Number:</label>
-                <input type="text" id="msisdn" class="form-control" placeholder="Enter Customer MSISDN">
-            </div> --}}
-        </div>
 
-        <table id="myTables" class="display myTables" cellSpacing="0" width="100%">
-            <thead>
-                <tr>
-                    <th>Refunded ID</th>
-                    <th>Customer MSISDN</th>
-                    <th>Transaction ID</th>
-                    <th>Reference ID</th>
-                    <th>Amount</th>
-                    <th>Refunded By</th>
-                    <th>Plan Name</th>
-                    <th>Product Name</th>
-                    <th>Company Name</th>
-                    <th>Medium</th>
-                    <th>Subscription Date</th>
-                    <th>Unsubscription Date</th>
-                </tr>
-            </thead>
-        </table>
+    <div class="ms-content-wrapper">
+        <div class="row">
+            <div class="col-md-12">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb pl-0">
+                        <li class="breadcrumb-item"><a href="{{ route('superadmin.dashboard') }}"><i class="material-icons"></i>Home</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('superadmin.dashboard') }}">Deshboard</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Refunded Transaction Report</li>
+                    </ol>
+                </nav>
+                <div class="ms-panel">
+
+
+                    <div class="ms-panel-header ms-panel-custome align-items-center">
+                        <div class="row mb-3">
+                        </div>
+                        <div class="col-md-6">
+                            <form method="POST" action="{{ route('superadmin.RefundedDataExport') }}">
+                                @csrf
+                            <label for="dateFilter">Filter by Date:</label>
+                            <input type="text" id="dateFilter" name="dateFilter" class="form-control " placeholder="Select date range">
+                        </div>
+
+                        <div class="col-md-4 mt-6" style="margin-left: -14%">
+                            <button type="submit" class="btn btn-primary btn-sm"><i class='bx bx-down-arrow-alt'></i>Export</button>
+
+                        </div>
+
+                           </form>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-12 col-md-12">
+                <div class="ms-card">
+                    <div class="ms-card-body">
+
+                        <table id="myTables" class="display myTables" style="width:100%">
+                            <thead>
+                                <tr>
+                                    <th>Refunded ID</th>
+                                    <th>Customer MSISDN</th>
+                                    <th>Transaction ID</th>
+                                    <th>Reference ID</th>
+                                    <th>Amount</th>
+                                    <th>Refunded By</th>
+                                    <th>Plan Name</th>
+                                    <th>Product Name</th>
+                                    <th>Company Name</th>
+                                    <th>Medium</th>
+                                    <th>Subscription Date</th>
+                                    <th>Unsubscription Date</th>
+                                </tr>
+                            </thead>
+
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
     </div>
+
 
     <script>
         $(function () {
@@ -103,4 +130,6 @@
             });
         });
     </script>
+ @include('superadmin.partials.script')
+
 @endsection

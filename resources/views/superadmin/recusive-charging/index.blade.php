@@ -1,19 +1,6 @@
 @extends('superadmin.layout.master')
 
-<head>
-
-    <link href="{{asset('newdes/assets/css/style.css')}}" rel="stylesheet">
-
-<style>
-/* styles.css */
-
-.daterangepicker {
-    z-index: 1000; /* Ensure this value is higher than other elements */
-    position: relative; /* Adjust positioning if necessary */
-}
-
-</style>
-</head>
+@include('superadmin.partials.style')
 
 @section('content')
 
@@ -23,38 +10,31 @@
         <div class="col-md-12">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb pl-0">
-                    <li class="breadcrumb-item"><a href="#"><i class="material-icons">home</i> Home</a></li>
-                    <li class="breadcrumb-item"><a href="#">Add Doctor</a></li>
-                    <li class="breadcrumb-item active" aria-current="page">Doctor List</li>
+                    <li class="breadcrumb-item"><a href="{{ route('superadmin.dashboard') }}"><i class="material-icons"></i>Home</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('superadmin.dashboard') }}">Deshboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Recusive Charging List</li>
                 </ol>
             </nav>
             <div class="ms-panel">
+
+
                 <div class="ms-panel-header ms-panel-custome align-items-center">
                     <div class="row mb-3">
-                        <div class="col-md-8">
-                            <form method="POST" action="{{ route('superadmin.export-recusive-charging-data') }}">
-                                @csrf
-                            <label for="dateFilter">Filter by Date:</label>
-                            <input type="text" id="dateFilter" name="dateFilter" class="form-control daterangepicker" placeholder="Select date range">
-                        </div>
-                        <div class="col-md-4 mt-6" style="marign-top:-12%;">
-                              <button type="submit" class="btn btn-primary btn-sm"><i class='bx bx-down-arrow-alt'></i>Export</button>
-                        </div>
-                           </form>
+                    </div>
+                    <div class="col-md-6">
+                        <form method="POST" action="{{ route('superadmin.export-recusive-charging-data') }}">
+                            @csrf
+                        <label for="dateFilter">Filter by Date:</label>
+                        <input type="text" id="dateFilter" name="dateFilter" class="form-control " placeholder="Select date range">
                     </div>
 
-                    <div class="date-range-filter">
-                        <label for="start-date">Start Date:</label>
-                        <input type="date" id="start-date" name="start-date">
+                    <div class="col-md-4 mt-6" style="margin-left: -14%">
+                        <button type="submit" class="btn btn-primary btn-sm"><i class='bx bx-down-arrow-alt'></i>Export</button>
 
-                        <label for="end-date">End Date:</label>
-                        <input type="date" id="end-date" name="end-date">
-
-                        <button id="filter-button">Filter</button>
                     </div>
 
+                       </form>
 
-                    <button class="btn btn-primary d-inline w-20" type="submit">Add Doctor</button>
                 </div>
             </div>
         </div>
@@ -87,9 +67,9 @@
 </div>
 
 
+
     <script>
         $(function () {
-            // Initialize the date range picker
             $('#dateFilter').daterangepicker({
                 opens: 'left',
                 autoUpdateInput: false,
@@ -157,5 +137,9 @@
             });
         });
     </script>
+
+@include('superadmin.partials.script')
+
+
 
  @endsection

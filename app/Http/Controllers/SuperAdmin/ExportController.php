@@ -67,7 +67,7 @@ class ExportController extends Controller
    }
 
    // Generate XLS file
-   $filePath = storage_path('app/exported_data.xls');
+   $filePath = storage_path('app/ActiveSubscriptionsReport.xls');
    $file = fopen($filePath, 'w');
    foreach ($rows as $row) {
     fputcsv($file, $row, "\t"); // Tab-delimited for Excel
@@ -130,7 +130,7 @@ class ExportController extends Controller
    }
 
    // Generate XLS file
-   $filePath = storage_path('app/exported_data.xls');
+   $filePath = storage_path('app/NetEnrollmentReport.xls');
    $file = fopen($filePath, 'w');
    foreach ($rows as $row) {
     fputcsv($file, $row, "\t"); // Tab-delimited for Excel
@@ -191,7 +191,7 @@ class ExportController extends Controller
    }
 
    // Generate XLS file
-   $filePath = storage_path('app/exported_data.xls');
+   $filePath = storage_path('app/FailedSaleReport.xls');
    $file = fopen($filePath, 'w');
    foreach ($rows as $row) {
     fputcsv($file, $row, "\t"); // Tab-delimited for Excel
@@ -265,7 +265,7 @@ class ExportController extends Controller
            }
 
            // Generate XLS file
-           $filePath = storage_path('app/exported_data.xls');
+           $filePath = storage_path('app/CancelledReport.xls');
            $file = fopen($filePath, 'w');
            foreach ($rows as $row) {
             fputcsv($file, $row, "\t"); // Tab-delimited for Excel
@@ -334,7 +334,7 @@ public function RefundedDataExport(Request $request)
          }
 
          // Generate XLS file
-         $filePath = storage_path('app/exported_data.xls');
+         $filePath = storage_path('app/RefundedReport.xls');
          $file = fopen($filePath, 'w');
          foreach ($rows as $row) {
           fputcsv($file, $row, "\t"); // Tab-delimited for Excel
@@ -396,7 +396,7 @@ public function ManageRefundedDataExport(Request $request)
          }
 
          // Generate XLS file
-         $filePath = storage_path('app/exported_data.xls');
+         $filePath = storage_path('app/ManageRefundedReport.xls');
          $file = fopen($filePath, 'w');
          foreach ($rows as $row) {
           fputcsv($file, $row, "\t"); // Tab-delimited for Excel
@@ -460,7 +460,7 @@ public function getDataCompanyExport(Request $request)
          }
 
          // Generate XLS file
-         $filePath = storage_path('app/exported_data.xls');
+         $filePath = storage_path('app/NetEnrollmentCompanyReport.xls');
          $file = fopen($filePath, 'w');
          foreach ($rows as $row) {
           fputcsv($file, $row, "\t"); // Tab-delimited for Excel
@@ -523,7 +523,7 @@ public function agents_get_data_export(Request $request)
              }
 
              // Generate XLS file
-             $filePath = storage_path('app/exported_data.xls');
+             $filePath = storage_path('app/NetEntrollmentAgentReport.xls');
              $file = fopen($filePath, 'w');
              foreach ($rows as $row) {
               fputcsv($file, $row, "\t"); // Tab-delimited for Excel
@@ -593,7 +593,7 @@ public function agents_get_data_export(Request $request)
              }
 
              // Generate XLS file
-             $filePath = storage_path('app/exported_data.xls');
+             $filePath = storage_path('app/FailedSaleReport.xls');
              $file = fopen($filePath, 'w');
              foreach ($rows as $row) {
               fputcsv($file, $row, "\t"); // Tab-delimited for Excel
@@ -660,7 +660,7 @@ public function agents_get_data_export(Request $request)
              }
 
              // Generate XLS file
-             $filePath = storage_path('app/exported_data.xls');
+             $filePath = storage_path('app/CompanyFailedSaleReport.xls');
              $file = fopen($filePath, 'w');
              foreach ($rows as $row) {
               fputcsv($file, $row, "\t"); // Tab-delimited for Excel
@@ -698,7 +698,7 @@ public function export_recusive_charing_data(Request $request)
         //  dd($data);
                // Define headers
                $headers = ['Subscription ID', 'Customer MSISDN', 'Plan Name', 'Product Name', 'Transaction ID','Reference ID', 'Amount',
-               'Cps Response','Next Charging Date', 'Duration',]; // Replace with your actual column names
+               'Cps Response','Next Charging Date', 'Duration','Created at']; // Replace with your actual column names
                 // Prepare the data with headers
               $rows[] = $headers;
               foreach ($data as $item) {
@@ -713,13 +713,14 @@ public function export_recusive_charing_data(Request $request)
                   $item->cps_response,
                   $item->charging_date,
                   $item->duration,
+                  $item->created_at,
 
 
               ];
              }
 
              // Generate XLS file
-             $filePath = storage_path('app/exported_data.xls');
+             $filePath = storage_path('app/RecusiveChargingReport.xls');
              $file = fopen($filePath, 'w');
              foreach ($rows as $row) {
               fputcsv($file, $row, "\t"); // Tab-delimited for Excel
