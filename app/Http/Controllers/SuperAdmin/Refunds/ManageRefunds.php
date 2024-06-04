@@ -76,19 +76,16 @@ class ManageRefunds extends Controller
 {
     if ($request->ajax()) {
         // Start building the query
-        $query = RefundedCustomer::with(['customer_subscription.plan', 'customer_subscription.products', 'customer_subscription.company', 'customer_unsubscription']);
+        $query = RefundedCustomer::select('*');
 
-        if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
-            $dateRange = explode(' to ', $request->input('dateFilter'));
-            $startDate = $dateRange[0];
-            $endDate = $dateRange[1];
-
-            // Apply the date filter
-            $query->whereHas('customer_unsubscription', function ($query) use ($startDate, $endDate) {
-                $query->whereDate('unsubscription_datetime', '>=', $startDate)
-                      ->whereDate('unsubscription_datetime', '<=', $endDate);
-            });
-        }
+            if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+                $dateRange = explode(' to ', $request->input('dateFilter'));
+                $startDate = $dateRange[0];
+                $endDate = $dateRange[1];
+                $query->whereDate('refunded_customers.refunded_time', '>=', $startDate)
+                ->whereDate('refunded_customers.refunded_time', '<=', $endDate);
+                // $query->whereBetween('refunded_customers.refunded_time', [$startDate, $endDate]);
+            }
 
         return Datatables::of($query)->addIndexColumn()
             ->addColumn('subscriber_msisdn', function ($data) {
