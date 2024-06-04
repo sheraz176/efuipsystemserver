@@ -67,7 +67,7 @@ class CMExportController extends Controller
    }
 
    // Generate XLS file
-   $filePath = storage_path('app/exported_data.xls');
+   $filePath = storage_path('app/TotalSubscriptionReport.xls');
    $file = fopen($filePath, 'w');
    foreach ($rows as $row) {
     fputcsv($file, $row, "\t"); // Tab-delimited for Excel
@@ -131,7 +131,7 @@ class CMExportController extends Controller
    }
 
    // Generate XLS file
-   $filePath = storage_path('app/exported_data.xls');
+   $filePath = storage_path('app/NetEnrollmentsReport.xls');
    $file = fopen($filePath, 'w');
    foreach ($rows as $row) {
     fputcsv($file, $row, "\t"); // Tab-delimited for Excel
@@ -194,7 +194,7 @@ class CMExportController extends Controller
    }
 
    // Generate XLS file
-   $filePath = storage_path('app/exported_data.xls');
+   $filePath = storage_path('app/UnSuccessFullReport.xls');
    $file = fopen($filePath, 'w');
    foreach ($rows as $row) {
     fputcsv($file, $row, "\t"); // Tab-delimited for Excel
@@ -271,7 +271,7 @@ class CMExportController extends Controller
            }
 
            // Generate XLS file
-           $filePath = storage_path('app/exported_data.xls');
+           $filePath = storage_path('app/CancelledReport.xls');
            $file = fopen($filePath, 'w');
            foreach ($rows as $row) {
             fputcsv($file, $row, "\t"); // Tab-delimited for Excel
@@ -343,7 +343,7 @@ public function RefundedDataExport(Request $request)
          }
 
          // Generate XLS file
-         $filePath = storage_path('app/exported_data.xls');
+         $filePath = storage_path('app/RefundedReport.xls');
          $file = fopen($filePath, 'w');
          foreach ($rows as $row) {
           fputcsv($file, $row, "\t"); // Tab-delimited for Excel
@@ -407,7 +407,7 @@ public function ManageRefundedDataExport(Request $request)
          }
 
          // Generate XLS file
-         $filePath = storage_path('app/exported_data.xls');
+         $filePath = storage_path('app/ManageRefundedReport.xls');
          $file = fopen($filePath, 'w');
          foreach ($rows as $row) {
           fputcsv($file, $row, "\t"); // Tab-delimited for Excel
@@ -472,7 +472,7 @@ public function getDataCompanyExport(Request $request)
          }
 
          // Generate XLS file
-         $filePath = storage_path('app/exported_data.xls');
+         $filePath = storage_path('app/NetEnrollmentReport.xls');
          $file = fopen($filePath, 'w');
          foreach ($rows as $row) {
           fputcsv($file, $row, "\t"); // Tab-delimited for Excel
@@ -538,7 +538,7 @@ public function agents_get_data_export(Request $request)
              }
 
              // Generate XLS file
-             $filePath = storage_path('app/exported_data.xls');
+             $filePath = storage_path('app/NetEnrollmentReport.xls');
              $file = fopen($filePath, 'w');
              foreach ($rows as $row) {
               fputcsv($file, $row, "\t"); // Tab-delimited for Excel
@@ -609,7 +609,7 @@ public function agents_get_data_export(Request $request)
              }
 
              // Generate XLS file
-             $filePath = storage_path('app/exported_data.xls');
+             $filePath = storage_path('app/AgentSaleReport.xls');
              $file = fopen($filePath, 'w');
              foreach ($rows as $row) {
               fputcsv($file, $row, "\t"); // Tab-delimited for Excel

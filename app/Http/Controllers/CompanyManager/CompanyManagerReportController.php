@@ -23,29 +23,37 @@ class CompanyManagerReportController extends Controller
     }
     public function getData(Request $request)
     {
+        // dd('hi');
         $companyId = Auth::guard('company_manager')->user()->company_id;
-        $query = CustomerSubscription::select([
-            'customer_subscriptions.*', // Select all columns from customer_subscriptions table
-            'plans.plan_name', // Select the plan_name column from the plans table
-            'products.product_name', // Select the product_name column from the products table
-            'company_profiles.company_name', // Select the company_name column from the company_profiles table
-        ])
-        ->where('customer_subscriptions.company_id', '=', $companyId)
-        ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
-        ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
-        ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-        ->with(['plan', 'product', 'companyProfile'])
-        ->where('customer_subscriptions.policy_status', '=', '1'); // Eager load related models
-         if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
-             $dateRange = explode(' to ', $request->input('dateFilter'));
-             $startDate = $dateRange[0];
-             $endDate = $dateRange[1];
-             $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
-             ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
-         }
-         return DataTables::eloquent($query)->toJson();
-        // $data = $query->get();
-        // return DataTables::of($data)->make(true);
+        if ($request->ajax()) {
+            // Start building the query
+            $query = CustomerSubscription::select('*')->where('policy_status' , '1')->where('company_id' , $companyId);
+
+                  // Apply date filters if provided
+            if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+                $dateRange = explode(' to ', $request->input('dateFilter'));
+                $startDate = $dateRange[0];
+                $endDate = $dateRange[1];
+                $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
+                      ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
+            }
+
+            return Datatables::of($query)->addIndexColumn()
+
+                ->addColumn('company_name', function($data){
+                    return $data->company->company_name;
+                })
+                ->addColumn('plan_name', function($data){
+                    return $data->plan->plan_name;
+                })
+                ->addColumn('product_name', function($data){
+                    return $data->products->product_name;
+                })
+
+                ->rawColumns(['company_name', 'plan_name', 'product_name'])
+                ->make(true);
+        }
+
     }
 
     public function failed_transactions()
@@ -55,32 +63,41 @@ class CompanyManagerReportController extends Controller
 
     public function getFailedData(Request $request)
     {
-
+        // dd('hi');
         $companyId = Auth::guard('company_manager')->user()->company_id;
-        $query = FailedSubscription::select([
-            'insufficient_balance_customers.*',
-            'plans.plan_name',
-            'products.product_name',
-            'company_profiles.company_name',
-            'tele_sales_agents.username',
-            ])
-            ->where('insufficient_balance_customers.company_id', '=', $companyId)
-            ->join('plans', 'insufficient_balance_customers.planId', '=', 'plans.plan_id')
-             ->join('products', 'insufficient_balance_customers.product_id', '=', 'products.product_id')
-             ->join('company_profiles', 'insufficient_balance_customers.company_id', '=', 'company_profiles.id')
-             ->join('tele_sales_agents', 'insufficient_balance_customers.agent_id', '=', 'tele_sales_agents.agent_id')
-             ->with(['plan','product','companyProfile','teleSalesAgent']);
+        if ($request->ajax()) {
+            // Start building the query
+            $query = FailedSubscription::select('*')->where('company_id' , $companyId);
 
-        if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
-            $dateRange = explode(' to ', $request->input('dateFilter'));
-            $startDate = $dateRange[0];
-            $endDate = $dateRange[1];
+            if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+                $dateRange = explode(' to ', $request->input('dateFilter'));
+                $startDate = $dateRange[0];
+                $endDate = $dateRange[1];
+                $query->whereDate('insufficient_balance_customers.sale_request_time', '>=', $startDate)
+                      ->whereDate('insufficient_balance_customers.sale_request_time', '<=', $endDate);
+            }
 
-            $query->whereDate('insufficient_balance_customers.sale_request_time', '>=', $startDate)
-            ->whereDate('insufficient_balance_customers.sale_request_time', '<=', $endDate);
+            return Datatables::of($query)->addIndexColumn()
+                ->addColumn('plan_name', function ($data) {
+                    return $data->plan->plan_name;
+                })
+                ->addColumn('product_name', function ($data) {
+                    return $data->product->product_name;
+                })
+                ->addColumn('company_name', function ($data) {
+                    return $data->company->company_name;
+                })
+                ->addColumn('username', function ($data) {
+                    if ($data->teleSalesAgent) {
+                        return $data->teleSalesAgent->username;
+                    }
+                    return 'N/A'; // Or any other default value you prefer
+                })
+                ->rawColumns(['plan_name', 'product_name', 'company_name', 'username'])
+                ->make(true);
         }
 
-        return DataTables::eloquent($query)->toJson();
+
     }
 
     public function complete_active_subscription()
@@ -92,29 +109,38 @@ class CompanyManagerReportController extends Controller
 
 public function activecustomerdataget(Request $request)
     {
+
+        // dd('hi');
         $companyId = Auth::guard('company_manager')->user()->company_id;
-          //   dd($companyId);
-        $query = CustomerSubscription::select([
-            'customer_subscriptions.*', // Select all columns from customer_subscriptions table
-            'plans.plan_name', // Select the plan_name column from the plans table
-            'products.product_name', // Select the product_name column from the products table
-            'company_profiles.company_name', // Select the company_name column from the company_profiles table
-        ])
-        ->where('customer_subscriptions.company_id', '=', $companyId)
-        ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
-        ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
-        ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-        ->with(['plan', 'product', 'companyProfile']); // Eager load related models
+        if ($request->ajax()) {
+            // Start building the query
+            $query = CustomerSubscription::select('*')->where('company_id' , $companyId);
 
-         if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
-             $dateRange = explode(' to ', $request->input('dateFilter'));
-             $startDate = $dateRange[0];
-             $endDate = $dateRange[1];
-             $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
-             ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
+                  // Apply date filters if provided
+            if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+                $dateRange = explode(' to ', $request->input('dateFilter'));
+                $startDate = $dateRange[0];
+                $endDate = $dateRange[1];
+                $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
+                      ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
+            }
 
-         }
-         return DataTables::eloquent($query)->toJson();
+            return Datatables::of($query)->addIndexColumn()
+
+                ->addColumn('company_name', function($data){
+                    return $data->company->company_name;
+                })
+                ->addColumn('plan_name', function($data){
+                    return $data->plan->plan_name;
+                })
+                ->addColumn('product_name', function($data){
+                    return $data->products->product_name;
+                })
+
+                ->rawColumns(['company_name', 'plan_name', 'product_name'])
+                ->make(true);
+        }
+
     }
 
     public function companies_unsubscribed_reports()
@@ -126,44 +152,59 @@ public function activecustomerdataget(Request $request)
 
    public function companies_cancelled_data(Request $request)
    {
+    // dd('hi');
     $companyId = Auth::guard('company_manager')->user()->company_id;
-    $query = CustomerUnSubscription::select([
-        'unsubscriptions.unsubscription_id',
-        'customer_subscriptions.subscriber_msisdn',
-        'plans.plan_name',
-        'products.product_name',
-        'customer_subscriptions.transaction_amount',
-        'customer_subscriptions.cps_transaction_id',
-        'customer_subscriptions.referenceId',
-        'customer_subscriptions.subscription_time',
-        'unsubscriptions.unsubscription_datetime',
-        'unsubscriptions.medium',
-        'company_profiles.company_name',
-    ])
-    ->where('customer_subscriptions.company_id', '=', $companyId)
-    ->join('customer_subscriptions', 'customer_subscriptions.subscription_id', '=', 'unsubscriptions.subscription_id')
-    ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
-    ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
-    ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id');
+    if ($request->ajax()) {
+        // Start building the query
 
-    // Apply filters if provided
-    if ($request->has('companyFilter') && $request->input('companyFilter') != '') {
-        $query->where('company_profiles.company_id', $request->input('companyFilter'));
-    }
+            $query = CustomerUnSubscription::whereHas('customer_subscription', function ($query) use ($companyId) {
+                $query->where('company_id', $companyId);
+            });
+        // Apply company filter if provided
+        if ($request->has('companyFilter') && $request->input('companyFilter') != '') {
+            $query->whereHas('customer_subscription.company', function ($q) use ($request) {
+                $q->where('id', $request->input('companyFilter'));
+            });
+        }
 
     if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
         $dateRange = explode(' to ', $request->input('dateFilter'));
         $startDate = $dateRange[0];
         $endDate = $dateRange[1];
-
         $query->whereDate('unsubscriptions.unsubscription_datetime', '>=', $startDate)
         ->whereDate('unsubscriptions.unsubscription_datetime', '<=', $endDate);
 
-        $query->addSelect([
-            \DB::raw('TIMESTAMPDIFF(SECOND, customer_subscriptions.subscription_time, unsubscriptions.unsubscription_datetime) as subscription_duration')
-        ]);
     }
-    return DataTables::eloquent($query)->toJson();
+
+        return Datatables::of($query)->addIndexColumn()
+            ->addColumn('subscriber_msisdn', function ($data) {
+                return $data->customer_subscription->subscriber_msisdn;
+            })
+            ->addColumn('transaction_amount', function ($data) {
+                return $data->customer_subscription->transaction_amount;
+            })
+            ->addColumn('plan_name', function ($data) {
+                return $data->customer_subscription->plan->plan_name;
+            })
+            ->addColumn('product_name', function ($data) {
+                return $data->customer_subscription->products->product_name;
+            })
+            ->addColumn('company_name', function ($data) {
+                return $data->customer_subscription->company->company_name;
+            })
+            ->addColumn('cps_transaction_id', function ($data) {
+                return $data->customer_subscription->cps_transaction_id;
+            })
+            ->addColumn('referenceId', function ($data) {
+                return $data->customer_subscription->referenceId;
+            })
+            ->addColumn('subscription_time', function ($data) {
+                return $data->customer_subscription->subscription_time;
+            })
+            ->rawColumns(['subscriber_msisdn','cps_transaction_id', 'transaction_amount', 'plan_name', 'product_name', 'company_name', 'subscription_time'])
+            ->make(true);
+    }
+
 
     }
 
@@ -176,44 +217,62 @@ public function activecustomerdataget(Request $request)
     public function getRefundedData(Request $request)
     {
         $companyId = Auth::guard('company_manager')->user()->company_id;
-        $refundData = RefundedCustomer::select(
-            'refunded_customers.refund_id as refund_id',
-            'customer_subscriptions.subscriber_msisdn',
-            'customer_subscriptions.transaction_amount',
-            'unsubscriptions.unsubscription_datetime',
-            'refunded_customers.transaction_id',
-            'refunded_customers.reference_id',
-            'refunded_customers.refunded_by',
-            'plans.plan_name',
-            'products.product_name',
-            'company_profiles.company_name',
-            'refunded_customers.medium',
-            'customer_subscriptions.subscription_time'
-        )
-            ->where('customer_subscriptions.company_id', '=', $companyId)
-            ->join('customer_subscriptions', 'refunded_customers.subscription_id', '=', 'customer_subscriptions.subscription_id')
-            ->join('unsubscriptions', 'customer_subscriptions.subscription_id', '=', 'unsubscriptions.subscription_id')
-            ->leftJoin('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
-            ->leftJoin('products', 'customer_subscriptions.productId', '=', 'products.product_id')
-            ->leftjoin('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id');// Assuming you pass refunded_id as a parameter
 
-            if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
-                $dateRange = explode(' to ', $request->input('dateFilter'));
-                $startDate = $dateRange[0];
-                $endDate = $dateRange[1];
+        if ($request->ajax()) {
+            // Start building the query
+            $query = RefundedCustomer::whereHas('customer_subscription', function ($query) use ($companyId) {
+                $query->where('company_id', $companyId);
+            });
 
-                $refundData->whereDate('unsubscriptions.unsubscription_datetime', '>=', $startDate)
-                ->whereDate('unsubscriptions.unsubscription_datetime', '<=', $endDate);
-            }
+                if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+                    $dateRange = explode(' to ', $request->input('dateFilter'));
+                    $startDate = $dateRange[0];
+                    $endDate = $dateRange[1];
+                    $query->whereDate('refunded_customers.refunded_time', '>=', $startDate)
+                    ->whereDate('refunded_customers.refunded_time', '<=', $endDate);
+                    // $query->whereBetween('refunded_customers.refunded_time', [$startDate, $endDate]);
+                }
 
-                    // Add custom search functionality for numeric columns
-           if ($request->has('msisdn') && !empty($request->input('msisdn'))) {
-            $msisdn = $request->input('msisdn');
-            $refundData->where('customer_subscriptions.subscriber_msisdn', 'like', '%' . $msisdn . '%');
-            }
+                     // Add custom search functionality for numeric columns
+                     if ($request->has('msisdn') && !empty($request->input('msisdn'))) {
+                        $msisdn = $request->input('msisdn');
+                        $query->whereHas('customer_subscription', function ($query) use ($msisdn) {
+                            $query->where('subscriber_msisdn', 'like', '%' . $msisdn . '%');
+                        });
+                    }
+
+            return Datatables::of($query)->addIndexColumn()
+                ->addColumn('subscriber_msisdn', function ($data) {
+                    return $data->customer_subscription->subscriber_msisdn;
+                })
+                ->addColumn('transaction_amount', function ($data) {
+                    return $data->customer_subscription->transaction_amount;
+                })
+                ->addColumn('plan_name', function ($data) {
+                    return $data->customer_subscription->plan->plan_name;
+                })
+                ->addColumn('product_name', function ($data) {
+                    return $data->customer_subscription->products->product_name;
+                })
+                ->addColumn('company_name', function ($data) {
+                    return $data->customer_subscription->company->company_name;
+                })
+                ->addColumn('subscription_time', function ($data) {
+                    return $data->customer_subscription->subscription_time;
+                })
+                ->addColumn('unsubscription_datetime', function ($data) {
+                    $data_count = count($data->customer_unsubscription);
+                    if ($data_count > 0) {
+                        return $data->customer_unsubscription[$data_count - 1]->unsubscription_datetime;
+                    } else {
+                        return "";
+                    }
+                })
+                ->rawColumns(['subscriber_msisdn', 'transaction_amount', 'plan_name', 'product_name', 'company_name', 'subscription_time', 'unsubscription_datetime'])
+                ->make(true);
+        }
 
 
-            return DataTables::eloquent($refundData)->toJson();
     }
 
     public function manage_refund_index()
@@ -226,42 +285,45 @@ public function activecustomerdataget(Request $request)
         // dd($request->all);
         $todayDate = Carbon::now()->toDateString();
         $companyId = Auth::guard('company_manager')->user()->company_id;
-        $query = CustomerSubscription::select([
-            'customer_subscriptions.*', // Select all columns from customer_subscriptions table
-            'plans.plan_name', // Select the plan_name column from the plans table
-            'products.product_name', // Select the product_name column from the products table
-            'company_profiles.company_name', // Select the company_name column from the company_profiles table
-        ])
-            ->where('customer_subscriptions.company_id', '=', $companyId)
-            ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
-            ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
-            ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-            ->with(['plan', 'product', 'companyProfile'])
-            ->where('grace_period_time', '>=', $todayDate) // Eager load related models
-            ->where('policy_status', '=', 1);
 
-        if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
-            $dateRange = explode(' to ', $request->input('dateFilter'));
-            $startDate = $dateRange[0];
-            $endDate = $dateRange[1];
-        //    dd($startDate);
-        // $results = YourModel::whereBetween('created_at', [$start_date, $end_date])
-            // $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+         if ($request->ajax()) {
+            $todayDate = Carbon::now()->toDateString();
+            // Start building the query
+            $query = CustomerSubscription::where('grace_period_time', '>=', $todayDate)->where('policy_status', 1)->where('company_id' , $companyId);
 
-            $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
-            ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
+            if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+                $dateRange = explode(' to ', $request->input('dateFilter'));
+                $startDate = $dateRange[0];
+                $endDate = $dateRange[1];
+                $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
+                ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
+                // $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
+            }
+
+            // Add custom search functionality for numeric columns
+            if ($request->has('msisdn') && !empty($request->input('msisdn'))) {
+                $msisdn = $request->input('msisdn');
+                $query->where('customer_subscriptions.subscriber_msisdn', 'like', '%' . $msisdn . '%');
+            }
+
+
+            return Datatables::of($query)->addIndexColumn()
+
+                ->addColumn('plan_name', function ($data) {
+                    return $data->plan->plan_name;
+                })
+                ->addColumn('product_name', function ($data) {
+                    return $data->products->product_name;
+                })
+                ->addColumn('company_name', function ($data) {
+                    return $data->company->company_name;
+                })
+
+                ->rawColumns(['plan_name', 'product_name', 'company_name'])
+                ->make(true);
         }
 
-        // Add custom search functionality for numeric columns
-        if ($request->has('msisdn') && !empty($request->input('msisdn'))) {
-            $msisdn = $request->input('msisdn');
-            $query->where('customer_subscriptions.subscriber_msisdn', 'like', '%' . $msisdn . '%');
-        }
 
-
-
-        // Use DataTables for pagination and server-side processing
-        return DataTables::eloquent($query)->toJson();
     }
 
     public function agents_Subscriptions()
@@ -274,43 +336,43 @@ public function activecustomerdataget(Request $request)
 
     public function agents_get_data(Request $request)
     {
+        // dd('hi');
         $companyId = Auth::guard('company_manager')->user()->company_id;
-        $query = CustomerSubscription::select([
-            'customer_subscriptions.*', // Select all columns from customer_subscriptions table
-            'plans.plan_name', // Select the plan_name column from the plans table
-            'products.product_name', // Select the product_name column from the products table
-            'company_profiles.company_name', // Select the company_name column from the company_profiles table
-        ])
-        ->where('customer_subscriptions.company_id', '=', $companyId)
-        ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
-        ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
-        ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-        ->with(['plan', 'product', 'companyProfile']) // Eager load related models
-        ->where('customer_subscriptions.policy_status', '=', '1'); // Eager load related models
 
-        // Apply filters if provided
-        if ($request->has('companyFilter') && $request->input('companyFilter') != '') {
-            $query->where('customer_subscriptions.sales_agent', $request->input('companyFilter'));
-        }
+        if ($request->ajax()) {
+            // Start building the query
+            $query = CustomerSubscription::select('*')->where('policy_status' , '1')->where('company_id' , $companyId);
 
-        // if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
-        //     $dateRange = explode(' to ', $request->input('dateFilter'));
-        //     $startDate = date('Y-m-d H:i:s', strtotime($dateRange[0] . ' 00:00:00'));
-        //     $endDate = date('Y-m-d H:i:s', strtotime($dateRange[1] . ' 23:59:59'));
+                  // Apply date filters if provided
+            if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+                $dateRange = explode(' to ', $request->input('dateFilter'));
+                $startDate = $dateRange[0];
+                $endDate = $dateRange[1];
+                $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
+                      ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
+            }
 
-        //     $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
-        // }
+            if ($request->has('companyFilter') && $request->input('companyFilter') != '') {
+                $query->where('customer_subscriptions.sales_agent', $request->input('companyFilter'));
+            }
 
-        if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
-            $dateRange = explode(' to ', $request->input('dateFilter'));
-            $startDate = $dateRange[0];
-            $endDate = $dateRange[1];
+            return Datatables::of($query)->addIndexColumn()
 
-            $query->whereDate('customer_subscriptions.subscription_time', '>=', $startDate)
-            ->whereDate('customer_subscriptions.subscription_time', '<=', $endDate);
-        }
+                ->addColumn('company_name', function($data){
+                    return $data->company->company_name;
+                })
+                ->addColumn('plan_name', function($data){
+                    return $data->plan->plan_name;
+                })
+                ->addColumn('product_name', function($data){
+                    return $data->products->product_name;
+                })
 
-        return DataTables::eloquent($query)->toJson();
+                ->rawColumns(['company_name', 'plan_name', 'product_name'])
+                ->make(true);
+          }
+
+
     }
 
     public function agents_sales_request()
@@ -321,50 +383,44 @@ public function activecustomerdataget(Request $request)
 
     public function agents_sales_data(Request $request)
     {
+        // dd('hi');
         $companyId = Auth::guard('company_manager')->user()->company_id;
-        $query = FailedSubscription::select([
-            'insufficient_balance_customers.request_id', // Select all columns from customer_subscriptions table
-            'insufficient_balance_customers.transactionId', // Select all columns from customer_subscriptions table
-            'insufficient_balance_customers.referenceId', // Select all columns from customer_subscriptions table
-            'insufficient_balance_customers.timeStamp', // Select all columns from customer_subscriptions table
-            'insufficient_balance_customers.accountNumber', // Select all columns from customer_subscriptions table
-            'insufficient_balance_customers.resultDesc', // Select all columns from customer_subscriptions table
-            'insufficient_balance_customers.failedReason', // Select all columns from customer_subscriptions table
-            'insufficient_balance_customers.amount', // Select all columns from customer_subscriptions table
-            'plans.plan_name', // Select the plan_name column from the plans table
-            'products.product_name', // Select the product_name column from the products table
-            'company_profiles.company_name', // Select the company_name column from the company_profiles table
-        ])
-        ->where('insufficient_balance_customers.company_id', '=', $companyId)
-        ->join('plans', 'insufficient_balance_customers.planId', '=', 'plans.plan_id')
-        ->join('products', 'insufficient_balance_customers.product_id', '=', 'products.product_id')
-        ->join('company_profiles', 'insufficient_balance_customers.company_id', '=', 'company_profiles.id')
-        ->with(['plan', 'product', 'companyProfile']); // Eager load related models
+        if ($request->ajax()) {
+            // Start building the query
+            $query = FailedSubscription::select('*')->where('company_id' , $companyId);
 
+            if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+                $dateRange = explode(' to ', $request->input('dateFilter'));
+                $startDate = $dateRange[0];
+                $endDate = $dateRange[1];
+                $query->whereDate('insufficient_balance_customers.sale_request_time', '>=', $startDate)
+                      ->whereDate('insufficient_balance_customers.sale_request_time', '<=', $endDate);
+            }
+            if ($request->has('companyFilter') && $request->input('companyFilter') != '') {
+                $query->where('insufficient_balance_customers.agent_id', $request->input('companyFilter'));
+            }
 
-        // Apply filters if provided
-        if ($request->has('companyFilter') && $request->input('companyFilter') != '') {
-            $query->where('insufficient_balance_customers.agent_id', $request->input('companyFilter'));
+            return Datatables::of($query)->addIndexColumn()
+                ->addColumn('plan_name', function ($data) {
+                    return $data->plan->plan_name;
+                })
+                ->addColumn('product_name', function ($data) {
+                    return $data->product->product_name;
+                })
+                ->addColumn('company_name', function ($data) {
+                    return $data->company->company_name;
+                })
+                ->addColumn('username', function ($data) {
+                    if ($data->teleSalesAgent) {
+                        return $data->teleSalesAgent->username;
+                    }
+                    return 'N/A'; // Or any other default value you prefer
+                })
+                ->rawColumns(['plan_name', 'product_name', 'company_name', 'username'])
+                ->make(true);
         }
 
-        // if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
-        //     $dateRange = explode(' to ', $request->input('dateFilter'));
-        //     $startDate = date('Y-m-d H:i:s', strtotime($dateRange[0] . ' 00:00:00'));
-        //     $endDate = date('Y-m-d H:i:s', strtotime($dateRange[1] . ' 23:59:59'));
 
-        //     $query->whereBetween('customer_subscriptions.subscription_time', [$startDate, $endDate]);
-        // }
-
-        if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
-            $dateRange = explode(' to ', $request->input('dateFilter'));
-            $startDate = $dateRange[0];
-            $endDate = $dateRange[1];
-
-            $query->whereDate('insufficient_balance_customers.sale_request_time', '>=', $startDate)
-            ->whereDate('insufficient_balance_customers.sale_request_time', '<=', $endDate);
-        }
-
-        return DataTables::eloquent($query)->toJson();
     }
 
     public function check_agent_status()
