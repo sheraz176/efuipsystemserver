@@ -1,5 +1,7 @@
 @extends('superadmin.layout.master')
 @include('superadmin.partials.style')
+<link href="{{asset('newdes/assets/css/toastr.min.css')}}" rel="stylesheet">
+
 @section('content')
 
 @if(session('success'))
@@ -174,6 +176,43 @@
         });
     });
 </script>
+
+
+<script>
+    function toastSuccess() {
+        // alert('hi');
+        toastr.remove();
+        toastr.options.positionClass = "toast-top-right";
+        toastr.success('Customer unsubscribed successfully.', 'Successfull !');
+    }
+
+    function toastdanger() {
+        toastr.remove();
+        toastr.options.positionClass = "toast-top-right";
+        toastr.error('Invalid response from API', 'Some thing Wrong !');
+    }
+</script>
+<script>
+    $(document).ready(function() {
+
+        var created = "{{ Session::get('success') }}";
+        if (created) {
+            toastSuccess();
+        }
+
+        var error = "{{ Session::get('error') }}";
+        if (error) {
+            toastdanger();
+        }
+
+    });
+
+</script>
+
+<script src="{{asset('newdes/assets/js/toastr.min.js')}}"> </script>
+<script src="{{asset('newdes/assets/js/toast.js')}}"> </script>
+
+
 @include('superadmin.partials.script')
 
 @endsection

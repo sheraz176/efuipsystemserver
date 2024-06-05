@@ -4,12 +4,7 @@
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <script src="assets/icons/icons.js"></script>
-    <!-- Bootstrap core CSS -->
-    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
-    <!-- jQuery UI -->
-    <link href="assets/css/jquery-ui.min.css" rel="stylesheet">
-    <!-- medjestic styles -->
-    <link href="assets/css/style.css" rel="stylesheet">
+
 
  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css">
 
