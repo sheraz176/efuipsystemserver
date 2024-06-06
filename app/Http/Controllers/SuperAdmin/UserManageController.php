@@ -79,8 +79,8 @@ class UserManageController extends Controller
         $validator = Validator::make($request->all(), [
             'first_name' => 'required',
             'last_name' => 'required',
-            'username' => 'required|unique:tele_sales_agents',
-            'email' => 'required|email|unique:tele_sales_agents',
+            'username' => 'required|unique:super_agents',
+            'email' => 'required|email|unique:super_agents',
             'status' => 'required|in:1,0',
             'company_id' => 'required',
             'password' => 'required|min:6', // Add validation for password

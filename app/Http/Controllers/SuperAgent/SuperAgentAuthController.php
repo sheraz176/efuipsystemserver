@@ -5,6 +5,7 @@ namespace App\Http\Controllers\SuperAgent;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\SuperAgent\SuperAgentModel;
 
 class SuperAgentAuthController extends Controller
 {
@@ -17,10 +18,19 @@ class SuperAgentAuthController extends Controller
     {
         $credentials = $request->only('username', 'password');
 
+         $superagents =  SuperAgentModel::where('company_id',12)->where('username',$request->username)->first();
+
+        //   dd($superagents);
         if (Auth::guard('super_agent')->attempt($credentials)) {
             $agent = Auth::guard('super_agent')->user();
             session(['agent' => $agent]);
-            return redirect()->intended(route('super_agent.dashboard'));
+
+            if ($superagents && $superagents->company_id == 12) {
+                return redirect()->intended(route('super_agent_l.dashboard'));
+            } else {
+                return redirect()->intended(route('super_agent.dashboard'));
+            }
+
         }
 
         //return back()->withErrors(['message' => 'Invalid credentials']);
@@ -29,7 +39,7 @@ class SuperAgentAuthController extends Controller
 
     public function logout(Request $request)
     {
-        
+
         Auth::guard('super_agent')->logout();
 
         $request->session()->invalidate();
