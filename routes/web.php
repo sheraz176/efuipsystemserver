@@ -32,6 +32,9 @@ use App\Http\Controllers\SuperAdmin\ExportController;
 use App\Http\Controllers\SuperAgentL\SuperAgentAuthLController;
 use App\Http\Controllers\SuperAgentL\SuperAgentDashboardLController;
 use App\Http\Controllers\SuperAgentL\CustomerDataL;
+use App\Http\Controllers\SuperAgentInterested\SuperAgentDashboardControllerInterested;
+use App\Http\Controllers\SuperAgentInterested\SuperAgentAuthControllerInterested;
+use App\Http\Controllers\SuperAgentInterested\CustomerDataInterested;
 
 /*
 |--------------------------------------------------------------------------
@@ -290,6 +293,8 @@ Route::prefix('super-agent')->group(function () {
 });
 
 
+
+
 Route::prefix('super-agent-l')->group(function () {
     Route::get('/login', [SuperAgentAuthLController::class, 'showLoginForm'])->name('super_agent_l.login');
     Route::post('/login', [SuperAgentAuthLController::class, 'login'])->name('super_agent_l.login.submit');
@@ -306,7 +311,22 @@ Route::prefix('super-agent-l')->group(function () {
     });
 });
 
+ // Route group for super-agent-Interested dashboard requiring authentication
 
+Route::prefix('super-agent-Interested')->group(function () {
+    Route::get('/Interested/login', [SuperAgentAuthControllerInterested::class, 'showLoginForm'])->name('super_agent_interested.login');
+    Route::post('/Interested/login', [SuperAgentAuthControllerInterested::class, 'login'])->name('super_agent_interested.login.submit');
+    Route::post('/Interested/logout', [SuperAgentAuthControllerInterested::class, 'logout'])->name('super_agent_interested.logout');
+
+
+    Route::middleware(['super_agent_auth'])->group(function () {
+        Route::get('/Interested/dashboard', [SuperAgentDashboardControllerInterested::class, 'index'])->name('super_agent_interested.dashboard');
+        Route::get('/Interested/customer-form', [CustomerDataInterested::class, 'showForm'])->name('super_agent_interested.showForm');;
+        Route::post('/Interested/fetch-customer-data', [CustomerDataInterested::class, 'fetchCustomerData'])->name('super_agent_interested.fetch_customer_data');
+        Route::post('/Interested/Interested-customer-data', [CustomerDataInterested::class, 'interestedCustomerData'])->name('super_agent_interested.interested_customer_data');
+
+    });
+});
 
 
 
