@@ -191,7 +191,7 @@
           <i class="bi bi-check-circle" style="font-size: 2rem; color: #28a745; vertical-align: middle;"></i> <!-- Success icon -->
           Customer is Forwarded to Super Agent
         </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
       </div>
       <div class="modal-body text-center">
         <i class="bi bi-check-circle" style="font-size: 4rem; color: #28a745;"></i> <!-- Success icon -->
