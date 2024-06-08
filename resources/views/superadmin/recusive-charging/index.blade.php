@@ -5,6 +5,8 @@
 @section('content')
 
 
+
+
 <div class="ms-content-wrapper">
     <div class="row">
         <div class="col-md-12">
@@ -15,11 +17,22 @@
                     <li class="breadcrumb-item active" aria-current="page">Recusive Charging List</li>
                 </ol>
             </nav>
+
+            <div class="col-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <span class="fw-medium d-block mb-1">Today Recusive Charging Count</span>
+                        <h3 class="card-title mb-2">{{ number_format($recusiveChargingDatacount, 0, '.', ',') }}</h3>
+                    </div>
+                </div>
+            </div>
             <div class="ms-panel">
 
 
                 <div class="ms-panel-header ms-panel-custome align-items-center">
                     <div class="row mb-3">
+
+
                     </div>
                     <div class="col-md-6">
                         <form method="POST" action="{{ route('superadmin.export-recusive-charging-data') }}">

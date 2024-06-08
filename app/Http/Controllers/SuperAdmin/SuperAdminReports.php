@@ -12,6 +12,7 @@ use App\Models\InterestedCustomers\InterestedCustomer;
 use App\Models\Unsubscription\CustomerUnSubscription;
 use App\Models\RecusiveChargingData;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 use Yajra\DataTables\DataTables;
 
 class SuperAdminReports extends Controller
@@ -315,13 +316,15 @@ public function get_active_subscription_data(Request $request)
 
     public function recusive_charging_data_index()
     {
-
-    return view('superadmin.recusive-charging.index');
+        $recusiveChargingDatacount = RecusiveChargingData::whereDate('created_at', Carbon::today())
+        ->count();
+    return view('superadmin.recusive-charging.index',compact('recusiveChargingDatacount'));
     }
 
 
     public function get_recusive_charging_data(Request $request)
     {
+
         // dd('hi');
         // RecusiveChargingData
         if ($request->ajax()) {
