@@ -54,11 +54,20 @@ class SuperAdminReports extends Controller
 
                   $data_count = count($data->interested_customers);
                 //   return  $data_count;
-                if($data_count > 0) {
-                    return "(DTMF)." . $data->interested_customers[$data_count - 1]->consistent_provider . "";
+                if ($data_count > 0) {
+                    $provider = $data->interested_customers[$data_count - 1]->consistent_provider;
+                    if (!is_null($provider)) {
+                        $dtmf = true;
+                        return "(DTMF)." . $provider;
+                    } else {
+                        $dtmf = null;
+                        return null; // Or any other default value you prefer
+                    }
                 } else {
-                    return "";
+                    $dtmf = null;
+                    return null; // Or any other default value you prefer
                 }
+
              })
 
             ->rawColumns(['company_name', 'plan_name', 'product_name','consistent_provider'])

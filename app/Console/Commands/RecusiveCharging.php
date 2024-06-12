@@ -8,6 +8,7 @@ use App\Models\RecusiveCharging as RecusiveChargingModel;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\JsonResponse;
 
 class RecusiveCharging extends Command
@@ -90,6 +91,9 @@ class RecusiveCharging extends Command
             // Convert the encrypted binary data to hex
             $hexEncryptedData = bin2hex($encryptedRequestData);
           // Set up the request parameters
+
+
+
           $url = 'https://gateway.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/sub_autoPayment';
 
           $headers = [
@@ -123,6 +127,12 @@ class RecusiveCharging extends Command
        // Execute cURL session and get the response
        $response = curl_exec($ch);
 
+       Log::info('API Request', [
+        'url' => 'https://gateway.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/sub_autoPayment',
+        'request-packet' => $body,
+        'response-data' => $response,
+        ]);
+
        // Check for cURL errors
        if ($response === false) {
            echo 'Curl error: ' . curl_error($ch);
@@ -139,9 +149,14 @@ class RecusiveCharging extends Command
        $end = microtime(true);
        $responseTime = now()->format('Y-m-d H:i:s');
        $elapsedTime = round(($end - $start) * 1000, 2);
+
+
+
         // return $response['data'];
                     // Process payment response
                     if (isset($response['data'])) {
+
+
 
                         $hexEncodedData = $response['data'];
 
@@ -149,6 +164,9 @@ class RecusiveCharging extends Command
 
                         // Decrypt the data using openssl_decrypt
                         $decryptedData = openssl_decrypt($binaryData, 'aes-128-cbc', $key, OPENSSL_RAW_DATA, $iv);
+
+
+
 
                         // echo $decryptedData;
 
@@ -198,7 +216,7 @@ class RecusiveCharging extends Command
                         }
 
                           // Update date records
-                        $nextChargingDate = Carbon::parse($subscription->recursive_charging_date)->addDays($subscription->product_duration)->toDateString();                       
+                        $nextChargingDate = Carbon::parse($subscription->recursive_charging_date)->addDays($subscription->product_duration)->toDateString();
                         DB::table('customer_subscriptions')
                         ->where('subscription_id', $subscription->subscription_id)
                         ->update([
