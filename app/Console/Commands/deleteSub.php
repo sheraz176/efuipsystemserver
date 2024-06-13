@@ -362,7 +362,12 @@ class deleteSub extends Command
 
         foreach($subscriptions as $subscription){
             // dd($subscription);
-
+        //     $find_ref = RefundedCustomer::where('subscription_id',$subscription->subscription_id)->get();
+        //     $find_ref->each->delete();
+        //     $find_unsub = CustomerUnSubscription::where('subscription_id',$subscription->subscription_id)->get();
+        //    $find_unsub->each->delete();
+        //      $find_sub = CustomerSubscription::where('subscription_id',$subscription->subscription_id)->get();
+        //      $find_sub->each->delete();
 
 
         }

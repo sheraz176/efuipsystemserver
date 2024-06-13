@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Auth;
 use Validator;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class CustomApiController extends Controller
 {
@@ -21,6 +22,10 @@ class CustomApiController extends Controller
          ]);
 
        if ($validator->fails()) {
+            // Logs
+            Log::channel('consent_api')->info('Consent Api Error.',[
+                'Error-data' =>  $validator->errors(),
+                ]);
           return response()->json(['status' => 'Error','message' => $validator->errors()],200);
          }
         $customer_msisdn = $request->customer_msisdn;
@@ -40,6 +45,11 @@ class CustomApiController extends Controller
               'interested_customer' => $interested_customer,
             );
             return response()->json($data ,200);
+
+              // Logs
+              Log::channel('consent_api')->info('Consent Api.',[
+                'response-data' =>  $data,
+                ]);
 
         }
 

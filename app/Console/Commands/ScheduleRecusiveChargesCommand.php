@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 class ScheduleRecusiveChargesCommand extends Command
 {
@@ -139,6 +140,13 @@ class ScheduleRecusiveChargesCommand extends Command
        }
        // Execute cURL session and get the response
        $response = curl_exec($ch);
+
+       // Logs
+       Log::channel('recusive_charging_api_job')->info('Recusive Charging Api.',[
+        'url' => $url,
+        'request-packet' => $body,
+       'response-data' => $response,
+       ]);
 
        // Check for cURL errors
        if ($response === false) {

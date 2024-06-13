@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\Plans\PlanModel;
 use App\Models\Plans\ProductModel;
 use App\Models\InterestedCustomers\InterestedCustomer;
+use Illuminate\Support\Facades\Log;
 
 class AutoDebitSubscriptionController extends Controller
 {
@@ -155,6 +156,13 @@ class AutoDebitSubscriptionController extends Controller
                 }
                 // Execute cURL session and get the response
                 $response = curl_exec($ch);
+
+                // Logs
+              Log::channel('auto_debit_api')->info('Auto Debit Api.',[
+               'url' => $url,
+               'request-packet' => $body,
+               'response-data' => $response,
+               ]);
 
                 // Check for cURL errors
                 if ($response === false) {

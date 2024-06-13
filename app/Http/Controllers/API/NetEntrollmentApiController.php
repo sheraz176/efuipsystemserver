@@ -13,6 +13,7 @@ use Carbon\Carbon;
 use App\Models\RecusiveChargingData;
 use App\Models\Unsubscription\CustomerUnSubscription;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class NetEntrollmentApiController extends Controller
 {
@@ -66,6 +67,11 @@ class NetEntrollmentApiController extends Controller
                 'message' => 'Your Net Enrollment Get Successfully',
                 'NetEnrollment' => $rows,
             ];
+
+              // Logs
+              Log::channel('net_entrollment_api')->info('Net Entrollment Api.',[
+                'response-data' => 'Your Net Enrollment Get Successfully',
+                ]);
 
             return response()->json($response, 200);
         } else {

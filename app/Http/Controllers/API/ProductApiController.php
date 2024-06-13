@@ -8,6 +8,7 @@ use App\Models\Plans\ProductModel;
 use App\Models\HealthProductBenefits;
 use Auth;
 use Validator;
+use Illuminate\Support\Facades\Log;
 
 class ProductApiController extends Controller
 {
@@ -19,6 +20,10 @@ class ProductApiController extends Controller
          ]);
 
        if ($validator->fails()) {
+             // Logs
+             Log::channel('products_api')->info('Product Api Error.',[
+                'request-Error-data' => $validator->errors(),
+                ]);
           return response()->json(['status' => 'Error','message' => $validator->errors()],200);
          }
         $plan_id = $request->plan_id;
@@ -59,6 +64,12 @@ class ProductApiController extends Controller
               'message' => 'Your Products Get Successfully',
               'Products' => $productData,
             );
+
+             // Logs
+             Log::channel('products_api')->info('Product Api.',[
+                'response-data' => 'Your Products Get Successfully',
+                ]);
+
             return response()->json($data ,200);
 
         }

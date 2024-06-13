@@ -14,6 +14,7 @@ use App\Models\Unsubscription\CustomerUnSubscription;
 use App\Http\Controllers\Subscription\FailedSubscriptionsController;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class USSDSubscriptionController extends Controller
 {
@@ -176,6 +177,13 @@ class USSDSubscriptionController extends Controller
                 }
                 // Execute cURL session and get the response
                 $response = curl_exec($ch);
+
+                  // Logs
+              Log::channel('ussd_api')->info('USSD Subscription Api.',[
+                'url' => $url,
+                'request-packet' => $body,
+                'response-data' => $response,
+                ]);
 
                 // Check for cURL errors
                 if ($response === false) {

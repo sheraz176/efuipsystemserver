@@ -9,6 +9,7 @@ use App\Models\Subscription\CustomerSubscription;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\TeleSalesAgent;
+use Illuminate\Support\Facades\Log;
 
 class AgentAuthController extends Controller
 {
@@ -33,10 +34,14 @@ class AgentAuthController extends Controller
             'password' => 'required|string',
         ]);
 
+
         // Attempt to authenticate the agent
         $agent = TeleSalesAgent::where('username', $request->username)->first();
 
     if ($agent && $agent->status == 1 && Auth::guard('agent')->attempt($credentials)) {
+
+        Log::channel('login_log_agent')->info('Agent logged in.', ['username' => $request->username]);
+
         // Authentication successful, update login details and redirect to the agent dashboard
         $agent = Auth::guard('agent')->user();
         $agent->islogin = 1;
@@ -51,7 +56,7 @@ class AgentAuthController extends Controller
         $currentMonthTotal = CustomerSubscription::where('sales_agent', $agentId)
             ->whereMonth('subscription_time', Carbon::now()->month)
             ->sum('transaction_amount');
-        
+
         $currentMonthTotalCount = CustomerSubscription::where('sales_agent', $agentId)
             ->whereMonth('subscription_time', Carbon::now()->month)
             ->count();
@@ -59,8 +64,8 @@ class AgentAuthController extends Controller
 
         $currentYearTotal = CustomerSubscription::where('sales_agent', $agentId)
             ->whereYear('subscription_time', Carbon::now()->year)
-            ->sum('transaction_amount');  
-            
+            ->sum('transaction_amount');
+
         $currentDayTotal = CustomerSubscription::where('sales_agent', $agentId)
             ->whereDate('subscription_time', Carbon::now()->toDateString())
             ->sum('transaction_amount');
@@ -71,7 +76,7 @@ class AgentAuthController extends Controller
 
              return view('agent.dashboard', compact('currentMonthTotal', 'currentYearTotal', 'currentDayTotal','currentMonthTotalCount','currentDayTotalCount', 'agent'));
             //return redirect()->route('agent.dashboard');
-            
+
         }
         if ($agent && $agent->status == 0) {
             return redirect()->back()->withInput()->withErrors(['login' => 'Your account is disabled.']);
@@ -98,6 +103,7 @@ class AgentAuthController extends Controller
         }
 
         Auth::guard('agent')->logout();
+        Log::channel('login_log_agent')->info('Agent log Out.');
 
         return redirect()->route('agent.login');
     }
@@ -109,13 +115,13 @@ class AgentAuthController extends Controller
      */
     public function dashboard()
     {
-       
+
 
 
         $agent = session('agent');
 
         if (!$agent) {
-            
+
             return redirect()->back()->withInput()->withErrors(['login' => 'Session Expired Kindly Re-login']);
         }
         else{
@@ -123,27 +129,27 @@ class AgentAuthController extends Controller
             $currentMonthTotal = CustomerSubscription::where('sales_agent', $agentId)
                 ->whereMonth('subscription_time', Carbon::now()->month)
                 ->sum('transaction_amount');
-            
+
             $currentMonthTotalCount = CustomerSubscription::where('sales_agent', $agentId)
                 ->whereMonth('subscription_time', Carbon::now()->month)
                 ->count();
                 //dd($currentMonthTotal);
-    
+
             $currentYearTotal = CustomerSubscription::where('sales_agent', $agentId)
                 ->whereYear('subscription_time', Carbon::now()->year)
-                ->sum('transaction_amount');  
-                
+                ->sum('transaction_amount');
+
             $currentDayTotal = CustomerSubscription::where('sales_agent', $agentId)
                 ->whereDate('subscription_time', Carbon::now()->toDateString())
                 ->sum('transaction_amount');
-    
+
             $currentDayTotalCount = CustomerSubscription::where('sales_agent', $agentId)
                 ->whereDate('subscription_time', Carbon::now()->toDateString())
                 ->count();
-    
+
                  return view('agent.dashboard', compact('currentMonthTotal', 'currentYearTotal', 'currentDayTotal','currentMonthTotalCount','currentDayTotalCount', 'agent'));
-              
+
         }
-       
+
     }
 }

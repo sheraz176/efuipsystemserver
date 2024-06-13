@@ -113,6 +113,108 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+
+         //  login Logs channels
+         'super_admin_log' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/login_Logs/super_admin_login.log'),
+            'level' => 'info',
+        ],
+        'login_log_companymanager' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/login_Logs/company_manager_login.log'),
+            'level' => 'info',
+        ],
+        'login_log_basicagent' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/login_Logs/basic_agent_login.log'),
+            'level' => 'info',
+        ],
+        'login_log_agent' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/login_Logs/agent_login.log'),
+            'level' => 'info',
+        ],
+        'login_log_superagentL' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/login_Logs/super_agent_L_login.log'),
+            'level' => 'info',
+        ],
+        'login_log_superagentInterested' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/login_Logs/super_agent_interested_login.log'),
+            'level' => 'info',
+        ],
+        'login_log_superagent' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/login_Logs/super_agent_login.log'),
+            'level' => 'info',
+        ],
+          // End login Logs channels
+           //  Api Logs channels
+           'recusive_charging_api' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/Api/recusive_charging.log'),
+            'level' => 'info',
+        ],
+        'recusive_charging_api_job' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/Api/recusive_charging_api_job.log'),
+            'level' => 'info',
+        ],
+        'interested_customer_api' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/Api/interested_customer_api.log'),
+            'level' => 'info',
+        ],
+        'auto_debit_api' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/Api/auto_debit_api.log'),
+            'level' => 'info',
+        ],
+        'ivr_api' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/Api/ivr_api.log'),
+            'level' => 'info',
+        ],
+        'landing_page_subscription_api' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/Api/landing_page_subscription_api.log'),
+            'level' => 'info',
+        ],
+        'net_entrollment_api' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/Api/net_entrollment_api.log'),
+            'level' => 'info',
+        ],
+        'products_api' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/Api/products_api.log'),
+            'level' => 'info',
+        ],
+        'ussd_api' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/Api/ussd_api.log'),
+            'level' => 'info',
+        ],
+        'auto_debit_reversal_inquiryi' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/Api/auto_debit_reversal_inquiryi.log'),
+            'level' => 'info',
+        ],
+        'auto_debit_reversal_payment_api' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/Api/auto_debit_reversal_payment_api.log'),
+            'level' => 'info',
+        ],
+        'consent_api' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/Api/consent_api.log'),
+            'level' => 'info',
+        ],
+
+           // End Api Logs channels
+
     ],
 
 ];

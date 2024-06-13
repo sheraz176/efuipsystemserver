@@ -8,6 +8,7 @@ use App\Models\Subscription\CustomerSubscription;
 use App\Models\TeleSalesAgent;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class SuperAdminAuth extends Controller
 {
@@ -26,12 +27,16 @@ class SuperAdminAuth extends Controller
         ]);
 
         if (Auth::guard('super_admin')->attempt($request->only('username', 'password'))) {
+
+            Log::channel('super_admin_log')->info('Super Admin logged in.', ['username' => $request->username]);
+
             $Superadmin = Auth::guard('super_admin')->user();
 
             session(['Superadmin' => $Superadmin]);
             return redirect()->route('superadmin.dashboard');
 
         }
+
 
         return back()->withErrors(['username' => 'Invalid credentials']);
     }
@@ -108,6 +113,8 @@ class SuperAdminAuth extends Controller
     public function logout()
     {
         Auth::guard('super_admin')->logout();
+        Log::channel('super_admin_log')->info('Super Admin log out.');
+
         return redirect()->route('superadmin.login');
     }
 }

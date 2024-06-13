@@ -8,6 +8,7 @@ use App\Models\Subscription\CustomerSubscription;
 use App\Models\Unsubscription\CustomerUnSubscription;
 use App\Models\Refund\RefundedCustomer;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ManagerUnSubscription extends Controller
 {
@@ -84,6 +85,14 @@ public function autoDebitReversalInquiry($accessToken,$subscription)
     $response = curl_exec($ch);
     // dd($response);
 
+       // Logs
+       Log::channel('auto_debit_reversal_inquiryi')->info('auto Debit Reversal Inquiryi Refunded Api.',[
+        'url' => $apiUrl,
+        'request-packet' => $body,
+        'response-data' => $response,
+        ]);
+
+
     if ($response === false) {
         throw new \Exception('Curl error: ' . curl_error($ch));
     }
@@ -129,6 +138,14 @@ public function autoDebitReversalPayment($accessToken,$subscription,$transaction
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
     $response = curl_exec($ch);
+
+     // Logs
+     Log::channel('auto_debit_reversal_payment_api')->info('auto Debit Reversal Payment Refunded Api.',[
+        'url' => $apiUrl,
+        'request-packet' => $body,
+        'response-data' => $response,
+        ]);
+
     if ($response === false) {
         throw new \Exception('Curl error: ' . curl_error($ch));
     }

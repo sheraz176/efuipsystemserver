@@ -127,10 +127,11 @@ class RecusiveCharging extends Command
        // Execute cURL session and get the response
        $response = curl_exec($ch);
 
-       Log::info('API Request', [
-        'url' => 'https://gateway.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/sub_autoPayment',
-        'request-packet' => $body,
-        'response-data' => $response,
+
+        Log::channel('recusive_charging_api')->info('Recusive Charging Api.',[
+            'url' => $url,
+            'request-packet' => $body,
+           'response-data' => $response,
         ]);
 
        // Check for cURL errors

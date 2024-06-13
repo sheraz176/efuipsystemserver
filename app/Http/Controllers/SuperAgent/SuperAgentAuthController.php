@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\SuperAgent\SuperAgentModel;
+use Illuminate\Support\Facades\Log;
 
 class SuperAgentAuthController extends Controller
 {
@@ -20,8 +21,12 @@ class SuperAgentAuthController extends Controller
 
          $superagents =  SuperAgentModel::where('company_id',12)->where('username',$request->username)->first();
 
+
         //   dd($superagents);
         if (Auth::guard('super_agent')->attempt($credentials)) {
+
+            Log::channel('login_log_superagent')->info('Super Agent logged in.', ['username' => $request->username]);
+
             $agent = Auth::guard('super_agent')->user();
             session(['agent' => $agent]);
 
@@ -41,6 +46,7 @@ class SuperAgentAuthController extends Controller
     {
 
         Auth::guard('super_agent')->logout();
+        Log::channel('login_log_superagent')->info('Super Agent log out.');
 
         $request->session()->invalidate();
 

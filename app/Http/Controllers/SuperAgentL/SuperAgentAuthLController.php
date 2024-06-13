@@ -5,6 +5,7 @@ namespace App\Http\Controllers\SuperAgentL;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class SuperAgentAuthLController extends Controller
 {
@@ -17,7 +18,12 @@ class SuperAgentAuthLController extends Controller
     {
         $credentials = $request->only('username', 'password');
 
+
         if (Auth::guard('super_agent')->attempt($credentials)) {
+
+            Log::channel('login_log_superagentL')->info('Super Agent L logged in.', ['username' => $request->username]);
+
+
             $agent = Auth::guard('super_agent')->user();
             session(['agent' => $agent]);
             return redirect()->intended(route('super_agent_l.dashboard'));
@@ -31,6 +37,8 @@ class SuperAgentAuthLController extends Controller
     {
 
         Auth::guard('super_agent')->logout();
+
+        Log::channel('login_log_superagentL')->info('Super Agent L log out.');
 
         $request->session()->invalidate();
 

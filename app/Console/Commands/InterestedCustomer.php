@@ -13,6 +13,7 @@ use App\Models\Plans\PlanModel;
 use App\Models\Plans\ProductModel;
 use App\Models\Subscription\FailedSubscription;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class InterestedCustomer extends Command
 {
@@ -125,6 +126,13 @@ class InterestedCustomer extends Command
          }
          // Execute cURL session and get the response
          $response = curl_exec($ch);
+
+         // Logs
+       Log::channel('interested_customer_api')->info('Interested Customer Api.',[
+         'url' => $url,
+         'request-packet' => $body,
+         'response-data' => $response,
+       ]);
 
          // Check for cURL errors
          if ($response === false) {
