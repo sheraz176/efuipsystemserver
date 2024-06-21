@@ -209,6 +209,33 @@
 </div>
 
 
+<div class="modal fade" id="errorModal" data-bs-backdrop="static" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 30%;">
+      <form class="modal-content">
+        <div class="modal-header justify-content-center"> <!-- Centering the modal header content -->
+          <h5 class="modal-title"> <!-- Remove id attribute to avoid duplication -->
+            <i class="bi bi-check-circle" style="font-size: 2rem; color: #28a745; vertical-align: middle;"></i> <!-- Success icon -->
+            Duplicate Number Alert for Deduction
+          </h5>
+
+        </div>
+        <div class="modal-body text-center">
+          <i class="bi bi-check-circle" style="font-size: 4rem; color: #28a745;"></i> <!-- Success icon -->
+          <!-- Add your success message here -->
+          <p class="mt-3">You have already sent this number for deduction to the Super-Agent today. Please complete the deduction process first.<br>
+            عنوان: نمبر کی دوبارہ بھیجنے کی اطلاع
+
+            وضاحت: آپ نے آج کے لیے اس نمبر کو پہلے ہی کٹوتی کے لیے سپر ایجنٹ کو بھیج دیا ہے۔ براہ کرم پہلے کٹوتی کا عمل مکمل کریں۔
+        </div>
+
+        <div class="modal-footer text-center"> <!-- Centering the modal footer content -->
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="resetForm()">Proceed to Next Sale</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
 
 
 
@@ -568,8 +595,10 @@ function makeAjaxRequest() {
             // If customer saved successfully, display modal
             $('#successModal').modal('show');
         } else {
+
+            $('#errorModal').modal('show');
             // If customer saving failed, display error message
-            alert('Failed to save customer: ' + data.message);
+            // alert('Failed to save customer: ' + data.message);
         }
     })
     .catch(error => {
