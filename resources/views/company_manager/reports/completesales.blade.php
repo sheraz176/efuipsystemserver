@@ -61,6 +61,7 @@
                 <th>Next Charging Date</th>
                 <th>Subscription Date</th>
                 <th>Free Look Period</th>
+                <th>Consent</th>
                                 </tr>
                             </thead>
 
@@ -133,6 +134,7 @@
                 { data: 'recursive_charging_date', name: 'recursive_charging_date' },
                 { data: 'subscription_time', name: 'subscription_time' },
                 { data: 'grace_period_time', name: 'grace_period_time' },
+                {data: 'consistent_provider', name: 'consistent_provider'},
                 ]
             });
 

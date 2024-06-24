@@ -94,7 +94,7 @@ class CMExportController extends Controller
         ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
         ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
         ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-        ->with(['plan', 'product', 'companyProfile'])
+        ->with(['plan', 'product', 'companyProfile', 'interested_customers']) // Eager load related models
         ->where('customer_subscriptions.policy_status', '=', '1'); // Eager load related models
 
         if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
@@ -107,28 +107,44 @@ class CMExportController extends Controller
         }
            $data = $query->get();
     //   dd($data);
-             // Define headers
-     $headers = ['Subscription ID', 'Customer MSISDN', 'Plan Name', 'Product Name', 'Amount', 'Duration',
-     'Company Name', 'Agent Name', 'Transaction ID', 'Reference ID', 'Next Charging Date', 'Subscription Date','Free Look Period']; // Replace with your actual column names
-      // Prepare the data with headers
-    $rows[] = $headers;
-    foreach ($data as $item) {
-     $rows[] = [
-        $item->subscription_id,
-        $item->subscriber_msisdn,
-        $item->plan_name,
-        $item->product_name,
-        $item->transaction_amount,
-        $item->product_duration,
-        $item->company_name,
-        $item->sales_agent,
-        $item->cps_transaction_id,
-        $item->referenceId,
-        $item->recursive_charging_date,
-        $item->subscription_time,
-        $item->grace_period_time,
-    ];
-   }
+
+        // Define headers
+        $headers = [
+            'Subscription ID', 'Customer MSISDN', 'Plan Name', 'Product Name', 'Amount', 'Duration',
+            'Company Name', 'Agent Name', 'Transaction ID', 'Reference ID', 'Next Charging Date',
+            'Subscription Date', 'Free Look Period', 'Consent'
+        ]; // Added 'Provider' as the last column
+
+        // Prepare the data with headers
+        $rows[] = $headers;
+        foreach ($data as $item) {
+            $data_count = count($item->interested_customers);
+            $provider = null;
+
+            if ($data_count > 0) {
+                $provider = $item->interested_customers[$data_count - 1]->consistent_provider;
+                if (!is_null($provider)) {
+                    $provider = "(DTMF)." . $provider;
+                }
+            }
+
+            $rows[] = [
+                $item->subscription_id,
+                $item->subscriber_msisdn,
+                $item->plan_name,
+                $item->product_name,
+                $item->transaction_amount,
+                $item->product_duration,
+                $item->company_name,
+                $item->sales_agent,
+                $item->cps_transaction_id,
+                $item->referenceId,
+                $item->recursive_charging_date,
+                $item->subscription_time,
+                $item->grace_period_time,
+                $provider // Added provider to the row in the required format
+            ];
+        }
 
    // Generate XLS file
    $filePath = storage_path('app/NetEnrollmentsReport.xls');

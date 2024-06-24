@@ -44,7 +44,7 @@ class UpdateRecusiveDate extends Command
         $subscriptions = DB::table('customer_subscriptions')
         ->select('subscription_id', DB::raw("CONCAT('92', SUBSTRING(subscriber_msisdn, -10)) AS subscriber_msisdn"), 'transaction_amount', 'consecutiveFailureCount', 'recursive_charging_date', 'product_duration', 'plan_id', 'productId')
         ->where('policy_status', 1)
-        ->where('transaction_amount',4)->where('recursive_charging_date', '>=','2024-06-06')
+        ->where('transaction_amount',4)->where('recursive_charging_date', '>=','2024-06-11')
         ->get();
 
         dd($subscriptions);
