@@ -159,6 +159,7 @@ class AutoDebitSubscriptionController extends Controller
 
                 // Logs
               Log::channel('auto_debit_api')->info('Auto Debit Api.',[
+               'Msisdn-number' => $subscriber_msisdn_deduction,
                'url' => $url,
                'request-packet' => $body,
                'response-data' => $response,
