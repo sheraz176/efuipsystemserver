@@ -107,8 +107,8 @@ class SuperAdminReports extends Controller
                     return $data->product->product_name;
                 })
                 ->addColumn('company_name', function ($data) {
-                    return $data->company->company_name;
-                })
+               return $data->company ? $data->company->company_name : 'No Company';
+                  })
                 ->addColumn('username', function ($data) {
                     if ($data->teleSalesAgent) {
                         return $data->teleSalesAgent->username;
@@ -205,9 +205,9 @@ public function companies_failed_data(Request $request)
         ->addColumn('product_name', function ($data) {
             return $data->product->product_name;
         })
-        ->addColumn('company_name', function ($data) {
-            return $data->company->company_name;
-        })
+       ->addColumn('company_name', function ($data) {
+        return $data->company ? $data->company->company_name : 'No Company';
+         })
         ->addColumn('username', function ($data) {
             if ($data->teleSalesAgent) {
                 return $data->teleSalesAgent->username;
