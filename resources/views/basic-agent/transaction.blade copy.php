@@ -593,14 +593,12 @@ function makeAjaxRequest() {
     .then(data => {
         if (data.success) {
             // If customer saved successfully, display modal
-            localStorage.setItem('customerSaved', 'true');
-            location.reload();
+            $('#successModal').modal('show');
         } else {
 
-            localStorage.setItem('dublicateSaved', 'true');
-            location.reload();
-
-
+            $('#errorModal').modal('show');
+            // If customer saving failed, display error message
+            // alert('Failed to save customer: ' + data.message);
         }
     })
     .catch(error => {
@@ -610,39 +608,9 @@ function makeAjaxRequest() {
 }
 
 
-           // Check for success flag on page load and display success modal if set
-document.addEventListener('DOMContentLoaded', (event) => {
 
-  if (localStorage.getItem('customerSaved') === 'true') {
-      var $jq = jQuery.noConflict();
-     $jq(document).ready(function() {
-      // Your code here
-     $jq('#successModal').modal('show');
-         })
-       localStorage.removeItem('customerSaved');
-      } else {
-       console.log('customerSaved flag not found in localStorage');
-       }
-   });
 
         // Start the timer
-
-              // Check for success flag on page load and display success modal if set
-document.addEventListener('DOMContentLoaded', (event) => {
-
-if (localStorage.getItem('dublicateSaved') === 'true') {
-    var $jq = jQuery.noConflict();
-   $jq(document).ready(function() {
-    // Your code here
-    $jq('#errorModal').modal('show');
-       })
-     localStorage.removeItem('dublicateSaved');
-    } else {
-     console.log('dublicateSaved flag not found in localStorage');
-     }
- });
-
-      // Start the timer
 
 
 
