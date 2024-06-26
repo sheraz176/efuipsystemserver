@@ -15,7 +15,7 @@
                     </nav>
                     <div class="ms-panel">
                         <div class="ms-panel-header ms-panel-custome align-items-center">
-                            <h6>Telesales Agent </h6>
+                            <h6>Telesales Agent  </h6>
                             <a href="{{ route('telesales-agents.create') }}" data-toggle="modal"
                                 class="btn btn-primary d-inline w-20" type="submit">Create New Telesales Agent</a>
                         </div>
@@ -39,6 +39,7 @@
                                             <th style="width: 150px;">Logout Time Today</th>
                                             <th>Email</th>
                                             <th>Company ID</th>
+                                            <th>Emp Code</th>
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
@@ -67,6 +68,7 @@
                                                 <td>{{ $telesalesAgent->today_logout_time }}</td>
                                                 <td>{{ $telesalesAgent->email }}</td>
                                                 <td>{{ $telesalesAgent->company_id }}</td>
+                                                <td>{{ $telesalesAgent->emp_code }}</td>
                                                 <td>
                                                     {{-- <a href="{{ route('telesales-agents.show', $telesalesAgent->agent_id) }}" class="btn btn-info">View</a> --}}
 
@@ -79,6 +81,8 @@
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-danger">Delete</button>
                                                     </form>
+                                                    <a href="{{ route('superadmin.telesales-agents-emp.edit', $telesalesAgent->agent_id) }}"
+                                                        class="btn btn-warning">Edit Emp Code</a>
                                                 </td>
                                             </tr>
                                         @endforeach

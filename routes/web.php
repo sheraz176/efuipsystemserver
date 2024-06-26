@@ -16,6 +16,7 @@ use App\Http\Controllers\Company\CompanyProfileController;
 use App\Http\Controllers\UnSubscription\ManagerUnSubscription;
 use App\Http\Controllers\SuperAdmin\AgentsReports\AgentReportsController;
 use App\Http\Controllers\SuperAdmin\Charts;
+use App\Http\Controllers\SuperAdmin\TesalesAgentsController;
 use App\Http\Controllers\Agent\TeleSalesAgentController;
 use App\Http\Controllers\CompanyManager\CompanyManagerAuthController;
 use App\Http\Controllers\CompanyManager\CompanyManagerReportController;
@@ -151,6 +152,12 @@ Route::prefix('super-admin')->group(function () {
 
         Route::resource('company', CompanyProfileController::class);
         Route::resource('telesales-agents', TelesalesAgentController::class);
+
+        //Telsales Emp Code Update
+        Route::get('telesales-agents-emp/edit/{id}', [TesalesAgentsController::class, 'edit'])->name('superadmin.telesales-agents-emp.edit');
+        Route::post('telesales-agents/update/emp', [TesalesAgentsController::class, 'update'])->name('superadmin.telesales-agents.update.emp');
+        //End Telsales Emp Code Update
+
 
           //User Managements Company Manager
           Route::get('company_manager/create', [UserManageController::class, 'company_manager_create'])->name('superadmin.company_manager_create');
