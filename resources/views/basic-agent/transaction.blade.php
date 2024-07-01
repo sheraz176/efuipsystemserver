@@ -202,7 +202,7 @@
       </div>
 
       <div class="modal-footer text-center"> <!-- Centering the modal footer content -->
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="resetForm()">Proceed to Next Sale</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="resetForms()">Proceed to Next Sale</button>
       </div>
     </form>
   </div>
@@ -229,7 +229,7 @@
         </div>
 
         <div class="modal-footer text-center"> <!-- Centering the modal footer content -->
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="resetForm()">Proceed to Next Sale</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="resetForms()">Proceed to Next Sale</button>
         </div>
       </form>
     </div>
@@ -643,7 +643,9 @@ if (localStorage.getItem('dublicateSaved') === 'true') {
  });
 
       // Start the timer
-
+  function resetForms() {
+       location.reload();
+   }
 
 
 

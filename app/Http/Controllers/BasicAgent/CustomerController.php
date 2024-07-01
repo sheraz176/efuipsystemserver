@@ -7,12 +7,13 @@ use Illuminate\Http\Request;
 use App\Models\InterestedCustomers\InterestedCustomer;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\DB;
 
 class CustomerController extends Controller
 {
+
     public function saveCustomer(Request $request)
 {
+    // dd($request->all());
     // Validate the incoming request
     $validatedData = $request->validate([
         'customer_msisdn' => 'required|string|max:255',
@@ -28,39 +29,35 @@ class CustomerController extends Controller
     ]);
 
     $today = Carbon::now('Asia/Karachi')->format('Y-m-d');
+    $uniqueKey = $request->customer_msisdn . '_' . $today;
 
     try {
-        // Start transaction
-        DB::beginTransaction();
+        // Create a new InterestedCustomer instance
+        $InterestedCustomer = new InterestedCustomer();
+        $InterestedCustomer->customer_msisdn = $request->customer_msisdn;
+        $InterestedCustomer->customer_cnic = $request->customer_cnic;
+        $InterestedCustomer->plan_id = $request->plan_id;
+        $InterestedCustomer->product_id = $request->product_id;
+        $InterestedCustomer->beneficiary_msisdn = $request->beneficiary_msisdn;
+        $InterestedCustomer->beneficiary_cnic = $request->beneficiary_cnic;
+        $InterestedCustomer->relationship = $request->relationship;
+        $InterestedCustomer->beneficinary_name = $request->beneficinary_name;
+        $InterestedCustomer->agent_id = $request->agent_id;
+        $InterestedCustomer->company_id = $request->company_id;
+        $InterestedCustomer->unique_key = $uniqueKey;
+        $InterestedCustomer->save();
 
-        // Check for existing entry
-        $customerChecks = InterestedCustomer::where('customer_msisdn', $request->customer_msisdn)
-            ->whereDate('created_at', $today)
-            ->lockForUpdate()
-            ->first();
-
-        if ($customerChecks) {
-            // Rollback transaction
-            DB::rollBack();
+        return response()->json(['success' => true, 'message' => 'Customer saved successfully']);
+    } catch (\Illuminate\Database\QueryException $e) {
+        // Check if the error is due to a unique constraint violation
+        if ($e->errorInfo[1] == 1062) { // 1062 is the error code for duplicate entry in MySQL
             return response()->json(['success' => false, 'message' => 'Today Already Number Add Interested Customer'], 500);
-          } else {
-            // Create a new InterestedCustomer instance
-            $customer = InterestedCustomer::create($validatedData);
-
-            if ($customer) {
-                // Commit transaction
-                DB::commit();
-                return response()->json(['success' => true, 'message' => 'Customer saved successfully']);
-            } else {
-                // Rollback transaction
-                DB::rollBack();
-                return response()->json(['success' => false, 'message' => 'Failed to save customer'], 500);
-            }
+        } else {
+            return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()], 500);
         }
     } catch (\Exception $e) {
-        // Rollback transaction in case of an error
-        DB::rollBack();
         return response()->json(['success' => false, 'message' => 'An error occurred: ' . $e->getMessage()], 500);
     }
 }
+
 }
