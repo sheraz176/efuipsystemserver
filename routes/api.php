@@ -78,6 +78,10 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
     Route::get("v1/takafulplus",[UserController::class,'getProducts']);
     Route::POST("v1/pushSubscription",[UserController::class,'Subscription']);
     Route::POST("v1/listactiveSubcriptions",[UserController::class,'activesubscriptions']);
+
+    Route::POST("v1/UnsubscribePackage",[UserController::class,'unsubscribeactiveplan']);
+     Route::POST("v1/closeRefundCase",[UserController::class,'Update_refund_status']);
+
     });
 
 
