@@ -348,7 +348,7 @@ class USSDSubscriptionController extends Controller
         //Get Grace Period Time
 	    $subscription = CustomerSubscription::where('policy_status', 1)->where('subscription_id', $subscriptionId)->first();
 
-                 dd($subscription);
+                //  dd($subscription);
         if (!$subscription) {
             return response()->json(['error' => 'Subscription not found.'], 404);
         }
