@@ -11,6 +11,7 @@ use App\Http\Controllers\API\LandingPageSubscription;
 use App\Http\Controllers\API\ProductApiController;
 use App\Http\Controllers\API\NetEntrollmentApiController;
 use App\Http\Controllers\API\USSDSubscriptionController;
+use App\Http\Controllers\API\MobileApiController;
 use App\Http\Controllers\SuperAgentL\CustomApiController;
 /*
 |--------------------------------------------------------------------------
@@ -58,6 +59,9 @@ Route::prefix('v2')->group(function () {
 });
 
 
+
+
+
 Route::prefix('v1')->group(function () {
     Route::prefix('auto-debit')->group(function () {
         Route::post("/auto-subscription", [AutoDebitSubscriptionController::class, 'AutoDebitSubscription'])
@@ -83,6 +87,29 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
      Route::POST("v1/closeRefundCase",[UserController::class,'Update_refund_status']);
 
     });
+
+
+ Route::post("v3/login",[MobileApiController::class,'login']);
+// Other routes related to Mobile Api can be added here
+Route::group(['middleware' => 'auth:sanctum'], function(){
+Route::prefix('v3')->group(function () {
+    Route::prefix('mobileApi')->group(function () {
+        Route::post("sub", [MobileApiController::class, 'ivr_subscription'])
+            ->name('sub'); // Example route name
+
+        Route::get("plan", [MobileApiController::class, 'getPlans'])
+            ->name('plan'); // Example route name
+
+        Route::post("products", [MobileApiController::class, 'getProducts'])
+            ->name('products'); // Example route name
+
+    Route::POST("unsub",[MobileApiController::class,'unsubscribeactiveplan'])
+    ->name('unsub');
+
+    });
+});
+});
+//End Other routes related to Mobile Api can be added here
 
 
 
