@@ -94,7 +94,7 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
 Route::group(['middleware' => 'auth:sanctum'], function(){
 Route::prefix('v3')->group(function () {
     Route::prefix('mobileApi')->group(function () {
-        Route::post("sub", [MobileApiController::class, 'ivr_subscription'])
+        Route::post("sub", [MobileApiController::class, 'jazz_app_subscription'])
             ->name('sub'); // Example route name
 
         Route::get("plan", [MobileApiController::class, 'getPlans'])
@@ -103,8 +103,12 @@ Route::prefix('v3')->group(function () {
         Route::post("products", [MobileApiController::class, 'getProducts'])
             ->name('products'); // Example route name
 
-    Route::POST("unsub",[MobileApiController::class,'unsubscribeactiveplan'])
+    Route::POST("unsub",[MobileApiController::class,'unsubscribePackage'])
     ->name('unsub');
+
+    Route::POST("updaterefund",[MobileApiController::class,'updaterefund'])
+    ->name('updaterefund');
+
 
     });
 });

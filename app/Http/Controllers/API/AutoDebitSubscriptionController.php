@@ -11,6 +11,7 @@ use App\Models\Plans\PlanModel;
 use App\Models\Plans\ProductModel;
 use App\Models\InterestedCustomers\InterestedCustomer;
 use Illuminate\Support\Facades\Log;
+use App\Models\Client;
 
 class AutoDebitSubscriptionController extends Controller
 {
