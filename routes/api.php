@@ -103,6 +103,8 @@ Route::prefix('v3')->group(function () {
         Route::post("products", [MobileApiController::class, 'getProducts'])
             ->name('products'); // Example route name
 
+     Route::POST("listactiveSubcriptions",[MobileApiController::class,'activesubscriptions']);
+
     Route::POST("unsub",[MobileApiController::class,'unsubscribePackage'])
     ->name('unsub');
 

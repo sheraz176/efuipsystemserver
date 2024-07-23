@@ -72,20 +72,20 @@ class MobileApiController extends Controller
     public function getProducts(Request $request)
 {
     // Validate the request
-    $validator = Validator::make($request->all(), [
-        'plan_id' => 'required|integer',
-    ]);
+    // $validator = Validator::make($request->all(), [
+    //     'plan_id' => 'required|integer',
+    // ]);
 
-    if ($validator->fails()) {
-        return response()->json([
-            'messageCode' => 400,
-            'message' => 'Validation failed',
-            'errors' => $validator->errors(),
-        ], 400);
-    }
+    // if ($validator->fails()) {
+    //     return response()->json([
+    //         'messageCode' => 400,
+    //         'message' => 'Validation failed',
+    //         'errors' => $validator->errors(),
+    //     ], 400);
+    // }
 
     // Retrieve active products associated with the specified plan ID
-    $products = ProductModel::where('plan_id', $request->plan_id)
+    $products = ProductModel::where('plan_id', '4')
                             ->where('status', 1)
                             ->get();
 
@@ -381,6 +381,7 @@ private function handleRefund($subscription, $subscriber_msisdn)
                 'subscription_id' => $subscription->subscription_id,
                 'updated_at' => $currentDateTime,
                 'created_at' => $currentDateTime,
+                'refund_id' => $refundedCustomer->refund_id,
                 'id' => $subscription->subscription_id,
             ];
 
@@ -390,7 +391,7 @@ private function handleRefund($subscription, $subscriber_msisdn)
                 'refund' => 'true',
                 'data_for_refund' => [
                     'Refund API Data' => $refundRow,
-                    'refund_api' => 'https://jazzcash-ips.efulife.com/mgmt/public/api/v1/closeRefundCase',
+                    'refund_api' => 'https://portal.mhealth.efulife.com/mgmt/api/v3/mobileApi/updaterefund',
                 ],
             ]);
         } else {
@@ -402,12 +403,12 @@ private function handleRefund($subscription, $subscriber_msisdn)
 
 public function updaterefund(Request $request)
 {
-
     // Validate the request
     $validator = Validator::make($request->all(), [
         'refund_id' => 'required',
         'transaction_id' => 'required',
         'reference_id' => 'required',
+        'cps_response' => 'required'
     ]);
 
     if ($validator->fails()) {
@@ -417,29 +418,116 @@ public function updaterefund(Request $request)
             'errors' => $validator->errors(),
         ], 400);
     }
+
     $refund_customer = RefundedCustomer::where('refund_id', $request->refund_id)->first();
 
-if (!$refund_customer) {
-    return response()->json(['error' => 'Refund not found.'], 404);
-}
+    if (!$refund_customer) {
+        return response()->json(['error' => 'Refund not found.'], 404);
+    }
+
+    // Check if the transaction_id is not equal to -1
+    if ($refund_customer->transaction_id != -1) {
+        return response()->json([
+            'messageCode' => 4001,
+            'message' => 'Case already closed.'
+        ], 400);
+    }
 
     $refund_customer->update([
         'transaction_id' => $request->transaction_id,
         'reference_id' => $request->reference_id,
+        'cps_response' => $request->cps_response,
     ]);
 
     $refundData = [
-        'refund id' => $refund_customer->refund_id,
+        'refund_status' => "Refund Completed Both Ends EFU & JazzCash",
+        'refund_case_status' => "Closed",
+        'refund_id' => $refund_customer->refund_id,
         'transaction_id' => $refund_customer->transaction_id,
         'reference_id' => $refund_customer->reference_id,
         'cps_response' => $refund_customer->cps_response,
         'result_description' => $refund_customer->result_description,
-
     ];
 
     return response()->json($refundData);
-
 }
+
+
+
+public function activesubscriptions(Request $request)
+{
+    $subscriber_msisdn = $request->input("subscriber_msisdn");
+    $rules = [
+        'subscriber_msisdn' => 'required|numeric'
+    ];
+
+    $validator = Validator::make($request->all(), $rules);
+    if ($validator->fails()) {
+        return response()->json(['error' => $validator->errors()], 400);
+    }
+
+    // Retrieve the subscription details
+    $subscription = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
+    ->where('plan_id', 4)
+    ->where('policy_status', 1)
+    ->first();
+
+    if ($subscription) {
+        // Retrieve the product_id from the subscription
+        $product_id = $subscription->productId;
+
+
+        // Retrieve the planCode using the product_id
+        $product = ProductModel::where('product_id', $product_id)->first();
+        $planCode = $product->product_code;
+
+        // Modified here: Changing keys to match the older response and including product_id
+        return response()->json([
+            'error' => false,
+            'is_policy_data' => 'true',
+            'message' => 'Active Policies',
+            'Active Subscriptions' => [
+		[
+                'id' => $subscription->subscription_id,
+                'customer_id' => $subscription->customer_id,
+                'payer_cnic' => $subscription->payer_cnic,
+                'payer_msisdn' => $subscription->payer_msisdn,
+                'subscriber_cnic' => $subscription->subscriber_cnic,
+                'subscriber_msisdn' => $subscription->subscriber_msisdn,
+                'beneficinary_name' => $subscription->beneficinary_name,
+                'benficinary_msisdn' => $subscription->benficinary_msisdn,
+                'transaction_amount' => $subscription->transaction_amount,
+                'transactionStatus' => $subscription->transaction_status,
+                'cpsOriginatorConversationId' => $subscription->referenceId,
+                'cpsTransactionId' => $subscription->cps_transaction_id,
+                'cpsRefundTransactionId' => -1,
+                'cpsResponse' => $subscription->cps_response_text,
+                'planId' => $subscription->productId,
+                'planCode' => $planCode, // Use the retrieved planCode here
+                'plan_status' => 1,
+                'pulse' => $subscription->pulse,
+                'APIsource' => $subscription->api_source,
+                'Recusive_charing_date' => $subscription->recursive_charging_date,
+                'subcription_time' => $subscription->subscription_time,
+                'grace_period_time' => $subscription->grace_period_time,
+                'Sales_agent' => $subscription->sales_agent,
+                'created_at' => $subscription->created_at,
+                'updated_at' => $subscription->updated_at,
+                'product_id' => $product_id  // Include product_id in the response
+		]
+            ]
+        ]);
+    } else {
+        // Modified here: Returning null instead of an empty array
+        return response()->json([
+            'error' => false,
+            'is_policy_data' => 'true',
+            'message' => 'Customer Didnt Subscribed to any Policy',
+            'Active Subscriptions' => []
+        ]);
+    }
+}
+
 
 
 
