@@ -55,7 +55,7 @@ class RecusiveCharging extends Command
                 ->whereDate('recursive_charging_date', $today)
                 ->where('policy_status', 1)->whereIn('transaction_amount',[4, 133])
                 ->get();
-              //dd($subscriptions);
+
             // Iterate over subscriptions
             foreach ($subscriptions as $subscription) {
 
@@ -161,6 +161,13 @@ class RecusiveCharging extends Command
 
                         $hexEncodedData = $response['data'];
 
+            // Remove non-hexadecimal characters
+            $hexEncodedData = preg_replace('/[^0-9a-fA-F]/', '', $hexEncodedData);
+
+            // Ensure the length is even
+            if (strlen($hexEncodedData) % 2 !== 0) {
+                $hexEncodedData = '0' . $hexEncodedData;
+            }
                         $binaryData = hex2bin($hexEncodedData);
 
                         // Decrypt the data using openssl_decrypt
@@ -174,7 +181,9 @@ class RecusiveCharging extends Command
                         $data = json_decode($decryptedData, true);
                     //  dd($data);
 
-                    if ($data['resultCode'] === "0") {
+
+                   if ($data !== null && isset($data['resultCode']) && $data['resultCode'] === "0") {
+
                         // dd($data);
                         // Calculate next charging date
                         $nextChargingDate = Carbon::parse($subscription->recursive_charging_date)->addDays($subscription->product_duration)->toDateString();
@@ -202,7 +211,7 @@ class RecusiveCharging extends Command
 
                             // dd($recusive_charging_data);
 
-                    } else {
+                    } else if ($data !== null) {
                         // dd($data);
                         // Increment consecutive failure count
                         DB::table('customer_subscriptions')

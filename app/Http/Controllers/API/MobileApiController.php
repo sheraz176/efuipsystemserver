@@ -122,15 +122,15 @@ class MobileApiController extends Controller
 
     // Perform validation
     $validator = Validator::make($request->all(), [
-        'subscriber_cnic' => 'required|numeric',
         'subscriber_msisdn' => 'required|numeric',
+        'subscriber_cnic' => 'required|numeric',
         'transaction_amount' => 'required|numeric',
         'transactionStatus' => 'required|string',
         'cpsOriginatorConversationId' => 'required|string',
         'cpsTransactionId' => 'required|string',
         'cpsResponse' => 'required|string',
         'planId' => 'required|numeric',
-        'product_id' => 'required|string',
+         'product_id' => 'required|string',
         'APIsource' => 'required|string'
     ]);
 
@@ -142,6 +142,19 @@ class MobileApiController extends Controller
     $product = ProductModel::where('plan_id', $planId)
                         ->where('product_id', $product_id)
                         ->first();
+
+                        // Check if product exists
+	if (!$product) {
+        return response()->json(['error' => "true", 'messageCode' => 404, 'message' => 'Product not found'], 404);
+        }
+
+        $transaction_amount = ProductModel::where('fee',$transaction_amount)
+        ->where('product_id', $product_id)
+        ->first();
+        if (!$transaction_amount) {
+            return response()->json(['error' => "true", 'messageCode' => 404, 'message' => 'Transaction Amount not Same Product Amount'], 404);
+            }
+    $amount = $transaction_amount->fee;
     //return "getting response of product:".$product;
 
     $grace_period = 14;
@@ -182,7 +195,7 @@ class MobileApiController extends Controller
             'subscriber_msisdn' => $subscriber_msisdn,
             'beneficiary_name' => 'Need to Filled in Future',
             'beneficiary_msisdn' => 0,
-            'transaction_amount' => $transaction_amount,
+            'transaction_amount' => $amount,
             'transaction_status' => $transactionStatus,
             'referenceId' => $cpsOriginatorConversationId,
             'cps_transaction_id' => $cpsTransactionId,
