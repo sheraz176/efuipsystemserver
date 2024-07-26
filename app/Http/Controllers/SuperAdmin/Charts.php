@@ -15,7 +15,7 @@ class Charts extends Controller
     public function getSubscriptionChartData(Request $request)
     {
         $timeRange = $request->input('time_range');
-    
+
         // Define the time range intervals based on the selected time range
         switch ($timeRange) {
             case 'today':
@@ -34,28 +34,28 @@ class Charts extends Controller
                     ->selectRaw("DATE_FORMAT(subscription_time, '%m-%Y') as label, COUNT(*) as count")
                     ->groupBy('label')
                     ->get();
-    
+
                 // Initialize labels and values
                 $labels = [];
                 $values = [];
-                
+
                 // Generate labels for each month of the year
                 for ($month = 1; $month <= 12; $month++) {
                     $labels[] = str_pad($month, 2, '0', STR_PAD_LEFT) . '-' . Carbon::now()->year;
                     $values[str_pad($month, 2, '0', STR_PAD_LEFT) . '-' . Carbon::now()->year] = 0; // Initialize count to 0
                 }
-    
+
                 // Fill in counts from fetched data
                 foreach ($data as $subscription) {
                     $values[$subscription->label] = $subscription->count;
                 }
-                
+
                 // Prepare labels and values for response
                 $formattedLabels = array_keys($values);
                 $formattedValues = array_values($values);
-                
+
                 return response()->json(['labels' => $formattedLabels, 'values' => $formattedValues]);
-                
+
                 break;
             case 'last_7_days':
                 $start = Carbon::now()->subDays(7);
@@ -81,13 +81,13 @@ class Charts extends Controller
                 // Handle invalid time range
                 return response()->json(['error' => 'Invalid time range']);
         }
-    
+
         // Fetch data based on the selected time range
         $data = CustomerSubscription::whereBetween('subscription_time', [$start, $end])
             ->selectRaw("DATE_FORMAT(subscription_time, '%Y-%m-%d" . ($interval === 'hour' ? ' %H:00:00' : '') . "') as label, COUNT(*) as count")
             ->groupBy('label')
             ->get();
-    
+
         // Generate labels with the complete range of time periods
         $labels = [];
         $values = [];
@@ -98,26 +98,26 @@ class Charts extends Controller
             $values[$formattedLabel] = 0; // Initialize count to 0
             $current->add($interval === 'hour' ? '1 hour' : '1 ' . $interval);
         }
-    
+
         // Fill in counts from fetched data
         foreach ($data as $subscription) {
             $values[$subscription->label] = $subscription->count;
         }
-    
+
         // Prepare labels and values for response
         $formattedLabels = array_keys($values);
         $formattedValues = array_values($values);
-    
+
         return response()->json(['labels' => $formattedLabels, 'values' => $formattedValues]);
     }
-    
 
 
 
-    
-    
 
-    
+
+
+
+
     public function getMonthlyActiveSubscriptionChartData()
     {
         // Fetch data from the database based on monthly active subscriptions
@@ -144,7 +144,7 @@ class Charts extends Controller
     public function getMonthlySubscriptionUnsubscriptionChartData()
     {
         // Fetch data from the database based on monthly subscription and unsubscription counts
-        $data = CustomerSubscription::selectRaw('MONTH(subscription_time) as month, 
+        $data = CustomerSubscription::selectRaw('MONTH(subscription_time) as month,
                                         SUM(CASE WHEN policy_status = 1 THEN 1 ELSE 0 END) as subscriptions,
                                         SUM(CASE WHEN policy_status = 0 THEN 1 ELSE 0 END) as unsubscriptions')
             ->groupBy('month')
@@ -166,6 +166,67 @@ class Charts extends Controller
         return response()->json(['labels' => $labels, 'subscriptions' => $subscriptionValues, 'unsubscriptions' => $unsubscriptionValues]);
     }
 
+    public function getChartData(Request $request)
+    {
+        $companyId = $request->input('company_id');
+        $timePeriod = $request->input('time_period', 'daily');
+
+        $query = CustomerSubscription::where('policy_status', 1);
+
+        if ($companyId) {
+            $query->where('company_id', $companyId);
+        }
+
+        // Determine the time grouping and data filtering based on the time period
+        switch ($timePeriod) {
+            case 'daily':
+                $query->selectRaw('DATE(created_at) as period, COUNT(*) as count');
+                break;
+            case 'monthly':
+                $query->selectRaw('MONTH(created_at) as period, COUNT(*) as count');
+                break;
+            case 'last7days':
+                $query->where('created_at', '>=', Carbon::now()->subDays(7))
+                      ->selectRaw('DATE(created_at) as period, COUNT(*) as count');
+                break;
+            case 'yearly':
+                $query->selectRaw('YEAR(created_at) as period, COUNT(*) as count');
+                break;
+        }
+
+        $data = $query->groupBy('period')
+                      ->orderBy('period')
+                      ->get();
+
+        $labels = $data->map(function($item) use ($timePeriod) {
+            switch ($timePeriod) {
+                case 'daily':
+                case 'last7days':
+                    return Carbon::parse($item->period)->format('Y-m-d'); // Format as YYYY-MM-DD
+                case 'monthly':
+                    return Carbon::create()->month($item->period)->format('F'); // Full month name
+                case 'yearly':
+                    return $item->period; // Year
+            }
+        });
+
+        $counts = $data->pluck('count');
+
+        return response()->json([
+            'data' => [
+                'labels' => $labels,
+                'datasets' => [
+                    [
+                        'label' => 'Net Enrollment',
+                        'data' => $counts,
+                        'backgroundColor' => 'rgba(54, 162, 235, 0.2)',
+                        'borderColor' => 'rgba(54, 162, 235, 1)',
+                        'borderWidth' => 1
+                    ]
+                ]
+            ]
+        ]);
+    }
 
     /////////////////////
     // public function getSubscriptionChartData($timeFrame)

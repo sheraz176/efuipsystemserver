@@ -162,8 +162,27 @@ class SuperAdminReports extends Controller
             ->addColumn('product_name', function($data){
                 return $data->products->product_name;
             })
+            ->addColumn('consistent_provider', function($data){
 
-            ->rawColumns(['company_name', 'plan_name', 'product_name'])
+                $data_count = count($data->interested_customers);
+              //   return  $data_count;
+              if ($data_count > 0) {
+                  $provider = $data->interested_customers[$data_count - 1]->consistent_provider;
+                  if (!is_null($provider)) {
+                      $dtmf = true;
+                      return "(DTMF)." . $provider;
+                  } else {
+                      $dtmf = null;
+                      return null; // Or any other default value you prefer
+                  }
+              } else {
+                  $dtmf = null;
+                  return null; // Or any other default value you prefer
+              }
+
+           })
+
+            ->rawColumns(['company_name', 'plan_name', 'product_name','consistent_provider'])
             ->make(true);
     }
 

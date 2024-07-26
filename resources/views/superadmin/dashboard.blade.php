@@ -11,9 +11,9 @@
 <h4 class=""><span class="text-muted fw-light">Company Performance/</span> Daily Lifes Secured & Total Sales</h4>
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="row">
-        <div class="col-12 col-md-8 col-lg-4 order-3 order-md-2">
+
             <div class="row">
-                <div class="col-6 mb-4">
+                <div class="col-4 mb-4">
                     <div class="card">
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
@@ -36,7 +36,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-6 mb-4">
+                <div class="col-4 mb-4">
                     <div class="card">
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
@@ -60,13 +60,7 @@
                     </div>
                 </div>
 
-
-
-            </div>
-        </div>
-        <div class="col-12 col-md-8 col-lg-4 order-3 order-md-2">
-            <div class="row">
-                <div class="col-6 mb-4">
+                <div class="col-4 mb-4">
                     <div class="card">
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
@@ -89,7 +83,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-6 mb-4">
+                <div class="col-4 mb-4">
                     <div class="card">
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
@@ -106,17 +100,14 @@
                                     </div>
                                 </div> --}}
                             </div>
-                            <span class="fw-medium d-block mb-1">Current Year Total Sales(Company)</span>
+                            <span class="fw-medium d-block mb-1">Current Year Total Sales</span>
                             <h3 class="card-title mb-2">{{ number_format($yearlyTransactionSum, 0, '.', ',') }}</h3>
                             {{-- <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +28.14%</small> --}}
                         </div>
                     </div>
                 </div>
-        </div>
-        </div>
-        <div class="col-12 col-md-8 col-lg-4 order-3 order-md-2">
-            <div class="row">
-                <div class="col-6 mb-4">
+
+                <div class="col-4 mb-4">
                     <div class="card">
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
@@ -139,7 +130,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-6 mb-4">
+                <div class="col-4 mb-4">
                     <div class="card">
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
@@ -156,16 +147,22 @@
                                     </div>
                                 </div> --}}
                             </div>
-                            <span class="fw-medium d-block mb-1">Today's Total Sales (Company)</span>
+                            <span class="fw-medium d-block mb-1">Today's Total Sales</span>
                             <h3 class="card-title mb-2">{{ number_format($dailyTransactionSum, 0, '.', ',') }}</h3>
                             {{-- <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +28.14%</small> --}}
                         </div>
                     </div>
                 </div>
+
+
             </div>
+
+
         </div>
+
     </div>
 </div>
+
 
 
 
@@ -182,8 +179,8 @@
                                 </div>
 
                             </div>
-                            <span class="d-block mb-1">Total Tsm Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($totalTsm, 0, '.', ',') }}</h3>
+                            {{-- <span class="d-block mb-1">Total Tsm Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($totalTsm, 0, '.', ',') }}</h3> --}}
                             <span class="d-block mb-1">Active Tsm Agents</span>
                             <h3 class="card-title text-nowrap mb-2"> {{ number_format($activeTsm, 0, '.', ',') }}</h3>
 
@@ -199,8 +196,8 @@
                                     <img src="{{ asset('/assets/img/icons/unicons/wallet.png')}}" alt="Credit Card" class="rounded" />
                                 </div>
                             </div>
-                            <span class="d-block mb-1">Total Ibex  Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($totalIbex, 0, '.', ',') }}</h3>
+                            {{-- <span class="d-block mb-1">Total Ibex  Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($totalIbex, 0, '.', ',') }}</h3> --}}
                             <span class="d-block mb-1">Active Ibex  Agents</span>
                             <h3 class="card-title text-nowrap mb-2"> {{ number_format($activeIbex, 0, '.', ',') }}</h3>
                         </div>
@@ -225,8 +222,8 @@
                                     <img src="{{ asset('/assets/img/icons/unicons/wallet.png')}}" alt="Credit Card" class="rounded" />
                                 </div>
                             </div>
-                            <span class="d-block mb-1">Total Sybrid  Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($totalSybrid, 0, '.', ',') }}</h3>
+                            {{-- <span class="d-block mb-1">Total Sybrid  Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($totalSybrid, 0, '.', ',') }}</h3> --}}
                             <span class="d-block mb-1">Active Sybrid  Agents</span>
                             <h3 class="card-title text-nowrap mb-2"> {{ number_format($activeSybrid, 0, '.', ',') }}</h3>
                         </div>
@@ -241,8 +238,8 @@
                                     <img src="{{ asset('/assets/img/icons/unicons/wallet.png')}}" alt="Credit Card" class="rounded" />
                                 </div>
                             </div>
-                            <span class="d-block mb-1">Total Abacus Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($totalAbacus, 0, '.', ',') }}</h3>
+                            {{-- <span class="d-block mb-1">Total Abacus Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($totalAbacus, 0, '.', ',') }}</h3> --}}
                             <span class="d-block mb-1">Active Abacus Agents</span>
                             <h3 class="card-title text-nowrap mb-2"> {{ number_format($activeAbacus, 0, '.', ',') }}</h3>
 
@@ -264,8 +261,8 @@
                                     <img src="{{ asset('/assets/img/icons/unicons/wallet.png')}}" alt="Credit Card" class="rounded" />
                                 </div>
                             </div>
-                            <span class="d-block mb-1">Total JazzIVR Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($totalJazzIVR, 0, '.', ',') }}</h3>
+                            {{-- <span class="d-block mb-1">Total JazzIVR Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($totalJazzIVR, 0, '.', ',') }}</h3> --}}
                             <span class="d-block mb-1">Active JazzIVR Agents</span>
                             <h3 class="card-title text-nowrap mb-2"> {{ number_format($activeJazzIVR, 0, '.', ',') }}</h3>
                         </div>
@@ -359,6 +356,57 @@
             </div>
         </div>
     </div>
+
+<!-- Net Enrollment Charts -->
+
+<div class="col-xl-8 col-12 mb-4">
+    <div class="card">
+        <div class="card-header header-elements">
+            <div class="d-flex justify-content-between align-items-center">
+                {{-- <h5 class="card-title mb-0">Net Enrollment </h5> --}}
+                <div class="d-flex justify-content-start align-items-center" >
+                    <div class="me-2">
+                        <label for="companyFilter">Filter by Company:</label>
+                        <select id="companyFilter" class="form-select">
+                            <option value="">All Companies</option>
+                            @foreach ($companies as $company)
+                                <option value="{{ $company->id }}">{{ $company->company_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label for="timeFilter">Filter by Time Period:</label>
+                        <select id="timeFilter" class="form-select">
+                            <option value="daily">Daily</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="last7days">Last 7 Days</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <canvas id="barChart_netenrollment" class="chartjs" data-height="500"></canvas>
+        </div>
+    </div>
+</div>
+<div class="col-4 mb-4">
+    <div class="card">
+        <div class="card-body">
+            <div class="card-title d-flex align-items-start justify-content-between">
+                <div class="avatar flex-shrink-0">
+                    <img src="{{ asset('/assets/img/icons/unicons/cc-primary.png')}}" alt="Credit Card" class="rounded" />
+                </div>
+            </div>
+            <span class="fw-medium d-block mb-1">Total Net Enrollment Count</span>
+            <h3 class="card-title mb-2">{{ number_format($NetEnrollmentCount, 0, '.', ',') }}</h3>
+             <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +{{ number_format($NetEnrollmentCount, 0, '.', ',') }}%</small>
+        </div>
+    </div>
+</div>
+
+
 
     <script>
 
@@ -538,7 +586,46 @@ function updateChart(data) {
     </script>
     <!-- /Line Charts -->
 
-    <!-- Radar Chart -->
+    <!-- Net Enrollment Chart -->
+    <script>
+        $(document).ready(function() {
+            var ctx = document.getElementById('barChart_netenrollment').getContext('2d');
+            var barChart = new Chart(ctx, {
+                type: 'bar',
+                data: {}, // Initial data
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            function fetchChartData(companyId, timePeriod) {
+                $.ajax({
+                    url: '{{ route('chart.data') }}',
+                    method: 'GET',
+                    data: { company_id: companyId, time_period: timePeriod },
+                    success: function(response) {
+                        barChart.data = response.data;
+                        barChart.update();
+                    }
+                });
+            }
+
+            // Initial load
+            fetchChartData('', 'daily');
+
+            // Update chart on filter change
+            $('#companyFilter, #timeFilter').change(function() {
+                var companyId = $('#companyFilter').val();
+                var timePeriod = $('#timeFilter').val();
+                fetchChartData(companyId, timePeriod);
+            });
+        });
+    </script>
 
 
 

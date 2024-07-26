@@ -8,7 +8,7 @@
                     <ol class="breadcrumb pl-0">
                         <li class="breadcrumb-item"><a href="{{ route('superadmin.dashboard') }}"><i
                                     class="material-icons"></i>Home</a></li>
-                        <li class="breadcrumb-item"><a href="{{ route('superadmin.dashboard') }}">Deshboard</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('superadmin.dashboard') }}">Dashboard</a></li>
                         <li class="breadcrumb-item active" aria-current="page">Net Enrollment Report List</li>
                     </ol>
                 </nav>
@@ -72,6 +72,7 @@
                                     <th>Next Charging Date</th>
                                     <th>Subscription Date</th>
                                     <th>Free Look Period</th>
+                                    <th>Consent</th>
                                 </tr>
                             </thead>
 
@@ -183,6 +184,7 @@
                         data: 'grace_period_time',
                         name: 'grace_period_time'
                     },
+                    {data: 'consistent_provider', name: 'consistent_provider'},
 
                 ],
             });

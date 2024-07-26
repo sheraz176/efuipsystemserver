@@ -8,6 +8,7 @@ use App\Models\Subscription\CustomerSubscription;
 use App\Models\TeleSalesAgent;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Company\CompanyProfile;
 use Illuminate\Support\Facades\Log;
 
 class SuperAdminAuth extends Controller
@@ -57,6 +58,9 @@ class SuperAdminAuth extends Controller
         $currentYearSubscriptionCount = CustomerSubscription::whereYear('created_at', Carbon::now()->year)
             ->count();
 
+            $NetEnrollmentCount = CustomerSubscription::where('policy_status','1')
+            ->count();
+
             $dailyTransactionSum = CustomerSubscription::whereDate('created_at', Carbon::today())
             ->sum('transaction_amount');
 
@@ -87,6 +91,7 @@ class SuperAdminAuth extends Controller
             $totalJazzIVR = TeleSalesAgent::where('company_id','14')->count();
             $activeJazzIVR = TeleSalesAgent::where('company_id','14')->where('islogin','1')->count();
 
+            $companies = CompanyProfile::all();
             //  dd($activeTsm);
 
         return view('superadmin.dashboard', [
@@ -106,6 +111,8 @@ class SuperAdminAuth extends Controller
             'activeSybrid' => $activeSybrid,
             'totalJazzIVR' => $totalJazzIVR,
             'activeJazzIVR' => $activeJazzIVR,
+            'NetEnrollmentCount' => $NetEnrollmentCount,
+            'companies' => $companies,
         ]);
 
     }

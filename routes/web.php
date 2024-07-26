@@ -203,6 +203,7 @@ Route::prefix('super-admin')->group(function () {
 
         Route::get('get-subscription-chart-data', [Charts::class, 'getSubscriptionChartData'])->name('superadmin.get-subscription-chart-data');
 
+        Route::get('/chart-data', [Charts::class, 'getChartData'])->name('chart.data');
 
 
         Route::get('getMonthlyActiveSubscriptionChartData', [Charts::class, 'getMonthlyActiveSubscriptionChartData'])->name('superadmin.getMonthlyActiveSubscriptionChartData');
