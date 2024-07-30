@@ -12,28 +12,44 @@
                         <li class="breadcrumb-item active" aria-current="page">Refunded Transaction Report</li>
                     </ol>
                 </nav>
+
                 <div class="ms-panel">
 
 
                     <div class="ms-panel-header ms-panel-custome align-items-center">
                         <div class="row mb-3">
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-1" >
+                        </div>
+                            <div class="col-md-4">
+                                <label for="msisdn">Search by Msisdn:</label>
+                                <input type="text" id="msisdn" class="form-control" placeholder="Enter MSISDN">
+
+
+                            </div>
+                            <div class="col-md-2" style="margin-top: 2%">
+                                <button type="submit" class="btn btn btn-info">Search</button>
+                            </div>
+
+                        <div class="col-md-4 mt-3">
                             <form method="POST" action="{{ route('superadmin.RefundedDataExport') }}">
                                 @csrf
                             <label for="dateFilter">Filter by Date:</label>
                             <input type="text" id="dateFilter" name="dateFilter" class="form-control " placeholder="Select date range">
                         </div>
 
-                        <div class="col-md-4 mt-6" style="margin-left: -14%">
-                            <button type="submit" class="btn btn-primary btn-sm"><i class='bx bx-down-arrow-alt'></i>Export</button>
+                        <div class="col-md-2 mt-8" style="margin-top: 2%">
+                            <button type="submit" class="btn btn-primary "><i class='bx bx-down-arrow-alt'></i>Export</button>
 
                         </div>
+                    </form>
 
-                           </form>
 
                     </div>
+
                 </div>
+
+
             </div>
             <div class="col-xl-12 col-md-12">
                 <div class="ms-card">
@@ -96,6 +112,7 @@
             });
 
             var table = $('#myTables').DataTable({
+                searching: false,
                 responsive: true,
                 processing: true,
                 serverSide: true,
@@ -106,6 +123,10 @@
                         if (dateFilter) {
                             d.dateFilter = dateFilter;
                         }
+                        var msisdn = $('#msisdn').val();
+                        if (msisdn) {
+                           d.msisdn = msisdn;
+                           }
                     }
                 },
                 columns: [
@@ -124,6 +145,9 @@
                 ]
             });
 
+            $('#msisdn').on('change', function () {
+            table.ajax.reload();
+              });
             var search_input = document.querySelectorAll('.dataTables_filter input');
             search_input.forEach(Element => {
                 Element.placeholder = 'Search by name';

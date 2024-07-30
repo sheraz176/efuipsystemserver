@@ -7,207 +7,38 @@ use Illuminate\Http\Request;
 use App\Models\Subscription\CustomerSubscription;
 use App\Models\Unsubscription\CustomerUnSubscription;
 use App\Models\Refund\RefundedCustomer;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+
 
 class ManagerUnSubscription extends Controller
 {
-
-public function getOAuthToken()
-{
-    $tokenUrl = 'https://gateway-sandbox.jazzcash.com.pk/token';
-
-    $ch = curl_init($tokenUrl);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(['grant_type' => 'client_credentials']));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, [
-        'Authorization: Basic T3lYYjhPZE5qQ0pIc25XSGt6bXNsUUFPSlVBYTpVSWUyVDZXWXk2aXhmMmZHZk12WDhScGZ6Z0Fh',
-        'Content-Type: application/x-www-form-urlencoded',
-    ]);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-    $tokenResponse = curl_exec($ch);
-    if ($tokenResponse === false) {
-        throw new \Exception('Curl error: ' . curl_error($ch));
-    }
-
-    $tokenData = json_decode($tokenResponse, true);
-    curl_close($ch);
-
-    if (!isset($tokenData['access_token'])) {
-        throw new \Exception('Failed to retrieve access token');
-    }
-
-    return $tokenData['access_token'];
-}
-public function autoDebitReversalInquiry($accessToken,$subscription)
-{
-    $apiUrl = 'https://gateway-sandbox.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/autoDebitReversalInquiry';
-        //   dd($subscription);
-
-      // Replace these with your actual secret key and initial vector
-            $key = 'mYjC!nc3dibleY3k'; // Change this to your secret key
-            $iv = 'Myin!tv3ctorjCM@'; // Change this to your initial vector
-
-            $data = json_encode([
-
-                 'receiverMSISDN' =>  $subscription->subscriber_msisdn,
-                'amount' => number_format($subscription->transaction_amount, 2, '.', ''),
-                 'referenceId' => $subscription->referenceId,
-
-
-            ]);
-
-           // echo "Request Plain Data (RPD): $data\n";
-
-            $encryptedData = openssl_encrypt($data, 'aes-128-cbc', $key, OPENSSL_RAW_DATA, $iv);
-
-            // Convert the encrypted binary data to hex
-            $hexEncryptedData = bin2hex($encryptedData);
-        $body = json_encode(['data' => $hexEncryptedData]);
-
-    $headers = [
-        'Accept: application/json',
-        'Content-Type: application/json',
-        'Authorization: Bearer ' . $accessToken,
-    ];
-
-    $ch = curl_init($apiUrl);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-    $response = curl_exec($ch);
-    // dd($response);
-
-       // Logs
-       Log::channel('auto_debit_reversal_inquiryi')->info('auto Debit Reversal Inquiryi Refunded Api.',[
-        'url' => $apiUrl,
-        'request-packet' => $body,
-        'response-data' => $response,
-        ]);
-
-
-    if ($response === false) {
-        throw new \Exception('Curl error: ' . curl_error($ch));
-    }
-
-    curl_close($ch);
-    return json_decode($response, true);
-}
-public function autoDebitReversalPayment($accessToken,$subscription,$transactionID)
-{
-    $apiUrl = 'https://gateway-sandbox.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/autoDebitReversalPayment';
-
-     // Replace these with your actual secret key and initial vector
-            $key = 'mYjC!nc3dibleY3k'; // Change this to your secret key
-            $iv = 'Myin!tv3ctorjCM@'; // Change this to your initial vector
-
-            $data = json_encode([
-                   'Init_transactionID' => $transactionID,
-                   'referenceId' => $subscription->referenceId,
-            ]);
-
-           // echo "Request Plain Data (RPD): $data\n";
-
-            $encryptedData = openssl_encrypt($data, 'aes-128-cbc', $key, OPENSSL_RAW_DATA, $iv);
-
-            // Convert the encrypted binary data to hex
-            $hexEncryptedData = bin2hex($encryptedData);
-            $body = json_encode(['data' => $hexEncryptedData]);
-
-
-
-    $headers = [
-        'Accept: application/json',
-        'Content-Type: application/json',
-        'Authorization: Bearer ' . $accessToken,
-    ];
-
-    $ch = curl_init($apiUrl);
-    curl_setopt($ch, CURLOPT_POST, 1);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-    $response = curl_exec($ch);
-
-     // Logs
-     Log::channel('auto_debit_reversal_payment_api')->info('auto Debit Reversal Payment Refunded Api.',[
-        'url' => $apiUrl,
-        'request-packet' => $body,
-        'response-data' => $response,
-        ]);
-
-    if ($response === false) {
-        throw new \Exception('Curl error: ' . curl_error($ch));
-    }
-
-    curl_close($ch);
-    return json_decode($response, true);
-}
-
     public function unsubscribeNow($subscriptionId)
-   {
-    //   dd($subscriptionId);
-        $superadmin = session('Superadmin');
+{
+    $superadmin = session('Superadmin');
     $username = $superadmin->username;
 
-       $subscription = CustomerSubscription::findOrFail($subscriptionId);
-    //  dd($subscription);
+    
 
-      $key = 'mYjC!nc3dibleY3k'; // Your secret key
-    $iv = 'Myin!tv3ctorjCM@'; // Your initial vector
+    // Fetch the customer subscription record
+    $subscription = CustomerSubscription::findOrFail($subscriptionId);
 
-    try {
-        $accessToken = $this->getOAuthToken();
+    // Call refundManager function with referenceId and CPSTransaction ID
+    $refundResult = $this->refundManager($subscription->cps_transaction_id,$subscription->referenceId );
 
-        // Step 2: Auto Debit Reversal Inquiry
-        $inquiryResponse = $this->autoDebitReversalInquiry($accessToken,$subscription);
-        if (!isset($inquiryResponse['data'])) {
-            return response()->json(['error' => 'Failed to get inquiry data'], 500);
-        }
-
-       // Decrypt the inquiry response data
-        $decryptedInquiryData = $this->decryptData($inquiryResponse['data'], $key, $iv);
-        $decodedInquiryData = json_decode($decryptedInquiryData, true);
-
-        //   dd($decodedPaymentData);
-        // Step 3: Auto Debit Reversal Payment
-        $paymentResponse = $this->autoDebitReversalPayment($accessToken,$subscription,$decodedInquiryData ['transactionID']);
-
-        if (!isset($paymentResponse['data'])) {
-            return response()->json(['error' => 'Failed to get payment data'], 500);
-        }
-
-
-        //  dd($decodedInquiryData);
-             // Decrypt the payment response data
-        $decryptedPaymentData = $this->decryptData($paymentResponse['data'], $key, $iv);
-
-        $decodedPaymentData = json_decode($decryptedPaymentData, true);
-        //   dd($decodedPaymentData);
-
-
-
-    if ($decodedPaymentData['responseCode'] == 0) {
+    
+    
+    
+    if ($refundResult['resultCode'] == 0) {
         // Call unsubscribeNow function with referenceId and CPS Transaction ID
         $subscription->update(['policy_status' => 0]);
 
         $refundedCustomer=RefundedCustomer::create([
         'subscription_id' => $subscription->subscription_id,
         'unsubscription_id' => 2,
-        'transaction_id' => $decodedPaymentData['transactionID'],
-        'reference_id' => $decodedPaymentData['referenceID'],
-        'cps_response' => $decodedPaymentData['responseDescription'],
-        'result_description' => $decodedPaymentData['responseDescription'],
+        'transaction_id' => $refundResult['transactionId'],
+        'reference_id' => $refundResult['referenceId'],
+        'cps_response' => $refundResult['failedReason'],
+        'result_description' => $refundResult['resultDesc'],
         'result_code' => 0,
         'refunded_by' => $username,
         'medium' => 'Portal',
@@ -225,37 +56,135 @@ public function autoDebitReversalPayment($accessToken,$subscription,$transaction
 
         // Handle $unsubscribeResult as needed
         return redirect()->back()->with('success', 'Customer unsubscribed successfully.');
-
-    }
-
+    } 
+    
     else {
         // Handle the case when refundManager fails
         return redirect()->back()->with([
             'error' => 'Refund failed',
-            'resultCode' => $decodedPaymentData['responseCode'],
-            'resultDesc' => $decodedPaymentData['responseDescription']
+            'resultCode' => $refundResult['resultCode'],
+            'resultDesc' => $refundResult['resultDesc']
         ], 500);
      }
 
-
-    } catch (\Exception $e) {
-        return response()->json(['error' => $e->getMessage()], 500);
-    }
-
-   }
-
-
-
-private function decryptData($hexEncodedData, $key, $iv)
-{
-    // Convert hex to binary
-    $binaryData = hex2bin($hexEncodedData);
-
-    // Decrypt the data
-    $decryptedData = openssl_decrypt($binaryData, 'aes-128-cbc', $key, OPENSSL_RAW_DATA, $iv);
-
-    return $decryptedData;
 }
 
+public function refundManager($originalTransactionId, $referenceId)
+{   
+    
+    
+    $referenceId_new = strval(mt_rand(100000000000000000, 999999999999999999));
+    // Retrieve data from the AJAX request
+    //dd($originalTransactionId,$referenceId);
+    // Replace these with your actual secret key and initial vector
+    $key = 'mYjC!nc3dibleY3k'; // Change this to your secret key
+    $iv = 'Myin!tv3ctorjCM@'; // Change this to your initial vector
 
+    $data = json_encode([
+        'originalTransactionId' => $originalTransactionId,
+        'referenceId' =>  $referenceId_new,
+        'POSID' => "12345"
+    ]);
+	
+	Log::info('API Request', [
+                'url' => 'https://gateway.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/unsub',
+		 'request-data' => $data,
+                ]);
+
+
+    //return $data
+
+    
+
+    $encryptedData = openssl_encrypt($data, 'aes-128-cbc', $key, OPENSSL_RAW_DATA, $iv);
+    $hexEncryptedData = bin2hex($encryptedData);
+
+    $url = 'https://gateway.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/unsub';
+
+    $headers = [
+        'X-CLIENT-ID: 946658113e89d870aad2e47f715c2b72',
+        'X-CLIENT-SECRET: e5a0279efbd7bd797e472d0ce9eebb69',
+        'X-PARTNER-ID: 946658113e89d870aad2e47f715c2b72',
+        'Content-Type: application/json',
+    ];
+
+    $body = json_encode(['data' => $hexEncryptedData]);
+
+	Log::info('API Request encrypted', [
+                'url' => 'https://gateway.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/unsub',
+		 'request-encrypted-data' => $hexEncryptedData,
+                ]);
+
+
+    //return $body;
+
+    $ch = curl_init($url);
+
+    // Set cURL options
+    curl_setopt($ch, CURLOPT_POST, 1);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 180);
+
+    // Execute cURL session and get the response
+    $response = curl_exec($ch);
+
+    // Check for cURL errors
+    if ($response === false) {
+        return response()->json(['error' => 'Curl error: ' . curl_error($ch)], 500);
+    }
+
+    // Close cURL session
+    curl_close($ch);
+
+    // Debugging: Echo raw response
+    // echo "Raw Response:\n" . $response . "\n";
+
+    // Handle the response as needed
+    $response = json_decode($response, true);
+	
+	Log::info('API response encrypted', [
+                'url' => 'https://gateway.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/unsub',
+		 'response-encrypted-data' => $response,
+                ]);
+
+	
+
+
+    if (isset($response['data'])) {
+        $hexEncodedData = $response['data'];
+        $binaryData = hex2bin($hexEncodedData);
+
+
+
+        // Decrypt the data using openssl_decrypt
+        $decryptedData = openssl_decrypt($binaryData, 'aes-128-cbc', $key, OPENSSL_RAW_DATA, $iv);
+
+        // Handle the decrypted data as needed
+        $data_1 = json_decode($decryptedData, true);
+
+        
+         $resultCode = $data_1['resultCode'];
+         $resultDesc = $data_1['resultDesc'];
+	
+	 Log::info('API response decrypted', [
+                'url' => 'https://gateway.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/unsub',
+		 'response-encrypted-data' => $decryptedData,
+                ]);
+
+	
+	
+         
+
+         return $data_1;
+    } 
+    
+    else {
+        // Handle the case when 'data' is not set in the response
+        return false;
+    }
+}
 }

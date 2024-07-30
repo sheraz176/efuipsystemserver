@@ -17,6 +17,7 @@ use App\Http\Controllers\UnSubscription\ManagerUnSubscription;
 use App\Http\Controllers\SuperAdmin\AgentsReports\AgentReportsController;
 use App\Http\Controllers\SuperAdmin\Charts;
 use App\Http\Controllers\SuperAdmin\TesalesAgentsController;
+use App\Http\Controllers\bulkmanager\BulkManagerController;
 use App\Http\Controllers\Agent\TeleSalesAgentController;
 use App\Http\Controllers\CompanyManager\CompanyManagerAuthController;
 use App\Http\Controllers\CompanyManager\CompanyManagerReportController;
@@ -141,6 +142,16 @@ Route::prefix('super-admin')->group(function () {
 
         Route::get('datatable', [SuperAdminReports::class, 'index'])->name('superadmin.datatable');
         Route::get('datatable/getData', [SuperAdminReports::class, 'getData'])->name('datatable.getData');
+
+         //Start BulkManagerController
+         Route::get('bulk/file/upload/index', [BulkManagerController::class, 'index'])->name('superadmin.builkmanager.index');
+         Route::get('bulk/file/upload/create', [BulkManagerController::class, 'create'])->name('superadmin.builkmanager.create');
+         Route::post('bulk/file/upload/store', [BulkManagerController::class, 'store'])->name('superadmin.builkmanager.store');
+         Route::get('bulk/file/upload/getData', [BulkManagerController::class, 'getData'])->name('superadmin.builkmanager.getData');
+
+
+
+          //END BulkManagerController
 
 
         Route::get('datatable-failed', [SuperAdminReports::class, 'failed_transactions'])->name('superadmin.datatable-failed');

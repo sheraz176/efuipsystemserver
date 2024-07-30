@@ -72,52 +72,59 @@ class ManageRefunds extends Controller
         return view('superadmin.refund.refundreport', compact('companies'));
     }
 
-  public function getRefundedData(Request $request)
-{
-    if ($request->ajax()) {
-        // Start building the query
-        $query = RefundedCustomer::select('*');
+    public function getRefundedData(Request $request)
+    {
+        if ($request->ajax()) {
+            // Start building the query
+            $query = RefundedCustomer::select('refunded_customers.*')
+                ->join('customer_subscriptions', 'refunded_customers.subscription_id', '=', 'customer_subscriptions.subscription_id');
 
-            if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+            // Date filter
+            if ($request->has('dateFilter') && !empty($request->input('dateFilter'))) {
                 $dateRange = explode(' to ', $request->input('dateFilter'));
                 $startDate = $dateRange[0];
                 $endDate = $dateRange[1];
                 $query->whereDate('refunded_customers.refunded_time', '>=', $startDate)
-                ->whereDate('refunded_customers.refunded_time', '<=', $endDate);
-                // $query->whereBetween('refunded_customers.refunded_time', [$startDate, $endDate]);
+                      ->whereDate('refunded_customers.refunded_time', '<=', $endDate);
             }
 
-        return Datatables::of($query)->addIndexColumn()
-            ->addColumn('subscriber_msisdn', function ($data) {
-                return $data->customer_subscription->subscriber_msisdn;
-            })
-            ->addColumn('transaction_amount', function ($data) {
-                return $data->customer_subscription->transaction_amount;
-            })
-            ->addColumn('plan_name', function ($data) {
-                return $data->customer_subscription->plan->plan_name;
-            })
-            ->addColumn('product_name', function ($data) {
-                return $data->customer_subscription->products->product_name;
-            })
-            ->addColumn('company_name', function ($data) {
-                return $data->customer_subscription->company->company_name;
-            })
-            ->addColumn('subscription_time', function ($data) {
-                return $data->customer_subscription->subscription_time;
-            })
-            ->addColumn('unsubscription_datetime', function ($data) {
-                $data_count = count($data->customer_unsubscription);
-                if ($data_count > 0) {
-                    return $data->customer_unsubscription[$data_count - 1]->unsubscription_datetime;
-                } else {
-                    return "";
-                }
-            })
-            ->rawColumns(['subscriber_msisdn', 'transaction_amount', 'plan_name', 'product_name', 'company_name', 'subscription_time', 'unsubscription_datetime'])
-            ->make(true);
+            // Custom search functionality for msisdn
+            if ($request->has('msisdn') && !empty($request->input('msisdn'))) {
+                $msisdn = $request->input('msisdn');
+                $query->where('customer_subscriptions.subscriber_msisdn', 'like', '%' . $msisdn . '%');
+            }
+
+            return Datatables::of($query)->addIndexColumn()
+                ->addColumn('subscriber_msisdn', function ($data) {
+                    return $data->customer_subscription->subscriber_msisdn;
+                })
+                ->addColumn('transaction_amount', function ($data) {
+                    return $data->customer_subscription->transaction_amount;
+                })
+                ->addColumn('plan_name', function ($data) {
+                    return $data->customer_subscription->plan->plan_name;
+                })
+                ->addColumn('product_name', function ($data) {
+                    return $data->customer_subscription->products->product_name;
+                })
+                ->addColumn('company_name', function ($data) {
+                    return $data->customer_subscription->company->company_name;
+                })
+                ->addColumn('subscription_time', function ($data) {
+                    return $data->customer_subscription->subscription_time;
+                })
+                ->addColumn('unsubscription_datetime', function ($data) {
+                    $data_count = count($data->customer_unsubscription);
+                    if ($data_count > 0) {
+                        return $data->customer_unsubscription[$data_count - 1]->unsubscription_datetime;
+                    } else {
+                        return "";
+                    }
+                })
+                ->rawColumns(['subscriber_msisdn', 'transaction_amount', 'plan_name', 'product_name', 'company_name', 'subscription_time', 'unsubscription_datetime'])
+                ->make(true);
+        }
     }
-}
 
 
 

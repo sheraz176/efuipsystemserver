@@ -96,7 +96,7 @@ class AutoDebitSubscriptionController extends Controller
                 $referenceId = strval(mt_rand(100000000000000000, 999999999999999999));
 
                 // Additional body parameters
-                $type = 'autoPayment';
+                $type = 'sub';
 
                 // Replace these with your actual secret key and initial vector
                 $key = 'mYjC!nc3dibleY3k'; // Change this to your secret key
