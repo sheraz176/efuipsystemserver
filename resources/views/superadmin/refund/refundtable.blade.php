@@ -100,7 +100,7 @@
         </div>
     </div>
 </div>
-
+<button onclick="toastSuccess()">test</button>
 <script>
     $(function () {
         // Initialize the date range picker
