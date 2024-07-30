@@ -1,4 +1,6 @@
 @extends('superadmin.layout.master')
+@include('superadmin.partials.style')
+<link href="{{asset('newdes/assets/css/toastr.min.css')}}" rel="stylesheet">
 
 @section('content')
 <div class="container">
@@ -12,6 +14,8 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Basic Layout</h5>
                         <small class="text-muted float-end">Bulk Manager</small>
+
+
                     </div>
                     <div class="card-body">
                         <form method="post" action="{{ route('superadmin.builkmanager.store') }}" enctype="multipart/form-data">
@@ -33,5 +37,52 @@
     </div>
 </div>
 
+
+<script>
+    function toastSuccess() {
+        // alert('hi');
+        toastr.remove();
+        toastr.options.positionClass = "toast-top-right";
+        toastr.success('Customer unsubscribed successfully.', 'Successfull !');
+    }
+
+    function toastdanger() {
+        toastr.remove();
+        toastr.options.positionClass = "toast-top-right";
+        toastr.error('Invalid response from API', 'Some thing Wrong !');
+    }
+    function toasterror() {
+        toastr.remove();
+        toastr.options.positionClass = "toast-top-right";
+        toastr.error('Subscription Not Found', 'Some thing Wrong !');
+    }
+
+</script>
+<script>
+    $(document).ready(function() {
+
+        var created = "{{ Session::get('success') }}";
+        if (created) {
+            toastSuccess();
+        }
+
+        var error = "{{ Session::get('error') }}";
+        if (error) {
+            toastdanger();
+        }
+
+        var erroring = "{{ Session::get('erroring') }}";
+        if (erroring) {
+            toasterror();
+        }
+
+
+
+    });
+
+</script>
+
+<script src="{{asset('newdes/assets/js/toastr.min.js')}}"> </script>
+<script src="{{asset('newdes/assets/js/toast.js')}}"> </script>
 
 @endsection

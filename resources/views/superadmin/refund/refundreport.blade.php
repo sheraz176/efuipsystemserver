@@ -27,9 +27,7 @@
 
 
                             </div>
-                            <div class="col-md-2" style="margin-top: 2%">
-                                <button type="submit" class="btn btn btn-info">Search</button>
-                            </div>
+
 
                         <div class="col-md-4 mt-3">
                             <form method="POST" action="{{ route('superadmin.RefundedDataExport') }}">
@@ -39,7 +37,7 @@
                         </div>
 
                         <div class="col-md-2 mt-8" style="margin-top: 2%">
-                            <button type="submit" class="btn btn-primary "><i class='bx bx-down-arrow-alt'></i>Export</button>
+                            <button type="submit" class="btn btn-primary btn-sm"><i class='bx bx-down-arrow-alt'></i>Export</button>
 
                         </div>
                     </form>

@@ -299,14 +299,15 @@ class ExportController extends Controller
 
 public function RefundedDataExport(Request $request)
 {
+    // dd($request->all());
     $refundData = RefundedCustomer::select(
         'refunded_customers.refund_id as refund_id',
         'customer_subscriptions.subscriber_msisdn',
         'customer_subscriptions.transaction_amount',
-        'unsubscriptions.unsubscription_datetime',
         'refunded_customers.transaction_id',
         'refunded_customers.reference_id',
         'refunded_customers.refunded_by',
+        'refunded_customers.refunded_time',
         'plans.plan_name',
         'products.product_name',
         'company_profiles.company_name',
@@ -314,7 +315,6 @@ public function RefundedDataExport(Request $request)
         'customer_subscriptions.subscription_time',
     )
         ->join('customer_subscriptions', 'refunded_customers.subscription_id', '=', 'customer_subscriptions.subscription_id')
-        ->join('unsubscriptions', 'customer_subscriptions.subscription_id', '=', 'unsubscriptions.subscription_id')
         ->leftJoin('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
         ->leftJoin('products', 'customer_subscriptions.productId', '=', 'products.product_id')
         ->leftjoin('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id');// Assuming you pass refunded_id as a parameter
@@ -323,8 +323,8 @@ public function RefundedDataExport(Request $request)
             $dateRange = explode(' to ', $request->input('dateFilter'));
             $startDate = $dateRange[0];
             $endDate = $dateRange[1];
-            $refundData->whereDate('unsubscriptions.unsubscription_datetime', '>=', $startDate)
-            ->whereDate('unsubscriptions.unsubscription_datetime', '<=', $endDate);
+            $refundData->whereDate('refunded_time', '>=', $startDate)
+            ->whereDate('refunded_time', '<=', $endDate);
 
         }
 
@@ -347,7 +347,7 @@ public function RefundedDataExport(Request $request)
               $item->reference_id,
               $item->medium,
               $item->subscription_time,
-              $item->unsubscription_datetime,
+              $item->refunded_time,
 
           ];
          }

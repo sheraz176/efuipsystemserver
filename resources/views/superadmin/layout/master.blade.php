@@ -248,7 +248,8 @@
             </li>
 
             <li class="menu-item {{ Request::is('super-admin/bulk/file/upload/index') ? 'active' : '' }}
-            {{ Request::is('super-admin/bulk/file/upload/create') ? 'active' : '' }}">
+            {{ Request::is('super-admin/bulk/file/upload/create') ? 'active' : '' }}
+             {{ Request::is('super-admin/bulk/file/upload/index/logs') ? 'active' : '' }}">
               <a href="{{ route('superadmin.builkmanager.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Bulk Refunds Manager</div>

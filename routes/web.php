@@ -148,6 +148,8 @@ Route::prefix('super-admin')->group(function () {
          Route::get('bulk/file/upload/create', [BulkManagerController::class, 'create'])->name('superadmin.builkmanager.create');
          Route::post('bulk/file/upload/store', [BulkManagerController::class, 'store'])->name('superadmin.builkmanager.store');
          Route::get('bulk/file/upload/getData', [BulkManagerController::class, 'getData'])->name('superadmin.builkmanager.getData');
+         Route::get('bulk/file/upload/index/logs', [BulkManagerController::class, 'logsindex'])->name('superadmin.builkmanager.logsindex');
+         Route::get('bulk/file/upload/logsData', [BulkManagerController::class, 'logsData'])->name('superadmin.builkmanager.logsData');
 
 
 

@@ -10,6 +10,7 @@ use App\Models\Subscription\CustomerSubscription;
 use App\Models\Unsubscription\CustomerUnSubscription;
 use App\Models\Refund\RefundedCustomer;
 use App\Models\BulkManager;
+use App\Models\logs;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
@@ -37,10 +38,28 @@ class BulkManagerController extends Controller
                 ->make(true);
         }
     }
+
+    public function logsindex()
+    {
+        return view('superadmin.bulkmanager.logs');
+    }
+    public function logsData(Request $request)
+    {
+        if ($request->ajax()) {
+            // Start building the query
+            $query = logs::select('*')
+            ->where('source', 'BulkRefundManager')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+
+            return Datatables::of($query)->addIndexColumn()
+                ->make(true);
+        }
+    }
+
     public function store(Request $request)
     {
-
-        // dd($request->all());
         // Validate the request
         $request->validate([
             'bulk_file' => 'required|file|mimes:xlsx,xls,csv',
@@ -49,18 +68,15 @@ class BulkManagerController extends Controller
         if ($request->hasFile('bulk_file')) {
             // Get the uploaded file
             $file = $request->file('bulk_file');
-            // dd($file);
             $filePath = $file->getRealPath();
 
             // Load the spreadsheet file
             $spreadsheet = IOFactory::load($filePath);
             $sheet = $spreadsheet->getActiveSheet();
-            // dd($sheet);
             $rows = $sheet->toArray();
-            //    dd($rows);
+
             // Extract data
             $extractedData = [];
-            // dd($extractedData);
             foreach ($rows as $row) {
                 // Assuming 'amount' is in the first column and 'number' is in the second
                 $extractedData[] = [
@@ -69,86 +85,90 @@ class BulkManagerController extends Controller
                 ];
             }
 
+            $successCount = 0;
+            $errorMessages = [];
+
             // Process the extracted data (e.g., save to the database)
             foreach ($extractedData as $data) {
-                 $msisdn =   $data['number'];
-                 $amount  =   $data['amount'];
-                //  dd($am);
-                  $todayDate = Carbon::now()->toDateString();
+                $msisdn = $data['number'];
+                $amount = $data['amount'];
+                $todayDate = Carbon::now()->toDateString();
 
-                 $subscriptions = CustomerSubscription::where('subscriber_msisdn',$msisdn)
-                 ->where('grace_period_time', '>=', $todayDate)
-                 ->where('policy_status', 1)->get();
+                $subscriptions = CustomerSubscription::where('subscriber_msisdn', $msisdn)
+                    ->where('grace_period_time', '>=', $todayDate)
+                    ->where('policy_status', 1)
+                    ->get();
 
-                 $superadmin = session('Superadmin');
-                 $username = $superadmin->username;
+                 if ($subscriptions->isEmpty()) {
+                    //  dd('by');
+                    return redirect()->back()->with('erroring', "Subscription Not Found.");
+                }
+                else{
 
-                 try {
-                   foreach($subscriptions as $subscription){
-                    $refundResult = $this->refundManager($subscription->cps_transaction_id,$subscription->referenceId );
+                $superadmin = session('Superadmin');
+                $username = $superadmin->username;
 
+                foreach ($subscriptions as $subscription) {
+                    try {
+                        $refundResult = $this->refundManager(
+                            $subscription->cps_transaction_id,
+                            $subscription->referenceId,
+                            $subscription->subscriber_msisdn
+                        );
 
-                    $bulkmanager = BulkManager::create([
-                        'subsecribe_id' => $subscription->subscription_id,
-                        'msisdn' => $subscription->subscriber_msisdn,
-                        'reason' => $refundResult['resultDesc'],
+                        BulkManager::create([
+                            'subsecribe_id' => $subscription->subscription_id,
+                            'msisdn' => $subscription->subscriber_msisdn,
+                            'reason' => $refundResult['resultDesc'],
                         ]);
 
-                    if ($refundResult['resultCode'] == 0) {
-                        // Call unsubscribeNow function with referenceId and CPS Transaction ID
-                        $subscription->update(['policy_status' => 0]);
+                        if ($refundResult['resultCode'] == 0) {
+                            // Call unsubscribeNow function with referenceId and CPS Transaction ID
+                            $subscription->update(['policy_status' => 0]);
 
-                        $refundedCustomer=RefundedCustomer::create([
-                        'subscription_id' => $subscription->subscription_id,
-                        'unsubscription_id' => 2,
-                        'transaction_id' => $refundResult['transactionId'],
-                        'reference_id' => $refundResult['referenceId'],
-                        'cps_response' => $refundResult['failedReason'],
-                        'result_description' => $refundResult['resultDesc'],
-                        'result_code' => 0,
-                        'refunded_by' => $username,
-                        'medium' => 'Portal',
-                        ]);
+                            $refundedCustomer = RefundedCustomer::create([
+                                'subscription_id' => $subscription->subscription_id,
+                                'unsubscription_id' => 2,
+                                'transaction_id' => $refundResult['transactionId'],
+                                'reference_id' => $refundResult['referenceId'],
+                                'cps_response' => $refundResult['failedReason'],
+                                'result_description' => $refundResult['resultDesc'],
+                                'result_code' => 0,
+                                'refunded_by' => $username,
+                                'medium' => 'Portal',
+                            ]);
 
+                            CustomerUnSubscription::create([
+                                'unsubscription_datetime' => now(),
+                                'medium' => "portal",
+                                'subscription_id' => $subscription->subscription_id,
+                                'refunded_id' => $refundedCustomer->refund_id,
+                            ]);
 
-                        CustomerUnSubscription::create([
-                            'unsubscription_datetime' => now(),
-                            'medium' => "portal",
-                            'subscription_id' => $subscription->subscription_id,
-                            'refunded_id' => $refundedCustomer->refund_id,
-                        ]);
-
-
-
-                        // Handle $unsubscribeResult as needed
-                        return redirect()->back()->with('success', 'Customer unsubscribed successfully.');
+                            $successCount++;
+                        } else {
+                            $errorMessages[] = "Refund failed for MSISDN: $msisdn - " . $refundResult['resultDesc'];
+                        }
+                    } catch (\Exception $e) {
+                        $errorMessages[] = "Error processing MSISDN: $msisdn - " . $e->getMessage();
                     }
+                }
+            }
 
-                    else {
-                        // Handle the case when refundManager fails
-                        return redirect()->back()->with([
-                            'error' => 'Refund failed',
-                            'resultCode' => $refundResult['resultCode'],
-                            'resultDesc' => $refundResult['resultDesc']
-                        ], 500);
-                     }
-
-                   }
-                 }
-
-
-                  catch (\Exception $e) {
-                     return response()->json(['error' => $e->getMessage()], 500);
-                 }
-                //   dd($subscription);
-
+            // Redirect with results after processing all data
+            if ($successCount > 0) {
+                return redirect()->route('superadmin.builkmanager.index')->with('success', "customers unsubscribed successfully.");
+            } else {
+                return redirect()->route('superadmin.builkmanager.index')->with('error', "Invaild Api Response.");
             }
         }
 
-        return redirect()->back()->with('success', 'Company profile created successfully');
+        return redirect()->route('superadmin.builkmanager.index')->with('error', 'No file uploaded.');
+        }
     }
 
-    public function refundManager($originalTransactionId, $referenceId)
+
+    public function refundManager($originalTransactionId, $referenceId ,$subscriber_msisdn)
 {
 
 
@@ -248,6 +268,25 @@ class BulkManagerController extends Controller
 
          $resultCode = $data_1['resultCode'];
          $resultDesc = $data_1['resultDesc'];
+         $transaction_id = $data_1['transactionId'];
+        //  $reference_id =   $data_1['referenceId'];
+         $cps_response = $data_1['failedReason'];
+         $msisdn = $subscriber_msisdn;
+         $response_encrypted_data = $response;
+         $response_decrypted_data = $decryptedData;
+         $api_url = "https://gateway-sandbox.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/unsub";
+
+         $logs = logs::create([
+            'msisdn' => $msisdn,
+            'resultCode' => $resultCode,
+            'resultDesc' => $resultDesc,
+            'transaction_id' => $transaction_id,
+            'reference_id' =>   $referenceId,
+            'cps_response' => $cps_response,
+            'api_url' => $api_url,
+            'source' => "BulkRefundManager",
+            ]);
+
 
 	 Log::info('API response decrypted', [
                 'url' => 'https://gateway-sandbox.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/unsub',
