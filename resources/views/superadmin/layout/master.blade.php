@@ -234,7 +234,9 @@
               </li>
             <!-- Misc -->
             <li class="menu-header small text-uppercase"><span class="menu-header-text">Refund Manager</span></li>
-            <li class="menu-item {{ Request::is('super-admin/manage-refunds') ? 'active' : '' }}">
+            <li class="menu-item {{ Request::is('super-admin/manage-refunds') ? 'active' : '' }}
+            {{ Request::is('super-admin/Refund/button/upload/index/logs') ? 'active' : '' }}
+            ">
               <a href="{{ route('superadmin.manage-refunds') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Manage Refunds</div>

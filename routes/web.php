@@ -150,9 +150,6 @@ Route::prefix('super-admin')->group(function () {
          Route::get('bulk/file/upload/getData', [BulkManagerController::class, 'getData'])->name('superadmin.builkmanager.getData');
          Route::get('bulk/file/upload/index/logs', [BulkManagerController::class, 'logsindex'])->name('superadmin.builkmanager.logsindex');
          Route::get('bulk/file/upload/logsData', [BulkManagerController::class, 'logsData'])->name('superadmin.builkmanager.logsData');
-
-
-
           //END BulkManagerController
 
 
@@ -202,6 +199,11 @@ Route::prefix('super-admin')->group(function () {
         Route::get('manage-refunds', [ManageRefunds::class, 'index'])->name('superadmin.manage-refunds');
         Route::get('manage-refunds/getRefundData', [ManageRefunds::class, 'getRefundData'])->name('manage-refunds.getRefundData');
         Route::get('refunded/unsubscribe-now/{subscriptionId}', [ManagerUnSubscription::class,'unsubscribeNow'])->name('refunded.unsubscribe-now');
+
+        // logs
+        Route::get('Refund/button/upload/index/logs', [ManagerUnSubscription::class, 'logsindex'])->name('superadmin.Refundbutton.logsindex');
+        Route::get('Refund/button/upload/logsData', [ManagerUnSubscription::class, 'logsData'])->name('superadmin.Refundbutton.logsData');
+
 
         Route::get('refunds-reports', [ManageRefunds::class, 'refundReports'])->name('superadmin.refunds-reports');
         Route::get('manage-refunds/getRefundedData', [ManageRefunds::class, 'getRefundedData'])->name('manage-refunds.getRefundedData');

@@ -8,6 +8,10 @@ use App\Models\Subscription\CustomerSubscription;
 use App\Models\Unsubscription\CustomerUnSubscription;
 use App\Models\Refund\RefundedCustomer;
 use Illuminate\Support\Facades\Log;
+use App\Models\logs;
+use Carbon\Carbon;
+use Illuminate\Support\Str;
+use Yajra\DataTables\DataTables;
 
 
 class ManagerUnSubscription extends Controller
@@ -17,17 +21,17 @@ class ManagerUnSubscription extends Controller
     $superadmin = session('Superadmin');
     $username = $superadmin->username;
 
-    
+
 
     // Fetch the customer subscription record
     $subscription = CustomerSubscription::findOrFail($subscriptionId);
 
     // Call refundManager function with referenceId and CPSTransaction ID
-    $refundResult = $this->refundManager($subscription->cps_transaction_id,$subscription->referenceId );
+    $refundResult = $this->refundManager($subscription->cps_transaction_id,$subscription->referenceId,$subscription->subscriber_msisdn);
 
-    
-    
-    
+
+
+
     if ($refundResult['resultCode'] == 0) {
         // Call unsubscribeNow function with referenceId and CPS Transaction ID
         $subscription->update(['policy_status' => 0]);
@@ -56,8 +60,8 @@ class ManagerUnSubscription extends Controller
 
         // Handle $unsubscribeResult as needed
         return redirect()->back()->with('success', 'Customer unsubscribed successfully.');
-    } 
-    
+    }
+
     else {
         // Handle the case when refundManager fails
         return redirect()->back()->with([
@@ -69,10 +73,10 @@ class ManagerUnSubscription extends Controller
 
 }
 
-public function refundManager($originalTransactionId, $referenceId)
-{   
-    
-    
+public function refundManager($originalTransactionId, $referenceId ,$subscriber_msisdn)
+{
+
+
     $referenceId_new = strval(mt_rand(100000000000000000, 999999999999999999));
     // Retrieve data from the AJAX request
     //dd($originalTransactionId,$referenceId);
@@ -85,7 +89,7 @@ public function refundManager($originalTransactionId, $referenceId)
         'referenceId' =>  $referenceId_new,
         'POSID' => "12345"
     ]);
-	
+
 	Log::info('API Request', [
                 'url' => 'https://gateway.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/unsub',
 		 'request-data' => $data,
@@ -94,7 +98,7 @@ public function refundManager($originalTransactionId, $referenceId)
 
     //return $data
 
-    
+
 
     $encryptedData = openssl_encrypt($data, 'aes-128-cbc', $key, OPENSSL_RAW_DATA, $iv);
     $hexEncryptedData = bin2hex($encryptedData);
@@ -145,13 +149,13 @@ public function refundManager($originalTransactionId, $referenceId)
 
     // Handle the response as needed
     $response = json_decode($response, true);
-	
+
 	Log::info('API response encrypted', [
                 'url' => 'https://gateway.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/unsub',
 		 'response-encrypted-data' => $response,
                 ]);
 
-	
+
 
 
     if (isset($response['data'])) {
@@ -166,25 +170,64 @@ public function refundManager($originalTransactionId, $referenceId)
         // Handle the decrypted data as needed
         $data_1 = json_decode($decryptedData, true);
 
-        
-         $resultCode = $data_1['resultCode'];
-         $resultDesc = $data_1['resultDesc'];
-	
+
+        $resultCode = $data_1['resultCode'];
+        $resultDesc = $data_1['resultDesc'];
+        $transaction_id = $data_1['transactionId'];
+       //  $reference_id =   $data_1['referenceId'];
+        $cps_response = $data_1['failedReason'];
+        $msisdn = $subscriber_msisdn;
+        $response_encrypted_data = $response;
+        $response_decrypted_data = $decryptedData;
+        $api_url = "https://gateway.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/unsub";
+
+        $logs = logs::create([
+           'msisdn' => $msisdn,
+           'resultCode' => $resultCode,
+           'resultDesc' => $resultDesc,
+           'transaction_id' => $transaction_id,
+           'reference_id' =>   $referenceId,
+           'cps_response' => $cps_response,
+           'api_url' => $api_url,
+           'source' => "ButtonRefundManager",
+           ]);
+
 	 Log::info('API response decrypted', [
                 'url' => 'https://gateway.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/unsub',
 		 'response-encrypted-data' => $decryptedData,
                 ]);
 
-	
-	
-         
+
+
+
 
          return $data_1;
-    } 
-    
+    }
+
     else {
         // Handle the case when 'data' is not set in the response
         return false;
     }
 }
+
+public function logsindex()
+{
+    return view('superadmin.refund.logs');
+}
+public function logsData(Request $request)
+{
+    if ($request->ajax()) {
+        // Start building the query
+        $query = logs::select('*')
+        ->where('source', 'ButtonRefundManager')
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+
+        return Datatables::of($query)->addIndexColumn()
+            ->make(true);
+    }
+}
+
+
 }

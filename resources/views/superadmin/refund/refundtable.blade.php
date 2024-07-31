@@ -42,10 +42,10 @@
             </nav>
             <div class="ms-panel">
 
-                <form method="POST" action="{{ route('superadmin.ManageRefundedDataExport') }}">
-                    @csrf
+
                 <div class="ms-panel-header ms-panel-custome align-items-center">
                     <div class="row mb-3">
+
                     </div>
                     <div class="col-md-2">
 
@@ -55,21 +55,26 @@
                             <label for="msisdn">Search by Mobile Number:</label>
                             <input type="text" id="msisdn" class="form-control" placeholder="Enter MSISDN">
                         </div>
-                    <div class="col-md-4">
-
+                    <div class="col-md-4 mt-3">
+                        <form method="POST" action="{{ route('superadmin.ManageRefundedDataExport') }}">
+                            @csrf
                         <label for="dateFilter">Filter by Date:</label>
                         <input type="text" id="dateFilter" name="dateFilter" class="form-control " placeholder="Select date range">
                     </div>
 
                     <div class="col-md-2 mt-8" style="margin-top: 2%">
                         <button type="submit" class="btn btn-primary btn-sm"><i class='bx bx-down-arrow-alt'></i>Export</button>
+                    </form>
+                    <a href="{{ route('superadmin.Refundbutton.logsindex') }}"> <button type="submit"
+                        class="btn btn-info btn-sm">Refund Api Logs</button>
+                    </a>
 
                     </div>
 
 
 
                 </div>
-                </form>
+
             </div>
         </div>
         <div class="col-xl-12 col-md-12">
@@ -100,7 +105,7 @@
         </div>
     </div>
 </div>
-<button onclick="toastSuccess()">test</button>
+
 <script>
     $(function () {
         // Initialize the date range picker
