@@ -289,6 +289,7 @@ class MobileApiController extends Controller
 
     // Get the subscription
     $subscription = CustomerSubscription::where('policy_status', 1)
+       ->where('subscriber_msisdn',$subscriber_msisdn)
         ->where('subscription_id', $subscriptionId)
         ->first();
 
