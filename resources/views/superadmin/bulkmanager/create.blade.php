@@ -8,7 +8,7 @@
         <h4 class="py-3 mb-4"><span class="text-muted fw-light">Bulk Manager/</span> Create New Bulk File</h4>
 
         <!-- Basic Layout -->
-        <div class="row">
+        {{-- <div class="row">
             <div class="col-xl">
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
@@ -33,9 +33,38 @@
                     </div>
                 </div>
             </div>
+        </div> --}}
+        <div class="row">
+            <div class="col-xl">
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Basic Layout</h5>
+                        <small class="text-muted float-end">Bulk Manager</small>
+
+
+                    </div>
+                    <div class="card-body">
+                        <form action="{{ route('superadmin.file.upload') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <!-- Other fields... -->
+
+                            <!-- File Upload -->
+                            <div class="form-group">
+                                <label for="file">Upload CSV File:</label>
+                                <input type="file" name="file" class="form-control" required>
+                            </div>
+                            <br>
+                            <button type="submit" class="btn btn-primary">Upload CSV</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
         </div>
+
+
     </div>
 </div>
+
 
 
 <script>
@@ -43,7 +72,7 @@
         // alert('hi');
         toastr.remove();
         toastr.options.positionClass = "toast-top-right";
-        toastr.success('Customer unsubscribed successfully.', 'Successfull !');
+        toastr.success('Upload Csv File Successfull.', 'Successfull !');
     }
 
     function toastdanger() {

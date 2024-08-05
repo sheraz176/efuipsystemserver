@@ -18,6 +18,7 @@ use App\Http\Controllers\SuperAdmin\AgentsReports\AgentReportsController;
 use App\Http\Controllers\SuperAdmin\Charts;
 use App\Http\Controllers\SuperAdmin\TesalesAgentsController;
 use App\Http\Controllers\bulkmanager\BulkManagerController;
+use App\Http\Controllers\bulkmanager\bulkFileController;
 use App\Http\Controllers\Agent\TeleSalesAgentController;
 use App\Http\Controllers\CompanyManager\CompanyManagerAuthController;
 use App\Http\Controllers\CompanyManager\CompanyManagerReportController;
@@ -150,6 +151,9 @@ Route::prefix('super-admin')->group(function () {
          Route::get('bulk/file/upload/getData', [BulkManagerController::class, 'getData'])->name('superadmin.builkmanager.getData');
          Route::get('bulk/file/upload/index/logs', [BulkManagerController::class, 'logsindex'])->name('superadmin.builkmanager.logsindex');
          Route::get('bulk/file/upload/logsData', [BulkManagerController::class, 'logsData'])->name('superadmin.builkmanager.logsData');
+
+         Route::post('/file-upload', [bulkFileController::class, 'upload'])->name('superadmin.file.upload');
+
           //END BulkManagerController
 
 
