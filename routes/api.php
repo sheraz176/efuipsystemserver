@@ -142,4 +142,7 @@ Route::prefix('v1')->group(function () {
 
    //  Api NetEnrollment Report
    Route::post('/NetEnrollment', [NetEntrollmentApiController::class, 'NetEnrollment'])->name('NetEnrollment');
+   Route::post('/TotalActiveSubscription', [NetEntrollmentApiController::class, 'ActiveSubscription'])->name('TotalActiveSubscription');
+   Route::post('/RefundedTransaction', [NetEntrollmentApiController::class, 'RefundedTransaction'])->name('RefundedTransaction');
+
 
