@@ -15,16 +15,16 @@
             </nav>
             <div class="ms-panel">
 
-                <form method="POST" action="{{ route('superadmin.companies.cancelled-data-export') }}">
-                    @csrf
+
+
+
                 <div class="ms-panel-header ms-panel-custome align-items-center">
                     <div class="row mb-3">
                     </div>
-                    <div class="col-md-2">
 
-
-                    </div>
-                        <div class="col-md-4">
+                        <div class="col-md-4" style="margin-top: 1%">
+                            <form method="POST" action="{{ route('superadmin.companies.cancelled-data-export') }}">
+                                @csrf
                             <label for="companyFilter">Filter by Company:</label>
                             <select id="companyFilter" class="form-select">
                                 <option value="">All Companies</option>
@@ -34,21 +34,27 @@
                                 @endforeach
                             </select>
                         </div>
-                    <div class="col-md-4">
+                    <div class="col-md-2" style="margin-left: -4%">
 
                         <label for="dateFilter">Filter by Date:</label>
                         <input type="text" id="dateFilter" name="dateFilter" class="form-control " placeholder="Select date range">
                     </div>
 
-                    <div class="col-md-2 mt-8" style="margin-top: 2%">
+                    <div class="col-md-2 mt-8" style="margin-top: 2% ; margin-left: -6%">
                         <button type="submit" class="btn btn-primary btn-sm"><i class='bx bx-down-arrow-alt'></i>Export</button>
 
                     </div>
+                  </form>
 
+                    <div class="col-md-2">
+                        <label for="msisdn">Search by Mobile Number:</label>
+                        <input type="text" id="msisdn" class="form-control" placeholder="Enter MSISDN">
+                    </div>
 
 
                 </div>
-                </form>
+
+
             </div>
         </div>
         <div class="col-xl-12 col-md-12">
@@ -124,6 +130,10 @@
                     if (companyFilter) {
                         d.companyFilter = companyFilter;
                     }
+                    var msisdn = $('#msisdn').val();
+                    if (msisdn) {
+                        d.msisdn = msisdn;
+                    }
                 }
             },
             columns: [
@@ -142,6 +152,9 @@
         });
 
         $('#companyFilter').on('change', function () {
+            table.ajax.reload();
+        });
+        $('#msisdn').on('change', function () {
             table.ajax.reload();
         });
         var search_input = document.querySelectorAll('.dataTables_filter input');

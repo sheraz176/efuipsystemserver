@@ -251,7 +251,9 @@ public function companies_cancelled_data(Request $request)
     if ($request->ajax()) {
         // Start building the query
         $query = CustomerUnSubscription::with(['customer_subscription.company', 'customer_subscription.plan', 'customer_subscription.products'])
-            ->select('*');
+            ->select('*')
+            ->join('customer_subscriptions', 'unsubscriptions.subscription_id', '=', 'customer_subscriptions.subscription_id');
+
 
         // Apply company filter if provided
         if ($request->has('companyFilter') && $request->input('companyFilter') != '') {
@@ -259,6 +261,11 @@ public function companies_cancelled_data(Request $request)
                 $q->where('id', $request->input('companyFilter'));
             });
         }
+          // Custom search functionality for msisdn
+          if ($request->has('msisdn') && !empty($request->input('msisdn'))) {
+            $msisdn = $request->input('msisdn');
+            $query->where('customer_subscriptions.subscriber_msisdn', 'like', '%' . $msisdn . '%');
+            }
 
     if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
         $dateRange = explode(' to ', $request->input('dateFilter'));

@@ -37,9 +37,9 @@ class AgentAuthController extends Controller
         // Attempt to authenticate the agent
         $agent = TeleSalesAgent::where('username', $request->username)->first();
 
-    if ($agent && $agent->status == 1 && Auth::guard('agent')->attempt($credentials)) {
+      if ($agent && $agent->status == 1 && Auth::guard('agent')->attempt($credentials)) {
 
-        Log::channel('login_log_basicagent')->info('Basic Agent logged in.', ['username' => $request->username]);
+         Log::channel('login_log_basicagent')->info('Basic Agent logged in.', ['username' => $request->username]);
 
         // Authentication successful, update login details and redirect to the agent dashboard
         $agent = Auth::guard('agent')->user();
@@ -90,6 +90,21 @@ class AgentAuthController extends Controller
      *
      * @return \Illuminate\Http\RedirectResponse
      */
+
+     public function __construct()
+    {
+     $this->middleware(function ($request, $next) {
+        $agent = Auth::guard('agent')->user();
+
+        if ($agent && $agent->islogin == 0) {
+            Auth::guard('agent')->logout();
+            return redirect()->route('basic-agent.login')->withErrors(['login' => 'You have been logged out automatically.']);
+        }
+
+        return $next($request);
+      });
+    }
+
     public function logout()
     {
         $agent = Auth::guard('agent')->user();

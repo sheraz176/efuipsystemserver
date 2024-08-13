@@ -1,17 +1,35 @@
 @extends('company_manager.layout.master')
 
 @section('content')
-@if(session('status'))
-<div class="alert alert-success">
-    {{ session('status') }}
-</div>
-@endif
+
 
 <h4 class=""><span class="text-muted fw-light">Company Performance/</span> Daily Lifes Secured & Total Sales</h4>
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="row">
-        <div class="col-12 col-md-8 col-lg-4 order-3 order-md-2">
-            <div class="row">
+            <div class="col-6 mb-4">
+               <div class="card">
+                <div class="card-body">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                        <div class="avatar flex-shrink-0">
+                            <img src="{{ asset('/assets/img/icons/unicons/cc-primary.png')}}" alt="Credit Card" class="rounded" />
+                        </div>
+                        <div class="dropdown">
+                            <button class="btn p-0" type="button" id="cardOpt1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="bx bx-dots-vertical-rounded"></i>
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="cardOpt1">
+                                <a class="dropdown-item" href="javascript:void(0);">View More</a>
+                                <a class="dropdown-item" href="javascript:void(0);">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="fw-medium d-block mb-1">Today's Total Agents Logins Count</span>
+                    <h3 class="card-title mb-2">{{ number_format($activeAgents, 0, '.', ',') }}</h3>
+                    <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +{{ $activeAgents }}%</small>
+                </div>
+            </div>
+        </div>
+
                 <div class="col-6 mb-4">
                     <div class="card">
                         <div class="card-body">
@@ -60,11 +78,6 @@
                 </div>
 
 
-
-            </div>
-        </div>
-        <div class="col-12 col-md-8 col-lg-4 order-3 order-md-2">
-            <div class="row">
                 <div class="col-6 mb-4">
                     <div class="card">
                         <div class="card-body">
@@ -113,11 +126,6 @@
                 </div>
 
 
-
-            </div>
-        </div>
-        <div class="col-12 col-md-8 col-lg-4 order-3 order-md-2">
-            <div class="row">
                 <div class="col-6 mb-4">
                     <div class="card">
                         <div class="card-body">
@@ -166,9 +174,6 @@
                 </div>
 
 
-
-            </div>
-        </div>
     </div>
 
 

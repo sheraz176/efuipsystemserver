@@ -234,9 +234,7 @@
               </li>
             <!-- Misc -->
             <li class="menu-header small text-uppercase"><span class="menu-header-text">Refund Manager</span></li>
-            <li class="menu-item {{ Request::is('super-admin/manage-refunds') ? 'active' : '' }}
-            {{ Request::is('super-admin/Refund/button/upload/index/logs') ? 'active' : '' }}
-            ">
+            <li class="menu-item {{ Request::is('super-admin/manage-refunds') ? 'active' : '' }} ">
               <a href="{{ route('superadmin.manage-refunds') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Manage Refunds</div>
@@ -250,8 +248,7 @@
             </li>
 
             <li class="menu-item {{ Request::is('super-admin/bulk/file/upload/index') ? 'active' : '' }}
-            {{ Request::is('super-admin/bulk/file/upload/create') ? 'active' : '' }}
-             {{ Request::is('super-admin/bulk/file/upload/index/logs') ? 'active' : '' }}">
+            {{ Request::is('super-admin/bulk/file/upload/create') ? 'active' : '' }}">
               <a href="{{ route('superadmin.builkmanager.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Bulk Refunds Manager</div>
@@ -292,6 +289,37 @@
                 <div data-i18n="Basic">Total Sales Request Report</div>
               </a>
             </li>
+
+            <!-- User interface -->
+
+            <li class="menu-header small text-uppercase"><span class="menu-header-text">Logs</span></li>
+
+            <li class="menu-item {{ Request::is('super-admin/auto/debit/api/logs') ? 'active' : '' }}">
+                <a href="{{ route('superadmin.auto.debit.api.log') }}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-collection"></i>
+                  <div data-i18n="Basic">Super Agent (Logs)</div>
+                 </a>
+            </li>
+            <li class="menu-item {{ Request::is('super-admin/payment/api/logs') ? 'active' : '' }}">
+                <a href="{{ route('superadmin.payment.api.log') }}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-collection"></i>
+                  <div data-i18n="Basic">Agent (Logs)</div>
+                 </a>
+            </li>
+            <li class="menu-item {{ Request::is('super-admin/Refund/button/upload/index/logs') ? 'active' : '' }}">
+                <a href="{{ route('superadmin.Refundbutton.logsindex') }}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-collection"></i>
+                  <div data-i18n="Basic">Refunds Api Logs</div>
+                 </a>
+            </li>
+            <li class="menu-item {{ Request::is('super-admin/bulk/file/upload/index/logs') ? 'active' : '' }}">
+                <a href="{{ route('superadmin.builkmanager.logsindex') }}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-collection"></i>
+                  <div data-i18n="Basic">Bulk Refunds Manager Logs</div>
+                 </a>
+            </li>
+
+
           </ul>
         </aside>
         <!-- / Menu -->

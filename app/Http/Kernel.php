@@ -67,5 +67,6 @@ class Kernel extends HttpKernel
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'agent' => \App\Http\Middleware\TeleSaleAgent::class,
         'super_admin' => \App\Http\Middleware\SuperAdminMiddleware::class,
+        'check.agent.login' => \App\Http\Middleware\CheckAgentLoginStatus::class,
     ];
 }

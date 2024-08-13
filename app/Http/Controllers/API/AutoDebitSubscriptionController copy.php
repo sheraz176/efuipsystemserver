@@ -12,7 +12,6 @@ use App\Models\Plans\ProductModel;
 use App\Models\InterestedCustomers\InterestedCustomer;
 use Illuminate\Support\Facades\Log;
 use App\Models\Client;
-use App\Models\logs;
 
 class AutoDebitSubscriptionController extends Controller
 {
@@ -189,13 +188,6 @@ class AutoDebitSubscriptionController extends Controller
                 if (isset($response['data'])) {
                     $hexEncodedData = $response['data'];
 
-                     // Remove non-hexadecimal characters
-                    $hexEncodedData = preg_replace('/[^0-9a-fA-F]/', '', $hexEncodedData);
-                    // Ensure the length is even
-                   if (strlen($hexEncodedData) % 2 !== 0) {
-                    $hexEncodedData = '0' . $hexEncodedData;
-                      }
-
                     $binaryData = hex2bin($hexEncodedData);
 
                     // Decrypt the data using openssl_decrypt
@@ -213,22 +205,9 @@ class AutoDebitSubscriptionController extends Controller
                     $referenceId = $data['referenceId'];
                     $accountNumber = $data['accountNumber'];
 
-                     // Logs Table;
-                     $logs = logs::create([
-                        'msisdn' => $subscriber_msisdn_deduction,
-                        'resultCode' => $resultCode,
-                        'resultDesc' => $resultDesc,
-                        'transaction_id' => $transactionId,
-                        'reference_id' =>   $referenceId,
-                        'cps_response' => $failedReason,
-                        'api_url' => $url,
-                        'agent_id' => $request->input('agent_id'),
-                        'source' => "AutoDebitApi",
-                        ]);
-
 
                     //echo $resultCode;
-                    if ($data !== null && isset($data['resultCode']) && $data['resultCode'] === "0")
+                    if($resultCode == 0)
                     {
 
                     $customer_id = '0011' . $subscriber_msisdn;
@@ -319,7 +298,7 @@ class AutoDebitSubscriptionController extends Controller
 
 
                     }
-                    else if ($data !== null)
+                    else
                     {
                          FailedSubscriptionsController::saveFailedTransactionDataautoDebit($transactionId,$resultCode,$resultDesc,$failedReason,$amount,$referenceId,$accountNumber,$planId,$productId,$agent_id,$company_id);
 

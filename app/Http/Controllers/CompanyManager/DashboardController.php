@@ -9,6 +9,7 @@ use App\Models\Refund\RefundedCustomer;
 use App\Models\InterestedCustomers\InterestedCustomer;
 use App\Models\Subscription\CustomerSubscription;
 use Carbon\Carbon;
+use App\Models\TeleSalesAgent;
 
 class DashboardController extends Controller
 {
@@ -21,6 +22,8 @@ class DashboardController extends Controller
         $todaySubscriptionCount = CustomerSubscription::where('company_id', $companyId)
             ->whereDate('created_at', Carbon::today())
             ->count();
+
+         $activeAgents = TeleSalesAgent::where('company_id',$companyId)->where('islogin','1')->count();
 
         // Count of current month's subscriptions
         $currentMonthSubscriptionCount = CustomerSubscription::where('company_id', $companyId)
@@ -91,6 +94,7 @@ class DashboardController extends Controller
             'yearlyTransactionSum' => $yearlyTransactionSum,
             'CustomerSubscriptionData' =>$CustomerSubscriptionData,
             'RefundedCustomersData' =>$RefundedCustomersData,
+            'activeAgents' => $activeAgents,
         ]);
     }
 

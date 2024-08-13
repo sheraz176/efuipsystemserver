@@ -39,25 +39,6 @@ class BulkManagerController extends Controller
         }
     }
 
-    public function logsindex()
-    {
-        return view('superadmin.bulkmanager.logs');
-    }
-    public function logsData(Request $request)
-    {
-        if ($request->ajax()) {
-            // Start building the query
-            $query = logs::select('*')
-            ->where('source', 'BulkRefundManager')
-            ->orderBy('created_at', 'desc')
-            ->get();
-
-
-            return Datatables::of($query)->addIndexColumn()
-                ->make(true);
-        }
-    }
-
     public function store(Request $request)
     {
         // Validate the request

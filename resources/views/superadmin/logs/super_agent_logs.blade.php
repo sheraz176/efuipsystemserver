@@ -1,16 +1,14 @@
 @extends('superadmin.layout.master')
 @include('superadmin.partials.style')
-<link href="{{ asset('newdes/assets/css/toastr.min.css') }}" rel="stylesheet">
 @section('content')
     <div class="ms-content-wrapper">
         <div class="row">
             <div class="col-md-12">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb pl-0">
-                        <li class="breadcrumb-item"><a href="{{ route('superadmin.dashboard') }}"><i
-                                    class="material-icons"></i>Home</a></li>
+                        <li class="breadcrumb-item"><a href="{{ route('superadmin.dashboard') }}"><i class="material-icons"></i>Home</a></li>
                         <li class="breadcrumb-item"><a href="{{ route('superadmin.dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Bulk Refunds Manager</li>
+                        <li class="breadcrumb-item active" aria-current="page">Auto Debit Api Logs</li>
                     </ol>
                 </nav>
 
@@ -18,8 +16,6 @@
                     <div class="ms-panel-header ms-panel-custome align-items-center">
                         <div class="row mb-3">
                             {{-- <label for="dateFilter">upload</label> --}}
-
-
 
                         </div>
                         <div class="col-md-6">
@@ -29,15 +25,8 @@
                         </div>
 
                         <div class="col-md-4 mt-6" style="margin-left: -40%">
-                            <a href="{{ route('superadmin.builkmanager.logsindex') }}"> <button type="submit"
-                                    class="btn btn-primary btn-sm">Api Logs</button>
-                            </a>
-                            <a href="{{ route('superadmin.builkmanager.create') }}"> <button type="submit"
-                                    class="btn btn-danger btn-sm"><i class='bx bx-down-arrow-alt'></i>Upload File</button>
-                            </a>
-                            <a href="{{ route('download.sample.csv') }}" class="btn btn-primary btn-sm">
-                                Download Sample CSV
-                            </a>
+
+
                         </div>
                     </div>
 
@@ -50,10 +39,15 @@
                         <table id="myTables" class="display myTables" style="width:100%">
                             <thead>
                                 <tr>
-                                    <th>ID</th>
-                                    <th>Subscription ID</th>
+                                    <th>Logs ID</th>
                                     <th>Msisdn</th>
-                                    <th>Reason</th>
+                                    <th>Result Code</th>
+                                    <th>Result Desc</th>
+                                    <th>Transaction ID</th>
+                                    <th>Reference ID</th>
+                                    <th>Failed Response</th>
+                                    <th>Date & Time</th>
+                                    <th>Api Url</th>
 
                                 </tr>
                             </thead>
@@ -105,7 +99,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('superadmin.builkmanager.getData') }}",
+                    url: "{{ route('superadmin.auto.debit.api.log.data') }}",
                     data: function(d) {
                         var dateFilter = $('#dateFilter').val();
                         if (dateFilter) {
@@ -118,17 +112,40 @@
                         name: 'id'
                     },
                     {
-                        data: 'subsecribe_id',
-                        name: 'subsecribe_id'
-                    },
-                    {
                         data: 'msisdn',
                         name: 'msisdn'
                     },
                     {
-                        data: 'reason',
-                        name: 'reason'
+                        data: 'resultCode',
+                        name: 'resultCode'
                     },
+                    {
+                        data: 'resultDesc',
+                        name: 'resultDesc'
+                    },
+                    {
+                        data: 'transaction_id',
+                        name: 'transaction_id'
+                    },
+                    {
+                        data: 'reference_id',
+                        name: 'reference_id'
+                    },
+                    {
+                        data: 'cps_response',
+                        name: 'cps_response'
+                    },
+                    {
+                        data: 'created_at',
+                        name: 'created_at'
+                    },
+                    {
+                        data: 'api_url',
+                        name: 'api_url'
+                    },
+
+
+
 
                 ]
             });
@@ -139,41 +156,10 @@
             });
         });
     </script>
-    @include('superadmin.partials.script')
-    <script>
-        function toastSuccess() {
-            // alert('hi');
-            toastr.remove();
-            toastr.options.positionClass = "toast-top-right";
-            toastr.success('Customer unsubscribed successfully.', 'Successfull !');
-        }
-
-        function toastdanger() {
-            toastr.remove();
-            toastr.options.positionClass = "toast-top-right";
-            toastr.error('Invalid response from API', 'Some thing Wrong !');
-        }
-    </script>
-    <script>
-        $(document).ready(function() {
-
-            var created = "{{ Session::get('success') }}";
-            if (created) {
-                toastSuccess();
-            }
-
-            var error = "{{ Session::get('error') }}";
-            if (error) {
-                toastdanger();
-            }
-
-        });
-    </script>
-
-    <script src="{{ asset('newdes/assets/js/toastr.min.js') }}"></script>
-    <script src="{{ asset('newdes/assets/js/toast.js') }}"></script>
+@include('superadmin.partials.script')
 
 
 
 
-@endsection
+
+ @endsection

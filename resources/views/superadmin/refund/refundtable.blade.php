@@ -65,9 +65,9 @@
                     <div class="col-md-2 mt-8" style="margin-top: 2%">
                         <button type="submit" class="btn btn-primary btn-sm"><i class='bx bx-down-arrow-alt'></i>Export</button>
                     </form>
-                    <a href="{{ route('superadmin.Refundbutton.logsindex') }}"> <button type="submit"
+                    {{-- <a href="{{ route('superadmin.Refundbutton.logsindex') }}"> <button type="submit"
                         class="btn btn-info btn-sm">Refund Api Logs</button>
-                    </a>
+                    </a> --}}
 
                     </div>
 

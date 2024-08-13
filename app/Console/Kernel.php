@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command('process:bulkfile')->everyMinute();
+        $schedule->command('logout:agent')->dailyAt('20:00');
     }
 
     /**

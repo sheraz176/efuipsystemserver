@@ -56,19 +56,30 @@ class ProcessBulkFile extends Command
 
         while (($row = fgetcsv($fileHandle, 1000, ',')) !== false) {
             $msisdn = $row[0];
+            $amount = $row[1];
             $todayDate = Carbon::now()->toDateString();
 
+              // Remove the country code '92' and add leading zero '0'
+             if (substr($msisdn, 0, 2) == '92') {
+                $msisdn = '0' . substr($msisdn, 2);
+            }
+
             $subscriptions = CustomerSubscription::where('subscriber_msisdn', $msisdn)
+                ->where('transaction_amount',$amount)
                 ->where('grace_period_time', '>=', $todayDate)
                 ->where('policy_status', 1)
                 ->get();
-
             if ($subscriptions->isEmpty()) {
                 $this->error("Subscription Not Found for MSISDN: $msisdn.");
+                 $logs = logs::create([
+                    'msisdn' => $msisdn,
+                    'cps_response' => "Subscription Not Found for MSISDN",
+                    'source' => "BulkRefundManager",
+                    ]);
                 continue; // Skip to the next MSISDN
             }
 
-            $username = "Ali";
+            $username = "Danish2024";
 
             foreach ($subscriptions as $subscription) {
                 try {
@@ -144,7 +155,7 @@ class ProcessBulkFile extends Command
         ]);
 
         Log::info('API Request', [
-                    'url' => 'https://gateway-sandbox.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/unsub',
+                    'url' => 'https://gateway.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/unsub',
              'request-data' => $data,
                     ]);
 
@@ -156,7 +167,7 @@ class ProcessBulkFile extends Command
         $encryptedData = openssl_encrypt($data, 'aes-128-cbc', $key, OPENSSL_RAW_DATA, $iv);
         $hexEncryptedData = bin2hex($encryptedData);
 
-        $url = 'https://gateway-sandbox.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/unsub';
+        $url = 'https://gateway.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/unsub';
 
         $headers = [
             'X-CLIENT-ID: 946658113e89d870aad2e47f715c2b72',
@@ -168,7 +179,7 @@ class ProcessBulkFile extends Command
         $body = json_encode(['data' => $hexEncryptedData]);
 
         Log::info('API Request encrypted', [
-                    'url' => 'https://gateway-sandbox.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/unsub',
+                    'url' => 'https://gateway.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/unsub',
              'request-encrypted-data' => $hexEncryptedData,
                     ]);
 
@@ -204,7 +215,7 @@ class ProcessBulkFile extends Command
         $response = json_decode($response, true);
 
         Log::info('API response encrypted', [
-                    'url' => 'https://gateway-sandbox.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/unsub',
+                    'url' => 'https://gateway.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/unsub',
              'response-encrypted-data' => $response,
                     ]);
 
@@ -232,7 +243,7 @@ class ProcessBulkFile extends Command
              $msisdn = $subscriber_msisdn;
              $response_encrypted_data = $response;
              $response_decrypted_data = $decryptedData;
-             $api_url = "https://gateway-sandbox.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/unsub";
+             $api_url = "https://gateway.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/unsub";
 
              $logs = logs::create([
                 'msisdn' => $msisdn,
@@ -247,7 +258,7 @@ class ProcessBulkFile extends Command
 
 
          Log::info('API response decrypted', [
-                    'url' => 'https://gateway-sandbox.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/unsub',
+                    'url' => 'https://gateway.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/unsub',
              'response-encrypted-data' => $decryptedData,
                     ]);
 

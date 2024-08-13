@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\CheckingRequest;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Models\logs;
 
 class PaymentController extends Controller
 
@@ -157,6 +158,12 @@ class PaymentController extends Controller
 
             if (isset($response['data'])) {
                 $hexEncodedData = $response['data'];
+                   // Remove non-hexadecimal characters
+                   $hexEncodedData = preg_replace('/[^0-9a-fA-F]/', '', $hexEncodedData);
+                   // Ensure the length is even
+                  if (strlen($hexEncodedData) % 2 !== 0) {
+                   $hexEncodedData = '0' . $hexEncodedData;
+                     }
 
                 $binaryData = hex2bin($hexEncodedData);
 
@@ -175,16 +182,29 @@ class PaymentController extends Controller
                 $referenceId = $data['referenceId'];
                 $accountNumber = $data['accountNumber'];
 
+                   // Logs Table;
+                   $logs = logs::create([
+                    'msisdn' => $msisdn,
+                    'resultCode' => $resultCode,
+                    'resultDesc' => $resultDesc,
+                    'transaction_id' => $transactionId,
+                    'reference_id' =>   $referenceId,
+                    'cps_response' => $failedReason,
+                    'api_url' => $url,
+                    'agent_id' => $agent_id,
+                    'source' => "PaymentController",
+                    ]);
+
                 //dd($resultCode);
 
                 //echo $resultCode;
-                if($resultCode == 0)
+                if ($data !== null && isset($data['resultCode']) && $data['resultCode'] === "0")
                 {
                     SubscriptionController::saveSubscriptionData($msisdn,$amount,$transactionId,$referenceId, $duration,$agent_id, $planID,$product_id,$resultCode,$resultDesc,$failedReason,$Beneficinary_name,$company_id);
 
                     return response()->json($data, 200);
                 }
-                else
+                else if ($data !== null)
                 {
                     FailedSubscriptionsController::saveFailedTransactionData($transactionId,$resultCode,$resultDesc,$failedReason,$amount,$referenceId,$accountNumber,$planID,$product_id,$agent_id,$company_id);
                     return response()->json($data, 200);

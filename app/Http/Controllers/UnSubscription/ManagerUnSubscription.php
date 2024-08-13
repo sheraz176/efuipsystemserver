@@ -210,24 +210,6 @@ public function refundManager($originalTransactionId, $referenceId ,$subscriber_
     }
 }
 
-public function logsindex()
-{
-    return view('superadmin.refund.logs');
-}
-public function logsData(Request $request)
-{
-    if ($request->ajax()) {
-        // Start building the query
-        $query = logs::select('*')
-        ->where('source', 'ButtonRefundManager')
-        ->orderBy('created_at', 'desc')
-        ->get();
-
-
-        return Datatables::of($query)->addIndexColumn()
-            ->make(true);
-    }
-}
 
 
 }

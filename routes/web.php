@@ -38,7 +38,7 @@ use App\Http\Controllers\SuperAgentL\CustomerDataL;
 use App\Http\Controllers\SuperAgentInterested\SuperAgentDashboardControllerInterested;
 use App\Http\Controllers\SuperAgentInterested\SuperAgentAuthControllerInterested;
 use App\Http\Controllers\SuperAgentInterested\CustomerDataInterested;
-
+use App\Http\Controllers\SuperAdmin\LogsController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -73,7 +73,9 @@ Route::get('/clear', function () {
    return 'All cache cleared';
 });
 
-Route::prefix('agent')->group(function () {
+
+
+Route::prefix('testing-agent')->group(function () {
     Route::get('/login', [AgentAuthController::class, 'showLoginForm'])->name('agent.login');
     Route::post('/login', [AgentAuthController::class, 'login']);
 
@@ -100,7 +102,7 @@ Route::prefix('basic-agent')->group(function () {
     Route::get('/login', [AgentAuthController2::class, 'showLoginForm'])->name('basic-agent.login');
     Route::post('/login', [AgentAuthController2::class, 'login'])->name('basic-agent.login-post');
 
-    Route::middleware(['web', 'agent'])->group(function () {
+    Route::group(['middleware' => ['auth:agent', 'check.agent.login']], function () {
         Route::get('/dashboard', [AgentAuthController2::class, 'dashboard'])->name('basic-agent.dashboard');
         Route::get('/sales', [AgentSalesController2::class, 'sales'])->name('basic-agent.sales');
         Route::get('/transaction', [AgentSalesController2::class, 'transaction'])->name('basic-agent.transaction');
@@ -110,7 +112,7 @@ Route::prefix('basic-agent')->group(function () {
         // routes/web.php
         Route::post('/save-customer', [CustomerController::class, 'saveCustomer'])->name('save-customer');
         Route::post('/check-subscription', [SubscriptionController::class, 'checkSubscription'])->name('check-subscription-basic');
-        Route::get('/overall-reports', [ReportsController::class, 'overall_report'])->name('basic-agent.overall-reports');
+        Route::get('/overall-reports', [ReportsController::class, 'overall_report_basic'])->name('basic-agent.overall-reports');
 
 
     });
@@ -149,13 +151,23 @@ Route::prefix('super-admin')->group(function () {
          Route::get('bulk/file/upload/create', [BulkManagerController::class, 'create'])->name('superadmin.builkmanager.create');
          Route::post('bulk/file/upload/store', [BulkManagerController::class, 'store'])->name('superadmin.builkmanager.store');
          Route::get('bulk/file/upload/getData', [BulkManagerController::class, 'getData'])->name('superadmin.builkmanager.getData');
-         Route::get('bulk/file/upload/index/logs', [BulkManagerController::class, 'logsindex'])->name('superadmin.builkmanager.logsindex');
-         Route::get('bulk/file/upload/logsData', [BulkManagerController::class, 'logsData'])->name('superadmin.builkmanager.logsData');
 
          Route::post('/file-upload', [bulkFileController::class, 'upload'])->name('superadmin.file.upload');
 
           //END BulkManagerController
 
+        //Start Logs
+        Route::get('auto/debit/api/logs', [LogsController::class, 'SuperAgentindex'])->name('superadmin.auto.debit.api.log');
+        Route::get('auto/debit/api/logs/data', [LogsController::class, 'SuperAgentlogsData'])->name('superadmin.auto.debit.api.log.data');
+        Route::get('payment/api/logs', [LogsController::class, 'Agentindex'])->name('superadmin.payment.api.log');
+        Route::get('payment/api/logs/data', [LogsController::class, 'AgentlogsData'])->name('superadmin.payment.api.log.data');
+        Route::get('bulk/file/upload/index/logs', [LogsController::class, 'bulkmanagerindex'])->name('superadmin.builkmanager.logsindex');
+        Route::get('bulk/file/upload/logsData', [LogsController::class, 'bulkmanagerlogsData'])->name('superadmin.builkmanager.logsData');
+        Route::get('Refund/button/upload/index/logs', [LogsController::class, 'buttonlogsindex'])->name('superadmin.Refundbutton.logsindex');
+        Route::get('Refund/button/upload/logsData', [LogsController::class, 'buttonlogsData'])->name('superadmin.Refundbutton.logsData');
+        Route::get('/download-sample-csv', [LogsController::class, 'downloadSampleCsv'])
+        ->name('download.sample.csv');
+        //End Logs
 
         Route::get('datatable-failed', [SuperAdminReports::class, 'failed_transactions'])->name('superadmin.datatable-failed');
         Route::get('datatable-failed/getFailedData', [SuperAdminReports::class, 'getFailedData'])->name('datatable-failed.getFailedData');
@@ -170,6 +182,8 @@ Route::prefix('super-admin')->group(function () {
         //Telsales Emp Code Update
         Route::get('telesales-agents-emp/edit/{id}', [TesalesAgentsController::class, 'edit'])->name('superadmin.telesales-agents-emp.edit');
         Route::post('telesales-agents/update/emp', [TesalesAgentsController::class, 'update'])->name('superadmin.telesales-agents.update.emp');
+        Route::get('telesales-agents-logout/edit/{id}', [TesalesAgentsController::class, 'Agentlogout'])->name('superadmin.telesales-agents-logout.edit');
+        Route::get('datatable/basic/agent/data', [TesalesAgentsController::class, 'AgentData'])->name('superadmin.basic.agent.data');
         //End Telsales Emp Code Update
 
 
@@ -203,10 +217,6 @@ Route::prefix('super-admin')->group(function () {
         Route::get('manage-refunds', [ManageRefunds::class, 'index'])->name('superadmin.manage-refunds');
         Route::get('manage-refunds/getRefundData', [ManageRefunds::class, 'getRefundData'])->name('manage-refunds.getRefundData');
         Route::get('refunded/unsubscribe-now/{subscriptionId}', [ManagerUnSubscription::class,'unsubscribeNow'])->name('refunded.unsubscribe-now');
-
-        // logs
-        Route::get('Refund/button/upload/index/logs', [ManagerUnSubscription::class, 'logsindex'])->name('superadmin.Refundbutton.logsindex');
-        Route::get('Refund/button/upload/logsData', [ManagerUnSubscription::class, 'logsData'])->name('superadmin.Refundbutton.logsData');
 
 
         Route::get('refunds-reports', [ManageRefunds::class, 'refundReports'])->name('superadmin.refunds-reports');
