@@ -389,7 +389,7 @@ public function unsubscribeactiveplan(Request $request)
     }
 
     // Handle non-refundable amounts
-    $nonRefundableAmounts = ['4', '133', '163', '5','1600'];
+    $nonRefundableAmounts = ['4', '133', '163', '5'];
     if (in_array($subscription->transaction_amount, $nonRefundableAmounts)) {
         $this->handleUnsubscription($subscription, $subscriber_msisdn);
         return response()->json([
@@ -404,7 +404,7 @@ public function unsubscribeactiveplan(Request $request)
     $sub_date = Carbon::parse($subscription->created_at)->format('Y-m-d');
     $amount = $subscription->transaction_amount;
 
-    if (in_array($amount, ['1950'])) {
+    if (in_array($amount, ['1600','1950'])) {
         if ($sub_date == $today)
                 {
                     $refund_eligibility_time = Carbon::parse($subscription->created_at)->addHours(24)->format('Y-m-d H:i:s');

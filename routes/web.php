@@ -127,6 +127,8 @@ Route::prefix('super-admin')->group(function () {
         Route::get('/dashboard', [SuperAdminAuth::class, 'showDashboard'])->name('superadmin.dashboard');
         Route::post('/logout', [SuperAdminAuth::class, 'logout'])->name('superadmin.logout');
 
+        Route::get('/dashboard/stats', [SuperAdminAuth::class, 'getStats'])->name('dashboard.stats');
+
             //Export all Data
             Route::post('export/active/subription', [ExportController::class, 'exportactivesubription'])->name('superadmin.export-active-subription');
             Route::post('export/complete/sale', [ExportController::class, 'exportcomplatesale'])->name('superadmin.export-complete.sale');\

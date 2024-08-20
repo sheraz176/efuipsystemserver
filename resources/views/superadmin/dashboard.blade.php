@@ -8,7 +8,7 @@
 @endif
 
 
-<h4 class=""><span class="text-muted fw-light">Company Performance/</span> Daily Lifes Secured & Total Sales</h4>
+<h4 class=""><span class="text-muted fw-light">Company Performance/    </span> Daily Lifes Secured & Total Sales</h4>
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="row">
 
@@ -163,14 +163,13 @@
     </div>
 </div>
 
-
-
+<h4 class=""><span class="text-muted fw-light">Overall Agents Activity/ </span> Live & Total Registered</h4>
 
 <div class="container-xxl flex-grow-1 container-p-y">
     <div class="row">
-        <div class="col-12 col-md-8 col-lg-4 order-3 order-md-2">
+
             <div class="row">
-                <div class="col-6 mb-4">
+                <div class="col-4 mb-4">
                     <div class="card">
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
@@ -179,16 +178,17 @@
                                 </div>
 
                             </div>
-                            {{-- <span class="d-block mb-1">Total Tsm Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($totalTsm, 0, '.', ',') }}</h3> --}}
-                            <span class="d-block mb-1">Active Tsm Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($activeTsm, 0, '.', ',') }}</h3>
+                           <span class="d-block mb-1">Active Tsm Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"><span id="totalTsm">0</span></h3>
+
+                            <span class="d-block mb-1" style="color: rgb(244, 87, 24);font-weight: bold;">Live  Tsm Agents</span>
+                            <h3 class="card-title text-nowrap mb-2" ><span id="activeTsm">0</span></h3>
 
                         </div>
                     </div>
                 </div>
 
-                <div class="col-6 mb-4">
+                <div class="col-4 mb-4">
                     <div class="card">
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
@@ -196,25 +196,17 @@
                                     <img src="{{ asset('/assets/img/icons/unicons/wallet.png')}}" alt="Credit Card" class="rounded" />
                                 </div>
                             </div>
-                            {{-- <span class="d-block mb-1">Total Ibex  Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($totalIbex, 0, '.', ',') }}</h3> --}}
-                            <span class="d-block mb-1">Active Ibex  Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($activeIbex, 0, '.', ',') }}</h3>
+                            <span class="d-block mb-1">Active Ibex Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"><span id="totalIbex">0</span></h3>
+                            <span class="d-block mb-1" style="color: rgb(244, 87, 24);font-weight: bold;">Live Ibex  Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"><span id="activeIbex">0</span></h3>
                         </div>
                     </div>
                 </div>
 
 
 
-
-            </div>
-        </div>
-
-        <div class="col-12 col-md-8 col-lg-4 order-3 order-md-2">
-            <div class="row">
-
-
-                <div class="col-6 mb-4">
+                <div class="col-4 mb-4">
                     <div class="card">
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
@@ -222,15 +214,15 @@
                                     <img src="{{ asset('/assets/img/icons/unicons/wallet.png')}}" alt="Credit Card" class="rounded" />
                                 </div>
                             </div>
-                            {{-- <span class="d-block mb-1">Total Sybrid  Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($totalSybrid, 0, '.', ',') }}</h3> --}}
                             <span class="d-block mb-1">Active Sybrid  Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($activeSybrid, 0, '.', ',') }}</h3>
+                            <h3 class="card-title text-nowrap mb-2"><span id="totalSybrid">0</span></h3>
+                            <span class="d-block mb-1"  style="color: rgb(244, 87, 24);font-weight: bold;">Live  Sybrid Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"><span id="activeSybrid">0</span></h3>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-6 mb-4">
+                <div class="col-4 mb-4">
                     <div class="card">
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
@@ -238,22 +230,16 @@
                                     <img src="{{ asset('/assets/img/icons/unicons/wallet.png')}}" alt="Credit Card" class="rounded" />
                                 </div>
                             </div>
-                            {{-- <span class="d-block mb-1">Total Abacus Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($totalAbacus, 0, '.', ',') }}</h3> --}}
                             <span class="d-block mb-1">Active Abacus Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($activeAbacus, 0, '.', ',') }}</h3>
+                            <h3 class="card-title text-nowrap mb-2"><span id="totalAbacus">0</span></h3>
+                            <span class="d-block mb-1"  style="color: rgb(244, 87, 24);font-weight: bold;">Live  Abacus Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"><span id="activeAbacus">0</span></h3>
 
                         </div>
                     </div>
                 </div>
 
-            </div>
-        </div>
-
-
-        <div class="col-12 col-md-8 col-lg-4 order-3 order-md-2">
-            <div class="row">
-                <div class="col-6 mb-4">
+                <div class="col-4 mb-4">
                     <div class="card">
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
@@ -261,23 +247,33 @@
                                     <img src="{{ asset('/assets/img/icons/unicons/wallet.png')}}" alt="Credit Card" class="rounded" />
                                 </div>
                             </div>
-                            {{-- <span class="d-block mb-1">Total JazzIVR Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($totalJazzIVR, 0, '.', ',') }}</h3> --}}
                             <span class="d-block mb-1">Active JazzIVR Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($activeJazzIVR, 0, '.', ',') }}</h3>
+                            <h3 class="card-title text-nowrap mb-2"><span id="totalJazzIVR">0</span></h3>
+                            <span class="d-block mb-1"  style="color: rgb(244, 87, 24);font-weight: bold;">Live  JazzIVR Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"><span id="activeJazzIVR">0</span></h3>
                         </div>
                     </div>
                 </div>
-
-
-
+                <div class="col-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="card-title d-flex align-items-start justify-content-between">
+                                <div class="avatar flex-shrink-0">
+                                    <img src="{{ asset('/assets/img/icons/unicons/wallet.png')}}" alt="Credit Card" class="rounded" />
+                                </div>
+                            </div>
+                            <span class="d-block mb-1">Total Active Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"><span id="totalactive">0</span></h3>
+                            <span class="d-block mb-1"  style="color: rgb(244, 87, 24);font-weight: bold;">Total Live  Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"><span id="totallive">0</span></h3>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-
-
 
     </div>
 </div>
+<h4 class=""><span class="text-muted fw-light">Net Enrollment Pattern </span>(Daily,Weekly,Monthly)</h4>
 
 <div class="row">
     <!-- Bar Charts -->
@@ -340,6 +336,7 @@
     <!-- Horizontal Bar Charts -->
 
     <!-- /Horizontal Bar Charts -->
+    <h4 class=""><span class="text-muted fw-light">Overall Subscription and UnSubscription </span>Pattern</h4>
 
     <!-- Line Charts -->
     <div class="col-12 mb-4">
@@ -358,6 +355,7 @@
     </div>
 
 <!-- Net Enrollment Charts -->
+<h4 class=""><span class="text-muted fw-light">Overall Net Enrollment</span> Performance</h4>
 
 <div class="col-xl-8 col-12 mb-4">
     <div class="card">
@@ -406,6 +404,20 @@
     </div>
 </div>
 
+<div class="col-4 " style="margin-left: 67%; margin-top:-25%;">
+    <div class="card">
+        <div class="card-body">
+            <div class="card-title d-flex align-items-start justify-content-between">
+                <div class="avatar flex-shrink-0">
+                    <img src="{{ asset('/assets/img/icons/unicons/cc-primary.png')}}" alt="Credit Card" class="rounded" />
+                </div>
+            </div>
+            <span class="fw-medium d-block mb-1"  style="color: rgb(244, 87, 24);font-weight: bold;">Total Live Net Enrollment Revenue</span>
+            <h3 class="card-title mb-2"><span id="netentrollmentrevinus"> </span></h3>
+
+        </div>
+    </div>
+</div>
 
 
     <script>
@@ -625,6 +637,42 @@ function updateChart(data) {
                 fetchChartData(companyId, timePeriod);
             });
         });
+
+
+        function updateStats() {
+        $.ajax({
+        url: '{{ route("dashboard.stats") }}',
+        type: 'GET',
+        success: function (data) {
+            $('#totalTsm').text(data.totalTsm);
+            $('#activeTsm').text(data.activeTsm);
+
+            $('#totalIbex').text(data.totalIbex);
+            $('#activeIbex').text(data.activeIbex);
+
+            $('#totalAbacus').text(data.totalAbacus);
+            $('#activeAbacus').text(data.activeAbacus);
+
+            $('#totalSybrid').text(data.totalSybrid);
+            $('#activeSybrid').text(data.activeSybrid);
+
+            $('#totalJazzIVR').text(data.totalJazzIVR);
+            $('#activeJazzIVR').text(data.activeJazzIVR);
+
+            $('#totalactive').text(data.totalactive);
+            $('#totallive').text(data.totallive);
+
+            $('#netentrollmentrevinus').text(data.netentrollmentrevinus);
+
+
+        }
+         });
+      }
+      // Call updateStats function every 10 seconds
+     setInterval(updateStats, 10000);
+      // Initial call
+      updateStats();
+
     </script>
 
 

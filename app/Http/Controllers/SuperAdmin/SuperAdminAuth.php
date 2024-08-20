@@ -73,24 +73,6 @@ class SuperAdminAuth extends Controller
         $yearlyTransactionSum = CustomerSubscription::whereYear('created_at', Carbon::now()->year)
             ->sum('transaction_amount');
 
-            $totalTsm = TeleSalesAgent::where('company_id','11')->count();
-            $activeTsm = TeleSalesAgent::where('company_id','11')->where('islogin','1')->count();
-
-            $totalIbex = TeleSalesAgent::where('company_id','1')->count();
-            $activeIbex = TeleSalesAgent::where('company_id','1')->where('islogin','1')->count();
-
-
-            $totalAbacus = TeleSalesAgent::where('company_id','2')->count();
-            $activeAbacus = TeleSalesAgent::where('company_id','2')->where('islogin','1')->count();
-
-
-            $totalSybrid = TeleSalesAgent::where('company_id','12')->count();
-            $activeSybrid = TeleSalesAgent::where('company_id','12')->where('islogin','1')->count();
-
-
-            $totalJazzIVR = TeleSalesAgent::where('company_id','14')->count();
-            $activeJazzIVR = TeleSalesAgent::where('company_id','14')->where('islogin','1')->count();
-
             $companies = CompanyProfile::all();
             //  dd($activeTsm);
 
@@ -101,16 +83,6 @@ class SuperAdminAuth extends Controller
             'dailyTransactionSum' => $dailyTransactionSum,
             'monthlyTransactionSum' => $monthlyTransactionSum,
             'yearlyTransactionSum' => $yearlyTransactionSum,
-            'totalTsm' => $totalTsm,
-            'activeTsm' => $activeTsm,
-            'totalIbex' => $totalIbex,
-            'activeIbex' => $activeIbex,
-            'totalAbacus' => $totalAbacus,
-            'activeAbacus' => $activeAbacus,
-            'totalSybrid' => $totalSybrid,
-            'activeSybrid' => $activeSybrid,
-            'totalJazzIVR' => $totalJazzIVR,
-            'activeJazzIVR' => $activeJazzIVR,
             'NetEnrollmentCount' => $NetEnrollmentCount,
             'companies' => $companies,
         ]);
@@ -124,4 +96,36 @@ class SuperAdminAuth extends Controller
 
         return redirect()->route('superadmin.login');
     }
+
+    public function getStats()
+    {
+        $stats = [
+
+            'totalTsm' => TeleSalesAgent::where('company_id', '11')->where('status','1')->count(),
+            'activeTsm' => TeleSalesAgent::where('company_id', '11')->where('islogin', '1')->count(),
+
+            'totalIbex' => TeleSalesAgent::where('company_id', '1')->where('status','1')->count(),
+            'activeIbex' => TeleSalesAgent::where('company_id', '1')->where('islogin', '1')->count(),
+
+            'totalAbacus' => TeleSalesAgent::where('company_id', '2')->where('status','1')->count(),
+            'activeAbacus' => TeleSalesAgent::where('company_id', '2')->where('islogin', '1')->count(),
+
+            'totalSybrid' => TeleSalesAgent::where('company_id', '12')->where('status','1')->count(),
+            'activeSybrid' => TeleSalesAgent::where('company_id', '12')->where('islogin', '1')->count(),
+
+            'totalJazzIVR' => TeleSalesAgent::where('company_id', '14')->where('status','1')->count(),
+            'activeJazzIVR' => TeleSalesAgent::where('company_id', '14')->where('islogin', '1')->count(),
+
+            'totalactive' => TeleSalesAgent::where('status','1')->count(),
+            'totallive' => TeleSalesAgent::where('islogin', '1')->count(),
+
+            'netentrollmentrevinus' => number_format(CustomerSubscription::where('policy_status', '1')->sum('transaction_amount'), 2),
+
+
+        ];
+
+        return response()->json($stats);
+    }
+
+
 }
