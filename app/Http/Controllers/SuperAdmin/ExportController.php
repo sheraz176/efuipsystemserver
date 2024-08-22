@@ -11,6 +11,7 @@ use Barryvdh\DomPDF\Facade as PDF;
 use Barryvdh\DomPDF\Facade;
 use Carbon\Carbon;
 use App\Models\RecusiveChargingData;
+use App\Models\TeleSalesAgent;
 use App\Models\Unsubscription\CustomerUnSubscription;
 use Illuminate\Support\Facades\DB;
 
@@ -26,11 +27,13 @@ class ExportController extends Controller
             'plans.plan_name', // Select the plan_name column from the plans table
             'products.product_name', // Select the product_name column from the products table
             'company_profiles.company_name', // Select the company_name column from the company_profiles table
+            'tele_sales_agents.username',
         ])
         ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
         ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
         ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-        ->with(['plan', 'product', 'companyProfile']); // Eager load related models
+        ->join('tele_sales_agents','customer_subscriptions.sales_agent', '=', 'tele_sales_agents.agent_id')
+        ->with(['plan', 'product', 'companyProfile','tele_sales_agents']); // Eager load related models
 
         if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
             $dateRange = explode(' to ', $request->input('dateFilter'));
@@ -45,7 +48,7 @@ class ExportController extends Controller
 
       // Define headers
      $headers = ['Subscription ID', 'Customer MSISDN', 'Plan Name', 'Product Name', 'Amount', 'Duration',
-     'Company Name', 'Agent Name', 'Transaction ID', 'Reference ID', 'Next Charging Date', 'Subscription Date','Free Look Period']; // Replace with your actual column names
+     'Company Name', 'Agent User Name', 'Transaction ID', 'Reference ID', 'Next Charging Date', 'Subscription Date','Free Look Period','agent_id']; // Replace with your actual column names
       // Prepare the data with headers
     $rows[] = $headers;
     foreach ($data as $item) {
@@ -57,12 +60,13 @@ class ExportController extends Controller
         $item->transaction_amount,
         $item->product_duration,
         $item->company_name,
-        $item->sales_agent,
+        $item->username,
         $item->cps_transaction_id,
         $item->referenceId,
         $item->recursive_charging_date,
         $item->subscription_time,
         $item->grace_period_time,
+        $item->sales_agent,
     ];
    }
 
@@ -90,11 +94,13 @@ class ExportController extends Controller
             'plans.plan_name', // Select the plan_name column from the plans table
             'products.product_name', // Select the product_name column from the products table
             'company_profiles.company_name', // Select the company_name column from the company_profiles table
+            'tele_sales_agents.username',
         ])
         ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
+        ->join('tele_sales_agents','customer_subscriptions.sales_agent', '=', 'tele_sales_agents.agent_id')
         ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
         ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-        ->with(['plan', 'product', 'companyProfile', 'interested_customers']) // Eager load related models
+        ->with(['plan', 'product', 'companyProfile','tele_sales_agents']) // Eager load related models
         ->where('customer_subscriptions.policy_status', '=', '1'); // Filter by policy status
 
         if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
@@ -112,22 +118,14 @@ class ExportController extends Controller
         // Define headers
         $headers = [
             'Subscription ID', 'Customer MSISDN', 'Plan Name', 'Product Name', 'Amount', 'Duration',
-            'Company Name', 'Agent Name', 'Transaction ID', 'Reference ID', 'Next Charging Date',
-            'Subscription Date', 'Free Look Period', 'Consent'
+            'Company Name', 'Agent User Name', 'Transaction ID', 'Reference ID', 'Next Charging Date',
+            'Subscription Date', 'Free Look Period', 'Consent','agent_id'
         ]; // Added 'Provider' as the last column
 
         // Prepare the data with headers
         $rows[] = $headers;
         foreach ($data as $item) {
-            $data_count = count($item->interested_customers);
-            $provider = null;
 
-            if ($data_count > 0) {
-                $provider = $item->interested_customers[$data_count - 1]->consistent_provider;
-                if (!is_null($provider)) {
-                    $provider = "(DTMF)." . $provider;
-                }
-            }
 
             $rows[] = [
                 $item->subscription_id,
@@ -137,13 +135,14 @@ class ExportController extends Controller
                 $item->transaction_amount,
                 $item->product_duration,
                 $item->company_name,
-                $item->sales_agent,
+                $item->username,
                 $item->cps_transaction_id,
                 $item->referenceId,
                 $item->recursive_charging_date,
                 $item->subscription_time,
                 $item->grace_period_time,
-                $provider // Added provider to the row in the required format
+                $item->consent,
+                $item->sales_agent,
             ];
         }
 
@@ -237,6 +236,7 @@ class ExportController extends Controller
         'unsubscriptions.unsubscription_datetime',
         'unsubscriptions.medium',
         'company_profiles.company_name',
+        'customer_subscriptions.sales_agent'
     ])
     ->join('customer_subscriptions', 'customer_subscriptions.subscription_id', '=', 'unsubscriptions.subscription_id')
     ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
@@ -265,7 +265,7 @@ class ExportController extends Controller
           //  dd($data);
              // Define headers
              $headers = ['Cacellation ID', 'Customer MSISDN', 'Plan Name', 'Product Name', 'Amount', 'Company Name',
-             'Transaction ID', 'Reference ID', 'Subscription Date', 'UnSubscriotion Date']; // Replace with your actual column names
+             'Transaction ID', 'Reference ID', 'Subscription Date', 'UnSubscriotion Date','agent_id']; // Replace with your actual column names
               // Prepare the data with headers
             $rows[] = $headers;
             foreach ($data as $item) {
@@ -280,6 +280,7 @@ class ExportController extends Controller
                 $item->referenceId,
                 $item->subscription_time,
                 $item->unsubscription_datetime,
+                $item->sales_agent,
             ];
            }
 
@@ -374,11 +375,13 @@ public function ManageRefundedDataExport(Request $request)
         'plans.plan_name', // Select the plan_name column from the plans table
         'products.product_name', // Select the product_name column from the products table
         'company_profiles.company_name', // Select the company_name column from the company_profiles table
+        'tele_sales_agents.username',
     ])
         ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
+        ->join('tele_sales_agents','customer_subscriptions.sales_agent', '=', 'tele_sales_agents.agent_id')
         ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
         ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-        ->with(['plan', 'product', 'companyProfile'])
+        ->with(['plan', 'product', 'companyProfile','tele_sales_agents'])
         ->where('grace_period_time', '>=', $todayDate) // Eager load related models
         ->where('policy_status', '=', 1);
 
@@ -395,7 +398,7 @@ public function ManageRefundedDataExport(Request $request)
         //  dd($data);
            // Define headers
            $headers = ['Subscription ID', 'Customer MSISDN', 'Plan Name', 'Product Name', 'Amount', 'Company Name',
-           'Agent Name', 'Next Charging Date', 'Subscription Date', 'Free Look Period']; // Replace with your actual column names
+           'Agent User Name', 'Next Charging Date', 'Subscription Date', 'Free Look Period']; // Replace with your actual column names
             // Prepare the data with headers
           $rows[] = $headers;
           foreach ($data as $item) {
@@ -406,7 +409,7 @@ public function ManageRefundedDataExport(Request $request)
               $item->product_name,
               $item->transaction_amount,
               $item->company_name,
-              $item->sales_agent,
+              $item->username,
               $item->recursive_charging_date,
               $item->subscription_time,
               $item->grace_period_time,
@@ -435,11 +438,13 @@ public function getDataCompanyExport(Request $request)
         'plans.plan_name', // Select the plan_name column from the plans table
         'products.product_name', // Select the product_name column from the products table
         'company_profiles.company_name', // Select the company_name column from the company_profiles table
+        'tele_sales_agents.username',
     ])
     ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
+    ->join('tele_sales_agents','customer_subscriptions.sales_agent', '=', 'tele_sales_agents.agent_id')
     ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
     ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-    ->with(['plan', 'product', 'companyProfile'])
+    ->with(['plan', 'product', 'companyProfile','tele_sales_agents'])
     ->where('customer_subscriptions.policy_status', '=', '1');
 
     if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
@@ -455,22 +460,14 @@ public function getDataCompanyExport(Request $request)
 
     $headers = [
         'Subscription ID', 'Customer MSISDN', 'Plan Name', 'Product Name', 'Amount', 'Duration',
-        'Company Name', 'Agent Name', 'Transaction ID', 'Reference ID', 'Next Charging Date',
+        'Company Name', 'Agent User Name', 'Transaction ID', 'Reference ID', 'Next Charging Date',
         'Subscription Date', 'Free Look Period', 'Consent'
     ]; // Added 'Provider' as the last column
 
     // Prepare the data with headers
     $rows[] = $headers;
     foreach ($data as $item) {
-        $data_count = count($item->interested_customers);
-        $provider = null;
 
-        if ($data_count > 0) {
-            $provider = $item->interested_customers[$data_count - 1]->consistent_provider;
-            if (!is_null($provider)) {
-                $provider = "(DTMF)." . $provider;
-            }
-        }
 
         $rows[] = [
             $item->subscription_id,
@@ -480,13 +477,13 @@ public function getDataCompanyExport(Request $request)
             $item->transaction_amount,
             $item->product_duration,
             $item->company_name,
-            $item->sales_agent,
+            $item->username,
             $item->cps_transaction_id,
             $item->referenceId,
             $item->recursive_charging_date,
             $item->subscription_time,
             $item->grace_period_time,
-            $provider // Added provider to the row in the required format
+            $item->consent,
         ];
     }
 
@@ -513,11 +510,13 @@ public function agents_get_data_export(Request $request)
             'plans.plan_name', // Select the plan_name column from the plans table
             'products.product_name', // Select the product_name column from the products table
             'company_profiles.company_name', // Select the company_name column from the company_profiles table
+            'tele_sales_agents.username',
         ])
         ->join('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
+        ->join('tele_sales_agents','customer_subscriptions.sales_agent', '=', 'tele_sales_agents.agent_id')
         ->join('products', 'customer_subscriptions.productId', '=', 'products.product_id')
         ->join('company_profiles', 'customer_subscriptions.company_id', '=', 'company_profiles.id')
-        ->with(['plan', 'product', 'companyProfile']) // Eager load related models
+        ->with(['plan', 'product', 'companyProfile','tele_sales_agents']) // Eager load related models
         ->where('customer_subscriptions.policy_status', '=', '1');
 
         if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
@@ -533,7 +532,7 @@ public function agents_get_data_export(Request $request)
         //    dd($data);
                // Define headers
                $headers = ['Subscription ID', 'Customer MSISDN', 'Plan Name', 'Product Name', 'Amount','Duration', 'Company Name',
-               'Agent Name','Transaction ID', 'Reference ID','Next Charging Date', 'Subscription Date', 'Free Look Period']; // Replace with your actual column names
+               'Agent User Name','Transaction ID', 'Reference ID','Next Charging Date', 'Subscription Date', 'Free Look Period']; // Replace with your actual column names
                 // Prepare the data with headers
               $rows[] = $headers;
               foreach ($data as $item) {
@@ -545,7 +544,7 @@ public function agents_get_data_export(Request $request)
                   $item->transaction_amount,
                   $item->product_duration,
                   $item->company_name,
-                  $item->sales_agent,
+                  $item->username,
                   $item->cps_transaction_id,
                   $item->referenceId,
                   $item->recursive_charging_date,

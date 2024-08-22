@@ -175,7 +175,14 @@
               </a>
             </li>
 
-
+              <!-- Information -->
+            <li class="menu-header small text-uppercase"><span class="menu-header-text">Information</span></li>
+            <li class="menu-item {{ Request::is('company-manager/customer/info') ? 'active' : '' }}">
+                <a href="{{ route('company-manager.customerinformation') }}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-collection"></i>
+                  <div data-i18n="Basic">Customer Information</div>
+                </a>
+              </li>
 
 
             <li class="menu-header small text-uppercase"><span class="menu-header-text">Agents Reports</span></li>

@@ -31,6 +31,8 @@
         <div class="row mt-3" id="customerDataSection" style="display: none;">
             <div class="col-md-12">
                 <h4 class="mb-4"><span class="text-muted fw-light">Auto Debit /</span> Customer Data for Auto Debit Payment</h4>
+                <input type="hidden" class="form-control" value="(DTMF),1" id="consent" name="consent" readonly>
+
                 <form id="customerDataForm">
                     <div class="form-group row mb-3">
                         <label for="customerMsisdn" class="col-md-2 col-form-label">Customer MSISDN:</label>
@@ -270,6 +272,7 @@
     var beneficinary_name = $('#beneficiaryName').val();
     var agent_id = $('#agentId').val();
     var company_id = $('#companyId').val();
+    var consent =  $('#consent').val();
 
     disableAutoDebitButton();
     // Construct the data object
@@ -282,7 +285,8 @@
         beneficiary_cnic: beneficiary_cnic,
         beneficinary_name: beneficinary_name,
         agent_id: agentId,
-        company_id: companyId
+        company_id: companyId,
+        consent : consent
         // Add other form fields as needed
     };
 

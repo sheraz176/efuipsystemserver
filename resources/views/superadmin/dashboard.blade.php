@@ -1,16 +1,16 @@
 @extends('superadmin.layout.master')
 
 @section('content')
-@if(session('status'))
-<div class="alert alert-success">
-    {{ session('status') }}
-</div>
-@endif
+    @if (session('status'))
+        <div class="alert alert-success">
+            {{ session('status') }}
+        </div>
+    @endif
 
 
-<h4 class=""><span class="text-muted fw-light">Company Performance/    </span> Daily Lifes Secured & Total Sales</h4>
-<div class="container-xxl flex-grow-1 container-p-y">
-    <div class="row">
+    <h4 class=""><span class="text-muted fw-light">Company Performance/ </span> Daily Lifes Secured & Total Sales</h4>
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <div class="row">
 
             <div class="row">
                 <div class="col-4 mb-4">
@@ -18,7 +18,8 @@
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
                                 <div class="avatar flex-shrink-0">
-                                    <img src="{{ asset('/assets/img/icons/unicons/wallet.png')}}" alt="Credit Card" class="rounded" />
+                                    <img src="{{ asset('/assets/img/icons/unicons/wallet.png') }}" alt="Credit Card"
+                                        class="rounded" />
                                 </div>
                                 {{-- <div class="dropdown">
                                     <button class="btn p-0" type="button" id="cardOpt4" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -31,7 +32,8 @@
                                 </div> --}}
                             </div>
                             <span class="d-block mb-1">Current Year Lifes Secured</span>
-                            <h3 class="card-title text-nowrap mb-2"> {{ number_format($currentYearSubscriptionCount, 0, '.', ',') }}</h3>
+                            <h3 class="card-title text-nowrap mb-2">
+                                {{ number_format($currentYearSubscriptionCount, 0, '.', ',') }}</h3>
                             {{-- <small class="text-danger fw-medium"><i class="bx bx-down-arrow-alt"></i> -14.82%</small> --}}
                         </div>
                     </div>
@@ -41,7 +43,8 @@
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
                                 <div class="avatar flex-shrink-0">
-                                    <img src="{{ asset('/assets/img/icons/unicons/cc-primary.png')}}" alt="Credit Card" class="rounded" />
+                                    <img src="{{ asset('/assets/img/icons/unicons/cc-primary.png') }}" alt="Credit Card"
+                                        class="rounded" />
                                 </div>
                                 {{-- <div class="dropdown">
                                     <button class="btn p-0" type="button" id="cardOpt1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -54,7 +57,8 @@
                                 </div> --}}
                             </div>
                             <span class="fw-medium d-block mb-1">Current Month Total Lifes Secured</span>
-                            <h3 class="card-title mb-2">{{ number_format($currentMonthSubscriptionCount, 0, '.', ',') }}</h3>
+                            <h3 class="card-title mb-2">{{ number_format($currentMonthSubscriptionCount, 0, '.', ',') }}
+                            </h3>
                             {{-- <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +28.14%</small> --}}
                         </div>
                     </div>
@@ -65,7 +69,8 @@
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
                                 <div class="avatar flex-shrink-0">
-                                    <img src="{{ asset('/assets/img/icons/unicons/chart.png')}}" alt="Credit Card" class="rounded" />
+                                    <img src="{{ asset('/assets/img/icons/unicons/chart.png') }}" alt="Credit Card"
+                                        class="rounded" />
                                 </div>
                                 {{-- <div class="dropdown">
                                     <button class="btn p-0" type="button" id="cardOpt4" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -78,7 +83,8 @@
                                 </div> --}}
                             </div>
                             <span class="d-block mb-1">Today's Total Lifes Secured</span>
-                            <h3 class="card-title text-nowrap mb-2">{{ number_format($todaySubscriptionCount, 0, '.', ',') }}</h3>
+                            <h3 class="card-title text-nowrap mb-2">
+                                {{ number_format($todaySubscriptionCount, 0, '.', ',') }}</h3>
                             {{-- <small class="text-danger fw-medium"><i class="bx bx-down-arrow-alt"></i> -14.82%</small> --}}
                         </div>
                     </div>
@@ -88,7 +94,8 @@
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
                                 <div class="avatar flex-shrink-0">
-                                    <img src="{{ asset('/assets/img/icons/unicons/cc-primary.png')}}" alt="Credit Card" class="rounded" />
+                                    <img src="{{ asset('/assets/img/icons/unicons/cc-primary.png') }}" alt="Credit Card"
+                                        class="rounded" />
                                 </div>
                                 {{-- <div class="dropdown">
                                     <button class="btn p-0" type="button" id="cardOpt1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -112,7 +119,8 @@
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
                                 <div class="avatar flex-shrink-0">
-                                    <img src="{{ asset('/assets/img/icons/unicons/chart.png')}}" alt="Credit Card" class="rounded" />
+                                    <img src="{{ asset('/assets/img/icons/unicons/chart.png') }}" alt="Credit Card"
+                                        class="rounded" />
                                 </div>
                                 {{-- <div class="dropdown">
                                     <button class="btn p-0" type="button" id="cardOpt4" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -125,7 +133,8 @@
                                 </div> --}}
                             </div>
                             <span class="d-block mb-1">Current Months Total Sales</span>
-                            <h3 class="card-title text-nowrap mb-2">{{ number_format($monthlyTransactionSum, 0, '.', ',') }}</h3>
+                            <h3 class="card-title text-nowrap mb-2">
+                                {{ number_format($monthlyTransactionSum, 0, '.', ',') }}</h3>
                             {{-- <small class="text-danger fw-medium"><i class="bx bx-down-arrow-alt"></i> -14.82%</small> --}}
                         </div>
                     </div>
@@ -135,7 +144,8 @@
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
                                 <div class="avatar flex-shrink-0">
-                                    <img src="{{ asset('/assets/img/icons/unicons/cc-primary.png')}}" alt="Credit Card" class="rounded" />
+                                    <img src="{{ asset('/assets/img/icons/unicons/cc-primary.png') }}" alt="Credit Card"
+                                        class="rounded" />
                                 </div>
                                 {{-- <div class="dropdown">
                                     <button class="btn p-0" type="button" id="cardOpt1" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -161,12 +171,12 @@
         </div>
 
     </div>
-</div>
+    </div>
 
-<h4 class=""><span class="text-muted fw-light">Overall Agents Activity/ </span> Live & Total Registered</h4>
+    <h4 class=""><span class="text-muted fw-light">Overall Agents Activity/ </span> Live & Total Registered</h4>
 
-<div class="container-xxl flex-grow-1 container-p-y">
-    <div class="row">
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <div class="row">
 
             <div class="row">
                 <div class="col-4 mb-4">
@@ -174,15 +184,17 @@
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
                                 <div class="avatar flex-shrink-0">
-                                    <img src="{{ asset('/assets/img/icons/unicons/wallet.png')}}" alt="Credit Card" class="rounded" />
+                                    <img src="{{ asset('/assets/img/icons/unicons/wallet.png') }}" alt="Credit Card"
+                                        class="rounded" />
                                 </div>
 
                             </div>
-                           <span class="d-block mb-1">Active Tsm Agents</span>
+                            <span class="d-block mb-1">Active Tsm Agents</span>
                             <h3 class="card-title text-nowrap mb-2"><span id="totalTsm">0</span></h3>
 
-                            <span class="d-block mb-1" style="color: rgb(244, 87, 24);font-weight: bold;">Live  Tsm Agents</span>
-                            <h3 class="card-title text-nowrap mb-2" ><span id="activeTsm">0</span></h3>
+                            <span class="d-block mb-1" style="color: rgb(244, 87, 24);font-weight: bold;">Live Tsm
+                                Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"><span id="activeTsm">0</span></h3>
 
                         </div>
                     </div>
@@ -193,12 +205,14 @@
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
                                 <div class="avatar flex-shrink-0">
-                                    <img src="{{ asset('/assets/img/icons/unicons/wallet.png')}}" alt="Credit Card" class="rounded" />
+                                    <img src="{{ asset('/assets/img/icons/unicons/wallet.png') }}" alt="Credit Card"
+                                        class="rounded" />
                                 </div>
                             </div>
                             <span class="d-block mb-1">Active Ibex Agents</span>
                             <h3 class="card-title text-nowrap mb-2"><span id="totalIbex">0</span></h3>
-                            <span class="d-block mb-1" style="color: rgb(244, 87, 24);font-weight: bold;">Live Ibex  Agents</span>
+                            <span class="d-block mb-1" style="color: rgb(244, 87, 24);font-weight: bold;">Live Ibex
+                                Agents</span>
                             <h3 class="card-title text-nowrap mb-2"><span id="activeIbex">0</span></h3>
                         </div>
                     </div>
@@ -211,12 +225,14 @@
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
                                 <div class="avatar flex-shrink-0">
-                                    <img src="{{ asset('/assets/img/icons/unicons/wallet.png')}}" alt="Credit Card" class="rounded" />
+                                    <img src="{{ asset('/assets/img/icons/unicons/wallet.png') }}" alt="Credit Card"
+                                        class="rounded" />
                                 </div>
                             </div>
-                            <span class="d-block mb-1">Active Sybrid  Agents</span>
+                            <span class="d-block mb-1">Active Sybrid Agents</span>
                             <h3 class="card-title text-nowrap mb-2"><span id="totalSybrid">0</span></h3>
-                            <span class="d-block mb-1"  style="color: rgb(244, 87, 24);font-weight: bold;">Live  Sybrid Agents</span>
+                            <span class="d-block mb-1" style="color: rgb(244, 87, 24);font-weight: bold;">Live Sybrid
+                                Agents</span>
                             <h3 class="card-title text-nowrap mb-2"><span id="activeSybrid">0</span></h3>
                         </div>
                     </div>
@@ -227,12 +243,14 @@
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
                                 <div class="avatar flex-shrink-0">
-                                    <img src="{{ asset('/assets/img/icons/unicons/wallet.png')}}" alt="Credit Card" class="rounded" />
+                                    <img src="{{ asset('/assets/img/icons/unicons/wallet.png') }}" alt="Credit Card"
+                                        class="rounded" />
                                 </div>
                             </div>
                             <span class="d-block mb-1">Active Abacus Agents</span>
                             <h3 class="card-title text-nowrap mb-2"><span id="totalAbacus">0</span></h3>
-                            <span class="d-block mb-1"  style="color: rgb(244, 87, 24);font-weight: bold;">Live  Abacus Agents</span>
+                            <span class="d-block mb-1" style="color: rgb(244, 87, 24);font-weight: bold;">Live Abacus
+                                Agents</span>
                             <h3 class="card-title text-nowrap mb-2"><span id="activeAbacus">0</span></h3>
 
                         </div>
@@ -244,12 +262,14 @@
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
                                 <div class="avatar flex-shrink-0">
-                                    <img src="{{ asset('/assets/img/icons/unicons/wallet.png')}}" alt="Credit Card" class="rounded" />
+                                    <img src="{{ asset('/assets/img/icons/unicons/wallet.png') }}" alt="Credit Card"
+                                        class="rounded" />
                                 </div>
                             </div>
                             <span class="d-block mb-1">Active JazzIVR Agents</span>
                             <h3 class="card-title text-nowrap mb-2"><span id="totalJazzIVR">0</span></h3>
-                            <span class="d-block mb-1"  style="color: rgb(244, 87, 24);font-weight: bold;">Live  JazzIVR Agents</span>
+                            <span class="d-block mb-1" style="color: rgb(244, 87, 24);font-weight: bold;">Live JazzIVR
+                                Agents</span>
                             <h3 class="card-title text-nowrap mb-2"><span id="activeJazzIVR">0</span></h3>
                         </div>
                     </div>
@@ -259,422 +279,562 @@
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
                                 <div class="avatar flex-shrink-0">
-                                    <img src="{{ asset('/assets/img/icons/unicons/wallet.png')}}" alt="Credit Card" class="rounded" />
+                                    <img src="{{ asset('/assets/img/icons/unicons/wallet.png') }}" alt="Credit Card"
+                                        class="rounded" />
                                 </div>
                             </div>
                             <span class="d-block mb-1">Total Active Agents</span>
                             <h3 class="card-title text-nowrap mb-2"><span id="totalactive">0</span></h3>
-                            <span class="d-block mb-1"  style="color: rgb(244, 87, 24);font-weight: bold;">Total Live  Agents</span>
+                            <span class="d-block mb-1" style="color: rgb(244, 87, 24);font-weight: bold;">Total Live
+                                Agents</span>
                             <h3 class="card-title text-nowrap mb-2"><span id="totallive">0</span></h3>
                         </div>
                     </div>
                 </div>
             </div>
 
+        </div>
     </div>
-</div>
-<h4 class=""><span class="text-muted fw-light">Net Enrollment Pattern </span>(Daily,Weekly,Monthly)</h4>
+    <h4 class=""><span class="text-muted fw-light">Net Enrollment Pattern </span>(Daily,Weekly,Monthly)</h4>
 
-<div class="row">
-    <!-- Bar Charts -->
-    <div class="col-xl-6 col-12 mb-4">
-        <div class="card">
-            <div class="card-header header-elements">
-                <h5 class="card-title mb-0">Net Enrollments (Total Sales)</h5>
-                <div class="card-action-element ms-auto py-0">
-                    <div class="dropdown">
-                        <button type="button" class="btn dropdown-toggle px-0" data-bs-toggle="dropdown" aria-expanded="false"><i class="bx bx-calendar"></i></button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center" data-range="today">Today</a></li>
-                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center" data-range="yesterday">Yesterday</a></li>
-                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center" data-range="last_7_days">Last 7 Days</a></li>
-                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center" data-range="last_30_days">Last 30 Days</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center" data-range="current_month">Current Month</a></li>
-                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center" data-range="last_month">Last Month</a></li>
-                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center" data-range="this_year">This Year</a></li>
-                        </ul>
+    <div class="row">
+        <!-- Bar Charts -->
+        <div class="col-xl-6 col-12 mb-4">
+            <div class="card">
+                <div class="card-header header-elements">
+                    <h5 class="card-title mb-0">Net Enrollments (Total Sales)</h5>
+                    <div class="card-action-element ms-auto py-0">
+                        <div class="dropdown">
+                            <button type="button" class="btn dropdown-toggle px-0" data-bs-toggle="dropdown"
+                                aria-expanded="false"><i class="bx bx-calendar"></i></button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center"
+                                        data-range="today">Today</a></li>
+                                <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center"
+                                        data-range="yesterday">Yesterday</a></li>
+                                <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center"
+                                        data-range="last_7_days">Last 7 Days</a></li>
+                                <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center"
+                                        data-range="last_30_days">Last 30 Days</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center"
+                                        data-range="current_month">Current Month</a></li>
+                                <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center"
+                                        data-range="last_month">Last Month</a></li>
+                                <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center"
+                                        data-range="this_year">This Year</a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="card-body">
-                <canvas id="barChart" class="chartjs" data-height="400" height="500" style="display: block; box-sizing: border-box; height: 400px; width: 519px;" width="649"></canvas>
+                <div class="card-body">
+                    <canvas id="barChart" class="chartjs" data-height="400" height="500"
+                        style="display: block; box-sizing: border-box; height: 400px; width: 519px;"
+                        width="649"></canvas>
+                </div>
             </div>
         </div>
-    </div>
-    <!-- /Bar Charts -->
+        <!-- /Bar Charts -->
 
-    <div class="col-xl-6 col-12 mb-4">
-        <div class="card">
-            <div class="card-header header-elements">
-                <h5 class="card-title mb-0">Monthly Active Subscriptions</h5>
-                <div class="card-action-element ms-auto py-0">
-                    <div class="dropdown">
-                        <button type="button" class="btn dropdown-toggle px-0" data-bs-toggle="dropdown" aria-expanded="false"><i class="bx bx-calendar"></i></button>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Today</a></li>
-                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Yesterday</a></li>
-                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 7 Days</a></li>
-                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 30 Days</a></li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Current Month</a></li>
-                            <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last Month</a></li>
-                        </ul>
+        <div class="col-xl-6 col-12 mb-4">
+            <div class="card">
+                <div class="card-header header-elements">
+                    <h5 class="card-title mb-0">Monthly Active Subscriptions</h5>
+                    <div class="card-action-element ms-auto py-0">
+                        <div class="dropdown">
+                            <button type="button" class="btn dropdown-toggle px-0" data-bs-toggle="dropdown"
+                                aria-expanded="false"><i class="bx bx-calendar"></i></button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li><a href="javascript:void(0);"
+                                        class="dropdown-item d-flex align-items-center">Today</a></li>
+                                <li><a href="javascript:void(0);"
+                                        class="dropdown-item d-flex align-items-center">Yesterday</a></li>
+                                <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 7
+                                        Days</a></li>
+                                <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last 30
+                                        Days</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Current
+                                        Month</a></li>
+                                <li><a href="javascript:void(0);" class="dropdown-item d-flex align-items-center">Last
+                                        Month</a></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="card-body">
-                <canvas id="barChart_1" class="chartjs" data-height="400" height="500" style="display: block; box-sizing: border-box; height: 400px; width: 519px;" width="649"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- Horizontal Bar Charts -->
-
-    <!-- /Horizontal Bar Charts -->
-    <h4 class=""><span class="text-muted fw-light">Overall Subscription and UnSubscription </span>Pattern</h4>
-
-    <!-- Line Charts -->
-    <div class="col-12 mb-4">
-        <div class="card">
-            <div class="card-header header-elements">
-                <div>
-                    <h5 class="card-title mb-0">Monthly Subscription and UnSubscription</h5>
-                    <small class="text-muted">Different Between Subscription and UnSubscription Trends</small>
+                <div class="card-body">
+                    <canvas id="barChart_1" class="chartjs" data-height="400" height="500"
+                        style="display: block; box-sizing: border-box; height: 400px; width: 519px;"
+                        width="649"></canvas>
                 </div>
-
-            </div>
-            <div class="card-body">
-                <canvas id="lineChart" class="chartjs" data-height="500" height="625" width="1391" style="display: block; box-sizing: border-box; height: 500px; width: 1112px;"></canvas>
             </div>
         </div>
-    </div>
 
-<!-- Net Enrollment Charts -->
-<h4 class=""><span class="text-muted fw-light">Overall Net Enrollment</span> Performance</h4>
+        <!-- Horizontal Bar Charts -->
 
-<div class="col-xl-8 col-12 mb-4">
-    <div class="card">
-        <div class="card-header header-elements">
-            <div class="d-flex justify-content-between align-items-center">
-                {{-- <h5 class="card-title mb-0">Net Enrollment </h5> --}}
-                <div class="d-flex justify-content-start align-items-center" >
+        <!-- /Horizontal Bar Charts -->
+        <h4 class=""><span class="text-muted fw-light">Overall Subscription and UnSubscription </span>Pattern</h4>
+
+        <!-- Line Charts -->
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header header-elements">
+                    <div>
+                        <h5 class="card-title mb-0">Monthly Subscription and UnSubscription</h5>
+                        <small class="text-muted">Different Between Subscription and UnSubscription Trends</small>
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <canvas id="lineChart" class="chartjs" data-height="500" height="625" width="1391"
+                        style="display: block; box-sizing: border-box; height: 500px; width: 1112px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <h4 class=""><span class="text-muted fw-light">Hourly Net Enrollment</span>  (Total Sales, Total
+            Agents , Total Revenue)</h4>
+
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header header-elements">
+
                     <div class="me-2">
-                        <label for="companyFilter">Filter by Company:</label>
-                        <select id="companyFilter" class="form-select">
+                        <label for="companyFilters">Filter by Company:</label>
+                        <select id="companyFilters" class="form-select">
                             <option value="">All Companies</option>
                             @foreach ($companies as $company)
                                 <option value="{{ $company->id }}">{{ $company->company_name }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <div>
-                        <label for="timeFilter">Filter by Time Period:</label>
-                        <select id="timeFilter" class="form-select">
-                            <option value="daily">Daily</option>
-                            <option value="monthly">Monthly</option>
-                            <option value="last7days">Last 7 Days</option>
-                            <option value="yearly">Yearly</option>
-                        </select>
+                </div>
+                <div class="card-body">
+                    <canvas id="lineChartrevinue" class="chartjs" data-height="500" height="625" width="1391"
+                        style="display: block; box-sizing: border-box; height: 500px; width: 1112px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Net Enrollment Charts -->
+        <h4 class=""><span class="text-muted fw-light">Overall Net Enrollment</span> Performance</h4>
+
+        <div class="col-xl-8 col-12 mb-4">
+            <div class="card">
+                <div class="card-header header-elements">
+                    <div class="d-flex justify-content-between align-items-center">
+                        {{-- <h5 class="card-title mb-0">Net Enrollment </h5> --}}
+                        <div class="d-flex justify-content-start align-items-center">
+                            <div class="me-2">
+                                <label for="companyFilter">Filter by Company:</label>
+                                <select id="companyFilter" class="form-select">
+                                    <option value="">All Companies</option>
+                                    @foreach ($companies as $company)
+                                        <option value="{{ $company->id }}">{{ $company->company_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label for="timeFilter">Filter by Time Period:</label>
+                                <select id="timeFilter" class="form-select">
+                                    <option value="daily">Daily</option>
+                                    <option value="monthly">Monthly</option>
+                                    <option value="last7days">Last 7 Days</option>
+                                    <option value="yearly">Yearly</option>
+                                    <option value="hourly">Hourly</option>
+                                </select>
+                            </div>
+
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="card-body">
-            <canvas id="barChart_netenrollment" class="chartjs" data-height="500"></canvas>
-        </div>
-    </div>
-</div>
-<div class="col-4 mb-4">
-    <div class="card">
-        <div class="card-body">
-            <div class="card-title d-flex align-items-start justify-content-between">
-                <div class="avatar flex-shrink-0">
-                    <img src="{{ asset('/assets/img/icons/unicons/cc-primary.png')}}" alt="Credit Card" class="rounded" />
+                <div class="card-body">
+                    <canvas id="barChart_netenrollment" class="chartjs" data-height="500"></canvas>
                 </div>
             </div>
-            <span class="fw-medium d-block mb-1">Total Net Enrollment Count</span>
-            <h3 class="card-title mb-2">{{ number_format($NetEnrollmentCount, 0, '.', ',') }}</h3>
-             <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +{{ number_format($NetEnrollmentCount, 0, '.', ',') }}%</small>
         </div>
-    </div>
-</div>
-
-<div class="col-4 " style="margin-left: 67%; margin-top:-25%;">
-    <div class="card">
-        <div class="card-body">
-            <div class="card-title d-flex align-items-start justify-content-between">
-                <div class="avatar flex-shrink-0">
-                    <img src="{{ asset('/assets/img/icons/unicons/cc-primary.png')}}" alt="Credit Card" class="rounded" />
+        <div class="col-4 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                        <div class="avatar flex-shrink-0">
+                            <img src="{{ asset('/assets/img/icons/unicons/cc-primary.png') }}" alt="Credit Card"
+                                class="rounded" />
+                        </div>
+                    </div>
+                    <span class="fw-medium d-block mb-1">Total Net Enrollment Count</span>
+                    <h3 class="card-title mb-2">{{ number_format($NetEnrollmentCount, 0, '.', ',') }}</h3>
+                    <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
+                        +{{ number_format($NetEnrollmentCount, 0, '.', ',') }}%</small>
                 </div>
             </div>
-            <span class="fw-medium d-block mb-1"  style="color: rgb(244, 87, 24);font-weight: bold;">Total Live Net Enrollment Revenue</span>
-            <h3 class="card-title mb-2"><span id="netentrollmentrevinus"> </span></h3>
-
         </div>
-    </div>
-</div>
+
+        <div class="col-4 " style="margin-left: 67%; margin-top:-25%;">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                        <div class="avatar flex-shrink-0">
+                            <img src="{{ asset('/assets/img/icons/unicons/cc-primary.png') }}" alt="Credit Card"
+                                class="rounded" />
+                        </div>
+                    </div>
+                    <span class="fw-medium d-block mb-1" style="color: rgb(244, 87, 24);font-weight: bold;">Total Live Net
+                        Enrollment Revenue</span>
+                    <h3 class="card-title mb-2"><span id="netentrollmentrevinus"> </span></h3>
+
+                </div>
+            </div>
+        </div>
 
 
-    <script>
+        <script>
+            $(document).ready(function() {
+                // Initial fetch for current month data
+                fetchChartData('current_month');
 
-$(document).ready(function () {
-    // Initial fetch for current month data
-    fetchChartData('current_month');
-
-    // Dropdown click event handler
-    $('.dropdown-menu .dropdown-item').click(function() {
-        var timeRange = $(this).data('range');
-        fetchChartData(timeRange);
-    });
-});
-
-function fetchChartData(timeRange) {
-    // AJAX request to fetch data based on the selected time range
-    $.ajax({
-        url: '{{ route('superadmin.get-subscription-chart-data') }}',
-        type: 'GET',
-        data: { time_range: timeRange }, // Pass the time range parameter
-        dataType: 'json',
-        success: function (data) {
-            // Update the chart with the fetched data
-            updateChart(data);
-        },
-        error: function (error) {
-            console.error('Error fetching data:', error);
-        }
-    });
-}
-
-
-var barChart = null; // Declare barChart variable outside the updateChart function
-
-function updateChart(data) {
-    // Check if a previous Chart instance exists and destroy it
-    if (barChart) {
-        barChart.destroy();
-    }
-
-    // Extract necessary data from the fetched response
-    var labels = data.labels;  // Array of date labels
-    var values = data.values;  // Array of corresponding subscription counts
-
-    // Get the chart canvas
-    var ctx = document.getElementById('barChart').getContext('2d');
-
-    // Create a new bar chart
-    barChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Monthly Subscription Counts',
-                data: values,
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',  // Example color
-                borderColor: 'rgba(75, 192, 192, 1)',       // Example color
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
-}
-
-
-
-
-
-        $(document).ready(function() {
-            // Fetch data from the server
-            $.ajax({
-                url: '{{ route('superadmin.getMonthlyActiveSubscriptionChartData') }}'
-                , type: 'GET'
-                , dataType: 'json'
-                , success: function(data) {
-                    // Update the chart with the fetched data
-                    updateChart_2(data, 'barChart_1'); // Pass chart ID as an argument
-                }
-                , error: function(error) {
-                    console.error('Error fetching data:', error);
-                }
-            });
-        });
-
-        function updateChart_2(data, chartId) {
-            // Extract necessary data from the fetched response
-            var labels = data.labels; // Array of month names
-            var values = data.values; // Array of corresponding active subscription counts
-
-            // Get the chart canvas
-            var ctx = document.getElementById(chartId).getContext('2d');
-
-            // Create a new bar chart
-            var barChart = new Chart(ctx, {
-                type: 'bar'
-                , data: {
-                    labels: labels
-                    , datasets: [{
-                        label: 'Monthly Active Subscriptions'
-                        , data: values
-                        , backgroundColor: 'rgba(75, 192, 192, 0.2)', // Example color
-                        borderColor: 'rgba(75, 192, 192, 1)', // Example color
-                        borderWidth: 1
-                    }]
-                }
-                , options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        }
-
-
-        $(document).ready(function() {
-            // Fetch data from the server
-            $.ajax({
-                url: '{{ route('superadmin.getMonthlySubscriptionUnsubscriptionChartData') }}'
-                , type: 'GET'
-                , dataType: 'json'
-                , success: function(data) {
-                    // Update the chart with the fetched data
-                    updateLineChart(data);
-                }
-                , error: function(error) {
-                    console.error('Error fetching data:', error);
-                }
-            });
-        });
-
-        function updateLineChart(data) {
-            // Extract necessary data from the fetched response
-            var labels = data.labels; // Array of month names
-            var subscriptions = data.subscriptions; // Array of corresponding subscription counts
-            var unsubscriptions = data.unsubscriptions; // Array of corresponding unsubscription counts
-
-            // Get the chart canvas
-            var ctx = document.getElementById('lineChart').getContext('2d');
-
-            // Create a new line chart
-            var lineChart = new Chart(ctx, {
-                type: 'line'
-                , data: {
-                    labels: labels
-                    , datasets: [{
-                        label: 'Subscriptions'
-                        , data: subscriptions
-                        , borderColor: 'rgba(75, 192, 192, 1)', // Example color for subscriptions
-                        borderWidth: 2
-                        , fill: false
-                    }, {
-                        label: 'Unsubscriptions'
-                        , data: unsubscriptions
-                        , borderColor: 'rgba(255, 99, 132, 1)', // Example color for unsubscriptions
-                        borderWidth: 2
-                        , fill: false
-                    }]
-                }
-                , options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        }
-
-    </script>
-    <!-- /Line Charts -->
-
-    <!-- Net Enrollment Chart -->
-    <script>
-        $(document).ready(function() {
-            var ctx = document.getElementById('barChart_netenrollment').getContext('2d');
-            var barChart = new Chart(ctx, {
-                type: 'bar',
-                data: {}, // Initial data
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
+                // Dropdown click event handler
+                $('.dropdown-menu .dropdown-item').click(function() {
+                    var timeRange = $(this).data('range');
+                    fetchChartData(timeRange);
+                });
             });
 
-            function fetchChartData(companyId, timePeriod) {
+            function fetchChartData(timeRange) {
+                // AJAX request to fetch data based on the selected time range
                 $.ajax({
-                    url: '{{ route('chart.data') }}',
-                    method: 'GET',
-                    data: { company_id: companyId, time_period: timePeriod },
-                    success: function(response) {
-                        barChart.data = response.data;
-                        barChart.update();
+                    url: '{{ route('superadmin.get-subscription-chart-data') }}',
+                    type: 'GET',
+                    data: {
+                        time_range: timeRange
+                    }, // Pass the time range parameter
+                    dataType: 'json',
+                    success: function(data) {
+                        // Update the chart with the fetched data
+                        updateChart(data);
+                    },
+                    error: function(error) {
+                        console.error('Error fetching data:', error);
                     }
                 });
             }
 
-            // Initial load
-            fetchChartData('', 'daily');
 
-            // Update chart on filter change
-            $('#companyFilter, #timeFilter').change(function() {
-                var companyId = $('#companyFilter').val();
-                var timePeriod = $('#timeFilter').val();
-                fetchChartData(companyId, timePeriod);
+            var barChart = null; // Declare barChart variable outside the updateChart function
+
+            function updateChart(data) {
+                // Check if a previous Chart instance exists and destroy it
+                if (barChart) {
+                    barChart.destroy();
+                }
+
+                // Extract necessary data from the fetched response
+                var labels = data.labels; // Array of date labels
+                var values = data.values; // Array of corresponding subscription counts
+
+                // Get the chart canvas
+                var ctx = document.getElementById('barChart').getContext('2d');
+
+                // Create a new bar chart
+                barChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Monthly Subscription Counts',
+                            data: values,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)', // Example color
+                            borderColor: 'rgba(75, 192, 192, 1)', // Example color
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+
+
+
+
+            $(document).ready(function() {
+                // Fetch data from the server
+                $.ajax({
+                    url: '{{ route('superadmin.getMonthlyActiveSubscriptionChartData') }}',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        // Update the chart with the fetched data
+                        updateChart_2(data, 'barChart_1'); // Pass chart ID as an argument
+                    },
+                    error: function(error) {
+                        console.error('Error fetching data:', error);
+                    }
+                });
             });
+
+            function updateChart_2(data, chartId) {
+                // Extract necessary data from the fetched response
+                var labels = data.labels; // Array of month names
+                var values = data.values; // Array of corresponding active subscription counts
+
+                // Get the chart canvas
+                var ctx = document.getElementById(chartId).getContext('2d');
+
+                // Create a new bar chart
+                var barChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Monthly Active Subscriptions',
+                            data: values,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)', // Example color
+                            borderColor: 'rgba(75, 192, 192, 1)', // Example color
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+
+            $(document).ready(function() {
+                // Fetch data from the server
+                $.ajax({
+                    url: '{{ route('superadmin.getMonthlySubscriptionUnsubscriptionChartData') }}',
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        // Update the chart with the fetched data
+                        updateLineChart(data);
+                    },
+                    error: function(error) {
+                        console.error('Error fetching data:', error);
+                    }
+                });
+            });
+
+            function updateLineChart(data) {
+                // Extract necessary data from the fetched response
+                var labels = data.labels; // Array of month names
+                var subscriptions = data.subscriptions; // Array of corresponding subscription counts
+                var unsubscriptions = data.unsubscriptions; // Array of corresponding unsubscription counts
+
+                // Get the chart canvas
+                var ctx = document.getElementById('lineChart').getContext('2d');
+
+                // Create a new line chart
+                var lineChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Subscriptions',
+                            data: subscriptions,
+                            borderColor: 'rgba(75, 192, 192, 1)', // Example color for subscriptions
+                            borderWidth: 2,
+                            fill: false
+                        }, {
+                            label: 'Unsubscriptions',
+                            data: unsubscriptions,
+                            borderColor: 'rgba(255, 99, 132, 1)', // Example color for unsubscriptions
+                            borderWidth: 2,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        </script>
+        <!-- /Line Charts -->
+
+        <!-- Net Enrollment Chart -->
+        <script>
+            $(document).ready(function() {
+                var ctx = document.getElementById('barChart_netenrollment').getContext('2d');
+                var barChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {}, // Initial data
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+                function fetchChartData(companyId, timePeriod) {
+                    $.ajax({
+                        url: '{{ route('chart.data') }}',
+                        method: 'GET',
+                        data: {
+                            company_id: companyId,
+                            time_period: timePeriod
+                        },
+                        success: function(response) {
+                            barChart.data = response.data;
+                            barChart.update();
+                        }
+                    });
+                }
+
+
+                // Initial load
+                fetchChartData('', 'daily');
+
+                // Update chart on filter change
+                $('#companyFilter, #timeFilter').change(function() {
+                    var companyId = $('#companyFilter').val();
+                    var timePeriod = $('#timeFilter').val();
+                    fetchChartData(companyId, timePeriod);
+                });
+            });
+
+
+            function updateStats() {
+                $.ajax({
+                    url: '{{ route('dashboard.stats') }}',
+                    type: 'GET',
+                    success: function(data) {
+                        $('#totalTsm').text(data.totalTsm);
+                        $('#activeTsm').text(data.activeTsm);
+
+                        $('#totalIbex').text(data.totalIbex);
+                        $('#activeIbex').text(data.activeIbex);
+
+                        $('#totalAbacus').text(data.totalAbacus);
+                        $('#activeAbacus').text(data.activeAbacus);
+
+                        $('#totalSybrid').text(data.totalSybrid);
+                        $('#activeSybrid').text(data.activeSybrid);
+
+                        $('#totalJazzIVR').text(data.totalJazzIVR);
+                        $('#activeJazzIVR').text(data.activeJazzIVR);
+
+                        $('#totalactive').text(data.totalactive);
+                        $('#totallive').text(data.totallive);
+
+                        $('#netentrollmentrevinus').text(data.netentrollmentrevinus);
+
+
+                    }
+                });
+            }
+            // Call updateStats function every 10 seconds
+            setInterval(updateStats, 10000);
+            // Initial call
+            updateStats();
+        </script>
+
+       <script>
+            $(document).ready(function() {
+    let lineChart; // Declare the lineChart variable globally
+
+    function fetchChartData(companyId = '') {
+        $.ajax({
+            url: '{{ route('superadmin.revinuechart') }}',
+            type: 'GET',
+            dataType: 'json',
+            data: {
+                company_id: companyId // Pass the selected company ID to the server
+            },
+            success: function(data) {
+                updateChart(data);
+            },
+            error: function(error) {
+                console.error('Error fetching data:', error);
+            }
+        });
+    }
+
+    // Fetch chart data on page load
+    fetchChartData();
+
+    // Fetch chart data whenever the company filter changes
+    $('#companyFilters').change(function() {
+        var companyId = $(this).val();
+        fetchChartData(companyId);
+    });
+
+    function updateChart(data) {
+        var ctx = document.getElementById('lineChartrevinue').getContext('2d');
+
+        // Destroy previous chart instance if it exists
+        if (lineChart) {
+            lineChart.destroy();
+        }
+
+        // Convert to AM/PM format
+        var formattedLabels = data.labels.map(function(timestamp) {
+            var date = new Date(timestamp);
+            var hours = date.getHours();
+            var minutes = date.getMinutes();
+            var suffix = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12 || 12; // Convert 0 to 12
+            var formattedTime = hours + ':' + (minutes < 10 ? '0' : '') + minutes + ' ' + suffix;
+            return formattedTime;
         });
 
+        // Create a new line chart instance and assign it to the variable
+        lineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: formattedLabels, // Use formatted labels with AM/PM
+                datasets: [{
+                    label: 'Total Avg Agents',
+                    data: data.total_agents,
+                    borderColor: 'rgba(54, 162, 235, 1)', // Example color for Total Agents
+                    borderWidth: 2,
+                    fill: false
+                }, {
+                    label: 'Total Sales',
+                    data: data.total_sales,
+                    borderColor: 'rgba(75, 192, 192, 1)', // Example color for Total Sales
+                    borderWidth: 2,
+                    fill: false
+                }, {
+                    label: 'Total Revenue',
+                    data: data.total_revenue,
+                    borderColor: 'rgba(0, 255, 0, 1)', // Green color for Total Revenue
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+});
 
-        function updateStats() {
-        $.ajax({
-        url: '{{ route("dashboard.stats") }}',
-        type: 'GET',
-        success: function (data) {
-            $('#totalTsm').text(data.totalTsm);
-            $('#activeTsm').text(data.activeTsm);
-
-            $('#totalIbex').text(data.totalIbex);
-            $('#activeIbex').text(data.activeIbex);
-
-            $('#totalAbacus').text(data.totalAbacus);
-            $('#activeAbacus').text(data.activeAbacus);
-
-            $('#totalSybrid').text(data.totalSybrid);
-            $('#activeSybrid').text(data.activeSybrid);
-
-            $('#totalJazzIVR').text(data.totalJazzIVR);
-            $('#activeJazzIVR').text(data.activeJazzIVR);
-
-            $('#totalactive').text(data.totalactive);
-            $('#totallive').text(data.totallive);
-
-            $('#netentrollmentrevinus').text(data.netentrollmentrevinus);
-
-
-        }
-         });
-      }
-      // Call updateStats function every 10 seconds
-     setInterval(updateStats, 10000);
-      // Initial call
-      updateStats();
-
-    </script>
-
-
-
+        </script>
     @endsection()

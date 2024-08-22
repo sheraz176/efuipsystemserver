@@ -39,6 +39,7 @@ use App\Http\Controllers\SuperAgentInterested\SuperAgentDashboardControllerInter
 use App\Http\Controllers\SuperAgentInterested\SuperAgentAuthControllerInterested;
 use App\Http\Controllers\SuperAgentInterested\CustomerDataInterested;
 use App\Http\Controllers\SuperAdmin\LogsController;
+use App\Http\Controllers\customerInformation\CustomerInformationController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -113,6 +114,10 @@ Route::prefix('basic-agent')->group(function () {
         Route::post('/save-customer', [CustomerController::class, 'saveCustomer'])->name('save-customer');
         Route::post('/check-subscription', [SubscriptionController::class, 'checkSubscription'])->name('check-subscription-basic');
         Route::get('/overall-reports', [ReportsController::class, 'overall_report_basic'])->name('basic-agent.overall-reports');
+
+             // customer search info
+             Route::get('/customer/info', [CustomerInformationController::class,'BasicAgentindex'])->name('basic-agent.customerinformation');
+             Route::get('/customer/info/Search', [CustomerInformationController::class,'BasicAgentsearch'])->name('basic-agent.customerinformation.search');
 
 
     });
@@ -235,10 +240,17 @@ Route::prefix('super-admin')->group(function () {
         Route::get('get-subscription-chart-data', [Charts::class, 'getSubscriptionChartData'])->name('superadmin.get-subscription-chart-data');
 
         Route::get('/chart-data', [Charts::class, 'getChartData'])->name('chart.data');
+        Route::get('/Line/chart-data', [Charts::class, 'getLineChartData'])->name('superadmin.revinuechart');
 
 
         Route::get('getMonthlyActiveSubscriptionChartData', [Charts::class, 'getMonthlyActiveSubscriptionChartData'])->name('superadmin.getMonthlyActiveSubscriptionChartData');
         Route::get('getMonthlySubscriptionUnsubscriptionChartData', [Charts::class, 'getMonthlySubscriptionUnsubscriptionChartData'])->name('superadmin.getMonthlySubscriptionUnsubscriptionChartData');
+
+          // customer search info
+          Route::get('/customer/information', [CustomerInformationController::class,'index'])->name('superadmin.customerinformation');
+          Route::get('/customer/information/Search', [CustomerInformationController::class,'search'])->name('superadmin.customerinformation.search');
+
+
 
 
     });
@@ -310,6 +322,12 @@ Route::prefix('company-manager')->group(function () {
            Route::post('export/export-recusive-charging-data', [CMExportController::class, 'export_recusive_charing_data'])->name('company-manager.export-recusive-charging-data');
 
            //END Export all Data
+
+             // customer search info
+        Route::get('/customer/info', [CustomerInformationController::class,'CompanyMangerindex'])->name('company-manager.customerinformation');
+        Route::get('/customer/info/Search', [CustomerInformationController::class,'CompanyMangersearch'])->name('company-manager.customerinformation.search');
+
+
 
 
     });

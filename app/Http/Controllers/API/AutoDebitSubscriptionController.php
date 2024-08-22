@@ -54,7 +54,7 @@ class AutoDebitSubscriptionController extends Controller
                 $beneficinary_name = $request->input('beneficinary_name');
                 $agent_id = $request->input('agent_id');
                 $company_id = $request->input('company_id');
-
+                $consent  = $request->input('consent');
 
 
                 $subscription = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
@@ -265,6 +265,7 @@ class AutoDebitSubscriptionController extends Controller
                                 'message' => 'Already subscribed to the plan.',
                             ],
                         ], 200);
+
                     }
 
                     else {
@@ -292,13 +293,16 @@ class AutoDebitSubscriptionController extends Controller
                         'subscription_time' =>$activation_time,
                         'grace_period_time' => $grace_period_time,
                         'sales_agent' => $agent_id,
-                        'company_id' =>$company_id
+                        'company_id' =>$company_id,
+                        'consent' => $consent,
                     ]);
 
                     $CustomerSubscriptionDataID=$CustomerSubscriptionData->subscription_id;
 
                     $interestedCustomer = InterestedCustomer::where('customer_msisdn', $subscriber_msisdn)
-                    ->where('deduction_applied', 0)->first();
+                                        ->where('deduction_applied', 0)
+                                        ->orderBy('id', 'desc') // Order by ID in descending order
+                                        ->first();
                          // Update deduction_applied to 1 if a matching record is found
                              if ($interestedCustomer) {
                                  $interestedCustomer->update(['deduction_applied' => 1]);
@@ -324,7 +328,9 @@ class AutoDebitSubscriptionController extends Controller
                          FailedSubscriptionsController::saveFailedTransactionDataautoDebit($transactionId,$resultCode,$resultDesc,$failedReason,$amount,$referenceId,$accountNumber,$planId,$productId,$agent_id,$company_id);
 
                          $interestedCustomer = InterestedCustomer::where('customer_msisdn', $subscriber_msisdn)
-                         ->where('deduction_applied', 0)->first();
+                                        ->where('deduction_applied', 0)
+                                        ->orderBy('id', 'desc') // Order by ID in descending order
+                                        ->first();
                          // Update deduction_applied to 1 if a matching record is found
                              if ($interestedCustomer) {
                                  $interestedCustomer->update(['deduction_applied' => 1]);
@@ -335,7 +341,8 @@ class AutoDebitSubscriptionController extends Controller
                                 'messageCode' => 2003,
                                 'message' => $resultDesc . ' Here is Your Transaction ID: ' . $transactionId,
                             ],
-                        ], 422);                    }
+                        ], 422);
+                     }
                 }
                 else
                     {

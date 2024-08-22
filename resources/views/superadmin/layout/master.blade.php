@@ -289,6 +289,14 @@
                 <div data-i18n="Basic">Total Sales Request Report</div>
               </a>
             </li>
+           <!-- Information -->
+            <li class="menu-header small text-uppercase"><span class="menu-header-text">Information</span></li>
+            <li class="menu-item {{ Request::is('super-admin/customer/information') ? 'active' : '' }}">
+                <a href="{{ route('superadmin.customerinformation') }}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-collection"></i>
+                  <div data-i18n="Basic">Customer Information</div>
+                </a>
+              </li>
 
             <!-- User interface -->
 

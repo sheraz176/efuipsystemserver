@@ -42,11 +42,11 @@
     <!-- Add these links to your HTML file or layout file -->
 
     <!-- Data Tables -->
-    
-    
 
 
-   
+
+
+
 
     <!-- Vendors CSS -->
     <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css')}}" />
@@ -57,15 +57,15 @@
 
     <!-- Helpers -->
     <script src="{{ asset('/assets/vendor/js/helpers.js')}}"></script>
-   
+
 
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="{{ asset('/assets/js/config.js')}}"></script>
-    
-    
-    
-    
+
+
+
+
   </head>
 
   <body>
@@ -105,11 +105,18 @@
                 <div data-i18n="Basic">Start Sales</div>
               </a>
             </li>
-            
+
 
             <!-- Layouts -->
-            
 
+             <!-- Information -->
+             <li class="menu-header small text-uppercase"><span class="menu-header-text">Information</span></li>
+             <li class="menu-item {{ Request::is('basic-agent/customer/info') ? 'active' : '' }}">
+                 <a href="{{ route('basic-agent.customerinformation') }}" class="menu-link">
+                   <i class="menu-icon tf-icons bx bx-collection"></i>
+                   <div data-i18n="Basic">Customer Information</div>
+                 </a>
+               </li>
                        <!-- Components -->
             <li class="menu-header small text-uppercase"><span class="menu-header-text">Sales Information</span></li>
             <!-- Cards -->
@@ -126,7 +133,7 @@
               </a>
             </li>
             <!-- User interface -->
-           
+
             <li class="menu-header small text-uppercase"><span class="menu-header-text">Performance</span></li>
             <!-- Forms -->
             <li class="menu-item">
@@ -242,7 +249,7 @@
                         <span class="align-middle">Settings</span>
                       </a>
                     </li>
-                   
+
                     <li>
                       <div class="dropdown-divider"></div>
                     </li>
@@ -255,7 +262,7 @@
 
                   </ul>
                 </li>
-                
+
 <form id="logout-form" action="{{ route('basic-agent.logout') }}" method="POST" style="display: none;">
     @csrf
 </form>
@@ -274,17 +281,17 @@
               <!-- Layout Demo -->
               <div class="">
                 <div class="">
-                  
+
                 <!-- Here we Have to Put our Things Jahangir khan  -->
-                         
+
                 <!-- Start -->
-                  
+
                 @yield('content')
 
                 <!-- End -->
-                
+
               <!-- Buttons -->
-             
+
             </div>
 
 
@@ -308,7 +315,7 @@
                 </div>
                 <div>
                   <a href="#" class="footer-link me-4" target="_blank">License</a>
-                 
+
 
                   <a
                     href="#"
@@ -371,13 +378,13 @@
     <!-- Place this tag in your head or just before your close body tag. -->
     <!-- <script async defer src="https://buttons.github.io/buttons.js"></script> -->
 
-    
-  
+
+
 
   <script>
   let table = new DataTable('#subscription');
   </script>
-  
+
 
   </body>
 </html>

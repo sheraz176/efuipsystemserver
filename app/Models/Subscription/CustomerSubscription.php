@@ -8,6 +8,7 @@ use App\Models\Company\CompanyProfile;
 use App\Models\InterestedCustomers\InterestedCustomer;
 use App\Models\Plans\ProductModel;
 use App\Models\Plans\PlanModel;
+use App\Models\TeleSalesAgent;
 
 class CustomerSubscription extends Model
 {
@@ -37,7 +38,8 @@ class CustomerSubscription extends Model
                             'subscription_time',
                             'grace_period_time',
                             'sales_agent',
-                            'company_id'
+                            'company_id',
+                            'consent'
                         ];
 
 
@@ -45,6 +47,16 @@ class CustomerSubscription extends Model
     {
         return $this->belongsTo(PlanModel::class, 'plan_id');
     }
+    public function tele_sales_agents()
+    {
+        return $this->belongsTo(TeleSalesAgent::class, 'agent_id');
+    }
+
+     // Relationship to TeleSalesAgent
+     public function teleSalesAgent()
+     {
+         return $this->belongsTo(TeleSalesAgent::class, 'sales_agent');
+     }
 
     public function product()
     {
@@ -54,6 +66,10 @@ class CustomerSubscription extends Model
     public function companyProfile()
     {
         return $this->belongsTo(CompanyProfile::class, 'id');
+    }
+    public function companyProfiles()
+    {
+        return $this->belongsTo(CompanyProfile::class, 'company_id');
     }
 
     public function company()
@@ -65,9 +81,9 @@ class CustomerSubscription extends Model
         return $this->belongsTo(ProductModel::class ,'productId');
     }
 
-    public function interested_customers()
-    {
-        return $this->hasMany(InterestedCustomer::class, "customer_msisdn", "subscriber_msisdn");
-    }
+    // public function interested_customers()
+    // {
+    //     return $this->hasMany(InterestedCustomer::class, "customer_msisdn", "subscriber_msisdn");
+    // }
 
 }

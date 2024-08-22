@@ -8,7 +8,6 @@ use Carbon\Carbon;
 use App\Models\Subscription\CustomerSubscription;
 use Illuminate\Support\Facades\DB; // Add this line at the beginning of your file
 
-
 class Charts extends Controller
 {
 
@@ -167,66 +166,111 @@ class Charts extends Controller
     }
 
     public function getChartData(Request $request)
-    {
-        $companyId = $request->input('company_id');
-        $timePeriod = $request->input('time_period', 'daily');
+{
+    $companyId = $request->input('company_id');
+    $timePeriod = $request->input('time_period', 'daily');
 
-        $query = CustomerSubscription::where('policy_status', 1);
+    $query = CustomerSubscription::where('policy_status', 1);
 
-        if ($companyId) {
-            $query->where('company_id', $companyId);
-        }
+    if ($companyId) {
+        $query->where('company_id', $companyId);
+    }
 
-        // Determine the time grouping and data filtering based on the time period
+    // Determine the time grouping and data filtering based on the time period
+    switch ($timePeriod) {
+        case 'daily':
+            $query->selectRaw('DATE(created_at) as period, COUNT(*) as count');
+            break;
+        case 'monthly':
+            $query->selectRaw('MONTH(created_at) as period, COUNT(*) as count');
+            break;
+        case 'last7days':
+            $query->where('created_at', '>=', Carbon::now()->subDays(7))
+                  ->selectRaw('DATE(created_at) as period, COUNT(*) as count');
+            break;
+        case 'yearly':
+            $query->selectRaw('YEAR(created_at) as period, COUNT(*) as count');
+            break;
+        case 'hourly':
+            $query->selectRaw('DATE_FORMAT(created_at, "%Y-%m-%d %H:00") as period, COUNT(*) as count');
+            break;
+    }
+
+    $data = $query->groupBy('period')
+                  ->orderBy('period')
+                  ->get();
+
+    $labels = $data->map(function($item) use ($timePeriod) {
         switch ($timePeriod) {
             case 'daily':
-                $query->selectRaw('DATE(created_at) as period, COUNT(*) as count');
-                break;
-            case 'monthly':
-                $query->selectRaw('MONTH(created_at) as period, COUNT(*) as count');
-                break;
             case 'last7days':
-                $query->where('created_at', '>=', Carbon::now()->subDays(7))
-                      ->selectRaw('DATE(created_at) as period, COUNT(*) as count');
-                break;
+                return Carbon::parse($item->period)->format('Y-m-d'); // Format as YYYY-MM-DD
+            case 'monthly':
+                return Carbon::create()->month($item->period)->format('F'); // Full month name
             case 'yearly':
-                $query->selectRaw('YEAR(created_at) as period, COUNT(*) as count');
-                break;
+                return $item->period; // Year
+            case 'hourly':
+                return Carbon::parse($item->period)->format('Y-m-d H:i'); // Format as YYYY-MM-DD HH:00
         }
+    });
 
-        $data = $query->groupBy('period')
-                      ->orderBy('period')
-                      ->get();
+    $counts = $data->pluck('count');
 
-        $labels = $data->map(function($item) use ($timePeriod) {
-            switch ($timePeriod) {
-                case 'daily':
-                case 'last7days':
-                    return Carbon::parse($item->period)->format('Y-m-d'); // Format as YYYY-MM-DD
-                case 'monthly':
-                    return Carbon::create()->month($item->period)->format('F'); // Full month name
-                case 'yearly':
-                    return $item->period; // Year
-            }
-        });
-
-        $counts = $data->pluck('count');
-
-        return response()->json([
-            'data' => [
-                'labels' => $labels,
-                'datasets' => [
-                    [
-                        'label' => 'Net Enrollment',
-                        'data' => $counts,
-                        'backgroundColor' => 'rgba(54, 162, 235, 0.2)',
-                        'borderColor' => 'rgba(54, 162, 235, 1)',
-                        'borderWidth' => 1
-                    ]
+    return response()->json([
+        'data' => [
+            'labels' => $labels,
+            'datasets' => [
+                [
+                    'label' => 'Net Enrollment',
+                    'data' => $counts,
+                    'backgroundColor' => 'rgba(54, 162, 235, 0.2)',
+                    'borderColor' => 'rgba(54, 162, 235, 1)',
+                    'borderWidth' => 1
                 ]
             ]
-        ]);
+        ]
+    ]);
+}
+
+public function getLineChartData(Request $request)
+{
+    $companyId = $request->input('company_id');
+
+    $query = CustomerSubscription::selectRaw("
+        DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00') as hour,
+        COUNT(DISTINCT sales_agent) as total_agents,
+        COUNT(subscriber_msisdn) as total_sales,
+        SUM(transaction_amount) as total_revenue
+    ")
+    ->whereDate('created_at', now()->format('Y-m-d')) // Filter for today's date
+    ->where('policy_status', 1);
+
+    if ($companyId) {
+        $query->where('company_id', $companyId);
     }
+
+    $query->groupBy('hour')
+          ->orderBy('hour');
+
+    $results = $query->get();
+
+    $data = [
+        'labels' => [],
+        'total_agents' => [],
+        'total_sales' => [],
+        'total_revenue' => []
+    ];
+
+    foreach ($results as $row) {
+        $data['labels'][] = $row->hour;
+        $data['total_agents'][] = $row->total_agents;
+        $data['total_sales'][] = $row->total_sales;
+        $data['total_revenue'][] = $row->total_revenue;
+    }
+
+    return response()->json($data);
+}
+
 
     /////////////////////
     // public function getSubscriptionChartData($timeFrame)
