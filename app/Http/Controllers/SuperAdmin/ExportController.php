@@ -314,6 +314,7 @@ public function RefundedDataExport(Request $request)
         'company_profiles.company_name',
         'refunded_customers.medium',
         'customer_subscriptions.subscription_time',
+          'customer_subscriptions.sales_agent'
     )
         ->join('customer_subscriptions', 'refunded_customers.subscription_id', '=', 'customer_subscriptions.subscription_id')
         ->leftJoin('plans', 'customer_subscriptions.plan_id', '=', 'plans.plan_id')
@@ -333,7 +334,7 @@ public function RefundedDataExport(Request $request)
         //   dd($data);
            // Define headers
            $headers = ['Refunded ID', 'Customer MSISDN', 'Plan Name', 'Product Name', 'Amount', 'Company Name',
-           'Transaction ID', 'Reference ID', 'Medium','Subscription Date', 'UnSubscriotion Date']; // Replace with your actual column names
+           'Transaction ID', 'Reference ID', 'Medium','Subscription Date', 'UnSubscriotion Date','agent_id']; // Replace with your actual column names
             // Prepare the data with headers
           $rows[] = $headers;
           foreach ($data as $item) {
@@ -349,6 +350,7 @@ public function RefundedDataExport(Request $request)
               $item->medium,
               $item->subscription_time,
               $item->refunded_time,
+              $item->sales_agent,
 
           ];
          }
@@ -398,7 +400,7 @@ public function ManageRefundedDataExport(Request $request)
         //  dd($data);
            // Define headers
            $headers = ['Subscription ID', 'Customer MSISDN', 'Plan Name', 'Product Name', 'Amount', 'Company Name',
-           'Agent User Name', 'Next Charging Date', 'Subscription Date', 'Free Look Period']; // Replace with your actual column names
+           'Agent User Name', 'Next Charging Date', 'Subscription Date', 'Free Look Period','agent_id']; // Replace with your actual column names
             // Prepare the data with headers
           $rows[] = $headers;
           foreach ($data as $item) {
@@ -413,6 +415,7 @@ public function ManageRefundedDataExport(Request $request)
               $item->recursive_charging_date,
               $item->subscription_time,
               $item->grace_period_time,
+              $item->sales_agent,
 
           ];
          }

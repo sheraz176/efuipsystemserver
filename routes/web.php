@@ -40,6 +40,10 @@ use App\Http\Controllers\SuperAgentInterested\SuperAgentAuthControllerInterested
 use App\Http\Controllers\SuperAgentInterested\CustomerDataInterested;
 use App\Http\Controllers\SuperAdmin\LogsController;
 use App\Http\Controllers\customerInformation\CustomerInformationController;
+use App\Http\Controllers\BasicAgentL\AgentAuthBasicAgentLController;
+use App\Http\Controllers\BasicAgentL\AgentSalesBasicAgentLController;
+use App\Http\Controllers\BasicAgentL\CustomerBasicAgentLController;
+use App\Http\Controllers\BasicAgentL\AutoDebitProcessController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -118,6 +122,35 @@ Route::prefix('basic-agent')->group(function () {
              // customer search info
              Route::get('/customer/info', [CustomerInformationController::class,'BasicAgentindex'])->name('basic-agent.customerinformation');
              Route::get('/customer/info/Search', [CustomerInformationController::class,'BasicAgentsearch'])->name('basic-agent.customerinformation.search');
+
+
+    });
+});
+
+Route::prefix('basic-agent-l')->group(function () {
+    Route::get('/login', [AgentAuthBasicAgentLController::class, 'showLoginForm'])->name('basic-agent-l.login');
+    Route::post('/login', [AgentAuthBasicAgentLController::class, 'login'])->name('basic-agent-l.login-post');
+
+    Route::group(['middleware' => ['auth:agent', 'check.agent.login']], function () {
+        Route::get('/dashboard', [AgentAuthBasicAgentLController::class, 'dashboard'])->name('basic-agent-l.dashboard');
+        Route::get('/sales', [AgentSalesBasicAgentLController::class, 'sales'])->name('basic-agent-l.sales');
+        Route::get('/transaction', [AgentSalesBasicAgentLController::class, 'transaction'])->name('basic-agent-l.transaction');
+        Route::post('/logout', [AgentAuthBasicAgentLController::class, 'logout'])->name('basic-agent-l.logout');
+        Route::get('/sucesssales', [AgentSalesBasicAgentLController::class, 'showAgentData'])->name('basic-agent-l.sucesssales');
+        Route::get('/Failedsucesssales', [AgentSalesBasicAgentLController::class, 'FailedAgentReports'])->name('basic-agent-l.Failedsucesssales');
+        // routes/web.php
+        Route::post('/save-customer', [CustomerBasicAgentLController::class, 'saveCustomer'])->name('save-customer');
+        Route::post('/check-subscription', [SubscriptionController::class, 'checkSubscription'])->name('check-subscription-basic');
+        Route::get('/overall-reports', [ReportsController::class, 'overall_report_basic_agent_l'])->name('basic-agent-l.overall-reports');
+
+        Route::get('/auto/debit/index', [AutoDebitProcessController::class, 'index'])->name('basic-agent-l.index');
+        Route::post('/fetch-customer-data', [AutoDebitProcessController::class, 'fetchCustomerData'])->name('basic-agent-l.fetch_customer_data');
+        Route::post('/consent-check', [AutoDebitProcessController::class, 'checkConsent'])->name('basic-agent-l.consent_check');
+        Route::post('/auto/debit/request/check', [AutoDebitProcessController::class, 'requestcheck'])->name('basic_agent_l.request_check');
+
+             // customer search info
+       Route::get('/customer/info', [CustomerInformationController::class,'BasicAgentLindex'])->name('basic-agent-l.customerinformation');
+       Route::get('/customer/info/Search', [CustomerInformationController::class,'BasicAgentLsearch'])->name('basic-agent-l.customerinformation.search');
 
 
     });
@@ -346,6 +379,9 @@ Route::prefix('super-agent')->group(function () {
         Route::get('/dashboard', [SuperAgentDashboardController::class, 'index'])->name('super_agent.dashboard');
         Route::get('/customer-form', [CustomerData::class, 'showForm'])->name('super_agent.showForm');;
         Route::post('/fetch-customer-data', [CustomerData::class, 'fetchCustomerData'])->name('super_agent.fetch_customer_data');
+
+
+
     });
 });
 

@@ -79,4 +79,27 @@ class CustomerInformationController extends Controller
         return view('basic-agent.customerInformation.partials.customer_info', compact('customers'));
     }
 
+    public function BasicAgentLindex()
+    {
+
+        return view('basic-agent-l.customerInformation.index');
+    }
+
+    public function BasicAgentLsearch(Request $request)
+    {
+        //  dd($request->all());
+        $msisdn = $request->input('msisdn');
+        $agent_id = $request->input('agent_id');
+
+        $customers = CustomerSubscription::with(['companyProfiles', 'products', 'plan', 'teleSalesAgent'])
+                                         ->where('subscriber_msisdn', $msisdn)->where('sales_agent',$agent_id)
+                                         ->get();
+
+        if ($customers->isEmpty()) {
+            return response()->json(['error' => 'Customer not found'], 404);
+        }
+
+        return view('basic-agent-l.customerInformation.partials.customer_info', compact('customers'));
+    }
+
 }
