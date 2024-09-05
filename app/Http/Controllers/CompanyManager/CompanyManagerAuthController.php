@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Models\CompanyManager;
 
 class CompanyManagerAuthController extends Controller
 {
@@ -13,21 +14,32 @@ class CompanyManagerAuthController extends Controller
     public function login(Request $request)
     {
 
+        // dd($request->all());
         $credentials = $request->only('username', 'password');
+        $company_managers = CompanyManager::where('username', $request->username)->first();
+        // dd($company_managers);
+        // Check if the agent exists and is active
+        if ($company_managers) {
 
+            if (Auth::guard('company_manager')->attempt($credentials)) {
 
-        if (Auth::guard('company_manager')->attempt($credentials)) {
-            // Logs store...
+                // Authentication successful, update login details and redirect to the agent dashboard
+                $company_manager = Auth::guard('company_manager')->user();
+                $company_manager->save();
 
-            Log::channel('login_log_companymanager')->info('Company Manager logged in.', ['username' => $request->username]);
+                // Store agent information in the session
+                session(['company_manager' => $company_manager]);
 
-            // Authentication passed...
-            return redirect()->route('company-manager-dashboard')->with('company_manager', Auth::guard('company_manager')->user());
-
+                return redirect()->route('company-manager-dashboard');
+            } else {
+                // Invalid credentials
+                return redirect()->back()->withInput()->withErrors(['login' => 'Invalid credentials, Kindly check your username & password.']);
+            }
         } else {
-            // Authentication failed...
             return back()->withErrors(['username' => 'Invalid credentials']);
         }
+
+
     }
 
     public function showLoginForm()
@@ -42,4 +54,7 @@ class CompanyManagerAuthController extends Controller
 
     return redirect()->route('company.manager.login.form')->with('status', 'Logged out successfully.');
 }
+
+
+
 }

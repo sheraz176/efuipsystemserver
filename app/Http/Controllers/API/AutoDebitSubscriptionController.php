@@ -55,6 +55,7 @@ class AutoDebitSubscriptionController extends Controller
                 $agent_id = $request->input('agent_id');
                 $company_id = $request->input('company_id');
                 $consent  = $request->input('consent');
+                $super_agent_name = $request->input('super_agent_name');
 
 
                 $subscription = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
@@ -223,6 +224,7 @@ class AutoDebitSubscriptionController extends Controller
                         'cps_response' => $failedReason,
                         'api_url' => $url,
                         'agent_id' => $request->input('agent_id'),
+                        'super_agent_name' => $super_agent_name,
                         'source' => "AutoDebitApi",
                         ]);
 

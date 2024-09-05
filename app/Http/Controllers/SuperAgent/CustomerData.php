@@ -27,8 +27,10 @@ class CustomerData extends Controller
 
     public function fetchCustomerData(Request $request)
     {
+        // dd($request->all());
         $customer = InterestedCustomer::with(['agent', 'company', 'plan', 'product'])
         ->where('customer_msisdn', $request->customer_msisdn)
+        ->where('company_id',$request->company_id)
         ->whereDate('created_at', Carbon::today())
         ->where('deduction_applied', 0)
         ->first();

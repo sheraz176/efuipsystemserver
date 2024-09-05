@@ -255,6 +255,13 @@
               </a>
             </li>
 
+            <li class="menu-item {{ Request::is('super-admin/process/bulk/refund/File') ? 'active' : '' }}">
+                <a href="{{ route('process.bulk.refund.file') }}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-collection"></i>
+                  <div data-i18n="Basic">Bulk Refund File Run</div>
+                 </a>
+            </li>
+
             <li class="menu-header small text-uppercase"><span class="menu-header-text">Companies Reports</span></li>
             <li class="menu-item {{ Request::is('super-admin/companies-reports') ? 'active' : '' }}">
               <a href="{{ route('superadmin.companies-reports') }}" class="menu-link">
@@ -298,7 +305,8 @@
                 </a>
               </li>
 
-            <!-- User interface -->
+
+              <!-- User interface -->
 
             <li class="menu-header small text-uppercase"><span class="menu-header-text">Logs</span></li>
 
@@ -308,6 +316,13 @@
                   <div data-i18n="Basic">Super Agent (Logs)</div>
                  </a>
             </li>
+            <li class="menu-item {{ Request::is('super-admin/auto/debit/Super/Agent/Name/Logs') ? 'active' : '' }}">
+                <a href="{{ route('superadmin.auto.debit.super.agent.name') }}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-collection"></i>
+                  <div data-i18n="Basic">Super Agent Name (Logs)</div>
+                 </a>
+            </li>
+
             <li class="menu-item {{ Request::is('super-admin/payment/api/logs') ? 'active' : '' }}">
                 <a href="{{ route('superadmin.payment.api.log') }}" class="menu-link">
                   <i class="menu-icon tf-icons bx bx-collection"></i>

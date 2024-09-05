@@ -44,6 +44,7 @@ use App\Http\Controllers\BasicAgentL\AgentAuthBasicAgentLController;
 use App\Http\Controllers\BasicAgentL\AgentSalesBasicAgentLController;
 use App\Http\Controllers\BasicAgentL\CustomerBasicAgentLController;
 use App\Http\Controllers\BasicAgentL\AutoDebitProcessController;
+use App\Http\Controllers\SuperAdmin\processBulkRefund;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -207,6 +208,8 @@ Route::prefix('super-admin')->group(function () {
         Route::get('Refund/button/upload/logsData', [LogsController::class, 'buttonlogsData'])->name('superadmin.Refundbutton.logsData');
         Route::get('/download-sample-csv', [LogsController::class, 'downloadSampleCsv'])
         ->name('download.sample.csv');
+        Route::get('auto/debit/Super/Agent/Name/Logs', [LogsController::class, 'SuperAgentName'])->name('superadmin.auto.debit.super.agent.name');
+
         //End Logs
 
         Route::get('datatable-failed', [SuperAdminReports::class, 'failed_transactions'])->name('superadmin.datatable-failed');
@@ -283,6 +286,9 @@ Route::prefix('super-admin')->group(function () {
           Route::get('/customer/information', [CustomerInformationController::class,'index'])->name('superadmin.customerinformation');
           Route::get('/customer/information/Search', [CustomerInformationController::class,'search'])->name('superadmin.customerinformation.search');
 
+          Route::get('/process/bulk/refund/File', [processBulkRefund::class, 'processfile'])->name('process.bulk.refund.file');
+          Route::post('/process/bulk/refund', [processBulkRefund::class, 'bilkulfileRun'])->name('process.bulk.refund');
+          Route::get('/get-processed-results', [processBulkRefund::class, 'getProcessedResults'])->name('getProcessedResults');
 
 
 
@@ -297,6 +303,12 @@ Route::prefix('company-manager')->group(function () {
     Route::middleware(['auth.company_manager'])->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('company-manager-dashboard');
         Route::post('logout', [CompanyManagerAuthController::class, 'logout'])->name('company.manager.logout');
+
+
+        Route::get('dashboard/ajex', [DashboardController::class, 'ajex'])->name('company.manager.ajex');
+        Route::get('netentrooment/chart', [DashboardController::class, 'NetEnrollment'])->name('company.manager.netenrollment.chart');
+        Route::get('refundedCustomers/chart', [DashboardController::class, 'RefundedCustomers'])->name('company.manager.refundedcustomers.chart');
+
 
         // Company Manager Intersted Customer
         Route::get('today/customer', [DashboardController::class, 'today_interested_customer'])->name('company-manager.today-interested-customer');
@@ -379,7 +391,6 @@ Route::prefix('super-agent')->group(function () {
         Route::get('/dashboard', [SuperAgentDashboardController::class, 'index'])->name('super_agent.dashboard');
         Route::get('/customer-form', [CustomerData::class, 'showForm'])->name('super_agent.showForm');;
         Route::post('/fetch-customer-data', [CustomerData::class, 'fetchCustomerData'])->name('super_agent.fetch_customer_data');
-
 
 
     });

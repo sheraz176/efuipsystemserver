@@ -40,7 +40,9 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Basic Layout</h5>
                         <small class="text-muted float-end">Bulk Manager</small>
-
+                        <a href="{{ route('process.bulk.refund.file') }}"> <button type="submit"
+                            class="btn btn-primary btn-sm">Bulk Refund File Run</button>
+                        </a>
 
                     </div>
                     <div class="card-body">

@@ -139,4 +139,28 @@ class LogsController extends Controller
         return Response::stream($callback, 200, $headers);
     }
 
+    public function SuperAgentName(Request $request)
+    {
+        if ($request->ajax()) {
+            // Start building the query
+            $query = logs::select('*')
+            ->where('source', 'AutoDebitApi')
+            ->where('resultCode','0')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+            return DataTables::of($query)
+            ->addIndexColumn()
+            ->addColumn('created_at', function($query){
+                // Format the created_at field as needed
+                return Carbon::parse($query->created_at)->format('m-d-y h:i A'); // Customize the format
+            })
+            ->rawColumns(['created_at']) // Only necessary if you are adding HTML content
+            ->make(true);
+
+        }
+        return view('superadmin.logs.super_agent_name');
+    }
+
+
 }

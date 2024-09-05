@@ -7,6 +7,7 @@ use App\Models\TeleSalesAgent;
 use App\Models\Company\CompanyProfile;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Response;
 
 class basicAgentCreate extends Command
 {
@@ -42,57 +43,35 @@ class basicAgentCreate extends Command
     public function handle()
     {
         $agentsData = [
-            ['Mehwish', 'Asif', 'Mehwish.Asif.Basic.Sybrid', 'Mehwish#Asif#2024'],
-            ['Shanza', 'Iqbal', 'Shanza.Iqbal.Basic.Sybrid', 'Shanza#Iqbal#2024'],
-            ['Mubasher', 'Rehman', 'Mubasher.Rehman.Basic.Sybrid', 'Mubasher#Rehman#2024'],
-            ['Muhammad', 'Bilal', 'Muhammad.Bilal.Basic.Sybrid', 'Muhammad#Bilal#2024'],
-            ['Shumaila', 'Sanawar', 'Shumaila.Sanawar.Basic.Sybrid', 'Shumaila#Sanawar#2024'],
-            ['Sardar', 'Farsat', 'Sardar.Farsat.Basic.Sybrid', 'Sardar#Farsat#2024'],
-            ['M', 'Ehtesham', 'M.Ehtesham.Basic.Sybrid', 'Ehtesham#2024'],
-            ['Ammar', 'Mehmood', 'Ammar.Mehmood.Basic.Sybrid', 'Ammar#Mehmood#2024'],
-            ['Hanza', 'Shabir', 'Hanza.Shabir.Basic.Sybrid', 'Hanza#Shabir#2024'],
-            ['Nayyab', 'Abbasi', 'Nayyab.Abbasi.Basic.Sybrid', 'Nayyab#Abbasi#2024'],
-            ['Luqman', 'Shah', 'Luqman.Shah.Basic.Sybrid', 'Luqman#Shah#2024'],
-            ['Ameer', 'Zafar', 'Ameer.Zafar.Basic.Sybrid', 'Ameer#Zafar#2024'],
-            ['Yasir', 'Yasir Yaseen', 'Muhammad.YasirYaseen.Basic.Sybrid', 'Muhammad#Yasir#2024'],
-            ['Talha', 'Talha', 'Muhammad.Talha.Basic.Sybrid', 'Muhammad#Talha#2024'],
-            ['Dawood', 'Akhtar', 'Dawood.Akhtar.Basic.Sybrid', 'Dawood#Akhtar#2024'],
-            ['Aman', 'Shamas', 'Aman.Shamas.Basic.Sybrid', 'Aman#Shamas#2024'],
-            ['ayeshabasic', 'basic', 'Ayesha.Basic.Sybrid', 'Ayesha#2024'],
-            ['Alishab', 'Irshad', 'Alishab.Irshad.Basic.Sybrid', 'Alishab#Irshad#2024'],
-            ['Waleed', 'Zaman', 'Waleed.Zaman.Basic.Sybrid', 'Waleed#Zaman#2024'],
-            ['Kashif', 'Abbasi', 'Kashif.Abbasi.Basic.Sybrid', 'Kashif#Abbasi#2024'],
-            ['Sobia', 'Sarfaraz', 'Sobia.Sarfaraz.Basic.Sybrid', 'Sobia#Sarfaraz#2024'],
-            ['Rimsha', 'Ishtiaq', 'Rimsha.Ishtiaq.Basic.Sybrid', 'Rimsha#Ishtiaq#2024'],
-            ['shanzabasic', 'Rahim', 'Shanza.Rahim.Basic.Sybrid', 'Shanza#Rahim#2024'],
-            ['Azra', 'Mustaqeem', 'Azra.Mustaqeem.Basic.Sybrid', 'Azra#Mustaqeem#2024'],
-            ['Umar', 'Ilyas', 'Umar.Ilyas.Basic.Sybrid', 'Umar#Ilyas#2024'],
-            ['Iqra', 'Amjad', 'Iqra.Amjad.Basic.Sybrid', 'Iqra#Amjad#2024'],
-            ['Tayyaba', 'Talib', 'Tayyaba.Talib.Basic.Sybrid', 'Tayyaba#Talib#2024'],
-            ['Sumbal', 'Murtaza', 'Sumbal.Murtaza.Basic.Sybrid', 'Sumbal#Murtaza#2024'],
-            ['aamirbasic', 'Ali', 'Aamir.Ali.Basic.Sybrid', 'Aamir#Ali#2024'],
-            ['Hussain', 'Tussadiq', 'Hussain.Tussadiq.Basic.Sybrid', 'Hussain#Tussadiq#2024'],
-            ['Qurrat', 'ul Ain', 'Qurrat.ulAin.Basic.Sybrid', 'Qurrat#ulAin#2024'],
-            ['Amna', 'Noor Fatima', 'Amna.NoorFatima.Basic.Sybrid', 'Amna#NoorFatima#2024'],
-            ['Mahnoor', 'Fatima', 'Mahnoor.Fatima.Basic.Sybrid', 'Mahnoor#Fatima#2024'],
-            ['Muneeb', 'Hassan', 'Muneeb.Hassan.Basic.Sybrid', 'Muneeb#Hassan#2024'],
-            ['Huzaifa', 'Riwan', 'Huzaifa.Riwan.Basic.Sybrid', 'Huzaifa#Riwan#2024'],
-            ['Aun', 'Abbas', 'Aun.Abbas.Basic.Sybrid', 'Aun#Abbas#2024'],
-            ['Minhas', 'Ahmed', 'Minhas.Ahmed.Basic.Sybrid', 'Minhas#Ahmed#2024'],
-            ['Ameerbasic', 'Hamza Khan', 'Ameer.HamzaKhan.Basic.Sybrid', 'Ameer#HamzaKhan#2024'],
-            ['Hassan', 'Ali', 'Hassan.Ali.Basic.Sybrid', 'Hassan#Ali#2024'],
-            ['shahzaibBasic', 'ali', 'Shahzaib.Basic.Sybrid', 'Shahzaib#2024']
+            ['Sadia', 'Asghar', 'Sadia.Asghar.abacus', 'Sadia#Asghar#abacus#2024', 'Sadia@bpo.abacus-global.com'],
+            ['Sana', 'Mukhtar', 'Sana.Mukhtar.abacus', 'Sana#Mukhtar#abacus#2024', 'Sana2@bpo.abacus-global.com'],
+            ['Laiba', 'Khan', 'Laiba.Khan.abacus', 'Laiba#Khan#abacus#2024', 'Laiba.Khan@bpo.abacus-global.com'],
+            ['Maliha', 'Nasir', 'Maliha.Nasir.abacus', 'Maliha#Nasir#abacus#2024', 'Maliha.Nasir@bpo.abacus-global.com'],
+            ['Ramla', 'Nasir', 'Ramla.Nasir.abacus', 'Ramla#Nasir#abacus#2024', 'Ramla.Nasir@bpo.abacus-global.com'],
+            ['Mahnoor', 'Jibran', 'Mahnoor.Jibran.abacus', 'Mahnoor#Jibran#abacus#2024', 'Mahnoor.Jibran@bpo.abacus-global.com'],
+            ['Arooba', 'Irfan', 'Arooba.Irfan.abacus', 'Arooba#Irfan#abacus#2024', 'Arooba.Irfan@bpo.abacus-global.com'],
+            ['Arbab', 'Arooj', 'Arbab.Arooj.abacus', 'Arbab#Arooj#abacus#2024', 'Arbab.Arooj@bpo.abacus-global.com'],
+            ['Adeesha', 'Abid', 'Adeesha.Abid.abacus', 'Adeesha#Abid#abacus#2024', 'Adeesha@bpo.abacus-global.com'],
+            ['Hamna', 'Ayub', 'Hamna.Ayub.abacus', 'Hamna#Ayub#abacus#2024', 'Hamna.Ayub@bpo.abacus-global.com'],
+            ['Momna', 'Abid', 'Momna.Abid.abacus', 'Momna#Abid#abacus#2024', 'Momna@bpo.abacus-global.com'],
+            ['Rimsha', 'Shahzad', 'Rimsha.Shahzad.abacus', 'Rimsha#Shahzad#abacus#2024', 'Rimsha.Shahzad@bpo.abacus-global.com'],
+            ['Saira', 'Akbar', 'Saira.Akbar.abacus', 'Saira#Akbar#abacus#2024', 'Saira1@bpo.abacus-global.com'],
+            ['Nimra', 'Gulzar', 'Nimra.Gulzar.abacus', 'Nimra#Gulzar#abacus#2024', 'Nimra2@bpo.abacus-global.com'],
+            ['Janeeta', 'Azam', 'Janeeta.Azam.abacus', 'Janeeta#Azam#abacus#2024', 'Janeeta.Azam@bpo.abacus-global.com'],
         ];
 
-         dd($agentsData);
+
+
+
+
         foreach ($agentsData as $data) {
             $request = [
                 'first_name' => $data[0],
                 'last_name' => $data[1],
                 'username' => $data[2],
-                'email' => strtolower($data[0]) . '@gmail.com',
+                'email' => $data[4],
                 'status' => 1,
-                'company_id' => 12,
+                'company_id' => 2,
                 'password' => $data[3],
             ];
 

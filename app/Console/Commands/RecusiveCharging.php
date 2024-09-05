@@ -53,7 +53,7 @@ class RecusiveCharging extends Command
             $subscriptions = DB::table('customer_subscriptions')
                 ->select('subscription_id', DB::raw("CONCAT('92', SUBSTRING(subscriber_msisdn, -10)) AS subscriber_msisdn"), 'transaction_amount', 'consecutiveFailureCount', 'recursive_charging_date', 'product_duration', 'plan_id', 'productId')
                 ->whereDate('recursive_charging_date', $today)
-                ->where('policy_status', 1)->whereIn('transaction_amount',[4, 133])
+                ->where('policy_status', 1)->whereIn('transaction_amount',[10,200,2000,1950])
                 ->get();
 
             // Iterate over subscriptions

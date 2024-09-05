@@ -183,8 +183,7 @@
                         </button>
                     </div>
                     <div class="modal-body" id="errorModalBody">
-                       <h6> Internet Connectivity Issue </h6>
-                        <br>
+                        INTERNET Connectivity Issue
                         Contact your Local IT Support and Check Your Internet Connectivity
                         <!-- Error message will appear here -->
                     </div>
@@ -254,61 +253,91 @@
         });
 
 
-        $('#autoDebitButton').click(function () {
-    // Get the values from form fields
-    var customer_msisdn = $('#customerMsisdn').val();
-    var customer_cnic = $('#customerCnic').val();
-    var plan_id = $('#planId').val();
-    var product_id = $('#productId').val();
-    var beneficiary_msisdn = $('#beneficiaryMsisdn').val();
-    var beneficiary_cnic = $('#beneficiaryCnic').val();
-    var beneficinary_name = $('#beneficiaryName').val();
-    var company_id = $('#companyId').val();
-    var super_agent_name = '{{ session('agent')->username }}';
+        $('#autoDebitButton').click(function() {
+            // Get the values from form fields
+            var customer_msisdn = $('#customerMsisdn').val();
+            var customer_cnic = $('#customerCnic').val();
+            var plan_id = $('#planId').val();
+            var product_id = $('#productId').val();
+            var beneficiary_msisdn = $('#beneficiaryMsisdn').val();
+            var beneficiary_cnic = $('#beneficiaryCnic').val();
+            var beneficinary_name = $('#beneficiaryName').val();
+            var agent_id = $('#agentId').val();
+            var company_id = $('#companyId').val();
+            var super_agent_name = '{{ session('agent')->username }}';
+            disableAutoDebitButton();
+            // Construct the data object
+            var requestData = {
+                subscriber_msisdn: customer_msisdn,
+                customer_cnic: customer_cnic,
+                plan_id: planId,
+                product_id: productId,
+                beneficiary_msisdn: beneficiary_msisdn,
+                beneficiary_cnic: beneficiary_cnic,
+                beneficinary_name: beneficinary_name,
+                agent_id: agentId,
+                company_id: companyId,
+                super_agent_name: super_agent_name,
+                // Add other form fields as needed
+            };
 
-    disableAutoDebitButton();
-    // Construct the data object
-    var requestData = {
-        subscriber_msisdn: customer_msisdn,
-        customer_cnic: customer_cnic,
-        plan_id: planId,
-        product_id: productId,
-        beneficiary_msisdn: beneficiary_msisdn,
-        beneficiary_cnic: beneficiary_cnic,
-        beneficinary_name: beneficinary_name,
-        agent_id: agentId,
-        company_id: companyId,
-        super_agent_name: super_agent_name,
-        // Add other form fields as needed
-    };
+            // Perform AJAX call to ivr_subscription endpoint
+            $('#autoDebitButton').click(function() {
+                // Get the values from form fields
+                var customer_msisdn = $('#customerMsisdn').val();
+                var customer_cnic = $('#customerCnic').val();
+                var plan_id = $('#planId').val();
+                var product_id = $('#productId').val();
+                var beneficiary_msisdn = $('#beneficiaryMsisdn').val();
+                var beneficiary_cnic = $('#beneficiaryCnic').val();
+                var beneficinary_name = $('#beneficiaryName').val();
+                var company_id = $('#companyId').val();
+                var super_agent_name = '{{ session('agent')->username }}';
+                disableAutoDebitButton();
 
-    // Perform AJAX call to ivr_subscription endpoint
-    $.ajax({
-        type: 'POST',
-        url: '{{ route("AutoDebitSubscription") }}',
-        data: requestData,
-        success: function (response) {
-            // Handle success response
-            $('#customerDataForm')[0].reset(); // Reset the form
-            // Display success modal with response data
-            $('#successModalBody').html(response.data.message);
-            $('#successModal').modal('show');
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            // Handle error response
-            $('#customerDataForm')[0].reset(); // Reset the form
-            if (xhr.status === 422) {
-                // Display failed modal with error message
-                $('#failedModalBody').html(xhr.responseJSON.data.message);
-                $('#failedModal').modal('show');
+                // Construct the data object including the CSRF token
+                var requestData = {
+                    _token: '{{ csrf_token() }}', // Add the CSRF token here
+                    subscriber_msisdn: customer_msisdn,
+                    customer_cnic: customer_cnic,
+                    plan_id: planId,
+                    product_id: productId,
+                    beneficiary_msisdn: beneficiary_msisdn,
+                    beneficiary_cnic: beneficiary_cnic,
+                    beneficinary_name: beneficinary_name,
+                    agent_id: agentId,
+                    company_id: companyId,
+                    super_agent_name: super_agent_name,
+                    // Add other form fields as needed
+                };
 
-            } else {
-                // Display error modal with error message
-                $('#errorModal').modal('show');
+                // Perform AJAX call to ivr_subscription endpoint
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ route('super_agent.AutoDebitController') }}',
+                    data: requestData,
+                    success: function(response) {
+                        // Handle success response
+                        $('#customerDataForm')[0].reset(); // Reset the form
+                        // Display success modal with response data
+                        $('#successModalBody').html(response.data.message);
+                        $('#successModal').modal('show');
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        // Handle error response
+                        $('#customerDataForm')[0].reset(); // Reset the form
+                        if (xhr.status === 422) {
+                            // Display failed modal with error message
+                            $('#failedModalBody').html(xhr.responseJSON.data.message);
+                            $('#failedModal').modal('show');
+                        } else {
+                            // Display error modal with error message
+                            $('#errorModal').modal('show');
+                        }
+                    }
+                });
+            });
 
-            }
-        }
-     });
-   });
+        });
     </script>
 @endpush

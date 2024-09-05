@@ -14,6 +14,8 @@ class CompanyManager extends Model implements Authenticatable
 {
     use HasFactory, Notifiable, AuthenticableTrait;
 
+    protected $table = 'company_managers';
+
     protected $fillable = [
         'username',
         'first_name',

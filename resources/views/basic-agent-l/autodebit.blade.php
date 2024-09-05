@@ -175,6 +175,9 @@
                 </button>
             </div>
             <div class="modal-body" id="errorModalBody">
+                <h6> Internet Connectivity Issue </h6>
+                <br>
+                Contact your Local IT Support and Check Your Internet Connectivity
                 <!-- Error message will appear here -->
             </div>
         </div>

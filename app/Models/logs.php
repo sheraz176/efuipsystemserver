@@ -21,6 +21,8 @@ class logs extends Model
         'response_encrypted_data',
         'response_decrypted_data',
         'source',
+        'super_agent_name',
+        'agent_id'
 
     ];
 }
