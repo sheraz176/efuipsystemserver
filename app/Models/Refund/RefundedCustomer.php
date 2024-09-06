@@ -27,6 +27,7 @@ class RefundedCustomer extends Model
         'result_code',
         'refunded_by',
         'medium',
+        'reason',
     ];
 
     public function customer_subscription()

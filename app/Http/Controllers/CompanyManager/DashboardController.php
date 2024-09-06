@@ -10,6 +10,7 @@ use App\Models\InterestedCustomers\InterestedCustomer;
 use App\Models\Subscription\CustomerSubscription;
 use Carbon\Carbon;
 use App\Models\TeleSalesAgent;
+use Yajra\DataTables\DataTables;
 
 class DashboardController extends Controller
 {
@@ -180,6 +181,41 @@ public function RefundedCustomers(Request $request)
     ]);
 }
 
+
+public function ActiveAgent(Request $request)
+{
+    return view('company_manager.active-agent');
+
+
+}
+
+public function AgentData(Request $request)
+{
+    $companyId = Auth::guard('company_manager')->user()->company_id;
+
+   //   dd('hi');
+    if ($request->ajax()) {
+        $data = TelesalesAgent::select('*')
+        ->where('status',1)
+        ->where('company_id', $companyId);
+        return Datatables::of($data)
+
+
+
+   ->addColumn('islogin', function ($data) {
+       if ($data->islogin == "1") {
+           return '<button type="button" class="btn btn-success btn-sm">Log In</button>';
+       }
+       else{
+           return '<button type="button" class="btn btn-danger btn-sm">Log Out</button>';
+       }
+   })
+
+    ->rawColumns(['islogin'])
+                ->make(true);
+    }
+
+}
 
 
 }

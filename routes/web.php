@@ -45,6 +45,7 @@ use App\Http\Controllers\BasicAgentL\AgentSalesBasicAgentLController;
 use App\Http\Controllers\BasicAgentL\CustomerBasicAgentLController;
 use App\Http\Controllers\BasicAgentL\AutoDebitProcessController;
 use App\Http\Controllers\SuperAdmin\processBulkRefund;
+use App\Http\Controllers\SuperAdmin\RefundedController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -290,6 +291,11 @@ Route::prefix('super-admin')->group(function () {
           Route::post('/process/bulk/refund', [processBulkRefund::class, 'bilkulfileRun'])->name('process.bulk.refund');
           Route::get('/get-processed-results', [processBulkRefund::class, 'getProcessedResults'])->name('getProcessedResults');
 
+          Route::get('/Refunded/Customer', [RefundedController::class,'index'])->name('superadmin.refunded.customer');
+          Route::get('/Refunded/Customer/Search', [RefundedController::class,'search'])->name('superadmin.refunded.customer.search');
+          Route::post('/refund/process', [RefundedController::class, 'processRefund'])->name('superadmin.refund.process');
+
+
 
 
     });
@@ -303,6 +309,10 @@ Route::prefix('company-manager')->group(function () {
     Route::middleware(['auth.company_manager'])->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('company-manager-dashboard');
         Route::post('logout', [CompanyManagerAuthController::class, 'logout'])->name('company.manager.logout');
+
+        Route::get('ActiveAgent', [DashboardController::class, 'ActiveAgent'])->name('company-manager-ActiveAgent');
+        Route::get('active/agent/Data', [DashboardController::class, 'AgentData'])->name('company.manager.agent.data');
+
 
 
         Route::get('dashboard/ajex', [DashboardController::class, 'ajex'])->name('company.manager.ajex');

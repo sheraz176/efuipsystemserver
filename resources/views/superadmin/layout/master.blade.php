@@ -240,6 +240,14 @@
                 <div data-i18n="Basic">Manage Refunds</div>
               </a>
             </li>
+
+            <li class="menu-item {{ Request::is('super-admin/Refunded/Customer') ? 'active' : '' }} ">
+                <a href="{{ route('superadmin.refunded.customer') }}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-collection"></i>
+                  <div data-i18n="Basic">Manage Refunds Forms</div>
+                </a>
+              </li>
+
             <li class="menu-item {{ Request::is('super-admin/refunds-reports') ? 'active' : '' }}">
               <a href="{{ route('superadmin.refunds-reports') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>

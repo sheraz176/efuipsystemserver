@@ -123,6 +123,12 @@
                 <div data-i18n="Basic">Check Agent Status</div>
               </a>
             </li>
+            <li class="menu-item {{ Request::is('company-manager/ActiveAgent') ? 'active' : '' }}">
+                <a href="{{ route('company-manager-ActiveAgent') }}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-file"></i>
+                  <div data-i18n="Basic">Active Agent Status</div>
+                </a>
+            </li>
 
             <!-- User interface -->
 
