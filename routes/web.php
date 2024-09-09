@@ -210,6 +210,8 @@ Route::prefix('super-admin')->group(function () {
         Route::get('/download-sample-csv', [LogsController::class, 'downloadSampleCsv'])
         ->name('download.sample.csv');
         Route::get('auto/debit/Super/Agent/Name/Logs', [LogsController::class, 'SuperAgentName'])->name('superadmin.auto.debit.super.agent.name');
+        Route::post('auto/debit/Super/Agent/Name/Logs/Export', [LogsController::class, 'export'])->name('superadmin.export-logs');
+        Route::get('auto/debit/Super/Agent/Name/Ajax', [LogsController::class, 'SuperAgentNameAjax'])->name('superadmin.auto.debit.super.agent.SuperAgentNameAjax');
 
         //End Logs
 

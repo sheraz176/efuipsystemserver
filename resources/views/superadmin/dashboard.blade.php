@@ -396,29 +396,37 @@
             </div>
         </div>
 
-        <h4 class=""><span class="text-muted fw-light">Hourly Net Enrollment</span>  (Total Sales, Total
-            Agents , Total Revenue)</h4>
+        <h4 class=""><span class="text-muted fw-light">Hourly Net Enrollment</span>  (Total Present Agents, Total MSISDN , Average)</h4>
 
-        <div class="col-12 mb-4">
-            <div class="card">
-                <div class="card-header header-elements">
+            <div class="col-12 mb-4">
+                <div class="card">
+                    <div class="card-header header-elements">
+                        <div class="me-2">
+                            <label for="companyFilters">Filter by Company:</label>
+                            <select id="companyFilters" class="form-select">
+                                <option value="11">TSM</option>
+                                <option value="12">Sybrid</option>
+                                <option value="1">Ibex International</option>
+                                <option value="2">Abacus Consultation</option>
+                            </select>
+                        </div>
+                    </div>
 
-                    <div class="me-2">
-                        <label for="companyFilters">Filter by Company:</label>
-                        <select id="companyFilters" class="form-select">
-                            <option value="">All Companies</option>
-                            @foreach ($companies as $company)
-                                <option value="{{ $company->id }}">{{ $company->company_name }}</option>
-                            @endforeach
-                        </select>
+                    <div class="card-body">
+                        <table class="table" id="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Hour</th>
+                                    <th>Total Present Agents</th>
+                                    <th>Total MSISDN</th>
+                                    <th>Average</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
-                <div class="card-body">
-                    <canvas id="lineChartrevinue" class="chartjs" data-height="500" height="625" width="1391"
-                        style="display: block; box-sizing: border-box; height: 500px; width: 1112px;"></canvas>
-                </div>
             </div>
-        </div>
 
 
         <!-- Net Enrollment Charts -->
@@ -751,90 +759,66 @@
             updateStats();
         </script>
 
-       <script>
-            $(document).ready(function() {
-    let lineChart; // Declare the lineChart variable globally
+<script>
+    $(document).ready(function() {
+        var defaultCompanyId = $('#companyFilters').val(); // Get the default selected company ID
 
-    function fetchChartData(companyId = '') {
-        $.ajax({
-            url: '{{ route('superadmin.revinuechart') }}',
-            type: 'GET',
-            dataType: 'json',
-            data: {
-                company_id: companyId // Pass the selected company ID to the server
-            },
-            success: function(data) {
-                updateChart(data);
-            },
-            error: function(error) {
-                console.error('Error fetching data:', error);
-            }
-        });
-    }
-
-    // Fetch chart data on page load
-    fetchChartData();
-
-    // Fetch chart data whenever the company filter changes
-    $('#companyFilters').change(function() {
-        var companyId = $(this).val();
-        fetchChartData(companyId);
-    });
-
-    function updateChart(data) {
-        var ctx = document.getElementById('lineChartrevinue').getContext('2d');
-
-        // Destroy previous chart instance if it exists
-        if (lineChart) {
-            lineChart.destroy();
+        function fetchTableData(companyId = '') {
+            $.ajax({
+                url: '{{ route('superadmin.revinuechart') }}',
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    company_id: companyId // Pass the selected company ID to the server
+                },
+                success: function(data) {
+                    console.log('Data received:', data); // Debugging
+                    updateTable(data); // Update the table with the data
+                },
+                error: function(error) {
+                    console.error('Error fetching data:', error);
+                }
+            });
         }
 
-        // Convert to AM/PM format
-        var formattedLabels = data.labels.map(function(timestamp) {
-            var date = new Date(timestamp);
-            var hours = date.getHours();
-            var minutes = date.getMinutes();
-            var suffix = hours >= 12 ? 'PM' : 'AM';
-            hours = hours % 12 || 12; // Convert 0 to 12
-            var formattedTime = hours + ':' + (minutes < 10 ? '0' : '') + minutes + ' ' + suffix;
-            return formattedTime;
+        // Fetch table data on page load with default company ID
+        fetchTableData(defaultCompanyId);
+
+        // Fetch table data whenever the company filter changes
+        $('#companyFilters').change(function() {
+            var companyId = $(this).val();
+            fetchTableData(companyId);
         });
 
-        // Create a new line chart instance and assign it to the variable
-        lineChart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: formattedLabels, // Use formatted labels with AM/PM
-                datasets: [{
-                    label: 'Total Avg Agents',
-                    data: data.total_agents,
-                    borderColor: 'rgba(54, 162, 235, 1)', // Example color for Total Agents
-                    borderWidth: 2,
-                    fill: false
-                }, {
-                    label: 'Total Sales',
-                    data: data.total_sales,
-                    borderColor: 'rgba(75, 192, 192, 1)', // Example color for Total Sales
-                    borderWidth: 2,
-                    fill: false
-                }, {
-                    label: 'Total Revenue',
-                    data: data.total_revenue,
-                    borderColor: 'rgba(0, 255, 0, 1)', // Green color for Total Revenue
-                    borderWidth: 2,
-                    fill: false
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    }
-});
+        // Update table function
+        function updateTable(data) {
+            var tableBody = $('#data-table tbody');
+            tableBody.empty(); // Clear existing table rows
 
-        </script>
+            // Populate table with hourly MSISDN and total average data
+            data.labels.forEach(function(label, index) {
+                // Format the time for display (convert to AM/PM format)
+                var date = new Date(label);
+                var hours = date.getHours();
+                var minutes = date.getMinutes();
+                var suffix = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12 || 12; // Convert 0 to 12
+                var formattedTime = hours + ':' + (minutes < 10 ? '0' : '') + minutes + ' ' + suffix;
+
+                // Append row to the table
+                var row = `
+                    <tr>
+                        <td>${formattedTime}</td>
+                        <td>${data.total_present_agent}</td> <!-- Live agent count -->
+                        <td>${data.total_msisdn[index]}</td> <!-- Sales (MSISDN) per hour -->
+                        <td>${data.total_avg[index]}</td> <!-- Total average per hour -->
+                    </tr>
+                `;
+                tableBody.append(row);
+            });
+        }
+    });
+</script>
+
+
     @endsection()

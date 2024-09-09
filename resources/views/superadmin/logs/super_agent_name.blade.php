@@ -21,6 +21,26 @@
                         <div class="col-md-6">
 
                             {{-- <label for="dateFilter">Filter by Date:</label> --}}
+                            <div class="ms-panel-header ms-panel-custome align-items-center">
+                                <div class="row mb-3">
+                                </div>
+                                <div class="col-md-6">
+                                    <form method="POST" action="{{ route('superadmin.export-logs') }}">
+                                        @csrf
+                                        <label for="dateFilter">Filter by Date:</label>
+                                        <input type="text" id="dateFilter" name="dateFilter" class="form-control "
+                                            placeholder="Select date range">
+                                </div>
+
+                                <div class="col-md-4 mt-6" style="margin-left: -14%">
+                                    <button type="submit" class="btn btn-primary btn-sm"><i
+                                            class='bx bx-down-arrow-alt'></i>Export</button>
+
+                                </div>
+
+                                </form>
+
+                            </div>
 
                         </div>
 
@@ -97,7 +117,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('superadmin.auto.debit.super.agent.name') }}",
+                    url: "{{ route('superadmin.auto.debit.super.agent.SuperAgentNameAjax') }}",
                     data: function(d) {
                         var dateFilter = $('#dateFilter').val();
                         if (dateFilter) {

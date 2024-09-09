@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Subscription\CustomerSubscription;
 use Illuminate\Support\Facades\DB; // Add this line at the beginning of your file
+use App\Models\TeleSalesAgent;
 
 class Charts extends Controller
 {
@@ -236,11 +237,10 @@ public function getLineChartData(Request $request)
 {
     $companyId = $request->input('company_id');
 
+    // Query for hourly MSISDN (sales) data
     $query = CustomerSubscription::selectRaw("
-        DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00') as hour,
-        COUNT(DISTINCT sales_agent) as total_agents,
-        COUNT(subscriber_msisdn) as total_sales,
-        SUM(transaction_amount) as total_revenue
+        DATE_FORMAT(DATE_ADD(created_at, INTERVAL 1 HOUR), '%Y-%m-%d %H:00:00') as hour, -- Shift to next hour
+        COUNT(subscriber_msisdn) as total_msisdn -- Count sales (MSISDN) for each hour
     ")
     ->whereDate('created_at', now()->format('Y-m-d')) // Filter for today's date
     ->where('policy_status', 1);
@@ -254,22 +254,31 @@ public function getLineChartData(Request $request)
 
     $results = $query->get();
 
+    // Fetch live present agent count (based on current login status)
+    $totalPresentAgent = TeleSalesAgent::where('company_id', $companyId)
+        ->where('islogin', 1)
+        ->count();
+
+    // Prepare the data
     $data = [
         'labels' => [],
-        'total_agents' => [],
-        'total_sales' => [],
-        'total_revenue' => []
+        'total_msisdn' => [],
+        'total_avg' => [], // Add an array to store total avg for each hour
+        'total_present_agent' => $totalPresentAgent // Live agent count (not hourly)
     ];
 
     foreach ($results as $row) {
         $data['labels'][] = $row->hour;
-        $data['total_agents'][] = $row->total_agents;
-        $data['total_sales'][] = $row->total_sales;
-        $data['total_revenue'][] = $row->total_revenue;
+        $data['total_msisdn'][] = $row->total_msisdn;
+
+        // Calculate total average
+        $totalAvg = $totalPresentAgent > 0 ? round(($row->total_msisdn / $totalPresentAgent), 2) : 0;
+        $data['total_avg'][] = $totalAvg;
     }
 
     return response()->json($data);
 }
+
 
 
     /////////////////////
