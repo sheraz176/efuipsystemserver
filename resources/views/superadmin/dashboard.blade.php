@@ -398,10 +398,13 @@
 
         <h4 class=""><span class="text-muted fw-light">Hourly Net Enrollment</span>  (Total Present Agents, Total MSISDN , Average)</h4>
 
-            <div class="col-12 mb-4">
-                <div class="card">
-                    <div class="card-header header-elements">
-                        <div class="me-2">
+        <div class="col-12 mb-4">
+            <div class="card">
+                <div class="card-header header-elements d-flex align-items-center">
+                    <!-- Company Filter Dropdown and Gross Productivity Green Box (aligned next to each other) -->
+                    <div class="d-flex align-items-center">
+                        <!-- Company Filter Dropdown -->
+                        <div class="me-3" >
                             <label for="companyFilters">Filter by Company:</label>
                             <select id="companyFilters" class="form-select">
                                 <option value="11">TSM</option>
@@ -410,23 +413,32 @@
                                 <option value="2">Abacus Consultation</option>
                             </select>
                         </div>
-                    </div>
 
-                    <div class="card-body">
-                        <table class="table" id="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Hour</th>
-                                    <th>Total Present Agents</th>
-                                    <th>Total MSISDN</th>
-                                    <th>Average</th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
+                        <!-- Gross Productivity Green Box (immediately next to filter) -->
+                        <div id="last-hour-productivity" class="alert alert-success mb-0" style="display: none; margin-top: 2%">
+                            Gross Productivity: <span id="productivity-value"></span>
+                        </div>
                     </div>
                 </div>
+
+                <div class="card-body">
+                    <table class="table" id="data-table">
+                        <thead>
+                            <tr>
+                                <th>Hour</th>
+                                <th>Total Present Agents</th>
+                                <th>Total MSISDN</th>
+                                <th>Average</th>
+                                <th>Productivity</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
+        </div>
+
+
 
 
         <!-- Net Enrollment Charts -->
@@ -774,6 +786,7 @@
                 success: function(data) {
                     console.log('Data received:', data); // Debugging
                     updateTable(data); // Update the table with the data
+                    updateLastHourProductivity(data); // Update the last hour productivity
                 },
                 error: function(error) {
                     console.error('Error fetching data:', error);
@@ -795,7 +808,7 @@
             var tableBody = $('#data-table tbody');
             tableBody.empty(); // Clear existing table rows
 
-            // Populate table with hourly MSISDN and total average data
+            // Populate table with hourly MSISDN, total average, and productivity data
             data.labels.forEach(function(label, index) {
                 // Format the time for display (convert to AM/PM format)
                 var date = new Date(label);
@@ -805,20 +818,51 @@
                 hours = hours % 12 || 12; // Convert 0 to 12
                 var formattedTime = hours + ':' + (minutes < 10 ? '0' : '') + minutes + ' ' + suffix;
 
+                // Determine arrow direction for average (>= 1.0 is up, < 1.0 is down)
+                var avgArrow = data.total_avg[index] >= 1.0
+                    ? '<i class="bx bx-up-arrow-alt" style="color: green;"></i>'
+                    : '<i class="bx bx-down-arrow-alt" style="color: red;"></i>';
+
+                // Determine arrow direction for productivity (>= 1.0 is up, < 1.0 is down)
+                var prodArrow = data.productivity[index] >= 1.0
+                    ? '<i class="bx bx-up-arrow-alt" style="color: green;"></i>'
+                    : '<i class="bx bx-down-arrow-alt" style="color: red;"></i>';
+
                 // Append row to the table
                 var row = `
                     <tr>
                         <td>${formattedTime}</td>
-                        <td>${data.total_present_agent}</td> <!-- Live agent count -->
+                        <td>${data.total_present_agent[index]}</td> <!-- Live agent count for the specific hour -->
                         <td>${data.total_msisdn[index]}</td> <!-- Sales (MSISDN) per hour -->
-                        <td>${data.total_avg[index]}</td> <!-- Total average per hour -->
+                        <td>
+                            ${data.total_avg[index]}
+                            ${avgArrow} <!-- Average arrow with icon -->
+                        </td>
+                        <td>
+                            ${data.productivity[index]}
+                            ${prodArrow} <!-- Productivity arrow with icon -->
+                        </td>
                     </tr>
                 `;
                 tableBody.append(row);
             });
         }
+
+        // Update last hour's productivity and show it in a green box
+        function updateLastHourProductivity(data) {
+            if (data.productivity.length > 0) {
+                var lastHourProductivity = data.productivity[data.productivity.length - 1]; // Get the last productivity value
+
+                if (lastHourProductivity) {
+                    $('#productivity-value').text(lastHourProductivity); // Update the text in the green box
+                    $('#last-hour-productivity').show(); // Show the green box
+                }
+            }
+        }
     });
 </script>
+
+
 
 
     @endsection()

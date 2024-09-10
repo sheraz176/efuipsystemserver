@@ -16,8 +16,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
-        $schedule->command('process:bulkfile')->everyMinute();
-        $schedule->command('logout:agent')->dailyAt('20:00');
+        // $schedule->command('process:bulkfile')->everyMinute();
+        // $schedule->command('logout:agent')->dailyAt('20:00');
+        $schedule->command('agentcounts:save')->hourly();
     }
 
     /**

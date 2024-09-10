@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\Models\Subscription\CustomerSubscription;
 use Illuminate\Support\Facades\DB; // Add this line at the beginning of your file
 use App\Models\TeleSalesAgent;
+use App\Models\AgentCount;
 
 class Charts extends Controller
 {
@@ -254,30 +255,51 @@ public function getLineChartData(Request $request)
 
     $results = $query->get();
 
-    // Fetch live present agent count (based on current login status)
-    $totalPresentAgent = TeleSalesAgent::where('company_id', $companyId)
-        ->where('islogin', 1)
-        ->count();
-
     // Prepare the data
     $data = [
         'labels' => [],
         'total_msisdn' => [],
-        'total_avg' => [], // Add an array to store total avg for each hour
-        'total_present_agent' => $totalPresentAgent // Live agent count (not hourly)
+        'total_avg' => [], // Total average per hour
+        'total_cumulative_msisdn' => [], // Cumulative MSISDN count
+        'productivity' => [], // Productivity calculation
+        'total_present_agent' => [] // Live agent count per hour
     ];
+
+    $cumulativeMsisdn = 0; // To hold the cumulative MSISDN count
 
     foreach ($results as $row) {
         $data['labels'][] = $row->hour;
         $data['total_msisdn'][] = $row->total_msisdn;
 
+        // Calculate cumulative MSISDN count
+        $cumulativeMsisdn += $row->total_msisdn;
+        $data['total_cumulative_msisdn'][] = $cumulativeMsisdn;
+
+        // Fetch the latest agent count for the hour
+        $agentCount = AgentCount::selectRaw("
+            DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00') as hour,
+            count
+        ")
+        ->where('company_id', $companyId)
+        ->whereRaw("DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00') = ?", [$row->hour])
+        ->first();
+
+        // Total present agents for the hour
+        $totalPresentAgent = $agentCount ? $agentCount->count : 0;
+        $data['total_present_agent'][] = $totalPresentAgent;
+
         // Calculate total average
         $totalAvg = $totalPresentAgent > 0 ? round(($row->total_msisdn / $totalPresentAgent), 2) : 0;
         $data['total_avg'][] = $totalAvg;
+
+        // Calculate productivity (cumulative MSISDN / total present agents)
+        $productivity = $totalPresentAgent > 0 ? round(($cumulativeMsisdn / $totalPresentAgent), 2) : 0;
+        $data['productivity'][] = $productivity;
     }
 
     return response()->json($data);
 }
+
 
 
 
