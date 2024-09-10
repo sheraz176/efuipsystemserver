@@ -237,6 +237,7 @@ class Charts extends Controller
 public function getLineChartData(Request $request)
 {
     $companyId = $request->input('company_id');
+    $currentTime = now(); // Get current time
 
     // Query for hourly MSISDN (sales) data
     $query = CustomerSubscription::selectRaw("
@@ -244,6 +245,7 @@ public function getLineChartData(Request $request)
         COUNT(subscriber_msisdn) as total_msisdn -- Count sales (MSISDN) for each hour
     ")
     ->whereDate('created_at', now()->format('Y-m-d')) // Filter for today's date
+    ->where('created_at', '<', $currentTime) // Only include data for completed hours
     ->where('policy_status', 1);
 
     if ($companyId) {
@@ -268,13 +270,6 @@ public function getLineChartData(Request $request)
     $cumulativeMsisdn = 0; // To hold the cumulative MSISDN count
 
     foreach ($results as $row) {
-        $data['labels'][] = $row->hour;
-        $data['total_msisdn'][] = $row->total_msisdn;
-
-        // Calculate cumulative MSISDN count
-        $cumulativeMsisdn += $row->total_msisdn;
-        $data['total_cumulative_msisdn'][] = $cumulativeMsisdn;
-
         // Fetch the latest agent count for the hour
         $agentCount = AgentCount::selectRaw("
             DATE_FORMAT(created_at, '%Y-%m-%d %H:00:00') as hour,
@@ -286,19 +281,31 @@ public function getLineChartData(Request $request)
 
         // Total present agents for the hour
         $totalPresentAgent = $agentCount ? $agentCount->count : 0;
-        $data['total_present_agent'][] = $totalPresentAgent;
 
-        // Calculate total average
-        $totalAvg = $totalPresentAgent > 0 ? round(($row->total_msisdn / $totalPresentAgent), 2) : 0;
-        $data['total_avg'][] = $totalAvg;
+        // Only proceed if total present agents is greater than 0
+        if ($totalPresentAgent > 0) {
+            $data['labels'][] = $row->hour;
+            $data['total_msisdn'][] = $row->total_msisdn;
 
-        // Calculate productivity (cumulative MSISDN / total present agents)
-        $productivity = $totalPresentAgent > 0 ? round(($cumulativeMsisdn / $totalPresentAgent), 2) : 0;
-        $data['productivity'][] = $productivity;
+            // Calculate cumulative MSISDN count
+            $cumulativeMsisdn += $row->total_msisdn;
+            $data['total_cumulative_msisdn'][] = $cumulativeMsisdn;
+
+            $data['total_present_agent'][] = $totalPresentAgent;
+
+            // Calculate total average
+            $totalAvg = $totalPresentAgent > 0 ? round(($row->total_msisdn / $totalPresentAgent), 2) : 0;
+            $data['total_avg'][] = $totalAvg;
+
+            // Calculate productivity (cumulative MSISDN / total present agents)
+            $productivity = $totalPresentAgent > 0 ? round(($cumulativeMsisdn / $totalPresentAgent), 2) : 0;
+            $data['productivity'][] = $productivity;
+        }
     }
 
     return response()->json($data);
 }
+
 
 
 
