@@ -281,6 +281,9 @@ Route::prefix('super-admin')->group(function () {
         Route::get('/chart-data', [Charts::class, 'getChartData'])->name('chart.data');
         Route::get('/Line/chart-data', [Charts::class, 'getLineChartData'])->name('superadmin.revinuechart');
 
+        Route::get('/Line/chart/Recusive/Charging', [Charts::class, 'RecusiveChargingChart'])->name('superadmin.recusive.charging');
+
+
 
         Route::get('getMonthlyActiveSubscriptionChartData', [Charts::class, 'getMonthlyActiveSubscriptionChartData'])->name('superadmin.getMonthlyActiveSubscriptionChartData');
         Route::get('getMonthlySubscriptionUnsubscriptionChartData', [Charts::class, 'getMonthlySubscriptionUnsubscriptionChartData'])->name('superadmin.getMonthlySubscriptionUnsubscriptionChartData');

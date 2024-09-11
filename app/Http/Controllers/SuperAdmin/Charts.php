@@ -9,6 +9,7 @@ use App\Models\Subscription\CustomerSubscription;
 use Illuminate\Support\Facades\DB; // Add this line at the beginning of your file
 use App\Models\TeleSalesAgent;
 use App\Models\AgentCount;
+use App\Models\RecusiveChargingData;
 
 class Charts extends Controller
 {
@@ -305,6 +306,55 @@ public function getLineChartData(Request $request)
 
     return response()->json($data);
 }
+
+public function RecusiveChargingChart(Request $request)
+{
+    $query = RecusiveChargingData::query();
+
+    // Apply filter for cps_response (Cause)
+    if ($request->has('cause') && $request->cause != '') {
+        $query->where('cps_response', $request->cause);
+    }
+
+    // Initialize an empty array to store chart data
+    $chartData = [];
+
+    // Apply time period filter
+    if ($request->has('time_period')) {
+        $timePeriod = $request->time_period;
+
+        // Handle different time periods
+        if ($timePeriod == 'today') {
+            $chartData = $query->whereDate('created_at', now()->toDateString())
+                               ->selectRaw('COUNT(*) as count, HOUR(created_at) as label')
+                               ->groupBy('label')
+                               ->get();
+        } elseif ($timePeriod == 'monthly') {
+            $chartData = $query->selectRaw('COUNT(*) as count, MONTHNAME(created_at) as label')
+                               ->groupBy('label')
+                               ->get();
+        } elseif ($timePeriod == 'last7days') {
+            $chartData = $query->whereBetween('created_at', [now()->subDays(7), now()])
+                               ->selectRaw('COUNT(*) as count, DAYNAME(created_at) as label')
+                               ->groupBy('label')
+                               ->get();
+        } elseif ($timePeriod == 'yearly') {
+            $chartData = $query->selectRaw('COUNT(*) as count, YEAR(created_at) as label')
+                               ->groupBy('label')
+                               ->get();
+        }
+    } else {
+        // Default to return data for today if no time filter is provided
+        $chartData = $query->whereDate('created_at', now()->toDateString())
+                           ->selectRaw('COUNT(*) as count, HOUR(created_at) as label')
+                           ->groupBy('label')
+                           ->get();
+    }
+
+    // Return the data as JSON for chart rendering
+    return response()->json($chartData);
+}
+
 
 
 

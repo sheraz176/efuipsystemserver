@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Company\CompanyProfile;
 use Illuminate\Support\Facades\Log;
+use App\Models\RecusiveChargingData;
 
 class SuperAdminAuth extends Controller
 {
@@ -73,6 +74,18 @@ class SuperAdminAuth extends Controller
         $yearlyTransactionSum = CustomerSubscription::whereYear('created_at', Carbon::now()->year)
             ->sum('transaction_amount');
 
+              // Get total recusive charging count
+        $TotalRecusiveChargingCount = RecusiveChargingData::count();
+
+          // Get today's recusive charging count
+        $TodayRecusiveChargingCount = RecusiveChargingData::whereDate('created_at', now()->toDateString())->count();
+
+         // Get last month's recusive charging count
+         $LastMonthRecusiveChargingCount = RecusiveChargingData::whereMonth('created_at', now()->subMonth()->month)
+          ->whereYear('created_at', now()->subMonth()->year)
+           ->count();
+
+
             $companies = CompanyProfile::all();
             //  dd($activeTsm);
 
@@ -85,6 +98,9 @@ class SuperAdminAuth extends Controller
             'yearlyTransactionSum' => $yearlyTransactionSum,
             'NetEnrollmentCount' => $NetEnrollmentCount,
             'companies' => $companies,
+            'TotalRecusiveChargingCount' => $TotalRecusiveChargingCount,
+            'TodayRecusiveChargingCount'=> $TodayRecusiveChargingCount,
+            'LastMonthRecusiveChargingCount' => $LastMonthRecusiveChargingCount,
         ]);
 
     }

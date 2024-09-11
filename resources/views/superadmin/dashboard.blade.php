@@ -396,7 +396,8 @@
             </div>
         </div>
 
-        <h4 class=""><span class="text-muted fw-light">Hourly Net Enrollment</span>  (Total Present Agents, Total MSISDN , Average)</h4>
+        <h4 class=""><span class="text-muted fw-light">Hourly Net Enrollment</span> (Total Present Agents, Total
+            MSISDN , Average)</h4>
 
         <div class="col-12 mb-4">
             <div class="card">
@@ -404,7 +405,7 @@
                     <!-- Company Filter Dropdown and Gross Productivity Green Box (aligned next to each other) -->
                     <div class="d-flex align-items-center">
                         <!-- Company Filter Dropdown -->
-                        <div class="me-3" >
+                        <div class="me-3">
                             <label for="companyFilters">Filter by Company:</label>
                             <select id="companyFilters" class="form-select">
                                 <option value="11">TSM</option>
@@ -415,7 +416,8 @@
                         </div>
 
                         <!-- Gross Productivity Green Box (immediately next to filter) -->
-                        <div id="last-hour-productivity" class="alert alert-success mb-0" style="display: none; margin-top: 2%">
+                        <div id="last-hour-productivity" class="alert alert-success mb-0"
+                            style="display: none; margin-top: 2%">
                             Gross Productivity: <span id="productivity-value"></span>
                         </div>
                     </div>
@@ -438,6 +440,72 @@
             </div>
         </div>
 
+        <h4 class=""><span class="text-muted fw-light">Recusive Charging</span> Performance</h4>
+
+  <div class="col-xl-8 col-12 mb-4">
+    <div class="card">
+        <div class="card-header header-elements">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-start align-items-center">
+                    <div class="me-2">
+                        <label for="causeFilter">Filter by Causes:</label>
+                        <select id="causeFilter" class="form-select">
+                            <option value="">All</option>
+                            <option value="Process service request successfully.">Success Causes</option>
+                            <option value="Insufficient balance.">Failure Causes</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="timecauseFilter">Filter by Time Period:</label>
+                        <select id="timecauseFilter" class="form-select">
+                            <option value="today">Today</option>
+                            <option value="last7days">Last 7 Days</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="yearly">Yearly</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <canvas id="barChart_Recusive" class="chartjs" data-height="500"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="col-4 mb-4">
+    <div class="card">
+        <div class="card-body">
+            <div class="card-title d-flex align-items-start justify-content-between">
+                <div class="avatar flex-shrink-0">
+                    <img src="{{ asset('/assets/img/icons/unicons/cc-primary.png') }}" alt="Credit Card"
+                        class="rounded" />
+                </div>
+            </div>
+            <span class="fw-medium d-block mb-1">Today Recusive Charging Count</span>
+            <h3 class="card-title mb-2">{{ number_format($TodayRecusiveChargingCount, 0, '.', ',') }}</h3>
+            <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
+                +{{ number_format($TodayRecusiveChargingCount, 0, '.', ',') }}%</small>
+        </div>
+        <hr>
+        <div class="card-body">
+
+            <span class="fw-medium d-block mb-1">Last Month Recusive Charging Count</span>
+            <h3 class="card-title mb-2">{{ number_format($LastMonthRecusiveChargingCount, 0, '.', ',') }}</h3>
+            <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
+                +{{ number_format($LastMonthRecusiveChargingCount, 0, '.', ',') }}%</small>
+        </div>
+        <hr>
+        <div class="card-body">
+
+            <span class="fw-medium d-block mb-1">Total Recusive Charging Count</span>
+            <h3 class="card-title mb-2">{{ number_format($TotalRecusiveChargingCount, 0, '.', ',') }}</h3>
+            <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
+                +{{ number_format($TotalRecusiveChargingCount, 0, '.', ',') }}%</small>
+        </div>
+    </div>
+
+</div>
 
 
 
@@ -771,65 +839,65 @@
             updateStats();
         </script>
 
-<script>
-    $(document).ready(function() {
-        var defaultCompanyId = $('#companyFilters').val(); // Get the default selected company ID
+        <script>
+            $(document).ready(function() {
+                var defaultCompanyId = $('#companyFilters').val(); // Get the default selected company ID
 
-        function fetchTableData(companyId = '') {
-            $.ajax({
-                url: '{{ route('superadmin.revinuechart') }}',
-                type: 'GET',
-                dataType: 'json',
-                data: {
-                    company_id: companyId // Pass the selected company ID to the server
-                },
-                success: function(data) {
-                    console.log('Data received:', data); // Debugging
-                    updateTable(data); // Update the table with the data
-                    updateLastHourProductivity(data); // Update the last hour productivity
-                },
-                error: function(error) {
-                    console.error('Error fetching data:', error);
+                function fetchTableData(companyId = '') {
+                    $.ajax({
+                        url: '{{ route('superadmin.revinuechart') }}',
+                        type: 'GET',
+                        dataType: 'json',
+                        data: {
+                            company_id: companyId // Pass the selected company ID to the server
+                        },
+                        success: function(data) {
+                            console.log('Data received:', data); // Debugging
+                            updateTable(data); // Update the table with the data
+                            updateLastHourProductivity(data); // Update the last hour productivity
+                        },
+                        error: function(error) {
+                            console.error('Error fetching data:', error);
+                        }
+                    });
                 }
-            });
-        }
 
-        // Fetch table data on page load with default company ID
-        fetchTableData(defaultCompanyId);
+                // Fetch table data on page load with default company ID
+                fetchTableData(defaultCompanyId);
 
-        // Fetch table data whenever the company filter changes
-        $('#companyFilters').change(function() {
-            var companyId = $(this).val();
-            fetchTableData(companyId);
-        });
+                // Fetch table data whenever the company filter changes
+                $('#companyFilters').change(function() {
+                    var companyId = $(this).val();
+                    fetchTableData(companyId);
+                });
 
-        // Update table function
-        function updateTable(data) {
-            var tableBody = $('#data-table tbody');
-            tableBody.empty(); // Clear existing table rows
+                // Update table function
+                function updateTable(data) {
+                    var tableBody = $('#data-table tbody');
+                    tableBody.empty(); // Clear existing table rows
 
-            // Populate table with hourly MSISDN, total average, and productivity data
-            data.labels.forEach(function(label, index) {
-                // Format the time for display (convert to AM/PM format)
-                var date = new Date(label);
-                var hours = date.getHours();
-                var minutes = date.getMinutes();
-                var suffix = hours >= 12 ? 'PM' : 'AM';
-                hours = hours % 12 || 12; // Convert 0 to 12
-                var formattedTime = hours + ':' + (minutes < 10 ? '0' : '') + minutes + ' ' + suffix;
+                    // Populate table with hourly MSISDN, total average, and productivity data
+                    data.labels.forEach(function(label, index) {
+                        // Format the time for display (convert to AM/PM format)
+                        var date = new Date(label);
+                        var hours = date.getHours();
+                        var minutes = date.getMinutes();
+                        var suffix = hours >= 12 ? 'PM' : 'AM';
+                        hours = hours % 12 || 12; // Convert 0 to 12
+                        var formattedTime = hours + ':' + (minutes < 10 ? '0' : '') + minutes + ' ' + suffix;
 
-                // Determine arrow direction for average (>= 1.0 is up, < 1.0 is down)
-                var avgArrow = data.total_avg[index] >= 1.0
-                    ? '<i class="bx bx-up-arrow-alt" style="color: green;"></i>'
-                    : '<i class="bx bx-down-arrow-alt" style="color: red;"></i>';
+                        // Determine arrow direction for average (>= 1.0 is up, < 1.0 is down)
+                        var avgArrow = data.total_avg[index] >= 1.0 ?
+                            '<i class="bx bx-up-arrow-alt" style="color: green;"></i>' :
+                            '<i class="bx bx-down-arrow-alt" style="color: red;"></i>';
 
-                // Determine arrow direction for productivity (>= 1.0 is up, < 1.0 is down)
-                var prodArrow = data.productivity[index] >= 1.0
-                    ? '<i class="bx bx-up-arrow-alt" style="color: green;"></i>'
-                    : '<i class="bx bx-down-arrow-alt" style="color: red;"></i>';
+                        // Determine arrow direction for productivity (>= 1.0 is up, < 1.0 is down)
+                        var prodArrow = data.productivity[index] >= 1.0 ?
+                            '<i class="bx bx-up-arrow-alt" style="color: green;"></i>' :
+                            '<i class="bx bx-down-arrow-alt" style="color: red;"></i>';
 
-                // Append row to the table
-                var row = `
+                        // Append row to the table
+                        var row = `
                     <tr>
                         <td>${formattedTime}</td>
                         <td>${data.total_present_agent[index]}</td> <!-- Live agent count for the specific hour -->
@@ -844,25 +912,88 @@
                         </td>
                     </tr>
                 `;
-                tableBody.append(row);
-            });
-        }
-
-        // Update last hour's productivity and show it in a green box
-        function updateLastHourProductivity(data) {
-            if (data.productivity.length > 0) {
-                var lastHourProductivity = data.productivity[data.productivity.length - 1]; // Get the last productivity value
-
-                if (lastHourProductivity) {
-                    $('#productivity-value').text(lastHourProductivity); // Update the text in the green box
-                    $('#last-hour-productivity').show(); // Show the green box
+                        tableBody.append(row);
+                    });
                 }
-            }
-        }
-    });
-</script>
 
+                // Update last hour's productivity and show it in a green box
+                function updateLastHourProductivity(data) {
+                    if (data.productivity.length > 0) {
+                        var lastHourProductivity = data.productivity[data.productivity.length -
+                        1]; // Get the last productivity value
 
+                        if (lastHourProductivity) {
+                            $('#productivity-value').text(lastHourProductivity); // Update the text in the green box
+                            $('#last-hour-productivity').show(); // Show the green box
+                        }
+                    }
+                }
+            });
+        </script>
 
+        <script>
+            $(document).ready(function() {
+                let chart; // To store the chart instance
 
+                // Function to fetch data and update the chart
+                function fetchRecusiveChargingData() {
+                    var causeFilter = $('#causeFilter').val();
+                    var timePeriodFilter = $('#timecauseFilter').val();
+
+                    $.ajax({
+                        url: '{{ route('superadmin.recusive.charging') }}',
+                        type: 'GET',
+                        data: {
+                            cause: causeFilter,
+                            time_period: timePeriodFilter,
+                        },
+                        success: function(response) {
+                            // Extract labels and counts from the response
+                            let labels = response.map(item => item
+                            .label); // Day name, Month name, Hour, etc.
+                            let data = response.map(item => item.count); // Counts for each group
+
+                            // If chart already exists, destroy it to avoid overlay
+                            if (chart) {
+                                chart.destroy();
+                            }
+
+                            // Create a new chart with the updated data
+                            var ctx = document.getElementById('barChart_Recusive').getContext('2d');
+                            chart = new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: labels,
+                                    datasets: [{
+                                        label: 'Recusive Charging Count',
+                                        data: data,
+                                        backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                                        borderColor: 'rgba(54, 162, 235, 1)',
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true
+                                        }
+                                    }
+                                }
+                            });
+                        },
+                        error: function(error) {
+                            console.log('Error fetching data', error);
+                        }
+                    });
+                }
+
+                // Event listeners for the filters
+                $('#causeFilter, #timecauseFilter').on('change', function() {
+                    fetchRecusiveChargingData();
+                });
+
+                // Initial chart load
+                fetchRecusiveChargingData();
+            });
+        </script>
     @endsection()
