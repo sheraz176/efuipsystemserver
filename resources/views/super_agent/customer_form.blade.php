@@ -17,7 +17,8 @@
                     @csrf
                     <div class="form-group" style="padding-bottom: 10px;">
                         <label for="customerMSISDN">Customer MSISDN</label>
-                        <input type="hidden" class="form-control" id="company_id" value="{{ session('agent')->company_id }}" name="company_id">
+                        <input type="hidden" class="form-control" id="company_id"
+                            value="{{ session('agent')->company_id }}" name="company_id">
                         <input type="text" class="form-control" id="customerMSISDN" name="customer_msisdn">
                     </div>
 
@@ -106,7 +107,12 @@
                         </div>
                     </div>
                     <!-- Add other form fields as needed -->
-                    <button id="autoDebitButton" class="btn btn-primary" type="button">Proceed to Auto Debit</button>
+                    <button id="autoDebitButton" class="btn btn-primary" type="button" disabled>
+                        <span id="buttonText">Proceed to Auto Debit</span>
+                        <span id="buttonLoader" class="spinner-border spinner-border-sm" role="status"
+                            style="display: none;"></span>
+                    </button>
+
 
                 </form>
             </div>
@@ -133,15 +139,17 @@
                                 style="font-size: 2rem; color: #28a745; vertical-align: middle;"></i>
                             Success Transaction
                         </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        {{-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> --}}
                     </div>
                     <div class="modal-body mt-3 text-center" id="successModalBody" style="font-size: 1.25rem;">
                         <!-- Adjust text size here -->
                         <!-- Modal body content goes here -->
                     </div>
                     <div class="modal-footer text-center">
+                        <a href="{{ route('super_agent.showForm') }}">
                         <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                            onclick="resetForm()">Proceed to Next Deduction</button>
+                           >Proceed to Next Deduction</button>
+                        </a>
                     </div>
                 </form>
             </div>
@@ -156,15 +164,16 @@
                                 style="font-size: 2rem; color: #dc3545; vertical-align: middle;"></i>
                             Failed Transaction
                         </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        {{-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> --}}
                     </div>
                     <div class="modal-body mt-3 text-center" id="failedModalBody" style="font-size: 1.25rem;">
                         <!-- Adjust text size here -->
                         <!-- Modal body content goes here -->
                     </div>
                     <div class="modal-footer text-center">
-                        <button type="button" class="btn btn-primary" data-bs-dismiss="modal"
-                            onclick="resetForm()">Proceed to Next Deduction</button>
+                        <a href="{{ route('super_agent.showForm') }}">
+                             <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Proceed to Next Deduction</button>
+                        </a>
                     </div>
                 </form>
             </div>
@@ -183,7 +192,7 @@
                         </button>
                     </div>
                     <div class="modal-body" id="errorModalBody">
-                       <h6> Internet Connectivity Issue </h6>
+                        <h6> Internet Connectivity Issue </h6>
                         <br>
                         Contact your Local IT Support and Check Your Internet Connectivity
                         <!-- Error message will appear here -->
@@ -202,19 +211,28 @@
         var planId;
         var productId;
 
-        function disableAutoDebitButton() {
-            $('#autoDebitButton').prop('disabled', true);
+        // Function to show loader and disable button
+        function startLoading() {
+            $('#buttonText').hide(); // Hide button text
+            $('#buttonLoader').show(); // Show loader
+            $('#autoDebitButton').prop('disabled', true); // Disable button
         }
 
-        // Function to enable the button
-        function enableAutoDebitButton() {
-            $('#autoDebitButton').prop('disabled', false);
+        // Function to stop loader and enable button
+        function stopLoading() {
+            $('#buttonLoader').hide(); // Hide loader
+            $('#buttonText').show(); // Show button text
+            $('#autoDebitButton').prop('disabled', false); // Enable button
         }
 
         $(document).ready(function() {
             $('#customerSearchForm').submit(function(event) {
                 event.preventDefault();
                 var formData = $(this).serialize();
+
+                // Disable the auto debit button when fetching customer data
+                startLoading();
+
                 $.ajax({
                     type: 'POST',
                     url: '{{ route('super_agent.fetch_customer_data') }}',
@@ -233,82 +251,75 @@
                         $('#agentId').val(data.agent_name);
                         $('#companyId').val(data.company_name);
                         $('#superAgentId').val('{{ session('agent')->username }}');
-                        // Populate other form fields as needed
                         $('#errorMessageSection').hide();
 
                         agentId = data.agent_id;
                         companyId = data.company_id;
                         planId = data.plan_id;
                         productId = data.product_id;
+                        stopLoading(); // Stop loading when data is fetched
                         enableAutoDebitButton();
-
                     },
                     error: function(xhr, textStatus, errorThrown) {
-                        // Display error message
                         $('#customerDataSection').hide();
-                        // Display error message
                         $('#errorMessageSection').show();
+                        stopLoading(); // Stop loading on error
+                    }
+                });
+            });
+
+            $('#autoDebitButton').click(function() {
+                // Disable the button immediately on click to prevent multiple clicks
+                startLoading();
+
+                // Get form values
+                var customer_msisdn = $('#customerMsisdn').val();
+                var customer_cnic = $('#customerCnic').val();
+                var plan_id = $('#planId').val();
+                var product_id = $('#productId').val();
+                var beneficiary_msisdn = $('#beneficiaryMsisdn').val();
+                var beneficiary_cnic = $('#beneficiaryCnic').val();
+                var beneficinary_name = $('#beneficiaryName').val();
+                var company_id = $('#companyId').val();
+                var super_agent_name = '{{ session('agent')->username }}';
+
+                // Construct request data
+                var requestData = {
+                    subscriber_msisdn: customer_msisdn,
+                    customer_cnic: customer_cnic,
+                    plan_id: planId,
+                    product_id: productId,
+                    beneficiary_msisdn: beneficiary_msisdn,
+                    beneficiary_cnic: beneficiary_cnic,
+                    beneficinary_name: beneficinary_name,
+                    agent_id: agentId,
+                    company_id: companyId,
+                    super_agent_name: super_agent_name,
+                };
+
+                // AJAX request to ivr_subscription endpoint
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ route('AutoDebitSubscription') }}',
+                    data: requestData,
+                    success: function(response) {
+                        $('#customerDataForm')[0].reset(); // Reset the form
+                        $('#successModalBody').html(response.data.message);
+                        $('#successModal').modal('show');
+                        stopLoading(); // Stop loading and re-enable button
+                    },
+                    error: function(xhr, textStatus, errorThrown) {
+                        $('#customerDataForm')[0].reset(); // Reset the form
+                        if (xhr.status === 422) {
+                            $('#failedModalBody').html(xhr.responseJSON.data.message);
+                            $('#failedModal').modal('show');
+                        } else {
+                            $('#errorModal').modal('show');
+                        }
+                        stopLoading(); // Stop loading on error
                     }
                 });
             });
         });
-
-
-        $('#autoDebitButton').click(function () {
-    // Get the values from form fields
-    var customer_msisdn = $('#customerMsisdn').val();
-    var customer_cnic = $('#customerCnic').val();
-    var plan_id = $('#planId').val();
-    var product_id = $('#productId').val();
-    var beneficiary_msisdn = $('#beneficiaryMsisdn').val();
-    var beneficiary_cnic = $('#beneficiaryCnic').val();
-    var beneficinary_name = $('#beneficiaryName').val();
-    var company_id = $('#companyId').val();
-    var super_agent_name = '{{ session('agent')->username }}';
-
-    disableAutoDebitButton();
-    // Construct the data object
-    var requestData = {
-        subscriber_msisdn: customer_msisdn,
-        customer_cnic: customer_cnic,
-        plan_id: planId,
-        product_id: productId,
-        beneficiary_msisdn: beneficiary_msisdn,
-        beneficiary_cnic: beneficiary_cnic,
-        beneficinary_name: beneficinary_name,
-        agent_id: agentId,
-        company_id: companyId,
-        super_agent_name: super_agent_name,
-        // Add other form fields as needed
-    };
-
-    // Perform AJAX call to ivr_subscription endpoint
-    $.ajax({
-        type: 'POST',
-        url: '{{ route("AutoDebitSubscription") }}',
-        data: requestData,
-        success: function (response) {
-            // Handle success response
-            $('#customerDataForm')[0].reset(); // Reset the form
-            // Display success modal with response data
-            $('#successModalBody').html(response.data.message);
-            $('#successModal').modal('show');
-        },
-        error: function (xhr, textStatus, errorThrown) {
-            // Handle error response
-            $('#customerDataForm')[0].reset(); // Reset the form
-            if (xhr.status === 422) {
-                // Display failed modal with error message
-                $('#failedModalBody').html(xhr.responseJSON.data.message);
-                $('#failedModal').modal('show');
-
-            } else {
-                // Display error modal with error message
-                $('#errorModal').modal('show');
-
-            }
-        }
-     });
-   });
     </script>
 @endpush
