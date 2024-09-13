@@ -13,8 +13,6 @@ use App\Models\InterestedCustomers\InterestedCustomer;
 use Illuminate\Support\Facades\Log;
 use App\Models\Client;
 use App\Models\logs;
-use Carbon\Carbon;
-use App\Models\CheckingRequest;
 
 class AutoDebitSubscriptionController extends Controller
 {
@@ -42,45 +40,6 @@ class AutoDebitSubscriptionController extends Controller
                         'errors' => $validator->errors(),
                     ], 400);
                 }
-
-                $today = Carbon::now('Asia/Karachi')->format('Y-m-d');
-                $uniqueKey = $request->subscriber_msisdn . '_' . $today; // Generate unique key using MSISDN and today's date
-
-                // Check for existing request with the same unique key (MSISDN + Date)
-                $checking_request_number = CheckingRequest::where('unique_key', $uniqueKey)
-                    ->first();
-
-                // If a record exists for today's request
-                if ($checking_request_number) {
-                    // Check if a request has already been processed (request_number >= 1)
-                    if ($checking_request_number->request_number >= 1) {
-                        return response()->json([
-                            'status' => 'Failed',
-                            'data' => [
-                                'messageCode' => 2003,
-                                'message' => "Information: The agent has already attempted a deduction for this number. If you are receiving this message, the amount has already been deducted from the customer's account.",
-                            ],
-                        ], 422);
-                    }
-
-                    // Otherwise, proceed to update the request and prevent further hits
-                    $checking_request_number->is_processing = true; // Set to processing
-                    $checking_request_number->update();
-                } else {
-                    // If no request exists, create a new one
-                    $checking_request_number = new CheckingRequest();
-                    $checking_request_number->msisdn = $request->subscriber_msisdn;
-                    $checking_request_number->request_number = 0; // Initial request count
-                    $checking_request_number->unique_key = $uniqueKey; // Use MSISDN + Date
-                    $checking_request_number->is_processing = true; // Mark as processing
-                    $checking_request_number->save();
-                }
-
-                // Proceed with Jazz system hit if request_number is 0
-                if ($checking_request_number->request_number == 0) {
-                    try {
-             // Code to hit the Jazz system...
-
 
                 // Get request parameters
                 $planId = $request->input('plan_id');
@@ -351,10 +310,6 @@ class AutoDebitSubscriptionController extends Controller
                                  $interestedCustomer->update(['deduction_applied' => 1]);
                              }
 
-                              // After successful hit, mark request_number to 1
-                        $checking_request_number->request_number = 1;
-                        $checking_request_number->is_processing = false; // Reset processing flag
-                        $checking_request_number->update();
 
 
                             return response()->json([
@@ -382,12 +337,6 @@ class AutoDebitSubscriptionController extends Controller
                              if ($interestedCustomer) {
                                  $interestedCustomer->update(['deduction_applied' => 1]);
                              }
-
-                             // After successful hit, mark request_number to 1
-                        $checking_request_number->request_number = 1;
-                        $checking_request_number->is_processing = false; // Reset processing flag
-                        $checking_request_number->update();
-
                          return response()->json([
                             'status' => 'Failed',
                             'data' => [
@@ -408,32 +357,6 @@ class AutoDebitSubscriptionController extends Controller
                         ], 500);
                     }
 
-             //End Code to hit the Jazz system...
-
-
-                    } catch (\Exception $e) {
-                        // Handle errors (rollback is_processing flag)
-                        $checking_request_number->is_processing = false;
-                        $checking_request_number->update();
-
-                        return response()->json([
-                            'status' => 'Failed',
-                            'data' => [
-                                'messageCode' => 500,
-                                'message' => "Error: There was an issue processing the request. Please try again later.",
-                            ],
-                        ], 500);
-                    }
-                } else {
-                    // If request_number is not 0, no need to hit Jazz system again
-                    return response()->json([
-                        'status' => 'Failed',
-                        'data' => [
-                            'messageCode' => 2003,
-                            'message' => "Information: The agent has already attempted a deduction for this number.",
-                        ],
-                    ], 422);
-                }
 
 
 
