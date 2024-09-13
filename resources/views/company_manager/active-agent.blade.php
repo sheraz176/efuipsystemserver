@@ -27,8 +27,8 @@
 
                                 <th>Username</th>
                                 <th>Login Status</th>
-
-
+                                <th>Login Time </th>
+                                <th>Emp Code </th>
                             </tr>
                         </thead>
 
@@ -40,7 +40,7 @@
     </div>
 </div>
 
-<script >
+<script>
     $(function () {
         // Initialize the DataTable
         var table = $('#myTables').DataTable({
@@ -56,12 +56,23 @@
             columns: [
                 { data: 'agent_id', name: 'agent_id' },
                 { data: 'username', name: 'username' },
-                { data: 'islogin', name: 'islogin' }
+                { data: 'islogin', name: 'islogin' },
+                { data: 'today_login_time', name: 'today_login_time' },
+                { data: 'emp_code', name: 'emp_code' },
             ],
-            // Add the lengthMenu to allow selection of 30, 100, 500 rows per page
-            lengthMenu: [ [30, 100, 500], [30, 100, 500] ], // First array is for values, second array for display
-            pageLength: 30, // Default page length
+            // Add the lengthMenu to allow selection of 30, 120, 500 rows per page
+            lengthMenu: [ [30, 120, 500], [30, 120, 500] ], // First array is for values, second array for display
+            pageLength: 500, // Default page length
 
+            // Add buttons for exporting data
+            dom: 'Bfrtip',
+            buttons: [
+                {
+                    extend: 'excelHtml5',
+                    text: 'Export Excel',
+                    className: 'btn btn-primary'
+                }
+            ]
         });
 
         // Customize the search input placeholder
@@ -71,6 +82,8 @@
         });
     });
 </script>
+
+
 
 
 @include('superadmin.partials.script');

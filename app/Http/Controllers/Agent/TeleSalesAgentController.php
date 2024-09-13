@@ -23,7 +23,7 @@ class TeleSalesAgentController extends Controller
     // Show the form for creating a new telesales agent.
     public function create()
     {
-        
+
         $companies = CompanyProfile::all();
         return view('superadmin.telesales-agents.create',compact('companies'));
     }
@@ -31,6 +31,8 @@ class TeleSalesAgentController extends Controller
     // Store a newly created telesales agent in the database.
     public function store(Request $request)
     {
+
+        // dd($request->all());
         //dd($request);
         $validator = Validator::make($request->all(), [
             'first_name' => 'required',
@@ -41,7 +43,7 @@ class TeleSalesAgentController extends Controller
             'company_id' => 'required',
             'password' => 'required|min:6', // Add validation for password
         ]);
-    
+
         // If validation fails, redirect back with errors
         if ($validator->fails()) {
             return redirect()
@@ -49,18 +51,24 @@ class TeleSalesAgentController extends Controller
                 ->withErrors($validator)
                 ->withInput();
         }
-    
-        // Set default values
-        $validatedData = $validator->validated();
-        $validatedData['islogin'] = 0;
-        $validatedData['call_status'] = false;
-        $validatedData['password'] = Hash::make($request->input('password'));
-        $validatedData['today_login_time'] = now();
-        $validatedData['today_logout_time'] = now();
-    
-        // Create TelesalesAgent record
-        TelesalesAgent::create($validatedData);
-    
+
+        $telesaleAgents = new TeleSalesAgent();
+        $telesaleAgents->first_name = $request->first_name;
+        $telesaleAgents->last_name = $request->last_name;
+        $telesaleAgents->username = $request->username;
+        $telesaleAgents->email = $request->email;
+        $telesaleAgents->status = $request->status;
+        $telesaleAgents->company_id = $request->company_id;
+        $telesaleAgents->password = Hash::make($request->input('password'));
+        $telesaleAgents->islogin = "0";
+        $telesaleAgents->call_status = "0";
+        $telesaleAgents->today_login_time = now();
+        $telesaleAgents->today_logout_time = now();
+        if(!empty($request->emp_code)){
+            $telesaleAgents->emp_code = $request->emp_code;
+        }
+        $telesaleAgents->save();
+
         return redirect()->route('telesales-agents.index')->with('success', 'Telesales Agent created successfully.');
     }
 
@@ -76,7 +84,7 @@ class TeleSalesAgentController extends Controller
     {
         $telesalesAgent = TelesalesAgent::findOrFail($telesalesAgent);
         $companies = CompanyProfile::all();
-        //echo $telesalesAgent; 
+        //echo $telesalesAgent;
         return view('superadmin.telesales-agents.edit', compact('telesalesAgent','companies'));
     }
 
@@ -93,8 +101,8 @@ class TeleSalesAgentController extends Controller
             'password' => 'required|min:6', // Add validation for password
         ]);
 
-        
-    
+
+
         // If validation fails, redirect back with errors
         if ($validator->fails()) {
             return redirect()
@@ -102,7 +110,7 @@ class TeleSalesAgentController extends Controller
                 ->withErrors($validator)
                 ->withInput();
         }
-    
+
         // Set default values
         $validatedData = $validator->validated();
         $validatedData['islogin'] = 0;
