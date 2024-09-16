@@ -22,7 +22,7 @@ class TeleSalesAgent extends Model implements Authenticatable
      */
     protected $fillable = [
         'first_name', 'last_name', 'username', 'status', 'islogin', 'call_status',
-        'today_login_time', 'today_logout_time', 'email','company_id', 'password', 'session_id',
+        'today_login_time', 'today_logout_time', 'email','company_id', 'password', 'session_id','emp_code',
     ];
 
     /**

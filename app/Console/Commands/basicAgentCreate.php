@@ -43,31 +43,34 @@ class basicAgentCreate extends Command
     public function handle()
     {
         $agentsData = [
-            ['Haleema', 'Sadia', 'Haleema.Sadia.abacus', 'Haleema#Sadia#abacus#2024', 'Haleema.Sadia@bpo.abacus-global.com'],
-            ['Nasra', 'Farid', 'Nasra.Farid.abacus', 'Nasra#Farid#abacus#2024', 'Nasra.Farid@bpo.abacus-global.com'],
-            ['Aleena', 'Shujat', 'Aleena.Shujat.abacus', 'Aleena#Shujat#abacus#2024', 'Aleena.Shujat@bpo.abacus-global.com'],
-            ['Ayesha', 'Bibi', 'Ayesha.Bibi.abacus', 'Ayesha#Bibi#abacus#2024', 'Ayesha1@bpo.abacus-global.com'],
-            ['Robisha', 'Safdar', 'Robisha.Safdar.abacus', 'Robisha#Safdar#abacus#2024', 'Robisha.Safdar@bpo.abacus-global.com'],
-            ['Afshan', 'Siddiqui', 'Afshan.Siddiqui.abacus', 'Afshan#Siddiqui#abacus#2024', 'Afshan.Siddiqui@bpo.abacus-global.com'],
-            ['Hira', 'Irfan', 'Hira.Irfan.abacus', 'Hira#Irfan#abacus#2024', 'Hira.Irfan@bpo.abacus-global.com'],
-            ['Faiza', 'Aftab', 'Faiza.Aftab.abacus', 'Faiza#Aftab#abacus#2024', 'Faiza.Aftab@bpo.abacus-global.com'],
-            ['Malaika', 'Waseem', 'Malaika.Waseem.abacus', 'Malaika#Waseem#abacus#2024', 'Malaika.Waseem@bpo.abacus-global.com'],
-            ['Mehwish', 'Nazir', 'Mehwish.Nazir.abacus', 'Mehwish#Nazir#abacus#2024', 'Mehwish.Nazir@bpo.abacus-global.com'],
-            ['Fizza', 'Faiz', 'Fizza.Faiz.abacus', 'Fizza#Faiz#abacus#2024', 'Fizza.Faiz@bpo.abacus-global.com'],
-            ['Aina', 'Liaqat', 'Aina.Liaqat.abacus', 'Aina#Liaqat#abacus#2024', 'Aina.Liaqat@bpo.abacus-global.com'],
-            ['Syeda', 'Manzoor', 'Syeda.Manzoor.abacus', 'Syeda#Manzoor#abacus#2024', 'Syeda.Manzoor@bpo.abacus-global.com'],
-            ['Laiba', 'Amjad', 'Laiba.Amjad.abacus', 'Laiba#Amjad#abacus#2024', 'Laiba.Amjad@bpo.abacus-global.com'],
-            ['Aqsa', 'Tariq', 'Aqsa.Tariq.abacus', 'Aqsa#Tariq#abacus#2024', 'Aqsa.Tariq@bpo.abacus-global.com'],
-            ['Hina', 'Saleem', 'Hina.Saleem.abacus', 'Hina#Saleem#abacus#2024', 'Hina.Saleem@bpo.abacus-global.com'],
-            ['Qandeel', 'Kanwal', 'Qandeel.Kanwal.abacus', 'Qandeel#Kanwal#abacus#2024', 'Qandeel.Kanwal@bpo.abacus-global.com'],
-            ['Khair Ul', 'Nisa', 'KhairUl.Nisa.abacus', 'KhairUl#Nisa#abacus#2024', 'KhairUl.Nisa@bpo.abacus-global.com'],
-            ['Iram', 'Shahid', 'Iram.Shahid.abacus', 'Iram#Shahid#abacus#2024', 'Iram.Shahid@bpo.abacus-global.com'],
-            ['Ajwa', 'Bibi', 'Ajwa.Bibi.abacus', 'Ajwa#Bibi#abacus#2024', 'Ajwa@bpo.abacus-global.com'],
-            ['Muskan', 'Butt', 'Muskan.Butt.abacus', 'Muskan#Butt#abacus#2024', 'Muskan.Butt@bpo.abacus-global.com'],
-            ['Javeria', 'Usmani', 'Javeria.Usmani.abacus', 'Javeria#Usmani#abacus#2024', 'Javeria.Usmani@bpo.abacus-global.com'],
+            ['Abdul', 'Basit', 'Abdul.Basit.sybrid', 'Abdul#Basit#sybrid#2024', 'basitkhataka@gmail.com'],
+            ['Ayyaz', 'Hussain', 'Ayyaz.Hussain.sybrid', 'Ayyaz#Hussain#sybrid#2024', 'ayyaz1735@gmail.com'],
+            ['Muhammad', 'Sameed Khan', 'Muhammad.SameedKhan.sybrid', 'Muhammad#SameedKhan#sybrid#2024', 'sameedkapoor1415@gmail.com'],
+            ['Muhammad', 'Shahid', 'Muhammad.Shahid.sybrid', 'Muhammad#Shahid#sybrid#2024', 'istid4all@gmail.com'],
+            ['Muhammad', 'Rohail', 'Muhammad.Rohail.sybrid', 'Muhammad#Rohail#sybrid#2024', 'khanrohail760@gmail.com'],
+            ['Farhan', 'Ali', 'Farhan.Ali.sybrid', 'Farhan#Ali#sybrid#2024', 'farhanali4t5@gmail.com'],
+            ['Ghulam', 'Kibriya', 'Ghulam.Kibriya.sybrid', 'Ghulam#Kibriya#sybrid#2024', 'sameerirfan323@gmail.com'],
+            ['Iftikhar', 'Ul Haq', 'Iftikhar.UlHaq.sybrid', 'Iftikhar#UlHaq#sybrid#2024', 'ifti5114@gmail.com'],
+            ['Muhammad', 'Shakeel', 'Muhammad.Shakeel.sybrid', 'Muhammad#Shakeel#sybrid#2024', 'bangashshakeel3@gmail.com'],
+            ['Hamza', 'Hassan Khan', 'Hamza.HassanKhan.sybrid', 'Hamza#HassanKhan#sybrid#2024', 'humzahk28@gmail.com'],
+            ['Suleman', 'Khan', 'Suleman.Khan.sybrid', 'Suleman#Khan#sybrid#2024', 'sulimankhankhan12345@gmail.com'],
+            ['Hamza', 'Riaz', 'Hamza.Riaz.sybrid', 'Hamza#Riaz#sybrid#2024', 'riazhamza222@gmail.com'],
+            ['Muhammad', 'Hammad Khan', 'Muhammad.HammadKhan.sybrid', 'Muhammad#HammadKhan#sybrid#2024', 'hammadkhan2977@gmail.com'],
+            ['Muhammad', 'Afrasiyab', 'Muhammad.Afrasiyab.sybrid', 'Muhammad#Afrasiyab#sybrid#2024', 'afrasiyab.ctl@gmail.com'],
+            ['Aman', 'Ullah', 'Aman.Ullah.sybrid', 'Aman#Ullah#sybrid#2024', 'ak3719864@gmail.com'],
+            ['Muhammad', 'Ammad', 'Muhammad.Ammad.sybrid', 'Muhammad#Ammad#sybrid#2024', 'muhammadammad9584@gmail.com'],
+            ['Ahsan', 'Masood', 'Ahsan.Masood.sybrid', 'Ahsan#Masood#sybrid#2024', 'ahsanmasood984@gmail.com'],
+            ['Shahmeer', 'Hussain', 'Shahmeer.Hussain.sybrid', 'Shahmeer#Hussain#sybrid#2024', 'shahmeerhussain18@gmail.com'],
+            ['Abdur', 'Rehman Abid', 'Abdur.RehmanAbid.sybrid', 'Abdur#RehmanAbid#sybrid#2024', 'leaderoforganic@gmail.com'],
+            ['Bashir', 'Ahmed Raja', 'Bashir.AhmedRaja.sybrid', 'Bashir#AhmedRaja#sybrid#2024', 'ahmedmujahid0066@gmail.com'],
+            ['Muhammad', 'Yousaf', 'Muhammad.Yousaf.sybrid', 'Muhammad#Yousaf#sybrid#2024', 'melucky905@gmail.com'],
+            ['Ihsan', 'Ullah', 'Ihsan.Ullah.sybrid', 'Ihsan#Ullah#sybrid#2024', 'ihsanakhan55@gmail.com'],
+            ['Rizwan', 'ur Rehman', 'Rizwan.Rehman.sybrid', 'Rizwan#Rehman#sybrid#2024', 'rizwankhan0566322@gmail.com'],
+            ['Salman', 'Muhammad', 'Salman.Muhammad.sybrid', 'Salman#Muhammad#sybrid#2024', 'bangashsalman10@gmail.com'],
+            ['Jannat', 'Bibi', 'Jannat.Bibi.sybrid', 'Jannat#Bibi#sybrid#2024', 'jannatmanzoor700@gmail.com'],
+            ['Rabia', 'Zubair', 'Rabia.Zubair.sybrid', 'Rabia#Zubair#sybrid#2024', 'rm4190048@gmail.com'],
+            ['Isma', 'Aftab', 'Isma.Aftab.sybrid', 'Isma#Aftab#sybrid#2024', 'Ismaaftab702@gmail.com']
         ];
-
-
 
 
         foreach ($agentsData as $data) {
@@ -77,7 +80,7 @@ class basicAgentCreate extends Command
                 'username' => $data[2],
                 'email' => $data[4],
                 'status' => 1,
-                'company_id' => 2,
+                'company_id' => 12,
                 'password' => $data[3],
             ];
 

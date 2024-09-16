@@ -205,121 +205,136 @@
 @endsection
 
 @push('scripts')
-    <script>
-        var agentId;
-        var companyId;
-        var planId;
-        var productId;
 
-        // Function to show loader and disable button
-        function startLoading() {
-            $('#buttonText').hide(); // Hide button text
-            $('#buttonLoader').show(); // Show loader
-            $('#autoDebitButton').prop('disabled', true); // Disable button
-        }
+<script>
+    var agentId;
+    var companyId;
+    var planId;
+    var productId;
 
-        // Function to stop loader and enable button
-        function stopLoading() {
-            $('#buttonLoader').hide(); // Hide loader
-            $('#buttonText').show(); // Show button text
-            $('#autoDebitButton').prop('disabled', false); // Enable button
-        }
+    // Function to show loader and disable button
+    function startLoading() {
+        $('#buttonText').hide(); // Hide button text
+        $('#buttonLoader').show(); // Show loader
+        $('#autoDebitButton').prop('disabled', true); // Disable button
+    }
 
-        $(document).ready(function() {
-            $('#customerSearchForm').submit(function(event) {
-                event.preventDefault();
-                var formData = $(this).serialize();
+    // Function to stop loader and enable button
+    function stopLoading() {
+        $('#buttonLoader').hide(); // Hide loader
+        $('#buttonText').show(); // Show button text
+        $('#autoDebitButton').prop('disabled', false); // Enable button
+    }
 
-                // Disable the auto debit button when fetching customer data
-                startLoading();
+    $(document).ready(function() {
+        $('#customerSearchForm').submit(function(event) {
+            event.preventDefault();
+            var formData = $(this).serialize();
 
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ route('super_agent.fetch_customer_data') }}',
-                    data: formData,
-                    success: function(data) {
-                        $('#customerDataSection').show();
-                        $('#customerMsisdn').val(data.customer_msisdn);
-                        $('#customerCnic').val(data.customer_cnic);
-                        $('#planId').val(data.plan_name);
-                        $('#productId').val(data.product_name);
-                        $('#beneficiaryMsisdn').val(data.beneficiary_msisdn);
-                        $('#beneficiaryCnic').val(data.beneficiary_cnic);
-                        $('#relationship').val(data.relationship);
-                        $('#beneficiaryName').val(data.beneficinary_name);
-                        $('#deductionApplied').val(data.deduction_applied);
-                        $('#agentId').val(data.agent_name);
-                        $('#companyId').val(data.company_name);
-                        $('#superAgentId').val('{{ session('agent')->username }}');
-                        $('#errorMessageSection').hide();
+            // Disable the auto debit button when fetching customer data
+            startLoading();
 
-                        agentId = data.agent_id;
-                        companyId = data.company_id;
-                        planId = data.plan_id;
-                        productId = data.product_id;
-                        stopLoading(); // Stop loading when data is fetched
-                        enableAutoDebitButton();
-                    },
-                    error: function(xhr, textStatus, errorThrown) {
-                        $('#customerDataSection').hide();
-                        $('#errorMessageSection').show();
-                        stopLoading(); // Stop loading on error
-                    }
-                });
-            });
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('super_agent.fetch_customer_data') }}',
+                data: formData,
+                success: function(data) {
+                    $('#customerDataSection').show();
+                    $('#customerMsisdn').val(data.customer_msisdn);
+                    $('#customerCnic').val(data.customer_cnic);
+                    $('#planId').val(data.plan_name);
+                    $('#productId').val(data.product_name);
+                    $('#beneficiaryMsisdn').val(data.beneficiary_msisdn);
+                    $('#beneficiaryCnic').val(data.beneficiary_cnic);
+                    $('#relationship').val(data.relationship);
+                    $('#beneficiaryName').val(data.beneficinary_name);
+                    $('#deductionApplied').val(data.deduction_applied);
+                    $('#agentId').val(data.agent_name);
+                    $('#companyId').val(data.company_name);
+                    $('#superAgentId').val('{{ session('agent')->username }}');
+                    $('#errorMessageSection').hide();
 
-            $('#autoDebitButton').click(function() {
-                // Disable the button immediately on click to prevent multiple clicks
-                startLoading();
+                    agentId = data.agent_id;
+                    companyId = data.company_id;
+                    planId = data.plan_id;
+                    productId = data.product_id;
 
-                // Get form values
-                var customer_msisdn = $('#customerMsisdn').val();
-                var customer_cnic = $('#customerCnic').val();
-                var plan_id = $('#planId').val();
-                var product_id = $('#productId').val();
-                var beneficiary_msisdn = $('#beneficiaryMsisdn').val();
-                var beneficiary_cnic = $('#beneficiaryCnic').val();
-                var beneficinary_name = $('#beneficiaryName').val();
-                var company_id = $('#companyId').val();
-                var super_agent_name = '{{ session('agent')->username }}';
-
-                // Construct request data
-                var requestData = {
-                    subscriber_msisdn: customer_msisdn,
-                    customer_cnic: customer_cnic,
-                    plan_id: planId,
-                    product_id: productId,
-                    beneficiary_msisdn: beneficiary_msisdn,
-                    beneficiary_cnic: beneficiary_cnic,
-                    beneficinary_name: beneficinary_name,
-                    agent_id: agentId,
-                    company_id: companyId,
-                    super_agent_name: super_agent_name,
-                };
-
-                // AJAX request to ivr_subscription endpoint
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ route('AutoDebitSubscription') }}',
-                    data: requestData,
-                    success: function(response) {
-                        $('#customerDataForm')[0].reset(); // Reset the form
-                        $('#successModalBody').html(response.data.message);
-                        $('#successModal').modal('show');
-                        stopLoading(); // Stop loading and re-enable button
-                    },
-                    error: function(xhr, textStatus, errorThrown) {
-                        $('#customerDataForm')[0].reset(); // Reset the form
-                        if (xhr.status === 422) {
-                            $('#failedModalBody').html(xhr.responseJSON.data.message);
-                            $('#failedModal').modal('show');
-                        } else {
-                            $('#errorModal').modal('show');
-                        }
-                        stopLoading(); // Stop loading on error
-                    }
-                });
+                    stopLoading(); // Stop loading when data is fetched
+                    enableAutoDebitButton();
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                    $('#customerDataSection').hide();
+                    $('#errorMessageSection').show();
+                    stopLoading(); // Stop loading on error
+                }
             });
         });
-    </script>
+
+        // Debounce function to prevent multiple rapid clicks
+        function debounce(func, delay) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+
+        $('#autoDebitButton').click(debounce(function() {
+            // Immediately disable the button on click to prevent multiple requests
+            $(this).prop('disabled', true);
+
+            // Show loader and hide button text
+            startLoading();
+
+            // Get form values
+            var customer_msisdn = $('#customerMsisdn').val();
+            var customer_cnic = $('#customerCnic').val();
+            var plan_id = $('#planId').val();
+            var product_id = $('#productId').val();
+            var beneficiary_msisdn = $('#beneficiaryMsisdn').val();
+            var beneficiary_cnic = $('#beneficiaryCnic').val();
+            var beneficinary_name = $('#beneficiaryName').val();
+            var company_id = $('#companyId').val();
+            var super_agent_name = '{{ session('agent')->username }}';
+
+            // Construct request data
+            var requestData = {
+                subscriber_msisdn: customer_msisdn,
+                customer_cnic: customer_cnic,
+                plan_id: planId,
+                product_id: productId,
+                beneficiary_msisdn: beneficiary_msisdn,
+                beneficiary_cnic: beneficiary_cnic,
+                beneficinary_name: beneficinary_name,
+                agent_id: agentId,
+                company_id: companyId,
+                super_agent_name: super_agent_name,
+            };
+
+            // AJAX request to ivr_subscription endpoint
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('AutoDebitSubscription') }}',
+                data: requestData,
+                success: function(response) {
+                    $('#customerDataForm')[0].reset(); // Reset the form
+                    $('#successModalBody').html(response.data.message);
+                    $('#successModal').modal('show');
+                    stopLoading(); // Stop loading and re-enable button
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                    $('#customerDataForm')[0].reset(); // Reset the form
+                    if (xhr.status === 422) {
+                        $('#failedModalBody').html(xhr.responseJSON.data.message);
+                        $('#failedModal').modal('show');
+                    } else {
+                        $('#errorModal').modal('show');
+                    }
+                    stopLoading(); // Stop loading on error
+                }
+            });
+        }, 500)); // 500ms debounce to avoid multiple clicks
+    });
+</script>
+
 @endpush
