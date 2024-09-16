@@ -49,13 +49,27 @@ public function ajex(Request $request)
 
     // Count of live agents (currently logged in)
     $liveAgents = TeleSalesAgent::where('company_id', $companyId)
+        ->where('category', '0')
         ->where('islogin', '1')
         ->count();
 
     // Count of active agents
     $activeAgents = TeleSalesAgent::where('company_id', $companyId)
+        ->where('category', '0')
         ->where('status', '1')
         ->count();
+
+        // Count of live agents (currently logged in)
+    $liveAgentsWFH = TeleSalesAgent::where('company_id', $companyId)
+    ->where('category', '1')
+    ->where('islogin', '1')
+    ->count();
+
+  // Count of active agents
+   $activeAgentsWFH = TeleSalesAgent::where('company_id', $companyId)
+    ->where('category', '1')
+    ->where('status', '1')
+    ->count();
 
     // Count of current month's subscriptions
     $currentMonthSubscriptionCount = CustomerSubscription::where('company_id', $companyId)
@@ -89,6 +103,8 @@ public function ajex(Request $request)
         'liveAgents' => number_format($liveAgents),
         'todaySubscriptionCount' => number_format($todaySubscriptionCount),
         'activeAgents' => number_format($activeAgents),
+        'liveAgentsWFH' => number_format($liveAgentsWFH),
+        'activeAgentsWFH' => number_format($activeAgentsWFH),
         'currentMonthSubscriptionCount' => number_format($currentMonthSubscriptionCount),
         'currentYearSubscriptionCount' => number_format($currentYearSubscriptionCount),
         'dailyTransactionSum' => number_format($dailyTransactionSum, 2), // 2 decimal places
@@ -197,7 +213,8 @@ public function AgentData(Request $request)
     if ($request->ajax()) {
         $data = TelesalesAgent::select('*')
         ->where('status',1)
-        ->where('company_id', $companyId);
+        ->where('company_id', $companyId)
+        ->where('category', '0');
         return Datatables::of($data)
 
 

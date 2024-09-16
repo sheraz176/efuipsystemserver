@@ -36,12 +36,21 @@ class WFHAgent extends Command
      * @return int
      */
     public function handle()
-    {
+{
+    // Fetch the agents based on company_id and agent_id list
+    $agents = TeleSalesAgent::where('company_id', 11)
+        ->whereIn('agent_id', [156,427,428,429,499,500,501,502,555,556,557,558,559,560,561])->get();
 
-        $agents = DB::table('tele_sales_agents')
-        ->where('company_id', 11)->whereIn('agent_id',[10,200,2000,1950])
-        ->get();
-        dd($agents);
-        return 0;
+    // Update the category to 1 for each agent
+    foreach ($agents as $agent) {
+        $agent->category = 1;
+        $agent->save(); // Save the updated agent
     }
+
+    // Output the updated agents
+    dd($agents);
+
+    return 0;
+}
+
 }

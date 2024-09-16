@@ -117,8 +117,12 @@ class SuperAdminAuth extends Controller
     {
         $stats = [
 
-            'totalTsm' => TeleSalesAgent::where('company_id', '11')->where('status','1')->count(),
-            'activeTsm' => TeleSalesAgent::where('company_id', '11')->where('islogin', '1')->count(),
+            'totalTsm' => TeleSalesAgent::where('company_id', '11')->where('category', '0')->where('status','1')->count(),
+            'activeTsm' => TeleSalesAgent::where('company_id', '11')->where('category', '0')->where('islogin', '1')->count(),
+
+            'totalTsmWfh' => TeleSalesAgent::where('company_id', '11')->where('category', '1')->where('status','1')->count(),
+            'activeTsmWfh' => TeleSalesAgent::where('company_id', '11')->where('category', '1')->where('islogin', '1')->count(),
+
 
             'totalIbex' => TeleSalesAgent::where('company_id', '1')->where('status','1')->count(),
             'activeIbex' => TeleSalesAgent::where('company_id', '1')->where('islogin', '1')->count(),

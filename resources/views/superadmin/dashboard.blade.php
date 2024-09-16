@@ -179,22 +179,39 @@
         <div class="row">
 
             <div class="row">
+
+
                 <div class="col-4 mb-4">
                     <div class="card">
                         <div class="card-body">
                             <div class="card-title d-flex align-items-start justify-content-between">
                                 <div class="avatar flex-shrink-0">
-                                    <img src="{{ asset('/assets/img/icons/unicons/wallet.png') }}" alt="Credit Card"
-                                        class="rounded" />
+                                    <img src="{{ asset('/assets/img/icons/unicons/wallet.png') }}" alt="Credit Card" class="rounded" />
                                 </div>
-
+                                 <!-- Toggle Button -->
+                             <div class="text-center">
+                                <button id="toggleCounts" class="btn btn-primary btn-sm">Show WFH Counts</button>
                             </div>
-                            <span class="d-block mb-1">Active Tsm Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"><span id="totalTsm">0</span></h3>
+                            </div>
 
-                            <span class="d-block mb-1" style="color: rgb(244, 87, 24);font-weight: bold;">Live Tsm
-                                Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"><span id="activeTsm">0</span></h3>
+                            <!-- Default view showing TSM counts -->
+                            <div id="tsmCounts">
+                                <span class="d-block mb-1">Active Tsm Agents</span>
+                                <h3 class="card-title text-nowrap mb-2"><span id="totalTsm">0</span></h3>
+
+                                <span class="d-block mb-1" style="color: rgb(244, 87, 24); font-weight: bold;">Live Tsm Agents</span>
+                                <h3 class="card-title text-nowrap mb-2"><span id="activeTsm">0</span></h3>
+                            </div>
+
+                            <!-- WFH counts hidden initially -->
+                            <div id="wfhCounts" style="display: none;">
+                                <span class="d-block mb-1">Active Tsm Agents (WFH)</span>
+                                <h3 class="card-title text-nowrap mb-2"><span id="totalTsmWfh">0</span></h3>
+
+                                <span class="d-block mb-1" style="color: rgb(244, 87, 24); font-weight: bold;">Live Tsm Agents (WFH)</span>
+                                <h3 class="card-title text-nowrap mb-2"><span id="activeTsmWfh">0</span></h3>
+                            </div>
+
 
                         </div>
                     </div>
@@ -581,6 +598,26 @@
         </div>
 
 
+<!-- Add JavaScript to toggle between TSM and WFH counts -->
+<script>
+    document.getElementById('toggleCounts').addEventListener('click', function() {
+        // Toggle visibility of TSM and WFH counts
+        const tsmCounts = document.getElementById('tsmCounts');
+        const wfhCounts = document.getElementById('wfhCounts');
+        const toggleButton = document.getElementById('toggleCounts');
+
+        if (tsmCounts.style.display === 'none') {
+            tsmCounts.style.display = 'block';
+            wfhCounts.style.display = 'none';
+            toggleButton.textContent = 'Show WFH Counts';
+        } else {
+            tsmCounts.style.display = 'none';
+            wfhCounts.style.display = 'block';
+            toggleButton.textContent = 'Show TSM Counts';
+        }
+    });
+</script>
+
         <script>
             $(document).ready(function() {
                 // Initial fetch for current month data
@@ -811,6 +848,9 @@
                     success: function(data) {
                         $('#totalTsm').text(data.totalTsm);
                         $('#activeTsm').text(data.activeTsm);
+
+                        $('#totalTsmWfh').text(data.totalTsmWfh);
+                        $('#activeTsmWfh').text(data.activeTsmWfh);
 
                         $('#totalIbex').text(data.totalIbex);
                         $('#activeIbex').text(data.activeIbex);

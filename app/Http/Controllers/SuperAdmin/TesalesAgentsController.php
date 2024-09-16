@@ -58,6 +58,18 @@ class TesalesAgentsController extends Controller
      }
 
 
+     public function InActive($id)
+     {
+         $telesalesAgent = TelesalesAgent::findOrFail($id);
+        //  dd($telesalesAgent); // This will dump and die, so the rest of the code won't run
+        $telesalesAgent->islogin = "0";
+         $telesalesAgent->status = "0";
+         $telesalesAgent->today_logout_time = now();
+         $telesalesAgent->update();
+
+         return redirect()->route('telesales-agents.index')->with('success', 'Telesales Agent In Active Successfully.');
+     }
+
      public function AgentData(Request $request)
      {
         //   dd('hi');
@@ -76,6 +88,10 @@ class TesalesAgentsController extends Controller
                  <a href="' .route('superadmin.telesales-agents-logout.edit',$data->agent_id). '" class="btn-all mr-2">
                  <button type="button" class="btn btn-danger btn-sm">LogOut Agent</button>
                </a>
+
+                 <a href="' .route('superadmin.telesales-agents-Inactive.edit',$data->agent_id). '" class="btn-all mr-2">
+                 <button type="button" class="btn btn-warning btn-sm">In-Active Agent</button>
+                 </a>
 
                 ';
 

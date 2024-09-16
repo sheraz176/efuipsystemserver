@@ -16,6 +16,45 @@
             </nav>
 
         </div>
+        @if(Auth::guard('company_manager')->user()->company_id == 11)
+
+        <div class="col-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                        <div class="avatar flex-shrink-0">
+                            <img src="{{ asset('/assets/img/icons/unicons/wallet.png') }}" alt="Credit Card"
+                                class="rounded" />
+                        </div>
+                    </div>
+                    <span class="d-block mb-1">Active Agents (WFO)</span>
+                    <h3 class="card-title text-nowrap mb-2"><span id="activeAgents">0</span></h3>
+                    <span class="d-block mb-1" style="color: rgb(244, 87, 24);font-weight: bold;">Live
+                        Agents (WFO)</span>
+                    <h3 class="card-title text-nowrap mb-2"><span id="liveAgents">0</span></h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 mb-4">
+            <div class="card">
+                <div class="card-body">
+                    <div class="card-title d-flex align-items-start justify-content-between">
+                        <div class="avatar flex-shrink-0">
+                            <img src="{{ asset('/assets/img/icons/unicons/wallet.png') }}" alt="Credit Card"
+                                class="rounded" />
+                        </div>
+                    </div>
+                    <span class="d-block mb-1">Active Agents (WFH)</span>
+                    <h3 class="card-title text-nowrap mb-2"><span id="activeAgentsWFH">0</span></h3>
+                    <span class="d-block mb-1" style="color: rgb(244, 87, 24);font-weight: bold;">Live
+                        Agents (WFH)</span>
+                    <h3 class="card-title text-nowrap mb-2"><span id="liveAgentsWFH">0</span></h3>
+                </div>
+            </div>
+        </div>
+
+        @else
+        @endif
         <div class="col-xl-12 col-md-12">
             <div class="ms-card">
                 <div class="ms-card-body">
@@ -83,7 +122,33 @@
     });
 </script>
 
+<script>
+     function updateDashboardData() {
+            $.ajax({
+                url: '{{ route('company.manager.ajex') }}', // Replace with your actual route
+                type: 'GET',
+                success: function(data) {
+                    // Update the relevant elements on the dashboard with the returned data
+                    $('#liveAgents').text(data.liveAgents);
+                    $('#activeAgents').text(data.activeAgents);
+                    $('#liveAgentsWFH').text(data.liveAgentsWFH);
+                    $('#activeAgentsWFH').text(data.activeAgentsWFH);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error fetching dashboard data:', error);
+                }
+            });
+        }
 
+        // Call this function periodically to update the dashboard data, e.g., every 30 seconds
+        setInterval(updateDashboardData, 30000);
+
+        // Or call it when the page loads
+        $(document).ready(function() {
+            updateDashboardData();
+        });
+
+</script>
 
 
 @include('superadmin.partials.script');

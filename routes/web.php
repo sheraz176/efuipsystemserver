@@ -229,6 +229,7 @@ Route::prefix('super-admin')->group(function () {
         Route::get('telesales-agents-emp/edit/{id}', [TesalesAgentsController::class, 'edit'])->name('superadmin.telesales-agents-emp.edit');
         Route::post('telesales-agents/update/emp', [TesalesAgentsController::class, 'update'])->name('superadmin.telesales-agents.update.emp');
         Route::get('telesales-agents-logout/edit/{id}', [TesalesAgentsController::class, 'Agentlogout'])->name('superadmin.telesales-agents-logout.edit');
+        Route::get('telesales-agents-lnActive/edit/{id}', [TesalesAgentsController::class, 'InActive'])->name('superadmin.telesales-agents-Inactive.edit');
         Route::get('datatable/basic/agent/data', [TesalesAgentsController::class, 'AgentData'])->name('superadmin.basic.agent.data');
         //End Telsales Emp Code Update
 
