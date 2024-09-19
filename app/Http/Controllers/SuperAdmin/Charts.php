@@ -325,10 +325,9 @@ public function RecusiveChargingChart(Request $request)
 
         // Handle different time periods
         if ($timePeriod == 'today') {
-            $chartData = $query->whereDate('created_at', now()->toDateString())
-                               ->selectRaw('COUNT(*) as count, HOUR(created_at) as label')
-                               ->groupBy('label')
-                               ->get();
+            $totalCount = $query->whereDate('created_at', now()->toDateString())
+                                ->count();
+            $chartData[] = ['count' => $totalCount, 'label' => 'Today']; // Set label as 'Today'
         } elseif ($timePeriod == 'monthly') {
             $chartData = $query->selectRaw('COUNT(*) as count, MONTHNAME(created_at) as label')
                                ->groupBy('label')
@@ -345,15 +344,15 @@ public function RecusiveChargingChart(Request $request)
         }
     } else {
         // Default to return data for today if no time filter is provided
-        $chartData = $query->whereDate('created_at', now()->toDateString())
-                           ->selectRaw('COUNT(*) as count, HOUR(created_at) as label')
-                           ->groupBy('label')
-                           ->get();
+        $totalCount = $query->whereDate('created_at', now()->toDateString())
+                            ->count();
+        $chartData[] = ['count' => $totalCount, 'label' => 'Today']; // Set label as 'Today'
     }
 
     // Return the data as JSON for chart rendering
     return response()->json($chartData);
 }
+
 
 
 
