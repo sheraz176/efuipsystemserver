@@ -27,9 +27,16 @@ class AutoDebitProcessController extends Controller
 
     public function fetchCustomerData(Request $request)
     {
+        $agent = session('agent');
+        $agentId = $agent->agent_id;
+        $agents = TeleSalesAgent::where('agent_id',$agentId)->first();
+        //  dd($agents);
+         $company_id = $agents->company_id;
+
         // dd($request->all());
         $customer = InterestedCustomer::with(['agent', 'company', 'plan', 'product'])
         ->where('customer_msisdn', $request->customer_msisdn)
+        ->where('company_id', $company_id)
         ->whereDate('created_at', Carbon::today())
         ->where('deduction_applied', 0)
         ->first();
