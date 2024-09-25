@@ -46,6 +46,8 @@ use App\Http\Controllers\BasicAgentL\CustomerBasicAgentLController;
 use App\Http\Controllers\BasicAgentL\AutoDebitProcessController;
 use App\Http\Controllers\SuperAdmin\processBulkRefund;
 use App\Http\Controllers\SuperAdmin\RefundedController;
+use App\Http\Controllers\SuperAdmin\ProcessBulkSubController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -198,6 +200,15 @@ Route::prefix('super-admin')->group(function () {
 
           //END BulkManagerController
 
+           //Start ProcessBulkSubController
+           Route::get('bulk/processSubfile', [ProcessBulkSubController::class, 'processSubfile'])->name('superadmin.Subbuilkmanager.processSubfile');
+           Route::post('ProcessSubfile/file/upload', [ProcessBulkSubController::class, 'upload'])->name('superadmin.Subbuilkmanager.upload');
+           Route::post('/process/bulk/sub', [ProcessBulkSubController::class, 'bilkulfileRun'])->name('process.bulk.sub');
+           Route::get('/get-processed-results/sub', [ProcessBulkSubController::class, 'getProcessedResults'])->name('getProcessedResults.sub');
+
+
+           //End ProcessBulkSubController
+
         //Start Logs
         Route::get('auto/debit/api/logs', [LogsController::class, 'SuperAgentindex'])->name('superadmin.auto.debit.api.log');
         Route::get('auto/debit/api/logs/data', [LogsController::class, 'SuperAgentlogsData'])->name('superadmin.auto.debit.api.log.data');
@@ -212,6 +223,8 @@ Route::prefix('super-admin')->group(function () {
         Route::get('auto/debit/Super/Agent/Name/Logs', [LogsController::class, 'SuperAgentName'])->name('superadmin.auto.debit.super.agent.name');
         Route::post('auto/debit/Super/Agent/Name/Logs/Export', [LogsController::class, 'export'])->name('superadmin.export-logs');
         Route::get('auto/debit/Super/Agent/Name/Ajax', [LogsController::class, 'SuperAgentNameAjax'])->name('superadmin.auto.debit.super.agent.SuperAgentNameAjax');
+        Route::get('bulk/sub/api', [LogsController::class, 'bulksubapilogs'])->name('superadmin.bulk.sub.api');
+        Route::get('bulk/sub/index', [LogsController::class, 'bulksubapilogsindex'])->name('superadmin.bulk.sub.index');
 
         //End Logs
 

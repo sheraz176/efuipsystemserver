@@ -270,6 +270,15 @@
                  </a>
             </li>
 
+            <li class="menu-item {{ Request::is('super-admin/bulk/processSubfile') ? 'active' : '' }}
+            {{ Request::is('super-admin/bulk/sub/index') ? 'active' : '' }}
+            ">
+              <a href="{{ route('superadmin.Subbuilkmanager.processSubfile') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-collection"></i>
+                <div data-i18n="Basic">IVR Subscription</div>
+              </a>
+            </li>
+
             <li class="menu-header small text-uppercase"><span class="menu-header-text">Companies Reports</span></li>
             <li class="menu-item {{ Request::is('super-admin/companies-reports') ? 'active' : '' }}">
               <a href="{{ route('superadmin.companies-reports') }}" class="menu-link">

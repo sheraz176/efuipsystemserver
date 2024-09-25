@@ -228,4 +228,31 @@ class LogsController extends Controller
     }
 
 
+    public function bulksubapilogsindex()
+    {
+        return view('superadmin.Subbulkmanager.logs');
+    }
+    public function bulksubapilogs(Request $request)
+    {
+        if ($request->ajax()) {
+            // Start building the query
+            $query = logs::select('*')
+            ->where('source', 'subbulkapi')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+
+            return DataTables::of($query)
+            ->addIndexColumn()
+            ->addColumn('created_at', function($query){
+                // Format the created_at field as needed
+                return Carbon::parse($query->created_at)->format('m-d-y h:i A'); // Customize the format
+            })
+            ->rawColumns(['created_at']) // Only necessary if you are adding HTML content
+            ->make(true);
+        }
+    }
+
+
+
 }

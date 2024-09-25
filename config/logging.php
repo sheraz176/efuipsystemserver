@@ -213,6 +213,12 @@ return [
             'level' => 'info',
         ],
 
+        'bulk_sub_api' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/Api/bulk_sub_api.log'),
+            'level' => 'info',
+        ],
+
            // End Api Logs channels
 
     ],
