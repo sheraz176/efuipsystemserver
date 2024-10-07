@@ -42,35 +42,31 @@ class basicAgentCreate extends Command
      */
     public function handle()
     {
+
         $agentsData = [
-            ['Abdul', 'Basit', 'Abdul.Basit.sybrid', 'Abdul#Basit#sybrid#2024', 'basitkhataka@gmail.com'],
-            ['Ayyaz', 'Hussain', 'Ayyaz.Hussain.sybrid', 'Ayyaz#Hussain#sybrid#2024', 'ayyaz1735@gmail.com'],
-            ['Muhammad', 'Sameed Khan', 'Muhammad.SameedKhan.sybrid', 'Muhammad#SameedKhan#sybrid#2024', 'sameedkapoor1415@gmail.com'],
-            ['Muhammad', 'Shahid', 'Muhammad.Shahid.sybrid', 'Muhammad#Shahid#sybrid#2024', 'istid4all@gmail.com'],
-            ['Muhammad', 'Rohail', 'Muhammad.Rohail.sybrid', 'Muhammad#Rohail#sybrid#2024', 'khanrohail760@gmail.com'],
-            ['Farhan', 'Ali', 'Farhan.Ali.sybrid', 'Farhan#Ali#sybrid#2024', 'farhanali4t5@gmail.com'],
-            ['Ghulam', 'Kibriya', 'Ghulam.Kibriya.sybrid', 'Ghulam#Kibriya#sybrid#2024', 'sameerirfan323@gmail.com'],
-            ['Iftikhar', 'Ul Haq', 'Iftikhar.UlHaq.sybrid', 'Iftikhar#UlHaq#sybrid#2024', 'ifti5114@gmail.com'],
-            ['Muhammad', 'Shakeel', 'Muhammad.Shakeel.sybrid', 'Muhammad#Shakeel#sybrid#2024', 'bangashshakeel3@gmail.com'],
-            ['Hamza', 'Hassan Khan', 'Hamza.HassanKhan.sybrid', 'Hamza#HassanKhan#sybrid#2024', 'humzahk28@gmail.com'],
-            ['Suleman', 'Khan', 'Suleman.Khan.sybrid', 'Suleman#Khan#sybrid#2024', 'sulimankhankhan12345@gmail.com'],
-            ['Hamza', 'Riaz', 'Hamza.Riaz.sybrid', 'Hamza#Riaz#sybrid#2024', 'riazhamza222@gmail.com'],
-            ['Muhammad', 'Hammad Khan', 'Muhammad.HammadKhan.sybrid', 'Muhammad#HammadKhan#sybrid#2024', 'hammadkhan2977@gmail.com'],
-            ['Muhammad', 'Afrasiyab', 'Muhammad.Afrasiyab.sybrid', 'Muhammad#Afrasiyab#sybrid#2024', 'afrasiyab.ctl@gmail.com'],
-            ['Aman', 'Ullah', 'Aman.Ullah.sybrid', 'Aman#Ullah#sybrid#2024', 'ak3719864@gmail.com'],
-            ['Muhammad', 'Ammad', 'Muhammad.Ammad.sybrid', 'Muhammad#Ammad#sybrid#2024', 'muhammadammad9584@gmail.com'],
-            ['Ahsan', 'Masood', 'Ahsan.Masood.sybrid', 'Ahsan#Masood#sybrid#2024', 'ahsanmasood984@gmail.com'],
-            ['Shahmeer', 'Hussain', 'Shahmeer.Hussain.sybrid', 'Shahmeer#Hussain#sybrid#2024', 'shahmeerhussain18@gmail.com'],
-            ['Abdur', 'Rehman Abid', 'Abdur.RehmanAbid.sybrid', 'Abdur#RehmanAbid#sybrid#2024', 'leaderoforganic@gmail.com'],
-            ['Bashir', 'Ahmed Raja', 'Bashir.AhmedRaja.sybrid', 'Bashir#AhmedRaja#sybrid#2024', 'ahmedmujahid0066@gmail.com'],
-            ['Muhammad', 'Yousaf', 'Muhammad.Yousaf.sybrid', 'Muhammad#Yousaf#sybrid#2024', 'melucky905@gmail.com'],
-            ['Ihsan', 'Ullah', 'Ihsan.Ullah.sybrid', 'Ihsan#Ullah#sybrid#2024', 'ihsanakhan55@gmail.com'],
-            ['Rizwan', 'ur Rehman', 'Rizwan.Rehman.sybrid', 'Rizwan#Rehman#sybrid#2024', 'rizwankhan0566322@gmail.com'],
-            ['Salman', 'Muhammad', 'Salman.Muhammad.sybrid', 'Salman#Muhammad#sybrid#2024', 'bangashsalman10@gmail.com'],
-            ['Jannat', 'Bibi', 'Jannat.Bibi.sybrid', 'Jannat#Bibi#sybrid#2024', 'jannatmanzoor700@gmail.com'],
-            ['Rabia', 'Zubair', 'Rabia.Zubair.sybrid', 'Rabia#Zubair#sybrid#2024', 'rm4190048@gmail.com'],
-            ['Isma', 'Aftab', 'Isma.Aftab.sybrid', 'Isma#Aftab#sybrid#2024', 'Ismaaftab702@gmail.com']
+            ['Muneeb', 'Mubashir', 'Muneeb.Mubashir.sybrid', 'Muneeb#Mubashir#sybrid#2024', 'muneebfarooqui31@gmail.com'],
+            ['M Kamil', 'Ali', 'Kamil.Ali.sybrid', 'Kamil#Ali#sybrid#2024', 'hassankhan502133@gmail.com'],
+            ['Imtiaz', 'Ahmad', 'Imtiaz.Ahmad.sybrid', 'Imtiaz#Ahmad#sybrid#2024', 'wafaimtiaz00@gmail.com'],
+            ['Anwar', 'Saeed', 'Anwar.Saeed.sybrid', 'Anwar#Saeed#sybrid#2024', 'anwar0099saeed@gmail.com'],
+            ['Shan e', 'Hassan', 'ShaneHassan.sybrid', 'ShaneHassan#sybrid#2024', 'shanehassan50@gmail.com'],
+            ['Sardar Ali', 'Hassan', 'SardarAliHassan.sybrid', 'SardarAliHassan#sybrid#2024', 'sardaralihassanzahid01@gmail.com'],
+            ['Sardar Muhammad', 'Hassan', 'SardarMHassan.sybrid', 'SardarMHassan#sybrid#2024', 'sardarmhassan2002@gmail.com'],
+            ['Abdul', 'Baseer', 'AbdulBaseer.sybrid', 'AbdulBaseer#sybrid#2024', 'abdulbaseer8881@gmail.com'],
+            ['Muhammad', 'Usman', 'MuhammadUsman.sybrid', 'MuhammadUsman#sybrid#2024', 'ukdesigner007@gmail.com'],
+            ['Hafsa', 'Anwar', 'Hafsa.Anwar.sybrid', 'Hafsa#Anwar#sybrid#2024', 'sybfly5@gmail.com'],
+            ['Muhammad Sikandar', 'Abbasi', 'SikandarAbbasi.sybrid', 'SikandarAbbasi#sybrid#2024', 'sikandarabbasi112233@gmail.com'],
+            ['Sadaf', 'Mushtaq', 'SadafMushtaq.sybrid', 'SadafMushtaq#sybrid#2024', 'itxsadafrj9@gmail.com'],
+            ['Esha Bashir', 'Abbasi', 'EshaBashirAbbasi.sybrid', 'EshaBashirAbbasi#sybrid#2024', 'eshaabbasi66@gmail.com'],
+            ['Anam', 'Mustafa', 'AnamMustafa.sybrid', 'AnamMustafa#sybrid#2024', 'mustafaanum88@gmail.com'],
+            ['Faizan', 'Khurshid', 'FaizanKhurshid.sybrid', 'FaizanKhurshid#sybrid#2024', 'meerfaizankhursheed@gmail.com'],
+            ['Malaika', 'Arif', 'MalaikaArif.sybrid', 'MalaikaArif#sybrid#2024', 'malaikaarif33333@gmail.com'],
+            ['Mohsin', 'Naseer', 'MohsinNaseer.sybrid', 'MohsinNaseer#sybrid#2024', 'mohsinnaseer63@gmail.com'],
+            ['Abu', 'Huraira', 'AbuHuraira.sybrid', 'AbuHuraira#sybrid#2024', 'ahahxd8932@gmail.com'],
+            ['Hafiz Muhammad', 'Hashir Kiani', 'HashirKiani.sybrid', 'HashirKiani#sybrid#2024', 'hashirkiani15000@gmail.com'],
+            ['Umer', 'Nasir', 'UmerNasir.sybrid', 'UmerNasir#sybrid#2024', 'umernasir008@gmail.com'],
+            ['Shahzad', 'Ahmed', 'ShahzadAhmed.sybrid', 'ShahzadAhmed#sybrid#2024', 'shahzadinfo1436@gmail.com'],
         ];
+
 
 
         foreach ($agentsData as $data) {

@@ -448,7 +448,6 @@
                                 <th>Total Present Agents</th>
                                 <th>Total MSISDN</th>
                                 <th>Average</th>
-                                <th>Productivity</th>
                             </tr>
                         </thead>
                         <tbody></tbody>
@@ -879,65 +878,60 @@
             updateStats();
         </script>
 
-        <script>
-            $(document).ready(function() {
-                var defaultCompanyId = $('#companyFilters').val(); // Get the default selected company ID
+<script>
+    $(document).ready(function() {
+        var defaultCompanyId = $('#companyFilters').val(); // Get the default selected company ID
 
-                function fetchTableData(companyId = '') {
-                    $.ajax({
-                        url: '{{ route('superadmin.revinuechart') }}',
-                        type: 'GET',
-                        dataType: 'json',
-                        data: {
-                            company_id: companyId // Pass the selected company ID to the server
-                        },
-                        success: function(data) {
-                            console.log('Data received:', data); // Debugging
-                            updateTable(data); // Update the table with the data
-                            updateLastHourProductivity(data); // Update the last hour productivity
-                        },
-                        error: function(error) {
-                            console.error('Error fetching data:', error);
-                        }
-                    });
+        function fetchTableData(companyId = '') {
+            $.ajax({
+                url: '{{ route('superadmin.revinuechart') }}',
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    company_id: companyId // Pass the selected company ID to the server
+                },
+                success: function(data) {
+                    console.log('Data received:', data); // Debugging
+                    updateTable(data); // Update the table with the data
+                    updateGrossProductivity(data); // Update gross productivity
+                },
+                error: function(error) {
+                    console.error('Error fetching data:', error);
                 }
+            });
+        }
 
-                // Fetch table data on page load with default company ID
-                fetchTableData(defaultCompanyId);
+        // Fetch table data on page load with default company ID
+        fetchTableData(defaultCompanyId);
 
-                // Fetch table data whenever the company filter changes
-                $('#companyFilters').change(function() {
-                    var companyId = $(this).val();
-                    fetchTableData(companyId);
-                });
+        // Fetch table data whenever the company filter changes
+        $('#companyFilters').change(function() {
+            var companyId = $(this).val();
+            fetchTableData(companyId);
+        });
 
-                // Update table function
-                function updateTable(data) {
-                    var tableBody = $('#data-table tbody');
-                    tableBody.empty(); // Clear existing table rows
+        // Update table function
+        function updateTable(data) {
+            var tableBody = $('#data-table tbody');
+            tableBody.empty(); // Clear existing table rows
 
-                    // Populate table with hourly MSISDN, total average, and productivity data
-                    data.labels.forEach(function(label, index) {
-                        // Format the time for display (convert to AM/PM format)
-                        var date = new Date(label);
-                        var hours = date.getHours();
-                        var minutes = date.getMinutes();
-                        var suffix = hours >= 12 ? 'PM' : 'AM';
-                        hours = hours % 12 || 12; // Convert 0 to 12
-                        var formattedTime = hours + ':' + (minutes < 10 ? '0' : '') + minutes + ' ' + suffix;
+            // Populate table with hourly MSISDN, total average, and productivity data
+            data.labels.forEach(function(label, index) {
+                // Format the time for display (convert to AM/PM format)
+                var date = new Date(label);
+                var hours = date.getHours();
+                var minutes = date.getMinutes();
+                var suffix = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12 || 12; // Convert 0 to 12
+                var formattedTime = hours + ':' + (minutes < 10 ? '0' : '') + minutes + ' ' + suffix;
 
-                        // Determine arrow direction for average (>= 1.0 is up, < 1.0 is down)
-                        var avgArrow = data.total_avg[index] >= 1.0 ?
-                            '<i class="bx bx-up-arrow-alt" style="color: green;"></i>' :
-                            '<i class="bx bx-down-arrow-alt" style="color: red;"></i>';
+                // Determine arrow direction for average (>= 1.0 is up, < 1.0 is down)
+                var avgArrow = data.total_avg[index] >= 1.0 ?
+                    '<i class="bx bx-up-arrow-alt" style="color: green;"></i>' :
+                    '<i class="bx bx-down-arrow-alt" style="color: red;"></i>';
 
-                        // Determine arrow direction for productivity (>= 1.0 is up, < 1.0 is down)
-                        var prodArrow = data.productivity[index] >= 1.0 ?
-                            '<i class="bx bx-up-arrow-alt" style="color: green;"></i>' :
-                            '<i class="bx bx-down-arrow-alt" style="color: red;"></i>';
-
-                        // Append row to the table
-                        var row = `
+                // Append row to the table
+                var row = `
                     <tr>
                         <td>${formattedTime}</td>
                         <td>${data.total_present_agent[index]}</td> <!-- Live agent count for the specific hour -->
@@ -946,30 +940,23 @@
                             ${data.total_avg[index]}
                             ${avgArrow} <!-- Average arrow with icon -->
                         </td>
-                        <td>
-                            ${data.productivity[index]}
-                            ${prodArrow} <!-- Productivity arrow with icon -->
-                        </td>
                     </tr>
                 `;
-                        tableBody.append(row);
-                    });
-                }
-
-                // Update last hour's productivity and show it in a green box
-                function updateLastHourProductivity(data) {
-                    if (data.productivity.length > 0) {
-                        var lastHourProductivity = data.productivity[data.productivity.length -
-                        1]; // Get the last productivity value
-
-                        if (lastHourProductivity) {
-                            $('#productivity-value').text(lastHourProductivity); // Update the text in the green box
-                            $('#last-hour-productivity').show(); // Show the green box
-                        }
-                    }
-                }
+                tableBody.append(row);
             });
-        </script>
+        }
+
+        // Update Gross Productivity
+        function updateGrossProductivity(data) {
+            if (data.gross_productivity) {
+                // Update the green box with the gross productivity value (sum of averages)
+                $('#productivity-value').text(data.gross_productivity.toFixed(2)); // Round to 2 decimal places
+                $('#last-hour-productivity').show(); // Show the green box
+            }
+        }
+    });
+</script>
+
 
         <script>
             $(document).ready(function() {

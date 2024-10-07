@@ -86,6 +86,19 @@
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
     <script src="{{ asset('/assets/js/config.js')}}"></script>
 
+    <style>
+    /* Dark blue for Companies Management when active */
+.menu-item.has-submenu.active > .menu-link {
+    color: rgb(8, 4, 29) !important;  /* Make the text white for better contrast */
+}
+
+/* Light red for sub-menu items when active */
+.menu-item.active > .menu-link {
+    background-color: rgb(255, 5, 5) !important;  /* Light red background for sub-menu items */
+    color: white !important;  /* White text for better contrast */
+}
+      </style>
+
   </head>
 
   <body>
@@ -107,257 +120,368 @@
 
           <div class="menu-inner-shadow"></div>
 
-          <li class="menu-header small text-uppercase"><span class="menu-header-text">Side MenuBar</span></li>
+          {{-- <li class="menu-header small text-uppercase"><span class="menu-header-text">Side MenuBar</span></li> --}}
           <ul class="menu-inner py-1">
             <!-- Dashboard -->
             <li class="menu-item {{ Request::is('super-admin/dashboard') ? 'active' : '' }}">
               <a href="{{ route('superadmin.dashboard') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-home-circle"></i>
-                <div data-i18n="Analytics">Dashboard</div>
+                <i style="color: black" class="menu-icon tf-icons bx bx-home-circle"></i>
+                <div data-i18n="Analytics" style="color: black">Dashboard</div>
               </a>
             </li>
 
-            <li class="menu-header small text-uppercase"><span class="menu-header-text">Companies Management</span></li>
+            {{-- <li class="menu-header small text-uppercase"><span class="menu-header-text">Companies Management</span></li> --}}
             <!-- Cards -->
-            <li class="menu-item {{ Request::is('super-admin/company/create') ? 'active' : '' }}">
-              <a href="{{ route('company.create') }}" id = "salespagebutton" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Create New Company</div>
+            <li class="menu-item has-submenu {{ Request::is('super-admin/company*') ? 'active open' : '' }}">
+              <a href="javascript:void(0);" class="menu-link" onclick="toggleSubmenu(this)">
+                <i class="menu-icon tf-icons bx bx-building-house"></i>
+                <div data-i18n="Basic">Companies Management</div>
               </a>
+
+              <ul class="menu-sub" style="display: {{ Request::is('super-admin/company*') ? 'block' : 'none' }};">
+                <li class="menu-item {{ Request::is('super-admin/company/create') ? 'active' : '' }}">
+                  <a href="{{ route('company.create') }}" class="menu-link" onclick="closeSubmenu(this)">
+                    <i class="menu-icon tf-icons bx bx-plus"></i>
+                    <div data-i18n="Basic">Create New Company</div>
+                  </a>
+                </li>
+                <li class="menu-item {{ Request::is('super-admin/company') ? 'active' : '' }}">
+                  <a href="{{ route('company.index') }}" class="menu-link" onclick="closeSubmenu(this)">
+                    <i class="menu-icon tf-icons bx bx-check"></i>
+                    <div data-i18n="Basic">Check Company Status</div>
+                  </a>
+                </li>
+              </ul>
             </li>
-            <li class="menu-item {{ Request::is('super-admin/company') ? 'active' : '' }}">
-              <a href="{{ route('company.index') }}" id = "salespagebutton" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Check Company Status</div>
-              </a>
-            </li>
+
 
 
             <!-- Layouts -->
 
 
                        <!-- Components -->
-            <li class="menu-header small text-uppercase"><span class="menu-header-text">Sales Agent Management</span></li>
+            {{-- <li class="menu-header small text-uppercase"><span class="menu-header-text">Sales Agent Management</span></li> --}}
             <!-- Cards -->
-            <li class="menu-item {{ Request::is('super-admin/telesales-agents/create') ? 'active' : '' }}">
-              <a href="{{ route('telesales-agents.create') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Create New Agent</div>
-              </a>
-            </li>
-            <li class="menu-item {{ Request::is('super-admin/telesales-agents') ? 'active' : '' }}">
-              <a href="{{ route('telesales-agents.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-file"></i>
-                <div data-i18n="Basic">Check Agent Status</div>
-              </a>
-            </li>
+            <li class="menu-item has-submenu {{ Request::is('super-admin/telesales-agents*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link" onclick="toggleSubmenu(this)">
+                  <i class="menu-icon tf-icons bx bx-user"></i>
+                  <div data-i18n="Basic">Sales Agent Management</div>
+                </a>
+
+                <ul class="menu-sub" style="display: {{ Request::is('super-admin/telesales-agents*') ? 'block' : 'none' }};">
+                  <li class="menu-item {{ Request::is('super-admin/telesales-agents/create') ? 'active' : '' }}">
+                    <a href="{{ route('telesales-agents.create') }}" class="menu-link" onclick="closeSubmenu(this)">
+                      <i class="menu-icon tf-icons bx bx-plus"></i>
+                      <div data-i18n="Basic">Create New Agent</div>
+                    </a>
+                  </li>
+                  <li class="menu-item {{ Request::is('super-admin/telesales-agents') ? 'active' : '' }}">
+                    <a href="{{ route('telesales-agents.index') }}" class="menu-link" onclick="closeSubmenu(this)">
+                      <i class="menu-icon tf-icons bx bx-file"></i>
+                      <div data-i18n="Basic">Check Agent Status</div>
+                    </a>
+                  </li>
+                </ul>
+              </li>
 
 
 
                        <!-- Components  Manager -->
-            <li class="menu-header small text-uppercase"><span class="menu-header-text">Company Manager </span></li>
+            {{-- <li class="menu-header small text-uppercase"><span class="menu-header-text">Company Manager </span></li> --}}
             <!-- Cards -->
-            <li class="menu-item {{ Request::is('super-admin/company_manager/create') ? 'active' : '' }}">
-              <a href="{{ route('superadmin.company_manager_create') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Create New Company Manager</div>
-              </a>
-            </li>
-            <li class="menu-item {{ Request::is('super-admin/company_manager/index') ? 'active' : '' }}">
-              <a href="{{ route('superadmin.company_manager_index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-file"></i>
-                <div data-i18n="Basic">Check Company Managers</div>
-              </a>
-            </li>
+            <li class="menu-item has-submenu {{ Request::is('super-admin/company_manager*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link" onclick="toggleSubmenu(this)">
+                  <i class="menu-icon tf-icons bx bx-user"></i>
+                  <div data-i18n="Basic">Company Manager</div>
+                </a>
+
+                <ul class="menu-sub" style="display: {{ Request::is('super-admin/company_manager*') ? 'block' : 'none' }};">
+                  <li class="menu-item {{ Request::is('super-admin/company_manager/create') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.company_manager_create') }}" class="menu-link" onclick="closeSubmenu(this)">
+                      <i class="menu-icon tf-icons bx bx-plus"></i>
+                      <div data-i18n="Basic">Create New Company Manager</div>
+                    </a>
+                  </li>
+                  <li class="menu-item {{ Request::is('super-admin/company_manager/index') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.company_manager_index') }}" class="menu-link" onclick="closeSubmenu(this)">
+                      <i class="menu-icon tf-icons bx bx-file"></i>
+                      <div data-i18n="Basic">Check Company Managers</div>
+                    </a>
+                  </li>
+                </ul>
+              </li>
 
 
                        <!-- Super Agent -->
-            <li class="menu-header small text-uppercase"><span class="menu-header-text">Super Agent Management</span></li>
-            <!-- Cards -->
-            <li class="menu-item {{ Request::is('super-admin/super_agent/create') ? 'active' : '' }}">
-              <a href="{{ route('superadmin.super_agent_create') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Create New Super Agent</div>
-              </a>
-            </li>
-            <li class="menu-item {{ Request::is('super-admin/super_agent/index') ? 'active' : '' }}">
-              <a href="{{ route('superadmin.super_agent_index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-file"></i>
-                <div data-i18n="Basic">Check Super Agents</div>
-              </a>
-            </li>
+            {{-- <li class="menu-header small text-uppercase"><span class="menu-header-text">Super Agent Management</span></li> --}}
+            <li class="menu-item has-submenu {{ Request::is('super-admin/super_agent*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link" onclick="toggleSubmenu(this)">
+                  <i class="menu-icon tf-icons bx bx-user"></i>
+                  <div data-i18n="Basic">Super Agent Management</div>
+                </a>
+
+                <ul class="menu-sub" style="display: {{ Request::is('super-admin/super_agent*') ? 'block' : 'none' }};">
+                  <li class="menu-item {{ Request::is('super-admin/super_agent/create') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.super_agent_create') }}" class="menu-link" onclick="closeSubmenu(this)">
+                      <i class="menu-icon tf-icons bx bx-plus"></i>
+                      <div data-i18n="Basic">Create New Super Agent</div>
+                    </a>
+                  </li>
+                  <li class="menu-item {{ Request::is('super-admin/super_agent/index') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.super_agent_index') }}" class="menu-link" onclick="closeSubmenu(this)">
+                      <i class="menu-icon tf-icons bx bx-file"></i>
+                      <div data-i18n="Basic">Check Super Agents</div>
+                    </a>
+                  </li>
+                </ul>
+              </li>
 
 
 
             <!-- User interface -->
 
-            <li class="menu-header small text-uppercase"><span class="menu-header-text">IPS System Reports</span></li>
+            {{-- <li class="menu-header small text-uppercase"><span class="menu-header-text">IPS System Reports</span></li> --}}
             <!-- Forms -->
-            <li class="menu-item {{ Request::is('super-admin/datatable') ? 'active' : '' }}">
-              <a href="{{ route('superadmin.datatable') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Net Enrollment Report</div>
-              </a>
-            </li>
-            <li class="menu-item {{ Request::is('super-admin/datatable-failed') ? 'active' : '' }}">
-              <a href="{{ route('superadmin.datatable-failed') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Failed Sales Request</div>
-              </a>
-            </li>
-            <li class="menu-item {{ Request::is('super-admin/complete-active-subscriptions') ? 'active' : '' }}">
-              <a href="{{ route('superadmin.complete-active-subscriptions') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Total Subscription</div>
-              </a>
-            </li>
 
-            <li class="menu-item {{ Request::is('super-admin/companies-cancelled-reports') ? 'active' : '' }}">
-              <a href="{{ route('superadmin.companies-cancelled-reports') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Cancelled Subscriptions</div>
-              </a>
-            </li>
-
-            <li class="menu-item  {{ Request::is('super-admin/refunds-reports') ? 'active' : '' }}">
-              <a href="{{ route('superadmin.refunds-reports') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Refunded Transactions</div>
-              </a>
-            </li>
-
-             <li class="menu-item  {{ Request::is('super-admin/recusive/chargingdataindex') ? 'active' : '' }}">
-                <a href="{{ route('superadmin.recusive-charging-data-index') }}" class="menu-link">
-                  <i class="menu-icon tf-icons bx bx-collection"></i>
-                  <div data-i18n="Basic">Recursive Charging Report</div>
+            <li class="menu-item has-submenu {{ Request::is('super-admin/datatable*') || Request::is('super-admin/datatable-failed*') || Request::is('super-admin/complete-active-subscriptions*') || Request::is('super-admin/companies-cancelled-reports*') || Request::is('super-admin/refunds-reports*') || Request::is('super-admin/recusive/chargingdataindex*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link" onclick="toggleSubmenu(this)">
+                  <i class="menu-icon tf-icons bx bx-chart"></i>
+                  <div data-i18n="Basic">IPS System Reports</div>
                 </a>
+
+                <ul class="menu-sub" style="display: {{ Request::is('super-admin/datatable*') || Request::is('super-admin/datatable-failed*') || Request::is('super-admin/complete-active-subscriptions*') || Request::is('super-admin/companies-cancelled-reports*') || Request::is('super-admin/refunds-reports*') || Request::is('super-admin/recusive/chargingdataindex*') ? 'block' : 'none' }};">
+                  <li class="menu-item {{ Request::is('super-admin/datatable') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.datatable') }}" class="menu-link" onclick="closeSubmenu(this)">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Net Enrollment Report</div>
+                    </a>
+                  </li>
+
+                  <li class="menu-item {{ Request::is('super-admin/datatable-failed') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.datatable-failed') }}" class="menu-link" onclick="closeSubmenu(this)">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Failed Sales Request</div>
+                    </a>
+                  </li>
+
+                  <li class="menu-item {{ Request::is('super-admin/complete-active-subscriptions') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.complete-active-subscriptions') }}" class="menu-link" onclick="closeSubmenu(this)">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Total Subscription</div>
+                    </a>
+                  </li>
+
+                  <li class="menu-item {{ Request::is('super-admin/companies-cancelled-reports') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.companies-cancelled-reports') }}" class="menu-link" onclick="closeSubmenu(this)">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Cancelled Subscriptions</div>
+                    </a>
+                  </li>
+
+                  <li class="menu-item {{ Request::is('super-admin/refunds-reports') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.refunds-reports') }}" class="menu-link" onclick="closeSubmenu(this)">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Refunded Transactions</div>
+                    </a>
+                  </li>
+
+                  <li class="menu-item {{ Request::is('super-admin/recusive/chargingdataindex') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.recusive-charging-data-index') }}" class="menu-link" onclick="closeSubmenu(this)">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Recursive Charging Report</div>
+                    </a>
+                  </li>
+                </ul>
               </li>
+
             <!-- Misc -->
-            <li class="menu-header small text-uppercase"><span class="menu-header-text">Refund Manager</span></li>
-            <li class="menu-item {{ Request::is('super-admin/manage-refunds') ? 'active' : '' }} ">
-              <a href="{{ route('superadmin.manage-refunds') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Manage Refunds</div>
-              </a>
-            </li>
+            {{-- <li class="menu-header small text-uppercase"><span class="menu-header-text">Refund Manager</span></li> --}}
 
-            <li class="menu-item {{ Request::is('super-admin/Refunded/Customer') ? 'active' : '' }} ">
-                <a href="{{ route('superadmin.refunded.customer') }}" class="menu-link">
-                  <i class="menu-icon tf-icons bx bx-collection"></i>
-                  <div data-i18n="Basic">Manage Refunds Forms</div>
+            <li class="menu-item has-submenu {{ Request::is('super-admin/manage-refunds*') || Request::is('super-admin/Refunded/Customer*') || Request::is('super-admin/refunds-reports*') || Request::is('super-admin/bulk/file/upload*') || Request::is('super-admin/process/bulk/refund/File*') || Request::is('super-admin/bulk/processSubfile*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link" onclick="toggleSubmenu(this)">
+                  <i class="menu-icon tf-icons bx bx-dollar-circle"></i>
+                  <div data-i18n="Basic">Refund Manager</div>
                 </a>
+
+                <ul class="menu-sub" style="display: {{ Request::is('super-admin/manage-refunds*') || Request::is('super-admin/Refunded/Customer*') || Request::is('super-admin/refunds-reports*') || Request::is('super-admin/bulk/file/upload*') || Request::is('super-admin/process/bulk/refund/File*') || Request::is('super-admin/bulk/processSubfile*') ? 'block' : 'none' }};">
+
+                  <li class="menu-item {{ Request::is('super-admin/manage-refunds') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.manage-refunds') }}" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Manage Refunds</div>
+                    </a>
+                  </li>
+
+                  <li class="menu-item {{ Request::is('super-admin/Refunded/Customer') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.refunded.customer') }}" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Manage Refunds Forms</div>
+                    </a>
+                  </li>
+
+                  <li class="menu-item {{ Request::is('super-admin/refunds-reports') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.refunds-reports') }}" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Refunded Report</div>
+                    </a>
+                  </li>
+
+                  <li class="menu-item {{ Request::is('super-admin/bulk/file/upload/index') || Request::is('super-admin/bulk/file/upload/create') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.builkmanager.index') }}" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Bulk Refunds Manager</div>
+                    </a>
+                  </li>
+
+                  <li class="menu-item {{ Request::is('super-admin/process/bulk/refund/File') ? 'active' : '' }}">
+                    <a href="{{ route('process.bulk.refund.file') }}" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Bulk Refund File Run</div>
+                    </a>
+                  </li>
+
+                  <li class="menu-item {{ Request::is('super-admin/bulk/processSubfile') || Request::is('super-admin/bulk/sub/index') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.Subbuilkmanager.processSubfile') }}" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">IVR Subscription</div>
+                    </a>
+                  </li>
+
+                </ul>
               </li>
 
-            <li class="menu-item {{ Request::is('super-admin/refunds-reports') ? 'active' : '' }}">
-              <a href="{{ route('superadmin.refunds-reports') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Refunded Report</div>
-              </a>
-            </li>
 
-            <li class="menu-item {{ Request::is('super-admin/bulk/file/upload/index') ? 'active' : '' }}
-            {{ Request::is('super-admin/bulk/file/upload/create') ? 'active' : '' }}">
-              <a href="{{ route('superadmin.builkmanager.index') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Bulk Refunds Manager</div>
-              </a>
-            </li>
+            {{-- <li class="menu-header small text-uppercase"><span class="menu-header-text">Companies Reports</span></li> --}}
 
-            <li class="menu-item {{ Request::is('super-admin/process/bulk/refund/File') ? 'active' : '' }}">
-                <a href="{{ route('process.bulk.refund.file') }}" class="menu-link">
-                  <i class="menu-icon tf-icons bx bx-collection"></i>
-                  <div data-i18n="Basic">Bulk Refund File Run</div>
-                 </a>
-            </li>
+            <li class="menu-item has-submenu {{ Request::is('super-admin/companies-reports*') || Request::is('super-admin/companies-cancelled-reports*') || Request::is('super-admin/companies-failed-reports*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link" onclick="toggleSubmenu(this)">
+                  <i class="menu-icon tf-icons bx bx-building"></i>
+                  <div data-i18n="Basic">Companies Reports</div>
+                </a>
 
-            <li class="menu-item {{ Request::is('super-admin/bulk/processSubfile') ? 'active' : '' }}
-            {{ Request::is('super-admin/bulk/sub/index') ? 'active' : '' }}
-            ">
-              <a href="{{ route('superadmin.Subbuilkmanager.processSubfile') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">IVR Subscription</div>
-              </a>
-            </li>
+                <ul class="menu-sub" style="display: {{ Request::is('super-admin/companies-reports*') || Request::is('super-admin/companies-cancelled-reports*') || Request::is('super-admin/companies-failed-reports*') ? 'block' : 'none' }};">
 
-            <li class="menu-header small text-uppercase"><span class="menu-header-text">Companies Reports</span></li>
-            <li class="menu-item {{ Request::is('super-admin/companies-reports') ? 'active' : '' }}">
-              <a href="{{ route('superadmin.companies-reports') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Net Enrollment Report</div>
-              </a>
-            </li>
-            <li class="menu-item {{ Request::is('super-admin/companies-cancelled-reports') ? 'active' : '' }}">
-              <a href="{{ route('superadmin.companies-cancelled-reports') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Unsubscription Report</div>
-              </a>
-            </li>
+                  <li class="menu-item {{ Request::is('super-admin/companies-reports') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.companies-reports') }}" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Net Enrollment Report</div>
+                    </a>
+                  </li>
 
-            <li class="menu-item {{ Request::is('super-admin/companies-failed-reports') ? 'active' : '' }}">
-              <a href="{{ route('superadmin.companies-failed-reports') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Failed Sale Report</div>
-              </a>
-            </li>
+                  <li class="menu-item {{ Request::is('super-admin/companies-cancelled-reports') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.companies-cancelled-reports') }}" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Unsubscription Report</div>
+                    </a>
+                  </li>
 
-            <li class="menu-header small text-uppercase"><span class="menu-header-text">Agents Reports</span></li>
-            <li class="menu-item {{ Request::is('super-admin/agents-reports') ? 'active' : '' }}">
-              <a href="{{ route('superadmin.agents-reports') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Net Enrollment Report</div>
-              </a>
-            </li>
-            <li class="menu-item {{ Request::is('super-admin/agents-sales-request') ? 'active' : '' }}">
-              <a href="{{ route('superadmin.agents-sales-request') }}" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Total Sales Request Report</div>
-              </a>
-            </li>
+                  <li class="menu-item {{ Request::is('super-admin/companies-failed-reports') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.companies-failed-reports') }}" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Failed Sale Report</div>
+                    </a>
+                  </li>
+
+                </ul>
+              </li>
+
+            {{-- <li class="menu-header small text-uppercase"><span class="menu-header-text">Agents Reports</span></li> --}}
+            <li class="menu-item has-submenu {{ Request::is('super-admin/agents-reports*') || Request::is('super-admin/agents-sales-request*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link" onclick="toggleSubmenu(this)">
+                  <i class="menu-icon tf-icons bx bx-group"></i>
+                  <div data-i18n="Basic">Agents Reports</div>
+                </a>
+
+                <ul class="menu-sub" style="display: {{ Request::is('super-admin/agents-reports*') || Request::is('super-admin/agents-sales-request*') ? 'block' : 'none' }};">
+
+                  <li class="menu-item {{ Request::is('super-admin/agents-reports') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.agents-reports') }}" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Net Enrollment Report</div>
+                    </a>
+                  </li>
+
+                  <li class="menu-item {{ Request::is('super-admin/agents-sales-request') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.agents-sales-request') }}" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Total Sales Request Report</div>
+                    </a>
+                  </li>
+
+                </ul>
+              </li>
            <!-- Information -->
-            <li class="menu-header small text-uppercase"><span class="menu-header-text">Information</span></li>
-            <li class="menu-item {{ Request::is('super-admin/customer/information') ? 'active' : '' }}">
-                <a href="{{ route('superadmin.customerinformation') }}" class="menu-link">
-                  <i class="menu-icon tf-icons bx bx-collection"></i>
-                  <div data-i18n="Basic">Customer Information</div>
-                </a>
-              </li>
+            {{-- <li class="menu-header small text-uppercase"><span class="menu-header-text">Information</span></li> --}}
 
+            <li class="menu-item has-submenu {{ Request::is('super-admin/customer/information*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link" onclick="toggleSubmenu(this)">
+                  <i class="menu-icon tf-icons bx bx-info-circle"></i>
+                  <div data-i18n="Basic">Information</div>
+                </a>
+
+                <ul class="menu-sub" style="display: {{ Request::is('super-admin/customer/information*') ? 'block' : 'none' }};">
+
+                  <li class="menu-item {{ Request::is('super-admin/customer/information') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.customerinformation') }}" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Customer Information</div>
+                    </a>
+                  </li>
+
+                </ul>
+              </li>
 
               <!-- User interface -->
 
-            <li class="menu-header small text-uppercase"><span class="menu-header-text">Logs</span></li>
+            {{-- <li class="menu-header small text-uppercase"><span class="menu-header-text">Logs</span></li> --}}
 
-            <li class="menu-item {{ Request::is('super-admin/auto/debit/api/logs') ? 'active' : '' }}">
-                <a href="{{ route('superadmin.auto.debit.api.log') }}" class="menu-link">
-                  <i class="menu-icon tf-icons bx bx-collection"></i>
-                  <div data-i18n="Basic">Super Agent (Logs)</div>
-                 </a>
-            </li>
-            <li class="menu-item {{ Request::is('super-admin/auto/debit/Super/Agent/Name/Logs') ? 'active' : '' }}">
-                <a href="{{ route('superadmin.auto.debit.super.agent.name') }}" class="menu-link">
-                  <i class="menu-icon tf-icons bx bx-collection"></i>
-                  <div data-i18n="Basic">Super Agent Name (Logs)</div>
-                 </a>
-            </li>
+            <li class="menu-item has-submenu {{ Request::is('super-admin/auto/debit/api/logs*') || Request::is('super-admin/payment/api/logs*') || Request::is('super-admin/Refund/button/upload/index/logs*') || Request::is('super-admin/bulk/file/upload/index/logs*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link" onclick="toggleSubmenu(this)">
+                  <i class="menu-icon tf-icons bx bx-log-in"></i>
+                  <div data-i18n="Basic">Logs</div>
+                </a>
 
-            <li class="menu-item {{ Request::is('super-admin/payment/api/logs') ? 'active' : '' }}">
-                <a href="{{ route('superadmin.payment.api.log') }}" class="menu-link">
-                  <i class="menu-icon tf-icons bx bx-collection"></i>
-                  <div data-i18n="Basic">Agent (Logs)</div>
-                 </a>
-            </li>
-            <li class="menu-item {{ Request::is('super-admin/Refund/button/upload/index/logs') ? 'active' : '' }}">
-                <a href="{{ route('superadmin.Refundbutton.logsindex') }}" class="menu-link">
-                  <i class="menu-icon tf-icons bx bx-collection"></i>
-                  <div data-i18n="Basic">Refunds Api Logs</div>
-                 </a>
-            </li>
-            <li class="menu-item {{ Request::is('super-admin/bulk/file/upload/index/logs') ? 'active' : '' }}">
-                <a href="{{ route('superadmin.builkmanager.logsindex') }}" class="menu-link">
-                  <i class="menu-icon tf-icons bx bx-collection"></i>
-                  <div data-i18n="Basic">Bulk Refunds Manager Logs</div>
-                 </a>
-            </li>
+                <ul class="menu-sub" style="display: {{ Request::is('super-admin/auto/debit/api/logs*') || Request::is('super-admin/payment/api/logs*') || Request::is('super-admin/Refund/button/upload/index/logs*') || Request::is('super-admin/bulk/file/upload/index/logs*')
+                || Request::is('super-admin/auto/debit/Super/Agent/Name/Logs*') ? 'block' : 'none' }};
+                ">
+
+                  <li class="menu-item {{ Request::is('super-admin/auto/debit/api/logs') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.auto.debit.api.log') }}" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Super Agent (Logs)</div>
+                    </a>
+                  </li>
+
+                  <li class="menu-item {{ Request::is('super-admin/auto/debit/Super/Agent/Name/Logs') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.auto.debit.super.agent.name') }}" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Super Agent Name (Logs)</div>
+                    </a>
+                  </li>
+
+                  <li class="menu-item {{ Request::is('super-admin/payment/api/logs') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.payment.api.log') }}" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Agent (Logs)</div>
+                    </a>
+                  </li>
+
+                  <li class="menu-item {{ Request::is('super-admin/Refund/button/upload/index/logs') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.Refundbutton.logsindex') }}" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Refunds Api Logs</div>
+                    </a>
+                  </li>
+
+                  <li class="menu-item {{ Request::is('super-admin/bulk/file/upload/index/logs') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.builkmanager.logsindex') }}" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Bulk Refunds Manager Logs</div>
+                    </a>
+                  </li>
+
+                </ul>
+              </li>
 
 
           </ul>
@@ -580,6 +704,20 @@
   let table = new DataTable('#subscription');
   </script>
 
+
+<script>
+    function toggleSubmenu(element) {
+      const submenu = element.nextElementSibling;
+      const isVisible = submenu.style.display === 'block';
+      submenu.style.display = isVisible ? 'none' : 'block';
+    }
+
+    function closeSubmenu(element) {
+      // Close the parent submenu when clicking a link
+      const submenu = element.closest('.menu-sub');
+      submenu.style.display = 'none';
+    }
+  </script>
 
   </body>
 </html>

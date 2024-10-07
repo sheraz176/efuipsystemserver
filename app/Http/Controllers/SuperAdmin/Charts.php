@@ -261,14 +261,14 @@ public function getLineChartData(Request $request)
     // Prepare the data
     $data = [
         'labels' => [],
-        'total_msisdn' => [],
-        'total_avg' => [], // Total average per hour
-        'total_cumulative_msisdn' => [], // Cumulative MSISDN count
-        'productivity' => [], // Productivity calculation
-        'total_present_agent' => [] // Live agent count per hour
+        'total_msisdn' => [], // Total MSISDN per hour
+        'total_avg' => [],    // Total average per hour
+        'total_present_agent' => [], // Live agent count per hour
+        'gross_productivity' => 0 // Initialize gross productivity
     ];
 
     $cumulativeMsisdn = 0; // To hold the cumulative MSISDN count
+    $totalAvgSum = 0;      // To sum the total averages
 
     foreach ($results as $row) {
         // Fetch the latest agent count for the hour
@@ -287,25 +287,23 @@ public function getLineChartData(Request $request)
         if ($totalPresentAgent > 0) {
             $data['labels'][] = $row->hour;
             $data['total_msisdn'][] = $row->total_msisdn;
-
-            // Calculate cumulative MSISDN count
-            $cumulativeMsisdn += $row->total_msisdn;
-            $data['total_cumulative_msisdn'][] = $cumulativeMsisdn;
-
             $data['total_present_agent'][] = $totalPresentAgent;
 
-            // Calculate total average
-            $totalAvg = $totalPresentAgent > 0 ? round(($row->total_msisdn / $totalPresentAgent), 2) : 0;
+            // Calculate total average (MSISDN per present agent)
+            $totalAvg = round(($row->total_msisdn / $totalPresentAgent), 2);
             $data['total_avg'][] = $totalAvg;
 
-            // Calculate productivity (cumulative MSISDN / total present agents)
-            $productivity = $totalPresentAgent > 0 ? round(($cumulativeMsisdn / $totalPresentAgent), 2) : 0;
-            $data['productivity'][] = $productivity;
+            // Sum up total averages for Gross Productivity
+            $totalAvgSum += $totalAvg;
         }
     }
 
+    // Set Gross Productivity (sum of averages)
+    $data['gross_productivity'] = $totalAvgSum;
+
     return response()->json($data);
 }
+
 
 public function RecusiveChargingChart(Request $request)
 {
