@@ -186,6 +186,8 @@
     <form class="modal-content">
       <div class="modal-header justify-content-center"> <!-- Centering the modal header content -->
         <h5 class="modal-title"> <!-- Remove id attribute to avoid duplication -->
+            <i class="menu-icon tf-icons bx bx-checkbox-checked" style="color: green; font-size: 40px;"></i>
+
           <i class="bi bi-check-circle" style="font-size: 2rem; color: #28a745; vertical-align: middle;"></i> <!-- Success icon -->
           Data has been successfully submitted for deduction.
         </h5>
@@ -212,6 +214,10 @@
       <form class="modal-content">
         <div class="modal-header justify-content-center"> <!-- Centering the modal header content -->
           <h5 class="modal-title"> <!-- Remove id attribute to avoid duplication -->
+
+            <i class="menu-icon tf-icons bx bx-error" style="color: red; font-size: 50px;"></i>
+
+
             <i class="bi bi-check-circle" style="font-size: 2rem; color: #28a745; vertical-align: middle;"></i> <!-- Success icon -->
             Duplicate Number Alert for Deduction
           </h5>

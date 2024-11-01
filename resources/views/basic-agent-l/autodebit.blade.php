@@ -297,7 +297,7 @@
                             $('#customerDataSection').show();
 
                             // Perform an additional check for the Auto Debit button
-                            checkAutoDebitStatus(data.customer_msisdn);
+                            // checkAutoDebitStatus(data.customer_msisdn);
                         },
                         error: function(xhr, textStatus, errorThrown) {
                             // Hide the customer data section if an error occurs
@@ -359,7 +359,7 @@
 
 
                         // Perform an additional check for the Auto Debit button
-                        checkAutoDebitStatus(data.customer_msisdn);
+                        // checkAutoDebitStatus(data.customer_msisdn);
 
                         // Store necessary IDs for further processing
                         agentId = data.agent_id;

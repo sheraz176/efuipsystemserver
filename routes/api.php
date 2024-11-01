@@ -13,6 +13,9 @@ use App\Http\Controllers\API\NetEntrollmentApiController;
 use App\Http\Controllers\API\USSDSubscriptionController;
 use App\Http\Controllers\API\MobileApiController;
 use App\Http\Controllers\SuperAgentL\CustomApiController;
+use App\Http\Controllers\API\MarchantController;
+use App\Http\Controllers\API\USSDApiController;
+use App\Http\Controllers\API\USSDAPI23Controller;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -133,6 +136,66 @@ Route::prefix('v1')->group(function () {
         // Other routes related to IVR can be added here
     });
 });
+
+
+
+Route::prefix('v5')->group(function () {
+    Route::prefix('marchant-api')->group(function () {
+
+	Route::get("/getPlans", [MarchantController::class, 'getPlans'])
+    ->name('get_plans');
+	Route::post("/getProducts", [MarchantController::class, 'getProducts'])
+    ->name('get_products');
+
+    Route::post("/marchantSub", [MarchantController::class, 'marchant_subscription'])
+    ->name('marchantSub');
+
+
+    });
+});
+
+//Start routes related to USSD API Realted to Mobile Api can be added here
+Route::post("v6/login",[USSDApiController::class,'login']);
+Route::group(['middleware' => 'auth:sanctum'], function(){
+Route::prefix('v6')->group(function () {
+    Route::prefix('UssdApi')->group(function () {
+        Route::post("sub", [USSDApiController::class, 'jazz_app_subscription'])
+            ->name('sub');
+        Route::get("plan", [USSDApiController::class, 'getPlans'])
+            ->name('plan');
+        Route::post("products", [USSDApiController::class, 'getProducts'])
+            ->name('products');
+        Route::POST("listactiveSubcriptions",[USSDApiController::class,'activesubscriptions']);
+        Route::POST("unsub",[USSDApiController::class,'unsubscribePackage'])
+       ->name('unsub');
+        Route::POST("updaterefund",[USSDApiController::class,'updaterefund'])
+        ->name('updaterefund');
+
+    });
+});
+});
+//End routes related to USSD API Realted to Mobile Api
+
+//Start routes related to 23 USSD API Realted to Mobile Api can be added here
+Route::post("v23/login",[USSDAPI23Controller::class,'login']);
+Route::group(['middleware' => 'auth:sanctum'], function(){
+Route::prefix('v23')->group(function () {
+    Route::prefix('UssdApiV23')->group(function () {
+
+        Route::get("checkplan", [USSDAPI23Controller::class, 'fatchPlans'])
+            ->name('checkplan');
+        Route::get("checkProduct", [USSDAPI23Controller::class, 'fatchProducts'])
+            ->name('checkProduct');
+        Route::post("SubscriptionUssd", [USSDAPI23Controller::class, 'jazz_app_subscription_new'])
+            ->name('SubscriptionUssd');
+        Route::post("/marchantSubUSSD", [USSDAPI23Controller::class, 'marchant_subscription'])
+            ->name('marchantSubUSSD');
+
+    });
+});
+});
+//End routes related to 23 USSD API Realted to Mobile Api
+
 
    // Status Update Auto Debit Button Super Agent L Pannel
    Route::post('/InterestedCustomerStatusUpdate', [CustomApiController::class, 'status_update'])->name('InterestedCustomerStatusUpdate');

@@ -466,16 +466,16 @@
                     <div class="me-2">
                         <label for="causeFilter">Filter by Causes:</label>
                         <select id="causeFilter" class="form-select">
-                            <option value="">All</option>
                             <option value="Process service request successfully.">Success Causes</option>
                             <option value="Insufficient balance.">Failure Causes</option>
+                            <option value="">All Causes</option>
                         </select>
                     </div>
                     <div>
                         <label for="timecauseFilter">Filter by Time Period:</label>
                         <select id="timecauseFilter" class="form-select">
-                            <option value="today">Today</option>
                             <option value="last7days">Last 7 Days</option>
+                            <option value="today">Today</option>
                             <option value="monthly">Monthly</option>
                             <option value="yearly">Yearly</option>
                         </select>
@@ -498,7 +498,7 @@
                         class="rounded" />
                 </div>
             </div>
-            <span class="fw-medium d-block mb-1">Today Recusive Charging Count</span>
+            <span class="fw-medium d-block mb-1">Success Recusive Charging Count</span>
             <h3 class="card-title mb-2">{{ number_format($TodayRecusiveChargingCount, 0, '.', ',') }}</h3>
             <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
                 +{{ number_format($TodayRecusiveChargingCount, 0, '.', ',') }}%</small>

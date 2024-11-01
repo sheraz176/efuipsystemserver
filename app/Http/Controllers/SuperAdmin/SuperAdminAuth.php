@@ -78,7 +78,7 @@ class SuperAdminAuth extends Controller
         $TotalRecusiveChargingCount = RecusiveChargingData::count();
 
           // Get today's recusive charging count
-        $TodayRecusiveChargingCount = RecusiveChargingData::whereDate('created_at', now()->toDateString())->count();
+        $TodayRecusiveChargingCount = RecusiveChargingData::whereDate('created_at', now()->toDateString())->where('cps_response','Process service request successfully.')->count();
 
          // Get last month's recusive charging count
          $LastMonthRecusiveChargingCount = RecusiveChargingData::whereMonth('created_at', now()->subMonth()->month)

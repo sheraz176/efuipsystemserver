@@ -39,7 +39,8 @@ class CustomerSubscription extends Model
                             'grace_period_time',
                             'sales_agent',
                             'company_id',
-                            'consent'
+                            'consent',
+                            'marchant_id'
                         ];
 
 
