@@ -188,6 +188,10 @@ Route::prefix('v23')->group(function () {
             ->name('checkProduct');
         Route::post("SubscriptionUssd", [USSDAPI23Controller::class, 'jazz_app_subscription_new'])
             ->name('SubscriptionUssd');
+            Route::post("SubscriptionApp", [USSDAPI23Controller::class, 'jazz_app_subscription_app'])
+            ->name('SubscriptionApp');
+            Route::POST("UnSubscription",[USSDAPI23Controller::class,'unsubscribePackage'])
+            ->name('UnSubscription');
         Route::post("/marchantSubUSSD", [USSDAPI23Controller::class, 'marchant_subscription'])
             ->name('marchantSubUSSD');
 

@@ -9,6 +9,7 @@ use Auth;
 use Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Models\AutoDebitRequest;
 
 class CustomApiController extends Controller
 {
@@ -29,9 +30,22 @@ class CustomApiController extends Controller
           return response()->json(['status' => 'Error','message' => $validator->errors()],200);
          }
         $customer_msisdn = $request->customer_msisdn;
+
+
+    $autoDebitRequestData = AutoDebitRequest::where('msisdn', $customer_msisdn)
+    ->whereDate('created_at', Carbon::today())
+    ->first();
+
+    if (!$autoDebitRequestData) {
+        return response()->json(['status' => 'Error','message' => 'Customer Msisdn Number is Not available.'], 200);
+
+    }
+
+    $interested_customer_id = $autoDebitRequestData->interested_customer_id;
+    // Query to check if consistent_provider is 1 for the given MSISDN
+
         //  dd($customer_msisdn);
-        $interested_customer = InterestedCustomer::where('customer_msisdn', $customer_msisdn)
-        ->whereDate('created_at', Carbon::today())
+        $interested_customer = InterestedCustomer::where('id', $interested_customer_id)
         ->where('deduction_applied', 0)
         ->first();
         //  dd($interested_customer);

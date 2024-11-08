@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Company\CompanyProfile;
 use Illuminate\Support\Facades\Log;
 use App\Models\RecusiveChargingData;
+use App\Models\ConsentData;
+use App\Models\SuperDash;
 
 class SuperAdminAuth extends Controller
 {
@@ -46,64 +48,22 @@ class SuperAdminAuth extends Controller
     public function showDashboard()
     {
 
-        // Count of today's subscriptions
-        $todaySubscriptionCount = CustomerSubscription::whereDate('created_at', Carbon::today())
-            ->count();
-
-        // Count of current month's subscriptions
-        $currentMonthSubscriptionCount = CustomerSubscription::whereYear('created_at', Carbon::now()->year)
-            ->whereMonth('created_at', Carbon::now()->month)
-            ->count();
-
-        // Count of current year's subscriptions
-        $currentYearSubscriptionCount = CustomerSubscription::whereYear('created_at', Carbon::now()->year)
-            ->count();
-
-            $NetEnrollmentCount = CustomerSubscription::where('policy_status','1')
-            ->count();
-
-            $dailyTransactionSum = CustomerSubscription::whereDate('created_at', Carbon::today())
-            ->sum('transaction_amount');
-
-        // Sum of monthly transaction amounts
-        $monthlyTransactionSum = CustomerSubscription::whereYear('created_at', Carbon::now()->year)
-            ->whereMonth('created_at', Carbon::now()->month)
-            ->sum('transaction_amount');
-
-        // Sum of yearly transaction amounts
-        $yearlyTransactionSum = CustomerSubscription::whereYear('created_at', Carbon::now()->year)
-            ->sum('transaction_amount');
-
-              // Get total recusive charging count
-        $TotalRecusiveChargingCount = RecusiveChargingData::count();
-
-          // Get today's recusive charging count
-        $TodayRecusiveChargingCount = RecusiveChargingData::whereDate('created_at', now()->toDateString())->where('cps_response','Process service request successfully.')->count();
-
-         // Get last month's recusive charging count
-         $LastMonthRecusiveChargingCount = RecusiveChargingData::whereMonth('created_at', now()->subMonth()->month)
-          ->whereYear('created_at', now()->subMonth()->year)
-           ->count();
 
 
             $companies = CompanyProfile::all();
+            $superDashRecord = SuperDash::first();
             //  dd($activeTsm);
 
         return view('superadmin.dashboard', [
-            'todaySubscriptionCount' => $todaySubscriptionCount,
-            'currentMonthSubscriptionCount' => $currentMonthSubscriptionCount,
-            'currentYearSubscriptionCount' => $currentYearSubscriptionCount,
-            'dailyTransactionSum' => $dailyTransactionSum,
-            'monthlyTransactionSum' => $monthlyTransactionSum,
-            'yearlyTransactionSum' => $yearlyTransactionSum,
-            'NetEnrollmentCount' => $NetEnrollmentCount,
             'companies' => $companies,
-            'TotalRecusiveChargingCount' => $TotalRecusiveChargingCount,
-            'TodayRecusiveChargingCount'=> $TodayRecusiveChargingCount,
-            'LastMonthRecusiveChargingCount' => $LastMonthRecusiveChargingCount,
+            'superDashRecord' => $superDashRecord,
         ]);
 
     }
+
+
+
+
 
     public function logout()
     {
@@ -141,9 +101,47 @@ class SuperAdminAuth extends Controller
 
             'netentrollmentrevinus' => number_format(CustomerSubscription::where('policy_status', '1')->sum('transaction_amount'), 2),
 
+            'todaySubscriptionCount' => number_format(CustomerSubscription::whereDate('created_at', Carbon::today())->count()),
+            'currentMonthSubscriptionCount' => number_format(CustomerSubscription::whereYear('created_at', Carbon::now()->year)
+            ->whereMonth('created_at', Carbon::now()->month)
+             ->count()),
+
+            'currentYearSubscriptionCount' => number_format(CustomerSubscription::whereYear('created_at', Carbon::now()->year)->count()),
+            'NetEnrollmentCount' => number_format(CustomerSubscription::where('policy_status', '1')->count()),
+            'dailyTransactionSum' => number_format(CustomerSubscription::whereDate('created_at', Carbon::today())->sum('transaction_amount')),
+            'monthlyTransactionSum' => number_format(CustomerSubscription::whereYear('created_at', Carbon::now()->year)
+             ->whereMonth('created_at', Carbon::now()->month)
+             ->sum('transaction_amount')),
+
+            'yearlyTransactionSum' => number_format(CustomerSubscription::whereYear('created_at', Carbon::now()->year)->sum('transaction_amount')),
+            'TotalRecusiveChargingCount' => number_format(RecusiveChargingData::count()),
+            'TodayRecusiveChargingCount' => number_format(RecusiveChargingData::whereDate('created_at', now()->toDateString())
+              ->where('cps_response', 'Process service request successfully.')
+              ->count()),
+
+            'LastMonthRecusiveChargingCount' => number_format(RecusiveChargingData::whereMonth('created_at', now()->subMonth()->month)
+                ->whereYear('created_at', now()->subMonth()->year)
+                ->count()),
+
+             'TodaySubscriptionsCount' => number_format(ConsentData::whereDate('created_at', now()->toDateString())->where('status', 'Success')->count()),
+             'TotalSubscriptionCount' => number_format(ConsentData::where('status', 'Success')->count()),
+             'TotalCount' => number_format(ConsentData::whereDate('created_at', now()->toDateString())->count()),
+
+
 
         ];
 
+              // Check if a record already exists in SuperDash
+    $superDashRecord = SuperDash::first();
+
+    if ($superDashRecord) {
+        // Update the existing record with all stats
+        $superDashRecord->update($stats);
+    } else {
+        // Create a new record with all stats
+        SuperDash::create($stats);
+    }
+    //  dd($stats);
         return response()->json($stats);
     }
 

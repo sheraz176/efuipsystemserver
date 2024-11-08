@@ -14,6 +14,7 @@ class AutoDebitRequest extends Model
     protected $fillable = ['id',
                             'msisdn',
                             'agent_id',
+                            'interested_customer_id',
 
                         ];
 

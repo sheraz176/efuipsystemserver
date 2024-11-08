@@ -15,6 +15,7 @@ use App\Models\Client;
 use App\Models\logs;
 use Carbon\Carbon;
 use App\Models\CheckingRequest;
+use App\Models\ConsentNumber;
 
 class AutoDebitSubscriptionController extends Controller
 {
@@ -373,6 +374,24 @@ class AutoDebitSubscriptionController extends Controller
                     else if ($data !== null)
                     {
                          FailedSubscriptionsController::saveFailedTransactionDataautoDebit($transactionId,$resultCode,$resultDesc,$failedReason,$amount,$referenceId,$accountNumber,$planId,$productId,$agent_id,$company_id);
+
+                            // Create a new ConsentNumber instance
+                                $ConsentNumber = new ConsentNumber();
+                                $ConsentNumber->msisdn = $accountNumber;
+                                $ConsentNumber->amount = $amount;
+                                $ConsentNumber->resultCode = $resultCode;
+                                $ConsentNumber->response = $resultDesc;
+                                $ConsentNumber->consent = $consent;
+                                $ConsentNumber->customer_cnic = $customer_cnic;
+                                $ConsentNumber->beneficinary_name = $beneficinary_name;
+                                $ConsentNumber->beneficiary_msisdn = $beneficiary_msisdn;
+                                $ConsentNumber->agent_id = $agent_id;
+                                $ConsentNumber->company_id = $company_id;
+                                $ConsentNumber->planId = $planId;
+                                $ConsentNumber->productId = $productId;
+                                $ConsentNumber->status = "1";
+                                $ConsentNumber->save();
+
 
                          $interestedCustomer = InterestedCustomer::where('customer_msisdn', $subscriber_msisdn)
                                         ->where('deduction_applied', 0)

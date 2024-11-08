@@ -171,6 +171,7 @@ Route::prefix('super-admin')->group(function () {
 
         Route::get('/dashboard/stats', [SuperAdminAuth::class, 'getStats'])->name('dashboard.stats');
 
+
             //Export all Data
             Route::post('export/active/subription', [ExportController::class, 'exportactivesubription'])->name('superadmin.export-active-subription');
             Route::post('export/complete/sale', [ExportController::class, 'exportcomplatesale'])->name('superadmin.export-complete.sale');\
@@ -183,7 +184,7 @@ Route::prefix('super-admin')->group(function () {
             Route::post('export/agents/sale/data', [ExportController::class, 'agents_sales_data_export'])->name('superadmin.agents-sale-data-export');
             Route::post('export/companies/failed_data_export', [ExportController::class, 'companies_failed_data_export'])->name('superadmin.companies-failed-data-export');
             Route::post('export/export-recusive-charging-data', [ExportController::class, 'export_recusive_charing_data'])->name('superadmin.export-recusive-charging-data');
-
+            Route::post('export/export-consent-number-data', [ExportController::class, 'export_consent_number_data'])->name('superadmin.export-consent-number-data');
 
             //END Export all Data
 
@@ -230,6 +231,11 @@ Route::prefix('super-admin')->group(function () {
 
         Route::get('datatable-failed', [SuperAdminReports::class, 'failed_transactions'])->name('superadmin.datatable-failed');
         Route::get('datatable-failed/getFailedData', [SuperAdminReports::class, 'getFailedData'])->name('datatable-failed.getFailedData');
+
+        Route::get('datatable/ConsentData', [SuperAdminReports::class, 'ConsentDataIndex'])->name('superadmin.ConsentData');
+        Route::get('datatable/ConsentDataGet', [SuperAdminReports::class, 'ConsentDataGet'])->name('superadmin.ConsentDataGet');
+
+
 
         //Complete Active Customers
         Route::get('complete-active-subscriptions', [SuperAdminReports::class, 'complete_active_subscription'])->name('superadmin.complete-active-subscriptions');
@@ -296,6 +302,8 @@ Route::prefix('super-admin')->group(function () {
         Route::get('/Line/chart-data', [Charts::class, 'getLineChartData'])->name('superadmin.revinuechart');
 
         Route::get('/Line/chart/Recusive/Charging', [Charts::class, 'RecusiveChargingChart'])->name('superadmin.recusive.charging');
+        Route::get('/Line/chart/low/balance', [Charts::class, 'LowBalaceChart'])->name('superadmin.low.balance');
+
 
 
 

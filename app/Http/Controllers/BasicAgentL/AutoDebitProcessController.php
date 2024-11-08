@@ -27,19 +27,30 @@ class AutoDebitProcessController extends Controller
 
     public function fetchCustomerData(Request $request)
     {
+
+        // dd($request->all());
         $agent = session('agent');
         $agentId = $agent->agent_id;
         $agents = TeleSalesAgent::where('agent_id',$agentId)->first();
         //  dd($agents);
-         $company_id = $agents->company_id;
+        $company_id = $agents->company_id;
 
-        // dd($request->all());
-        $customer = InterestedCustomer::with(['agent', 'company', 'plan', 'product'])
-        ->where('customer_msisdn', $request->customer_msisdn)
-        ->where('company_id', $company_id)
+
+        $autoDebitRequestData = AutoDebitRequest::where('msisdn', $request->customer_msisdn)
         ->whereDate('created_at', Carbon::today())
+        ->first();
+
+        if (!$autoDebitRequestData) {
+            return response()->json(['error' => 'Customer not found'], 404);
+        }
+
+        $interested_customer_id = $autoDebitRequestData->interested_customer_id;
+        //   dd($interested_customer_id);
+        $customer = InterestedCustomer::with(['agent', 'company', 'plan', 'product'])
+        ->where('id', $interested_customer_id)
         ->where('deduction_applied', 0)
         ->first();
+        //   dd($customer);
 
         // Check if customer exists
         if (!$customer) {
@@ -66,8 +77,21 @@ public function checkConsent(Request $request)
 {
     $msisdn = $request->input('msisdn');
 
+
+    $autoDebitRequestData = AutoDebitRequest::where('msisdn', $msisdn)
+    ->whereDate('created_at', Carbon::today())
+    ->first();
+
+    if (!$autoDebitRequestData) {
+        return response()->json([
+            'consistent_provider' => 0,
+            'message' => 'No record found'
+        ]);
+    }
+
+    $interested_customer_id = $autoDebitRequestData->interested_customer_id;
     // Query to check if consistent_provider is 1 for the given MSISDN
-    $customer = InterestedCustomer::where('customer_msisdn', $msisdn)
+    $customer = InterestedCustomer::where('id', $interested_customer_id)
                     ->select('consistent_provider')
                     ->orderBy('id', 'desc') // Order by ID in descending order
                     ->first();

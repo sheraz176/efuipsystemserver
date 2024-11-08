@@ -52,6 +52,7 @@ class CustomerBasicAgentLController extends Controller
            AutoDebitRequest::create([
                'msisdn' => $request->customer_msisdn,
                'agent_id' => $request->agent_id,
+               'interested_customer_id' => $InterestedCustomer->id,
            ]);
 
         return response()->json(['success' => true, 'message' => 'Customer saved successfully']);

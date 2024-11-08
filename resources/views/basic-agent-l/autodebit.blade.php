@@ -20,22 +20,24 @@
                         <input type="text" class="form-control" value="{{ $existingRequest->msisdn ?? '' }}"
                             id="customerMSISDN" name="customer_msisdn">
                     </div>
-
-
                     <button type="submit" class="btn btn-primary">Search Customer</button>
-
-
                 </form>
+
             </div>
         </div>
 
         <hr>
-
+        <div id="errorMessageSection" class="text-danger"></div>
         <div class="row mt-3" id="customerDataSection" style="display: none;">
             <div class="col-md-12">
                 <h4 class="mb-4"><span class="text-muted fw-light">Auto Debit /</span> Customer Data for Auto Debit
                     Payment</h4>
                 <input type="hidden" class="form-control" value="(DTMF),1" id="consents" name="consent" readonly>
+
+                 <input type="hidden" class="form-control"  id="plan_id" name="plan_id" >
+                   <input type="hidden" class="form-control" id="product_id" name="product_id" >
+                   <input type="hidden" class="form-control" id="company_id" name="company_id" >
+                   <input type="hidden" class="form-control" id="agent_id" name="agent_id" readonly>
 
                 <form id="customerDataForm">
                     <div class="form-group row mb-3">
@@ -50,13 +52,13 @@
                     </div>
                     <!-- Add space between rows -->
                     <div class="form-group row mb-3">
-                        <label for="planId" class="col-md-2 col-form-label">Plan ID:</label>
+                        <label for="planId" class="col-md-2 col-form-label">Plan Name:</label>
                         <div class="col-md-4">
-                            <input type="text" class="form-control" id="planId" name="plan_id" readonly>
+                            <input type="text" class="form-control" id="plan_name" name="plan_name" readonly>
                         </div>
-                        <label for="productId" class="col-md-2 col-form-label">Product ID:</label>
+                        <label for="productId" class="col-md-2 col-form-label">Product Name:</label>
                         <div class="col-md-4">
-                            <input type="text" class="form-control" id="productId" name="product_id" readonly>
+                            <input type="text" class="form-control" id="product_name" name="product_name" readonly>
                         </div>
                     </div>
                     <!-- Add space between rows -->
@@ -91,16 +93,16 @@
                             <input type="text" class="form-control" id="deductionApplied" name="deduction_applied"
                                 readonly>
                         </div>
-                        <label for="agentId" class="col-md-2 col-form-label">Agent ID:</label>
+                        <label for="agentId" class="col-md-2 col-form-label">Agent Name:</label>
                         <div class="col-md-4">
-                            <input type="text" class="form-control" id="agentId" name="agent_id" readonly>
+                            <input type="text" class="form-control" id="agent_name" name="agent_name" readonly>
                         </div>
                     </div>
                     <!-- Add space between rows -->
                     <div class="form-group row mb-3">
-                        <label for="companyId" class="col-md-2 col-form-label">Company ID:</label>
+                        <label for="companyId" class="col-md-2 col-form-label">Company Name:</label>
                         <div class="col-md-4">
-                            <input type="text" class="form-control" id="companyId" name="company_id" readonly>
+                            <input type="text" class="form-control" id="company_name" name="company_name" readonly>
                         </div>
                         <label for="superAgentId" class="col-md-2 col-form-label">Super Agent ID:</label>
                         <div class="col-md-4">
@@ -128,8 +130,8 @@
                 <label for="error" class="text-danger" id="errorMessage">The customer wasn't found or the deduction
                     has already been attempted by the super-agent. According to the rule, only one attempt can be made on
                     the customer's JazzCash wallet <br>
-                    موصولہ گاہک نہیں ملا یا کم کرنے کا کوشش کر چکا ہے سپر ایجنٹ نے۔ قاعدے کے مطابق، گاہک کی جاز کیش والٹ پر
-                    صرف ایک کوشش کی جا سکتی ہے۔</label>
+                    Ù…ÙˆØµÙˆÙ„Û Ú¯Ø§ÛÚ© Ù†ÛÛŒÚº Ù…Ù„Ø§ ÛŒØ§ Ú©Ù… Ú©Ø±Ù†Û’ Ú©Ø§ Ú©ÙˆØ´Ø´ Ú©Ø± Ú†Ú©Ø§ ÛÛ’ Ø³Ù¾Ø± Ø§ÛŒØ¬Ù†Ù¹ Ù†Û’Û” Ù‚Ø§Ø¹Ø¯Û’ Ú©Û’ Ù…Ø·Ø§Ø¨Ù‚ØŒ Ú¯Ø§ÛÚ© Ú©ÛŒ Ø¬Ø§Ø² Ú©ÛŒØ´ ÙˆØ§Ù„Ù¹ Ù¾Ø±
+                    ØµØ±Ù Ø§ÛŒÚ© Ú©ÙˆØ´Ø´ Ú©ÛŒ Ø¬Ø§ Ø³Ú©ØªÛŒ ÛÛ’Û”</label>
             </div>
         </div>
 
@@ -259,124 +261,88 @@
         }
 
         $(document).ready(function() {
-            function fetchCustomerData(msisdn) {
-                if (msisdn !== '') {
-                    var formData = {
-                        customer_msisdn: msisdn,
-                        _token: '{{ csrf_token() }}' // Include the CSRF token
-                    };
+    function fetchCustomerData(msisdn) {
+        // Check if the MSISDN is exactly 11 digits
+        if (msisdn.length === 11) {
+            var formData = {
+                customer_msisdn: msisdn,
+                _token: '{{ csrf_token() }}' // Include the CSRF token
+            };
 
-                    $.ajax({
-                        type: 'POST',
-                        url: '{{ route('basic-agent-l.fetch_customer_data') }}',
-                        data: formData,
-                        success: function(data) {
-                            // Populate the fields with the returned data
-                            $('#customerDataSection').show();
-                            $('#customerMsisdn').val(data.customer_msisdn);
-                            $('#customerCnic').val(data.customer_cnic);
-                            $('#planId').val(data.plan_name);
-                            $('#productId').val(data.product_name);
-                            $('#beneficiaryMsisdn').val(data.beneficiary_msisdn);
-                            $('#beneficiaryCnic').val(data.beneficiary_cnic);
-                            $('#relationship').val(data.relationship);
-                            $('#beneficiaryName').val(data.beneficinary_name);
-                            $('#deductionApplied').val(data.deduction_applied);
-                            $('#agentId').val(data.agent_name);
-                            $('#companyId').val(data.company_name);
-                            $('#consistent_provider').val(data.consistent_provider);
-                            $('#superAgentId').val('{{ session('agent')->username }}');
-                            agentId = data.agent_id;
-                            companyId = data.company_id;
-                            planId = data.plan_id;
-                            productId = data.product_id;
-                            // Populate other form fields as needed
-                            $('#errorMessageSection').hide();
-
-                            // Show the customer data section
-                            $('#customerDataSection').show();
-
-                            // Perform an additional check for the Auto Debit button
-                            // checkAutoDebitStatus(data.customer_msisdn);
-                        },
-                        error: function(xhr, textStatus, errorThrown) {
-                            // Hide the customer data section if an error occurs
-                            $('#customerDataSection').hide();
-
-                            // Show the error section
-                            $('#errorMessageSection').show();
-                        }
-                    });
-                }
-            }
-
-            // Check if the customerMSISDN input already has a value on page load
-            var initialMsisdn = $('#customerMSISDN').val().trim();
-            if (initialMsisdn !== '') {
-                fetchCustomerData(initialMsisdn);
-            }
-
-            // Trigger data fetching automatically as the user types
-            $('#customerMSISDN').on('input', function() {
-                var msisdn = $(this).val().trim();
-                fetchCustomerData(msisdn);
-            });
-        });
-
-
-        $(document).ready(function() {
-            $('#customerSearchForm').submit(function(event) {
-                event.preventDefault();
-
-                var formData = $(this).serialize();
-
-                $.ajax({
-                    type: 'POST',
-                    url: '{{ route('basic-agent-l.fetch_customer_data') }}',
-                    data: formData,
-                    success: function(data) {
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('basic-agent-l.fetch_customer_data') }}',
+                data: formData,
+                success: function(data) {
+                    if (data) {
                         // Populate the fields with the returned data
                         $('#customerDataSection').show();
                         $('#customerMsisdn').val(data.customer_msisdn);
                         $('#customerCnic').val(data.customer_cnic);
-                        $('#planId').val(data.plan_name);
-                        $('#productId').val(data.product_name);
+                        $('#plan_name').val(data.plan_name);
+                        $('#product_name').val(data.product_name);
+                        $('#plan_id').val(data.plan_id);
+                        $('#product_id').val(data.product_id);
+                        $('#agent_id').val(data.agent_id);
+                        $('#company_id').val(data.company_id);
+
+
                         $('#beneficiaryMsisdn').val(data.beneficiary_msisdn);
                         $('#beneficiaryCnic').val(data.beneficiary_cnic);
                         $('#relationship').val(data.relationship);
                         $('#beneficiaryName').val(data.beneficinary_name);
                         $('#deductionApplied').val(data.deduction_applied);
-                        $('#agentId').val(data.agent_name);
-                        $('#companyId').val(data.company_name);
+                        $('#agent_name').val(data.agent_name);
+                        $('#company_name').val(data.company_name);
                         $('#consistent_provider').val(data.consistent_provider);
                         $('#superAgentId').val('{{ session('agent')->username }}');
-                        // Populate other form fields as needed
 
                         $('#errorMessageSection').hide();
-
-                        // Show the customer data section
                         $('#customerDataSection').show();
 
-
-                        // Perform an additional check for the Auto Debit button
+                        // Additional checks if needed
                         // checkAutoDebitStatus(data.customer_msisdn);
-
-                        // Store necessary IDs for further processing
-                        agentId = data.agent_id;
-                        companyId = data.company_id;
-                        planId = data.plan_id;
-                        productId = data.product_id;
-                    },
-                    error: function(xhr, textStatus, errorThrown) {
-                        // Hide the customer data section if an error occurs
+                    } else {
+                        // Display 'Data not found' if response is empty
                         $('#customerDataSection').hide();
 
-                        // Show the error section
-                        $('#errorMessageSection').show();
+                        $('#errorMessageSection').text("The customer wasn't found or the deduction has already been attempted by the super-agent. According to the rule, only one attempt can be made on the customer's JazzCash wallet.\nÙ…ÙˆØµÙˆÙ„Û Ú¯Ø§ÛÚ© Ù†ÛÛŒÚº Ù…Ù„Ø§ ÛŒØ§ Ú©Ù… Ú©Ø±Ù†Û’ Ú©Ø§ Ú©ÙˆØ´Ø´ Ú©Ø± Ú†Ú©Ø§ ÛÛ’ Ø³Ù¾Ø± Ø§ÛŒØ¬Ù†Ù¹ Ù†Û’Û” Ù‚Ø§Ø¹Ø¯Û’ Ú©Û’ Ù…Ø·Ø§Ø¨Ù‚ØŒ Ú¯Ø§ÛÚ© Ú©ÛŒ Ø¬Ø§Ø² Ú©ÛŒØ´ ÙˆØ§Ù„Ù¹ Ù¾Ø± ØµØ±Ù Ø§ÛŒÚ© Ú©ÙˆØ´Ø´ Ú©ÛŒ Ø¬Ø§ Ø³Ú©ØªÛŒ ÛÛ’Û”");
+
                     }
-                });
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                    // Hide the customer data section and show error
+                    $('#customerDataSection').hide();
+                    $('#errorMessageSection').text("The customer wasn't found or the deduction has already been attempted by the super-agent. According to the rule, only one attempt can be made on the customer's JazzCash wallet.\nÙ…ÙˆØµÙˆÙ„Û Ú¯Ø§ÛÚ© Ù†ÛÛŒÚº Ù…Ù„Ø§ ÛŒØ§ Ú©Ù… Ú©Ø±Ù†Û’ Ú©Ø§ Ú©ÙˆØ´Ø´ Ú©Ø± Ú†Ú©Ø§ ÛÛ’ Ø³Ù¾Ø± Ø§ÛŒØ¬Ù†Ù¹ Ù†Û’Û” Ù‚Ø§Ø¹Ø¯Û’ Ú©Û’ Ù…Ø·Ø§Ø¨Ù‚ØŒ Ú¯Ø§ÛÚ© Ú©ÛŒ Ø¬Ø§Ø² Ú©ÛŒØ´ ÙˆØ§Ù„Ù¹ Ù¾Ø± ØµØ±Ù Ø§ÛŒÚ© Ú©ÙˆØ´Ø´ Ú©ÛŒ Ø¬Ø§ Ø³Ú©ØªÛŒ ÛÛ’Û”");
+
+                }
             });
-        });
+        } else {
+            // Hide customer data and show an error if MSISDN is not 11 digits
+            $('#customerDataSection').hide();
+            $('#errorMessageSection').text('Please enter a valid 11-digit MSISDN').show();
+        }
+    }
+
+    // Check if the customerMSISDN input already has a value on page load
+    var initialMsisdn = $('#customerMSISDN').val().trim();
+    if (initialMsisdn.length === 11) {
+        fetchCustomerData(initialMsisdn);
+    }
+
+    // Trigger data fetching automatically as the user types
+    $('#customerMSISDN').on('input', function() {
+        var msisdn = $(this).val().trim();
+        fetchCustomerData(msisdn);
+    });
+
+    $('#customerSearchForm').submit(function(event) {
+        event.preventDefault();
+        var msisdn = $('#customerMSISDN').val().trim();
+        fetchCustomerData(msisdn);
+    });
+});
+
 
 
 
@@ -391,25 +357,26 @@
             // Get the values from form fields
             var customer_msisdn = $('#customerMsisdn').val();
             var customer_cnic = $('#customerCnic').val();
-            var plan_id = $('#planId').val();
-            var product_id = $('#productId').val();
+            var plan_id = $('#plan_id').val();
+            var product_id = $('#product_id').val();
             var beneficiary_msisdn = $('#beneficiaryMsisdn').val();
             var beneficiary_cnic = $('#beneficiaryCnic').val();
             var beneficinary_name = $('#beneficiaryName').val();
-            var company_id = $('#companyId').val();
+            var company_id = $('#company_id').val();
+            var agent_id = $('#agent_id').val();
             var consents = $('#consents').val();
 
             // Construct the data object
             var requestData = {
                 subscriber_msisdn: customer_msisdn,
                 customer_cnic: customer_cnic,
-                plan_id: planId,
-                product_id: productId,
+                plan_id: plan_id,
+                product_id: product_id,
                 beneficiary_msisdn: beneficiary_msisdn,
                 beneficiary_cnic: beneficiary_cnic,
                 beneficinary_name: beneficinary_name,
-                agent_id: agentId,
-                company_id: companyId,
+                agent_id: agent_id,
+                company_id: company_id,
                 consent: consents
             };
 

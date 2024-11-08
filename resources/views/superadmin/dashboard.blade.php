@@ -33,7 +33,10 @@
                             </div>
                             <span class="d-block mb-1">Current Year Lifes Secured</span>
                             <h3 class="card-title text-nowrap mb-2">
-                                {{ number_format($currentYearSubscriptionCount, 0, '.', ',') }}</h3>
+                                <span id="currentYearSubscriptionCount">
+                                    {{ $superDashRecord ? $superDashRecord->currentYearSubscriptionCount : 'No data available' }}
+
+                                       </span></h3>
                             {{-- <small class="text-danger fw-medium"><i class="bx bx-down-arrow-alt"></i> -14.82%</small> --}}
                         </div>
                     </div>
@@ -57,7 +60,10 @@
                                 </div> --}}
                             </div>
                             <span class="fw-medium d-block mb-1">Current Month Total Lifes Secured</span>
-                            <h3 class="card-title mb-2">{{ number_format($currentMonthSubscriptionCount, 0, '.', ',') }}
+                            <h3 class="card-title mb-2">
+                                <span id="currentMonthSubscriptionCount">
+                                    {{ $superDashRecord ? $superDashRecord->currentMonthSubscriptionCount : 'No data available' }}
+                                </span>
                             </h3>
                             {{-- <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +28.14%</small> --}}
                         </div>
@@ -84,7 +90,9 @@
                             </div>
                             <span class="d-block mb-1">Today's Total Lifes Secured</span>
                             <h3 class="card-title text-nowrap mb-2">
-                                {{ number_format($todaySubscriptionCount, 0, '.', ',') }}</h3>
+                                <span id="todaySubscriptionCount">
+                                    {{ $superDashRecord ? $superDashRecord->todaySubscriptionCount : 'No data available' }}
+                                    </span</h3>
                             {{-- <small class="text-danger fw-medium"><i class="bx bx-down-arrow-alt"></i> -14.82%</small> --}}
                         </div>
                     </div>
@@ -108,7 +116,9 @@
                                 </div> --}}
                             </div>
                             <span class="fw-medium d-block mb-1">Current Year Total Sales</span>
-                            <h3 class="card-title mb-2">{{ number_format($yearlyTransactionSum, 0, '.', ',') }}</h3>
+                            <h3 class="card-title mb-2"><span id="yearlyTransactionSum">
+                                {{ $superDashRecord ? $superDashRecord->yearlyTransactionSum : 'No data available' }}
+                                </span></h3>
                             {{-- <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +28.14%</small> --}}
                         </div>
                     </div>
@@ -134,7 +144,9 @@
                             </div>
                             <span class="d-block mb-1">Current Months Total Sales</span>
                             <h3 class="card-title text-nowrap mb-2">
-                                {{ number_format($monthlyTransactionSum, 0, '.', ',') }}</h3>
+                                <span id="monthlyTransactionSum">
+                                    {{ $superDashRecord ? $superDashRecord->monthlyTransactionSum : 'No data available' }}
+                                    </span></h3>
                             {{-- <small class="text-danger fw-medium"><i class="bx bx-down-arrow-alt"></i> -14.82%</small> --}}
                         </div>
                     </div>
@@ -158,7 +170,9 @@
                                 </div> --}}
                             </div>
                             <span class="fw-medium d-block mb-1">Today's Total Sales</span>
-                            <h3 class="card-title mb-2">{{ number_format($dailyTransactionSum, 0, '.', ',') }}</h3>
+                            <h3 class="card-title mb-2"><span id="dailyTransactionSum">
+                                {{ $superDashRecord ? $superDashRecord->dailyTransactionSum : 'No data available' }}
+                                </span></h3>
                             {{-- <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +28.14%</small> --}}
                         </div>
                     </div>
@@ -197,19 +211,27 @@
                             <!-- Default view showing TSM counts -->
                             <div id="tsmCounts">
                                 <span class="d-block mb-1">Active Tsm Agents</span>
-                                <h3 class="card-title text-nowrap mb-2"><span id="totalTsm">0</span></h3>
+                                <h3 class="card-title text-nowrap mb-2"><span id="totalTsm">
+                                    {{ $superDashRecord ? $superDashRecord->totalTsm : 'No data available' }}
+                                    </span></h3>
 
                                 <span class="d-block mb-1" style="color: rgb(244, 87, 24); font-weight: bold;">Live Tsm Agents</span>
-                                <h3 class="card-title text-nowrap mb-2"><span id="activeTsm">0</span></h3>
+                                <h3 class="card-title text-nowrap mb-2"><span id="activeTsm">
+                                    {{ $superDashRecord ? $superDashRecord->activeTsm : 'No data available' }}
+                                    </span></h3>
                             </div>
 
                             <!-- WFH counts hidden initially -->
                             <div id="wfhCounts" style="display: none;">
                                 <span class="d-block mb-1">Active Tsm Agents (WFH)</span>
-                                <h3 class="card-title text-nowrap mb-2"><span id="totalTsmWfh">0</span></h3>
+                                <h3 class="card-title text-nowrap mb-2"><span id="totalTsmWfh">
+                                    {{ $superDashRecord ? $superDashRecord->totalTsmWfh : 'No data available' }}
+                                    </span></h3>
 
                                 <span class="d-block mb-1" style="color: rgb(244, 87, 24); font-weight: bold;">Live Tsm Agents (WFH)</span>
-                                <h3 class="card-title text-nowrap mb-2"><span id="activeTsmWfh">0</span></h3>
+                                <h3 class="card-title text-nowrap mb-2"><span id="activeTsmWfh">
+                                    {{ $superDashRecord ? $superDashRecord->activeTsmWfh : 'No data available' }}
+                                    </span></h3>
                             </div>
 
 
@@ -227,10 +249,14 @@
                                 </div>
                             </div>
                             <span class="d-block mb-1">Active Ibex Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"><span id="totalIbex">0</span></h3>
+                            <h3 class="card-title text-nowrap mb-2"><span id="totalIbex">
+                                {{ $superDashRecord ? $superDashRecord->totalIbex : 'No data available' }}
+                                </span></h3>
                             <span class="d-block mb-1" style="color: rgb(244, 87, 24);font-weight: bold;">Live Ibex
                                 Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"><span id="activeIbex">0</span></h3>
+                            <h3 class="card-title text-nowrap mb-2"><span id="activeIbex">
+                                {{ $superDashRecord ? $superDashRecord->activeIbex : 'No data available' }}
+                                </span></h3>
                         </div>
                     </div>
                 </div>
@@ -247,10 +273,14 @@
                                 </div>
                             </div>
                             <span class="d-block mb-1">Active Sybrid Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"><span id="totalSybrid">0</span></h3>
+                            <h3 class="card-title text-nowrap mb-2"><span id="totalSybrid">
+                                {{ $superDashRecord ? $superDashRecord->totalSybrid : 'No data available' }}
+                                </span></h3>
                             <span class="d-block mb-1" style="color: rgb(244, 87, 24);font-weight: bold;">Live Sybrid
                                 Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"><span id="activeSybrid">0</span></h3>
+                            <h3 class="card-title text-nowrap mb-2"><span id="activeSybrid">
+                                {{ $superDashRecord ? $superDashRecord->activeSybrid : 'No data available' }}
+                                </span></h3>
                         </div>
                     </div>
                 </div>
@@ -265,10 +295,14 @@
                                 </div>
                             </div>
                             <span class="d-block mb-1">Active Abacus Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"><span id="totalAbacus">0</span></h3>
+                            <h3 class="card-title text-nowrap mb-2"><span id="totalAbacus">
+                                {{ $superDashRecord ? $superDashRecord->totalAbacus : 'No data available' }}
+                                </span></h3>
                             <span class="d-block mb-1" style="color: rgb(244, 87, 24);font-weight: bold;">Live Abacus
                                 Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"><span id="activeAbacus">0</span></h3>
+                            <h3 class="card-title text-nowrap mb-2"><span id="activeAbacus">
+                                {{ $superDashRecord ? $superDashRecord->activeAbacus : 'No data available' }}
+                                </span></h3>
 
                         </div>
                     </div>
@@ -284,10 +318,14 @@
                                 </div>
                             </div>
                             <span class="d-block mb-1">Active JazzIVR Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"><span id="totalJazzIVR">0</span></h3>
+                            <h3 class="card-title text-nowrap mb-2"><span id="totalJazzIVR">
+                                {{ $superDashRecord ? $superDashRecord->totalJazzIVR : 'No data available' }}
+                                </span></h3>
                             <span class="d-block mb-1" style="color: rgb(244, 87, 24);font-weight: bold;">Live JazzIVR
                                 Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"><span id="activeJazzIVR">0</span></h3>
+                            <h3 class="card-title text-nowrap mb-2"><span id="activeJazzIVR">
+                                {{ $superDashRecord ? $superDashRecord->activeJazzIVR : 'No data available' }}
+                                </span></h3>
                         </div>
                     </div>
                 </div>
@@ -301,10 +339,14 @@
                                 </div>
                             </div>
                             <span class="d-block mb-1">Total Active Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"><span id="totalactive">0</span></h3>
+                            <h3 class="card-title text-nowrap mb-2"><span id="totalactive">
+                                {{ $superDashRecord ? $superDashRecord->totalactive : 'No data available' }}
+                                </span></h3>
                             <span class="d-block mb-1" style="color: rgb(244, 87, 24);font-weight: bold;">Total Live
                                 Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"><span id="totallive">0</span></h3>
+                            <h3 class="card-title text-nowrap mb-2"><span id="totallive">
+                                {{ $superDashRecord ? $superDashRecord->totallive : 'No data available' }}
+                                </span></h3>
                         </div>
                     </div>
                 </div>
@@ -499,29 +541,119 @@
                 </div>
             </div>
             <span class="fw-medium d-block mb-1">Success Recusive Charging Count</span>
-            <h3 class="card-title mb-2">{{ number_format($TodayRecusiveChargingCount, 0, '.', ',') }}</h3>
-            <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
-                +{{ number_format($TodayRecusiveChargingCount, 0, '.', ',') }}%</small>
+            <h3 class="card-title mb-2"><span id="TodayRecusiveChargingCount">
+                {{ $superDashRecord ? $superDashRecord->TodayRecusiveChargingCount : 'No data available' }}
+                </span></h3>
+             <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
+                +  {{ $superDashRecord ? $superDashRecord->TodayRecusiveChargingCount : 'No data available' }}%</small>
         </div>
         <hr>
         <div class="card-body">
 
             <span class="fw-medium d-block mb-1">Last Month Recusive Charging Count</span>
-            <h3 class="card-title mb-2">{{ number_format($LastMonthRecusiveChargingCount, 0, '.', ',') }}</h3>
-            <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
-                +{{ number_format($LastMonthRecusiveChargingCount, 0, '.', ',') }}%</small>
+            <h3 class="card-title mb-2"><span id="LastMonthRecusiveChargingCount">
+                {{ $superDashRecord ? $superDashRecord->LastMonthRecusiveChargingCount : 'No data available' }}
+                </span></h3>
+             <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
+                +  {{ $superDashRecord ? $superDashRecord->LastMonthRecusiveChargingCount : 'No data available' }} %</small>
         </div>
         <hr>
         <div class="card-body">
 
             <span class="fw-medium d-block mb-1">Total Recusive Charging Count</span>
-            <h3 class="card-title mb-2">{{ number_format($TotalRecusiveChargingCount, 0, '.', ',') }}</h3>
-            <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
-                +{{ number_format($TotalRecusiveChargingCount, 0, '.', ',') }}%</small>
+            <h3 class="card-title mb-2"><span id="TotalRecusiveChargingCount">
+                {{ $superDashRecord ? $superDashRecord->TotalRecusiveChargingCount : 'No data available' }}
+                </span></h3>
+             <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
+                + {{ $superDashRecord ? $superDashRecord->TotalRecusiveChargingCount : 'No data available' }}%</small>
         </div>
     </div>
 
 </div>
+
+
+
+<h4 class=""><span class="text-muted fw-light">Low Balance</span> Performance</h4>
+
+<div class="col-xl-8 col-12 mb-4">
+  <div class="card">
+      <div class="card-header header-elements">
+          <div class="d-flex justify-content-between align-items-center">
+              <div class="d-flex justify-content-start align-items-center">
+                <div class="me-3">
+                    <label for="companynewFilters">Filter by Company:</label>
+                    <select id="companynewFilters" class="form-select">
+                        <option value="">All</option>
+                        <option value="11">TSM</option>
+                        <option value="12">Sybrid</option>
+                        <option value="1">Ibex International</option>
+                        <option value="2">Abacus Consultation</option>
+                    </select>
+                </div>
+                  <div class="me-2">
+                      <label for="lowbalnaceFilter">Filter by Causes:</label>
+                      <select id="lowbalnaceFilter" class="form-select">
+                        <option value="">All Causes</option>
+                          <option value="Success">Subscription</option>
+                          <option value="Failed">Insufficient balance</option>
+                      </select>
+                  </div>
+                  <div>
+                      <label for="timelowbalanceFilter">Filter by Time Period:</label>
+                      <select id="timelowbalanceFilter" class="form-select">
+                          <option value="last7days">Last 7 Days</option>
+                          <option value="today">Today</option>
+                          <option value="monthly">Monthly</option>
+                          <option value="yearly">Yearly</option>
+                      </select>
+                  </div>
+              </div>
+          </div>
+      </div>
+      <div class="card-body">
+          <canvas id="barChart_lowbalance" class="chartjs" data-height="500"></canvas>
+      </div>
+  </div>
+</div>
+
+<div class="col-4 mb-4">
+  <div class="card">
+      <div class="card-body">
+          <div class="card-title d-flex align-items-start justify-content-between">
+              <div class="avatar flex-shrink-0">
+                  <img src="{{ asset('/assets/img/icons/unicons/cc-primary.png') }}" alt="Credit Card"
+                      class="rounded" />
+              </div>
+          </div>
+          <span class="fw-medium d-block mb-1">Today Subscription Count</span>
+          <h3 class="card-title mb-2"><span id="TodaySubscriptionsCount">  {{ $superDashRecord ? $superDashRecord->TodaySubscriptionsCount : 'No data available' }}</span> </h3>
+          <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
+             +  {{ $superDashRecord ? $superDashRecord->TodaySubscriptionsCount : 'No data available' }} %</small>
+      </div>
+      <hr>
+      <div class="card-body">
+
+          <span class="fw-medium d-block mb-1">Total Subscription Count</span>
+          <h3 class="card-title mb-2"><span id="TotalSubscriptionCount">  {{ $superDashRecord ? $superDashRecord->TotalSubscriptionCount : 'No data available' }}</span></h3>
+          <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
+              +  {{ $superDashRecord ? $superDashRecord->TotalSubscriptionCount : 'No data available' }} %</small>
+      </div>
+      <hr>
+      <div class="card-body">
+
+          <span class="fw-medium d-block mb-1">Total Today Counts</span>
+          <h3 class="card-title mb-2"><span id="TotalCount">
+             {{ $superDashRecord ? $superDashRecord->TotalCount : 'No data available' }}
+            </span></h3>
+          <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
+              +  {{ $superDashRecord ? $superDashRecord->TotalCount : 'No data available' }} %</small>
+      </div>
+  </div>
+
+</div>
+
+
+
 
 
 
@@ -572,9 +704,9 @@
                         </div>
                     </div>
                     <span class="fw-medium d-block mb-1">Total Net Enrollment Count</span>
-                    <h3 class="card-title mb-2">{{ number_format($NetEnrollmentCount, 0, '.', ',') }}</h3>
+                    <h3 class="card-title mb-2"><span id="NetEnrollmentCount">  {{ $superDashRecord ? $superDashRecord->NetEnrollmentCount : 'No data available' }}</span></h3>
                     <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
-                        +{{ number_format($NetEnrollmentCount, 0, '.', ',') }}%</small>
+                        +  {{ $superDashRecord ? $superDashRecord->NetEnrollmentCount : 'No data available' }} %</small>
                 </div>
             </div>
         </div>
@@ -590,11 +722,14 @@
                     </div>
                     <span class="fw-medium d-block mb-1" style="color: rgb(244, 87, 24);font-weight: bold;">Total Live Net
                         Enrollment Revenue</span>
-                    <h3 class="card-title mb-2"><span id="netentrollmentrevinus"> </span></h3>
+                    <h3 class="card-title mb-2"><span id="netentrollmentrevinus">  {{ $superDashRecord ? $superDashRecord->netentrollmentrevinus : 'No data available' }} </span></h3>
 
                 </div>
             </div>
         </div>
+
+
+
 
 
 <!-- Add JavaScript to toggle between TSM and WFH counts -->
@@ -866,6 +1001,23 @@
                         $('#totalactive').text(data.totalactive);
                         $('#totallive').text(data.totallive);
 
+                        $('#todaySubscriptionCount').text(data.todaySubscriptionCount);
+                        $('#currentMonthSubscriptionCount').text(data.currentMonthSubscriptionCount);
+                        $('#currentYearSubscriptionCount').text(data.currentYearSubscriptionCount);
+                        $('#NetEnrollmentCount').text(data.NetEnrollmentCount);
+                        $('#dailyTransactionSum').text(data.dailyTransactionSum);
+                        $('#monthlyTransactionSum').text(data.monthlyTransactionSum);
+                        $('#yearlyTransactionSum').text(data.yearlyTransactionSum);
+                        $('#TotalRecusiveChargingCount').text(data.TotalRecusiveChargingCount);
+                        $('#TodayRecusiveChargingCount').text(data.TodayRecusiveChargingCount);
+                        $('#LastMonthRecusiveChargingCount').text(data.LastMonthRecusiveChargingCount);
+                        $('#TodaySubscriptionsCount').text(data.TodaySubscriptionsCount);
+                        $('#TotalSubscriptionCount').text(data.TotalSubscriptionCount);
+                        $('#TotalCount').text(data.TotalCount);
+
+
+
+
                         $('#netentrollmentrevinus').text(data.netentrollmentrevinus);
 
 
@@ -1023,4 +1175,76 @@
                 fetchRecusiveChargingData();
             });
         </script>
+
+<script>
+    $(document).ready(function() {
+        let chart; // To store the chart instance
+
+        // Function to fetch data and update the chart
+        function fetchRecusiveChargingData() {
+            var lowbalnaceFilter = $('#lowbalnaceFilter').val();
+            var timelowbalanceFilter = $('#timelowbalanceFilter').val();
+            var companynewFilters = $('#companynewFilters').val();
+
+            $.ajax({
+                url: '{{ route('superadmin.low.balance') }}',
+                type: 'GET',
+                data: {
+                    cause: lowbalnaceFilter,
+                    time_period: timelowbalanceFilter,
+                    company_id: companynewFilters,
+                },
+                success: function(response) {
+                    // Extract labels and counts from the response
+                    let labels = response.map(item => item
+                    .label); // Day name, Month name, Hour, etc.
+                    let data = response.map(item => item.count); // Counts for each group
+
+                    // If chart already exists, destroy it to avoid overlay
+                    if (chart) {
+                        chart.destroy();
+                    }
+
+                    // Create a new chart with the updated data
+                    var ctx = document.getElementById('barChart_lowbalance').getContext('2d');
+                    chart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Consent Number Count',
+                                data: data,
+                                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            scales: {
+                                y: {
+                                    beginAtZero: true
+                                }
+                            }
+                        }
+                    });
+                },
+                error: function(error) {
+                    console.log('Error fetching data', error);
+                }
+            });
+        }
+
+        // Event listeners for the filters
+        $('#lowbalnaceFilter, #timelowbalanceFilter,#companynewFilters').on('change', function() {
+            fetchRecusiveChargingData();
+        });
+
+        // Initial chart load
+        fetchRecusiveChargingData();
+    });
+</script>
+
+
+
+
     @endsection()

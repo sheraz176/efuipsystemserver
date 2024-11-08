@@ -14,7 +14,7 @@ use App\Models\RecusiveChargingData;
 use App\Models\TeleSalesAgent;
 use App\Models\Unsubscription\CustomerUnSubscription;
 use Illuminate\Support\Facades\DB;
-
+use App\Models\ConsentData;
 
 
 class ExportController extends Controller
@@ -765,5 +765,66 @@ public function export_recusive_charing_data(Request $request)
              // Download the file
              return response()->download($filePath)->deleteFileAfterSend(true);
 }
+
+public function export_consent_number_data(Request $request)
+{
+//    dd($request->all());
+    $query = ConsentData::select([
+        'consent_data.*', // Select all columns from recusive_charging_data table
+        'plans.plan_name', // Select the plan_name column from the plans table
+        'products.product_name', // Select the product_name column from the products table
+        'company_profiles.company_name',
+    ])
+    ->join('plans', 'consent_data.planId', '=', 'plans.plan_id')
+    ->join('products', 'consent_data.productId', '=', 'products.product_id')
+    ->join('company_profiles', 'consent_data.company_id', '=', 'company_profiles.id')
+    ->with(['plan', 'product','company']); // Eager load related models
+
+
+     if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+         $dateRange = explode(' to ', $request->input('dateFilter'));
+         $startDate = $dateRange[0];
+         $endDate = $dateRange[1];
+         $query->whereDate('consent_data.created_at', '>=', $startDate)
+         ->whereDate('consent_data.created_at', '<=', $endDate);
+
+     }
+
+    $data = $query->get();
+        //  dd($data);
+               // Define headers
+               $headers = ['ID', 'Customer MSISDN', 'Plan Name', 'Product Name', 'Agent ID','Company', 'Amount',
+               'status','Date']; // Replace with your actual column names
+                // Prepare the data with headers
+              $rows[] = $headers;
+              foreach ($data as $item) {
+               $rows[] = [
+                  $item->id,
+                  $item->msisdn,
+                  $item->plan_name,
+                  $item->product_name,
+                  $item->agent_id,
+                  $item->company_name,
+                  $item->amount,
+                  $item->status,
+                  $item->created_at,
+
+
+              ];
+             }
+
+             // Generate XLS file
+             $filePath = storage_path('app/LowBalanceNumberReport.xls');
+             $file = fopen($filePath, 'w');
+             foreach ($rows as $row) {
+              fputcsv($file, $row, "\t"); // Tab-delimited for Excel
+              }
+              fclose($file);
+
+             // Download the file
+             return response()->download($filePath)->deleteFileAfterSend(true);
+}
+
+
 
 }

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB; // Add this line at the beginning of your fil
 use App\Models\TeleSalesAgent;
 use App\Models\AgentCount;
 use App\Models\RecusiveChargingData;
+use App\Models\ConsentData;
 
 class Charts extends Controller
 {
@@ -312,6 +313,62 @@ public function RecusiveChargingChart(Request $request)
     // Apply filter for cps_response (Cause)
     if ($request->has('cause') && $request->cause != '') {
         $query->where('cps_response', $request->cause);
+    }
+
+    // Initialize an empty array to store chart data
+    $chartData = [];
+
+    // Apply time period filter
+    if ($request->has('time_period')) {
+        $timePeriod = $request->time_period;
+
+        // Handle different time periods
+        if ($timePeriod == 'today') {
+            $totalCount = $query->whereDate('created_at', now()->toDateString())
+                                ->count();
+            $chartData[] = ['count' => $totalCount, 'label' => 'Today']; // Set label as 'Today'
+        } elseif ($timePeriod == 'monthly') {
+            $chartData = $query->selectRaw('COUNT(*) as count, MONTHNAME(created_at) as label')
+                               ->groupBy('label')
+                               ->get();
+        } elseif ($timePeriod == 'last7days') {
+            $chartData = $query->whereBetween('created_at', [now()->subDays(7), now()])
+                               ->selectRaw('COUNT(*) as count, DAYNAME(created_at) as label')
+                               ->groupBy('label')
+                               ->get();
+        } elseif ($timePeriod == 'yearly') {
+            $chartData = $query->selectRaw('COUNT(*) as count, YEAR(created_at) as label')
+                               ->groupBy('label')
+                               ->get();
+        }
+    } else {
+        // Default to return data for today if no time filter is provided
+        $totalCount = $query->whereDate('created_at', now()->toDateString())
+                            ->count();
+        $chartData[] = ['count' => $totalCount, 'label' => 'Today']; // Set label as 'Today'
+    }
+
+    // Return the data as JSON for chart rendering
+    return response()->json($chartData);
+}
+
+
+public function LowBalaceChart(Request $request)
+{
+    // dd($request->all());
+    $query = ConsentData::query();
+
+    // dd($query);
+
+
+    // Apply filter for company_id (company_id)
+    if ($request->has('company_id') && $request->company_id != '') {
+        $query->where('company_id', $request->company_id);
+    }
+
+    // Apply filter for cps_response (Cause)
+    if ($request->has('cause') && $request->cause != '') {
+        $query->where('status', $request->cause);
     }
 
     // Initialize an empty array to store chart data

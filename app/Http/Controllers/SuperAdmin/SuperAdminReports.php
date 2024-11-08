@@ -14,6 +14,7 @@ use App\Models\RecusiveChargingData;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Yajra\DataTables\DataTables;
+use App\Models\ConsentData;
 
 class SuperAdminReports extends Controller
 {
@@ -353,6 +354,53 @@ public function get_active_subscription_data(Request $request)
         }
 
     }
+
+
+    public function ConsentDataIndex()
+    {
+        $ConsentNumberDatacount = ConsentData::whereDate('created_at', Carbon::today())
+        ->count();
+        return view('superadmin.consentdata',compact('ConsentNumberDatacount'));
+    }
+
+    public function ConsentDataGet(Request $request)
+{
+    if ($request->ajax()) {
+        // Start building the query
+        $query = ConsentData::select('*');
+
+              // Apply date filters if provided
+              if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+                $dateRange = explode(' to ', $request->input('dateFilter'));
+                $startDate = $dateRange[0];
+                $endDate = $dateRange[1];
+                $query->whereDate('consent_data.created_at', '>=', $startDate)
+                ->whereDate('consent_data.created_at', '<=', $endDate);
+            }
+            if ($request->has('causesFilter') && $request->input('causesFilter') != '') {
+                $status = $request->input('causesFilter');
+                $query->where('consent_data.status', $status);
+            }
+
+        return Datatables::of($query)->addIndexColumn()
+        ->editColumn('created_at', function ($row) {
+            return Carbon::parse($row->created_at)->format('Y-m-d H:i:s');
+        })
+        ->addColumn('plan_name', function($data){
+            return $data->plan->plan_name;
+        })
+        ->addColumn('product_name', function($data){
+            return $data->product->product_name;
+        })
+        ->addColumn('company_name', function($data){
+            return $data->company->company_name;
+        })
+        ->rawColumns(['plan_name','product_name','company_name'])
+        ->make(true);
+
+    }
+}
+
 
 
 }

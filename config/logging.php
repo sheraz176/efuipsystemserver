@@ -219,6 +219,14 @@ return [
             'level' => 'info',
         ],
 
+        'consent_number_api' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/Api/consent_number_api.log'),
+            'level' => 'info',
+        ],
+
+
+
            // End Api Logs channels
 
     ],

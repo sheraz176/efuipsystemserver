@@ -20,7 +20,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/assets/img/favicon/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="{{ asset('/assets/img/favicon/favicon.ico')}}" />
 
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 
@@ -291,6 +291,14 @@
                       <div data-i18n="Basic">Recursive Charging Report</div>
                     </a>
                   </li>
+
+                  <li class="menu-item {{ Request::is('super-admin/datatable/ConsentData') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.ConsentData') }}" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Low Balance Number</div>
+                    </a>
+                  </li>
+
                 </ul>
               </li>
 
@@ -419,14 +427,18 @@
                   <div data-i18n="Basic">Information</div>
                 </a>
 
-                <ul class="menu-sub" style="display: {{ Request::is('super-admin/customer/information*') ? 'block' : 'none' }};">
+                <ul class="menu-sub" style="display: {{ Request::is('super-admin/customer/information*') ? 'block' : 'none' }} ;">
 
-                  <li class="menu-item {{ Request::is('super-admin/customer/information') ? 'active' : '' }}">
+                  <li class="menu-item {{ Request::is('super-admin/customer/information')  ? 'active' : '' }}">
                     <a href="{{ route('superadmin.customerinformation') }}" class="menu-link">
                       <i class="menu-icon tf-icons bx bx-collection"></i>
                       <div data-i18n="Basic">Customer Information</div>
                     </a>
                   </li>
+
+
+
+
 
                 </ul>
               </li>
