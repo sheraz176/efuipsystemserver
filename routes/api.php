@@ -16,6 +16,7 @@ use App\Http\Controllers\SuperAgentL\CustomApiController;
 use App\Http\Controllers\API\MarchantController;
 use App\Http\Controllers\API\USSDApiController;
 use App\Http\Controllers\API\USSDAPI23Controller;
+use App\Http\Controllers\API\GenericApiController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -199,6 +200,33 @@ Route::prefix('v23')->group(function () {
 });
 });
 //End routes related to 23 USSD API Realted to Mobile Api
+
+//Start routes related to Generic Api Controller API
+
+Route::post("v24/login",[GenericApiController::class,'login']);
+Route::group(['middleware' => 'auth:sanctum'], function(){
+Route::prefix('v24')->group(function () {
+    Route::prefix('GenericApi')->group(function () {
+
+        Route::post("generic/get/plan", [GenericApiController::class, 'getPlans'])
+            ->name('genericgetplan');
+        Route::post("generic/get/products", [GenericApiController::class, 'getProducts'])
+            ->name('genericgetproducts');
+        Route::post("generic/Subscription", [GenericApiController::class, 'jazz_app_subscription'])
+            ->name('genericSubscription');
+
+            Route::POST("generic/UnSubscription",[GenericApiController::class,'unsubscribePackage'])
+            ->name('generic/UnSubscription');
+        Route::post("check/active/plan", [GenericApiController::class, 'activesubscriptions'])
+            ->name('checkactiveplan');
+
+    });
+});
+});
+
+//End routes related to Generic Api Controller API
+
+
 
 
    // Status Update Auto Debit Button Super Agent L Pannel
