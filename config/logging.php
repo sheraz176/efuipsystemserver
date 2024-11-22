@@ -225,6 +225,12 @@ return [
             'level' => 'info',
         ],
 
+        'unsub_number_log' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/Api/unsub_number_log.log'),
+            'level' => 'info',
+        ],
+
 
 
            // End Api Logs channels

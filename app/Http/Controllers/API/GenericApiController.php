@@ -109,9 +109,9 @@ class GenericApiController extends Controller
         // Check for validation errors
         if ($validator->fails()) {
             return response()->json([
-                'statusCode' => 400,
+                'statusCode' => 4002 ,
                 'message' => 'Invalid mobile number. Please enter a valid number in the format 0300XXXXXXX.'
-            ], 400);
+            ], 400 );
         }
 
         // Define the target plan IDs to check
@@ -126,7 +126,7 @@ class GenericApiController extends Controller
         // Condition 1: All three plans are subscribed
         if ($subscriptionCount == 3) {
             return response()->json([
-                'statusCode' => '2001',
+                'statusCode' => '2002',
                 'message' => 'All Plans Subscribed',
             ]);
         }
@@ -167,14 +167,14 @@ class GenericApiController extends Controller
         if ($subscriptionCount == 2 && $availablePlans->isNotEmpty()) {
             // Two plans are subscribed, one is available
             return response()->json([
-                'statusCode' => '200',
+                'statusCode' => '3000',
                 'SubscribedPlans' => $subscribedPlans,
                 'AvailablePlans' => $availablePlans,
             ]);
         } else {
             // All plans are available
             return response()->json([
-                'statusCode' => '200',
+                'statusCode' => '3000',
                 'SubscribedPlans' => $subscribedPlans,
                 'AvailablePlans' => $availablePlans,
             ]);
@@ -186,9 +186,9 @@ class GenericApiController extends Controller
         return response()
             ->json([
                 'status' => 'success',
+                'statusCode' => '3000',
                 'data' => $activePlans,
-            ])
-            ->setStatusCode(200);
+            ]);
     }
     // End Plan
 
@@ -240,7 +240,7 @@ class GenericApiController extends Controller
         // Check for validation errors
         if ($validator->fails()) {
             return response()->json([
-                'statusCode' => 400,
+                'statusCode' => 4002,
                 'message' => 'Invalid Plan ID',
             ], 400);
         }
@@ -255,7 +255,7 @@ class GenericApiController extends Controller
         // Check if any products are available
         if ($products->isEmpty()) {
             return response()->json([
-                'statusCode' => 400,
+                'statusCode' => 3101,
                 'message' => 'No Products Available for the Specified Plan ID',
             ], 400);
         }
@@ -271,7 +271,7 @@ class GenericApiController extends Controller
         });
 
         return response()->json([
-            'statusCode' => 200,
+            'statusCode' => 3100,
             'products' => $transformedProducts
         ]);
     }
@@ -305,6 +305,7 @@ class GenericApiController extends Controller
 
         return response()->json([
             'status' => 'success',
+            'statusCode' => 3100,
             'data' => $filteredProducts,
         ], 200);
     }
@@ -389,13 +390,13 @@ class GenericApiController extends Controller
             ->first();
         // Check if product exists
         if (!$product) {
-            return response()->json(['statusCode' => 404, 'message' => 'Product not found'], 404);
+            return response()->json(['statusCode' => 3101, 'message' => 'Product not found'], 404);
         }
         $transaction_amount = ProductModel::where('fee', $transaction_amount)
             ->where('product_id', $product_id)
             ->first();
         if (!$transaction_amount) {
-            return response()->json(['statusCode' => 404, 'message' => 'Transaction Amount not Same Product Amount'], 404);
+            return response()->json(['statusCode' => 4001, 'message' => 'Transaction Amount not Same Product Amount'], 404);
         }
         $amount = $transaction_amount->fee;
         //return "getting response of product:".$product;
@@ -418,7 +419,7 @@ class GenericApiController extends Controller
 
             return response()->json([
                 'error' => false,
-                'messageCode' => 2001,
+                'statusCode' => 4000,
                 'message' => 'Already subscribed to the plan.',
                 'Policy Number' => $subscription['subscription_id'],
                 'planCode' => $product_code_01,
@@ -470,7 +471,7 @@ class GenericApiController extends Controller
             // Construct the response
             $response = [
                 'error' => "false",
-                'messageCode' => 2002,
+                'statusCode' => 2000,
                 'message' => 'Customer Subscribed Sucessfully',
                 'policy_subscription_id' => $subscription_data->subscription_id,
                 'Information' => [
@@ -485,7 +486,7 @@ class GenericApiController extends Controller
                     'ApiSource' => $subscription_data->api_source,
 
                 ],
-                'StatusCode' => 200
+                'statusCode' => 2000
             ];
 
             // Return the response
@@ -531,14 +532,14 @@ class GenericApiController extends Controller
 
         // Check if product exists
         if (!$product) {
-            return response()->json(['statusCode' => 404, 'message' => 'Product not found'], 404);
+            return response()->json(['statusCode' => 3101, 'message' => 'Product not found'], 404);
         }
 
         $transaction_amount = ProductModel::where('fee', $transaction_amount)
             ->where('product_id', $product_id)
             ->first();
         if (!$transaction_amount) {
-            return response()->json(['statusCode' => 404, 'message' => 'Transaction Amount not Same Product Amount'], 404);
+            return response()->json(['statusCode' => 4001, 'message' => 'Transaction Amount not Same Product Amount'], 404);
         }
         $amount = $transaction_amount->fee;
         //return "getting response of product:".$product;
@@ -561,7 +562,7 @@ class GenericApiController extends Controller
 
             return response()->json([
                 'error' => false,
-                'messageCode' => 2001,
+                'statusCode' => 4000,
                 'message' => 'Already subscribed to the plan.',
                 'Policy Number' => $subscription['subscription_id'],
                 'planCode' => $product_code_01,
@@ -622,7 +623,7 @@ class GenericApiController extends Controller
             // Construct the response
             $response = [
                 'error' => "false",
-                'messageCode' => 2002,
+                'statusCode' => 2000,
                 'message' => 'Customer Subscribed Sucessfully',
                 'policy_subscription_id' => $subscription_data->subscription_id,
                 'Information' => [
@@ -638,7 +639,7 @@ class GenericApiController extends Controller
                     'MerchantMsisdn' => $marchant_msisdn,
 
                 ],
-                'StatusCode' => 200
+                'statusCode' => 2000
             ];
 
             // Return the response
@@ -669,7 +670,7 @@ class GenericApiController extends Controller
 
         // Check for validation errors
         if ($validator->fails()) {
-            return response()->json(['error' => "true", 'messageCode' => 400, 'message' => $validator->errors()], 400);
+            return response()->json(['error' => "true", 'statusCode' => 400, 'message' => $validator->errors()], 400);
         }
 
         $subscriber_cnic = $request->input("subscriber_cnic");
@@ -689,14 +690,14 @@ class GenericApiController extends Controller
 
         // Check if product exists
         if (!$product) {
-            return response()->json(['error' => "true", 'messageCode' => 404, 'message' => 'Product not found'], 404);
+            return response()->json(['error' => "true", 'statusCode' => 3101, 'message' => 'Product not found'], 404);
         }
 
         $transaction_amount = ProductModel::where('fee', $transaction_amount)
             ->where('product_id', $product_id)
             ->first();
         if (!$transaction_amount) {
-            return response()->json(['error' => "true", 'messageCode' => 404, 'message' => 'Transaction Amount not Same Product Amount'], 404);
+            return response()->json(['error' => "true", 'statusCode' => 4001, 'message' => 'Transaction Amount not Same Product Amount'], 404);
         }
         $amount = $transaction_amount->fee;
         //return "getting response of product:".$product;
@@ -719,7 +720,7 @@ class GenericApiController extends Controller
 
             return response()->json([
                 'error' => false,
-                'messageCode' => 2001,
+                'statusCode' => 4000,
                 'message' => 'Already subscribed to the plan.',
                 'Policy Number' => $subscription['subscription_id'],
                 'planCode' => $product_code_01,
@@ -771,7 +772,7 @@ class GenericApiController extends Controller
             // Construct the response
             $response = [
                 'error' => "false",
-                'messageCode' => 2002,
+                'statusCode' => 2000,
                 'message' => 'Customer Subscribed Sucessfully',
                 'policy_subscription_id' => $subscription_data->subscription_id,
                 'Information' => [
@@ -799,7 +800,7 @@ class GenericApiController extends Controller
                     'Sales_agent' => $subscription_data->sales_agent,
                     'id' => $subscription_data->subscription_id
                 ],
-                'Status Code' => 200
+                'statusCode' => 2000
             ];
 
             // Return the response
@@ -876,14 +877,14 @@ class GenericApiController extends Controller
         // If no active subscriptions are found, return a message
         if ($subscriptions->isEmpty()) {
             return response()->json([
-                'statusCode' => 404,
+                'statusCode' => 4004,
                 'message' => 'No active subscriptions found for this subscriber.',
             ], 404);
         }
         // Step 3: If active subscriptions are found, return them to the user
         if (!$request->has('subscription_id')) {
             return response()->json([
-                'statusCode' => 200,
+                'statusCode' => 4000,
                 'message' => 'Active subscriptions found.',
                 'subscriptions' => $subscriptions->map(function ($subscription) {
                     return [
@@ -900,7 +901,7 @@ class GenericApiController extends Controller
 
         if (!$subscription) {
             return response()->json([
-                'statusCode' => 404,
+                'statusCode' => 4004,
                 'message' => 'Subscription with the given ID not found in active subscriptions.',
             ], 404);
         }
@@ -916,7 +917,7 @@ class GenericApiController extends Controller
             $subscription->update(['policy_status' => 0]);
 
             return response()->json([
-                'status_code' => 200,
+                'statusCode' => 2001,
                 'refund' => 'false',
                 'medium' => 'USSD',
                 'message' => 'Package unsubscribed successfully. You are not eligible for a refund.',
@@ -945,14 +946,14 @@ class GenericApiController extends Controller
         // If no active subscriptions are found, return a message
         if ($subscriptions->isEmpty()) {
             return response()->json([
-                'statusCode' => 404,
+                'statusCode' => 4004,
                 'message' => 'No active subscriptions found for this subscriber.',
             ], 404);
         }
         // Step 3: If active subscriptions are found, return them to the user
         if (!$request->has('subscription_id')) {
             return response()->json([
-                'statusCode' => 200,
+                'statusCode' => 4000,
                 'message' => 'Active subscriptions found.',
                 'subscriptions' => $subscriptions->map(function ($subscription) {
                     return [
@@ -969,7 +970,7 @@ class GenericApiController extends Controller
 
         if (!$subscription) {
             return response()->json([
-                'statusCode' => 404,
+                'statusCode' => 4004,
                 'message' => 'Subscription with the given ID not found in active subscriptions.',
             ], 404);
         }
@@ -985,7 +986,7 @@ class GenericApiController extends Controller
             $subscription->update(['policy_status' => 0]);
 
             return response()->json([
-                'status_code' => 200,
+                'statusCode' => 2001,
                 'refund' => 'false',
                 'medium' => 'Marchant USSD',
                 'message' => 'Package unsubscribed successfully. You are not eligible for a refund.',
@@ -1014,14 +1015,14 @@ class GenericApiController extends Controller
         // If no active subscriptions are found, return a message
         if ($subscriptions->isEmpty()) {
             return response()->json([
-                'statusCode' => 404,
+                'statusCode' => 4004,
                 'message' => 'No active subscriptions found for this subscriber.',
             ], 404);
         }
         // Step 3: If active subscriptions are found, return them to the user
         if (!$request->has('subscription_id')) {
             return response()->json([
-                'statusCode' => 200,
+                'statusCode' => 4000,
                 'message' => 'Active subscriptions found.',
                 'subscriptions' => $subscriptions->map(function ($subscription) {
                     return [
@@ -1038,7 +1039,7 @@ class GenericApiController extends Controller
 
         if (!$subscription) {
             return response()->json([
-                'statusCode' => 404,
+                'statusCode' => 4004,
                 'message' => 'Subscription with the given ID not found in active subscriptions.',
             ], 404);
         }
@@ -1054,7 +1055,7 @@ class GenericApiController extends Controller
             $subscription->update(['policy_status' => 0]);
 
             return response()->json([
-                'status_code' => 200,
+                'statusCode' => 2001,
                 'refund' => 'false',
                 'medium' => 'Jazz Application',
                 'message' => 'Package unsubscribed successfully. You are not eligible for a refund.',
@@ -1134,6 +1135,7 @@ class GenericApiController extends Controller
             return response()->json([
                 'error' => false,
                 'is_policy_data' => 'true',
+                'statusCode' => 4000,
                 'message' => 'Active Policies',
                 'Active Subscriptions' => [
                     [
@@ -1171,6 +1173,7 @@ class GenericApiController extends Controller
             return response()->json([
                 'error' => true,
                 'is_policy_data' => 'false',
+                'statusCode' => 4004,
                 'message' => 'Customer Didnt Subscribed to any Policy',
                 'Active Subscriptions' => []
             ]);
