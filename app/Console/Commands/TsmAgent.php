@@ -43,22 +43,19 @@ class TsmAgent extends Command
     public function handle()
 {
     $agentsData = [
-        ['Talal', 'Qureshi', 'Talal.Qureshi.tsm', 'Talal#Qureshi#tsm#2024', 'HD1025'],
-        ['Fazeej', 'Haider', 'Fazeej.Haider.tsm', 'Fazeej#Haider#tsm#2024', 'HD1026'],
-        ['Muhammad', 'Safeer', 'Muhammad.Safeer.tsm', 'Muhammad#Safeer#tsm#2024', 'HD1027'],
-        ['Muhammad', 'Ashaj', 'Muhammad.Ashaj.tsm', 'Muhammad#Ashaj#tsm#2024', 'HD1028'],
-        ['Muhammad', 'Usman', 'Muhammad.Usman.tsm', 'Muhammad#Usman#tsm#2024', 'HD1029'],
-        ['Abdul', 'Ahad', 'Abdul.Ahad.tsm', 'Abdul#Ahad#tsm#2024', 'HD1030'],
-        ['Abdullah', 'Amin', 'Abdullah.Amin.tsm', 'Abdullah#Amin#tsm#2024', 'HD1031'],
-        ['Zeeshan', 'Nawaz', 'Zeeshan.Nawaz.tsm', 'Zeeshan#Nawaz#tsm#2024', 'HD1032'],
-        ['Alisha', 'Mehmood', 'Alisha.Mehmood.tsm', 'Alisha#Mehmood#tsm#2024', 'HD1033'],
-        ['Fiza', 'Nazar', 'Fiza.Nazar.tsm', 'Fiza#Nazar#tsm#2024', 'HD1034'],
-        ['Eisha', 'Iftikhar', 'Eisha.Iftikhar.tsm', 'Eisha#Iftikhar#tsm#2024', 'HD1035'],
-        ['Maria', 'Aslam', 'Maria.Aslam.tsm', 'Maria#Aslam#tsm#2024', 'HD1036'],
-        ['Rimsha', 'Zafar', 'Rimsha.Zafar.tsm', 'Rimsha#Zafar#tsm#2024', 'HD1037'],
-        ['Fiza', 'Ali', 'Fiza.Ali.tsm', 'Fiza#Ali#tsm#2024', 'HD1038'],
-        ['Ayat', 'Nadeem', 'Ayat.Nadeem.tsm', 'Ayat#Nadeem#tsm#2024', 'HD1039'],
+        ['Nosheen', 'Arzoo', 'Nosheen.Arzoo.tsm', 'Nosheen#Arzoo#tsm#2024', 'HD1141'],
+        ['Hera', 'Shafaqat', 'Hera.Shafaqat.tsm', 'Hera#Shafaqat#tsm#2024', 'HD1142'],
+        ['Abdullah', 'Arshad', 'Abdullah.Arshad.tsm', 'Abdullah#Arshad#tsm#2024', 'HD1143'],
+        ['Tahir', 'Naeem', 'Tahir.Naeem.tsm', 'Tahir#Naeem#tsm#2024', 'HD1144'],
+        ['Fatima', 'Aslam', 'Fatima.Aslam.tsm', 'Fatima#Aslam#tsm#2024', 'HD1145'],
+        ['Zeenat', 'Eman', 'Zeenat.Eman.tsm', 'Zeenat#Eman#tsm#2024', 'HD1146'],
+        ['Shiza', 'Dildar', 'Shiza.Dildar.tsm', 'Shiza#Dildar#tsm#2024', 'HD1147'],
+        ['Neha', 'Aslam', 'Neha.Aslam.tsm', 'Neha#Aslam#tsm#2024', 'HD1148'],
+        ['Zahra', 'Aftab', 'Zahra.Aftab.tsm', 'Zahra#Aftab#tsm#2024', 'HD1149'],
+        ['Wajiha', 'Ali', 'Wajiha.Ali.tsm', 'Wajiha#Ali#tsm#2024', 'HD1150'],
+        ['Maliha', 'Khan', 'Maliha.Khan.tsm', 'Maliha#Khan#tsm#2024', 'HD1151'],
     ];
+
 
     foreach ($agentsData as $data) {
         $request = [

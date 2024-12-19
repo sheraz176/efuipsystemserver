@@ -40,33 +40,21 @@ class downloadagent extends Command
 {
 
     $agentsData = [
-
-        ['Muneeb', 'Mubashir', 'Muneeb.Mubashir.sybrid', 'Muneeb#Mubashir#sybrid#2024', 'muneebfarooqui31@gmail.com'],
-        ['M Kamil', 'Ali', 'Kamil.Ali.sybrid', 'Kamil#Ali#sybrid#2024', 'hassankhan502133@gmail.com'],
-        ['Imtiaz', 'Ahmad', 'Imtiaz.Ahmad.sybrid', 'Imtiaz#Ahmad#sybrid#2024', 'wafaimtiaz00@gmail.com'],
-        ['Anwar', 'Saeed', 'Anwar.Saeed.sybrid', 'Anwar#Saeed#sybrid#2024', 'anwar0099saeed@gmail.com'],
-        ['Shan e', 'Hassan', 'ShaneHassan.sybrid', 'ShaneHassan#sybrid#2024', 'shanehassan50@gmail.com'],
-        ['Sardar Ali', 'Hassan', 'SardarAliHassan.sybrid', 'SardarAliHassan#sybrid#2024', 'sardaralihassanzahid01@gmail.com'],
-        ['Sardar Muhammad', 'Hassan', 'SardarMHassan.sybrid', 'SardarMHassan#sybrid#2024', 'sardarmhassan2002@gmail.com'],
-        ['Abdul', 'Baseer', 'AbdulBaseer.sybrid', 'AbdulBaseer#sybrid#2024', 'abdulbaseer8881@gmail.com'],
-        ['Muhammad', 'Usman', 'MuhammadUsman.sybrid', 'MuhammadUsman#sybrid#2024', 'ukdesigner007@gmail.com'],
-        ['Hafsa', 'Anwar', 'Hafsa.Anwar.sybrid', 'Hafsa#Anwar#sybrid#2024', 'sybfly5@gmail.com'],
-        ['Muhammad Sikandar', 'Abbasi', 'SikandarAbbasi.sybrid', 'SikandarAbbasi#sybrid#2024', 'sikandarabbasi112233@gmail.com'],
-        ['Sadaf', 'Mushtaq', 'SadafMushtaq.sybrid', 'SadafMushtaq#sybrid#2024', 'itxsadafrj9@gmail.com'],
-        ['Esha Bashir', 'Abbasi', 'EshaBashirAbbasi.sybrid', 'EshaBashirAbbasi#sybrid#2024', 'eshaabbasi66@gmail.com'],
-        ['Anam', 'Mustafa', 'AnamMustafa.sybrid', 'AnamMustafa#sybrid#2024', 'mustafaanum88@gmail.com'],
-        ['Faizan', 'Khurshid', 'FaizanKhurshid.sybrid', 'FaizanKhurshid#sybrid#2024', 'meerfaizankhursheed@gmail.com'],
-        ['Malaika', 'Arif', 'MalaikaArif.sybrid', 'MalaikaArif#sybrid#2024', 'malaikaarif33333@gmail.com'],
-        ['Mohsin', 'Naseer', 'MohsinNaseer.sybrid', 'MohsinNaseer#sybrid#2024', 'mohsinnaseer63@gmail.com'],
-        ['Abu', 'Huraira', 'AbuHuraira.sybrid', 'AbuHuraira#sybrid#2024', 'ahahxd8932@gmail.com'],
-        ['Hafiz Muhammad', 'Hashir Kiani', 'HashirKiani.sybrid', 'HashirKiani#sybrid#2024', 'hashirkiani15000@gmail.com'],
-        ['Umer', 'Nasir', 'UmerNasir.sybrid', 'UmerNasir#sybrid#2024', 'umernasir008@gmail.com'],
-        ['Shahzad', 'Ahmed', 'ShahzadAhmed.sybrid', 'ShahzadAhmed#sybrid#2024', 'shahzadinfo1436@gmail.com'],
+        ['Nosheen', 'Arzoo', 'Nosheen.Arzoo.tsm', 'Nosheen#Arzoo#tsm#2024', 'HD1141'],
+        ['Hera', 'Shafaqat', 'Hera.Shafaqat.tsm', 'Hera#Shafaqat#tsm#2024', 'HD1142'],
+        ['Abdullah', 'Arshad', 'Abdullah.Arshad.tsm', 'Abdullah#Arshad#tsm#2024', 'HD1143'],
+        ['Tahir', 'Naeem', 'Tahir.Naeem.tsm', 'Tahir#Naeem#tsm#2024', 'HD1144'],
+        ['Fatima', 'Aslam', 'Fatima.Aslam.tsm', 'Fatima#Aslam#tsm#2024', 'HD1145'],
+        ['Zeenat', 'Eman', 'Zeenat.Eman.tsm', 'Zeenat#Eman#tsm#2024', 'HD1146'],
+        ['Shiza', 'Dildar', 'Shiza.Dildar.tsm', 'Shiza#Dildar#tsm#2024', 'HD1147'],
+        ['Neha', 'Aslam', 'Neha.Aslam.tsm', 'Neha#Aslam#tsm#2024', 'HD1148'],
+        ['Zahra', 'Aftab', 'Zahra.Aftab.tsm', 'Zahra#Aftab#tsm#2024', 'HD1149'],
+        ['Wajiha', 'Ali', 'Wajiha.Ali.tsm', 'Wajiha#Ali#tsm#2024', 'HD1150'],
+        ['Maliha', 'Khan', 'Maliha.Khan.tsm', 'Maliha#Khan#tsm#2024', 'HD1151'],
     ];
 
 
-
-    $headers = ['First Name', 'Last Name', 'Username', 'Password','email'];
+    $headers = ['First Name', 'Last Name', 'Username', 'Password','id'];
 
     // CSV File Generation
     $filePath = storage_path('app/agents.csv');

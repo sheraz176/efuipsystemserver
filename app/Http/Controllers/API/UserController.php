@@ -43,40 +43,40 @@ class Usercontroller extends Controller
     }
 
     public function getProducts(Request $request)
-    {
+{
+    $planId = $request->input('plan_id');
 
-        $planId = $request->input('plan_id');
+    // Retrieve active products associated with the specified plan ID
+    $products = ProductModel::where('plan_id', $planId)
+        ->where('status', 1)
+        ->get();
 
-        // Retrieve active products associated with the specified plan ID
-        $products = ProductModel::where('plan_id', 1)
-            ->where('status', 1)
-            ->get();
-
-        $transformedProducts = [];
-        foreach ($products as $product) {
-            $transformedProducts[] = [
-                'id' => $product->product_id,
-                'plan_name' => $product->product_name,
-                'natural_death_benefit' => $product->natural_death_benefit,
-                'accidental_death_benefit' => $product->accidental_death_benefit,
-                'accidental_medicial_reimbursement' => $product->accidental_medicial_reimbursement,
-                'annual_contribution' => $product->contribution,
-                'plan_code' => $product->product_code,
-                'fee' => $product->fee,
-                'autoRenewal' => $product->autoRenewal,
-                'duration' => $product->duration,
-                'status' => $product->status,
-                'scope_of_cover' => $product->scope_of_cover,
-                'eligibility' => $product->eligibility,
-                'other_key_details' => $product->other_key_details,
-                'exclusions' => $product->exclusions,
-                'created_at' => $product->created_at,
-                'updated_at' => $product->updated_at,
-            ];
-        }
-
-        return response()->json($transformedProducts);
+    $transformedProducts = [];
+    foreach ($products as $product) {
+        $transformedProducts[] = [
+            'id' => $product->product_id,
+            'plan_name' => $product->product_name,
+            'natural_death_benefit' => (int)$product->natural_death_benefit,
+            'accidental_death_benefit' => (int)$product->accidental_death_benefit,
+            'accidental_medicial_reimbursement' => (int)$product->accidental_medicial_reimbursement,
+            'annual_contribution' => $product->contribution,
+            'plan_code' => $product->product_code,
+            'fee' => $product->fee,
+            'autoRenewal' => $product->autoRenewal,
+            'duration' => $product->duration,
+            'status' => $product->status,
+            'scope_of_cover' => $product->scope_of_cover,
+            'eligibility' => $product->eligibility,
+            'other_key_details' => $product->other_key_details,
+            'exclusions' => $product->exclusions,
+            'created_at' => $product->created_at,
+            'updated_at' => $product->updated_at,
+        ];
     }
+
+    return response()->json($transformedProducts);
+}
+
 
     public function Subscription(Request $request)
     {

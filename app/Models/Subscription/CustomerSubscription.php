@@ -40,7 +40,8 @@ class CustomerSubscription extends Model
                             'sales_agent',
                             'company_id',
                             'consent',
-                            'marchant_id'
+                            'marchant_id',
+                            'Imei_number'
                         ];
 
 

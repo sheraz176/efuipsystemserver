@@ -16,6 +16,7 @@ use App\Models\logs;
 use Carbon\Carbon;
 use App\Models\CheckingRequest;
 use App\Models\ConsentNumber;
+use Illuminate\Support\Facades\Http;
 
 class AutoDebitSubscriptionController extends Controller
 {
@@ -132,8 +133,15 @@ class AutoDebitSubscriptionController extends Controller
                     ]);
                 }
 
+
+
                 $fee = $products->fee;
                 $duration = $products->duration;
+
+                 $plan = PlanModel::where('plan_id', $planId)
+                ->where('status', 1)
+                ->first();
+                $plantext = $plan->plan_name;
 
 
                 //Generate a 32-digit unique referenceId
@@ -357,6 +365,43 @@ class AutoDebitSubscriptionController extends Controller
                         $checking_request_number->is_processing = false; // Reset processing flag
                         $checking_request_number->update();
 
+                       // SMS Code
+                           $url = 'https://api.efulife.com/itssr/its_sendsms';
+
+                           if ($plantext == 'EFU Term Takaful Plus Plan') {
+                              $link = "https://bit.ly/439oH0L";
+                           } else {
+                              $link = "https://bit.ly/3KagW3u";
+                             }
+
+                           $payload = [
+                             'MobileNo' => $subscriber_msisdn,
+                             'sender' => 'EFU-LIFE',
+                             'SMS' => "Dear Customer, You have successfully subscribed {$plantext}. for Rs {$fee}/-.T&Cs:{$link} ",
+                              ];
+
+                      $headers = [
+                           'Channelcode' => 'ITS',
+                            'Authorization' => 'Bearer XXXXAAA489SMSTOKEFU',
+                           'Content-Type' => 'application/json',
+                           ];
+
+                    try {
+                       // Set timeout for the request (e.g., 5 seconds)
+                       $response = Http::withHeaders($headers)->timeout(5)->post($url, $payload);
+
+                      // Optional: Log the response or check for successful response
+                      if ($response->successful()) {
+                      Log::info('SMS sent successfully', ['response' => $response->body()]);
+                    } else {
+                      Log::warning('SMS API response not successful', ['response' => $response->body()]);
+                       }
+                } catch (\Exception $e) {
+                   // Log the exception for debugging
+                         Log::error('SMS API call failed', ['error' => $e->getMessage()]);
+                           }
+
+             // End SMS Code
 
                             return response()->json([
                             'status' => 'success',
@@ -367,6 +412,8 @@ class AutoDebitSubscriptionController extends Controller
                                 ],
                             ], 200);
 
+
+
                     }
 
 
@@ -375,7 +422,7 @@ class AutoDebitSubscriptionController extends Controller
                     {
                          FailedSubscriptionsController::saveFailedTransactionDataautoDebit($transactionId,$resultCode,$resultDesc,$failedReason,$amount,$referenceId,$accountNumber,$planId,$productId,$agent_id,$company_id);
 
-                            // Create a new ConsentNumber instance
+                                 // Create a new ConsentNumber instance
                                 $ConsentNumber = new ConsentNumber();
                                 $ConsentNumber->msisdn = $accountNumber;
                                 $ConsentNumber->amount = $amount;

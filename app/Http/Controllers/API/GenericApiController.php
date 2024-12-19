@@ -88,7 +88,14 @@ class GenericApiController extends Controller
             return $this->customerUSSDPlan($request);
         } elseif ($userType === 'Mobile' && $userRole === 'Customer' && $appPlatform === 'CustomerMobileApp') {
             return $this->customerMobileAppPlan($request);
-        } else {
+        }
+        elseif ($userType === 'USSD' && $userRole === 'Health' && $appPlatform === 'HealthInsurance') {
+            return $this->HealthInsurancePlan($request);
+        }
+        elseif ($userType === 'USSD' && $userRole === 'Mobile' && $appPlatform === 'MobileInsurance') {
+            return $this->MobileInsurancePlan($request);
+        }
+         else {
             return response()->json([
                 'error' => true,
                 'message' => 'Invalid header values',
@@ -115,7 +122,7 @@ class GenericApiController extends Controller
         }
 
         // Define the target plan IDs to check
-        $targetPlanIds = [1, 4, 5];
+        $targetPlanIds = [1, 4,5,6,7];
 
         // Retrieve the number of active subscriptions for the specified plans
         $subscriptionCount = CustomerSubscription::where('subscriber_msisdn', $request->msisdn)
@@ -190,6 +197,174 @@ class GenericApiController extends Controller
                 'data' => $activePlans,
             ]);
     }
+
+    private function HealthInsurancePlan(Request $request){
+        $validator = Validator::make($request->all(), [
+            'msisdn' => [
+                'required',
+                'regex:/^03\d{9}$/', // Only accept numbers starting with 0300 and followed by 7 digits
+            ],
+        ]);
+
+        // Check for validation errors
+        if ($validator->fails()) {
+            return response()->json([
+                'statusCode' => 4002 ,
+                'message' => 'Invalid mobile number. Please enter a valid number in the format 0300XXXXXXX.'
+            ], 400 );
+        }
+
+        // Define the target plan IDs to check
+        $targetPlanIds = [6];
+
+        // Retrieve the number of active subscriptions for the specified plans
+        $subscriptionCount = CustomerSubscription::where('subscriber_msisdn', $request->msisdn)
+            ->whereIn('plan_id', $targetPlanIds)
+            ->where('policy_status', 1)
+            ->count();
+
+        // Condition 1: All three plans are subscribed
+        if ($subscriptionCount == 3) {
+            return response()->json([
+                'statusCode' => '2002',
+                'message' => 'All Plans Subscribed',
+            ]);
+        }
+
+        // Condition 2: Retrieve the user's subscribed plans
+        $subscriptions = CustomerSubscription::where('subscriber_msisdn', $request->msisdn)
+            ->where('policy_status', 1)
+            ->whereIn('plan_id', $targetPlanIds)
+            ->get();
+
+        $subscribedPlans = [];
+        $subscribedPlanIds = []; // To track subscribed plan IDs
+
+        foreach ($subscriptions as $subscription) {
+            $product_id = $subscription->productId;
+            $plan_id = $subscription->plan_id;
+            $product = ProductModel::where('product_id', $product_id)->first();
+            $planCode = $product->product_code;
+
+            // Add subscribed plan details to the array
+            $subscribedPlans[] = [
+                'planId' => $plan_id,
+                'planName' => $planCode,
+            ];
+
+            // Store subscribed plan IDs to exclude them from available plans
+            $subscribedPlanIds[] = $plan_id;
+        }
+
+        // Condition 3: Get available plans that are not in the subscribed list and have status = 1
+        $availablePlans = PlanModel::select('plan_id', 'plan_name')
+            ->whereIn('plan_id', $targetPlanIds)
+            ->whereNotIn('plan_id', $subscribedPlanIds)
+            ->where('status', 1)
+            ->get();
+
+        // Determine the response based on the number of subscriptions
+        if ($subscriptionCount == 2 && $availablePlans->isNotEmpty()) {
+            // Two plans are subscribed, one is available
+            return response()->json([
+                'statusCode' => '3000',
+                'SubscribedPlans' => $subscribedPlans,
+                'AvailablePlans' => $availablePlans,
+            ]);
+        } else {
+            // All plans are available
+            return response()->json([
+                'statusCode' => '3000',
+                'SubscribedPlans' => $subscribedPlans,
+                'AvailablePlans' => $availablePlans,
+            ]);
+        }
+    }
+
+    private function MobileInsurancePlan(Request $request){
+        $validator = Validator::make($request->all(), [
+            'msisdn' => [
+                'required',
+                'regex:/^03\d{9}$/', // Only accept numbers starting with 0300 and followed by 7 digits
+            ],
+        ]);
+
+        // Check for validation errors
+        if ($validator->fails()) {
+            return response()->json([
+                'statusCode' => 4002 ,
+                'message' => 'Invalid mobile number. Please enter a valid number in the format 0300XXXXXXX.'
+            ], 400 );
+        }
+
+        // Define the target plan IDs to check
+        $targetPlanIds = [7];
+
+        // Retrieve the number of active subscriptions for the specified plans
+        $subscriptionCount = CustomerSubscription::where('subscriber_msisdn', $request->msisdn)
+            ->whereIn('plan_id', $targetPlanIds)
+            ->where('policy_status', 1)
+            ->count();
+
+        // Condition 1: All three plans are subscribed
+        if ($subscriptionCount == 3) {
+            return response()->json([
+                'statusCode' => '2002',
+                'message' => 'All Plans Subscribed',
+            ]);
+        }
+
+        // Condition 2: Retrieve the user's subscribed plans
+        $subscriptions = CustomerSubscription::where('subscriber_msisdn', $request->msisdn)
+            ->where('policy_status', 1)
+            ->whereIn('plan_id', $targetPlanIds)
+            ->get();
+
+        $subscribedPlans = [];
+        $subscribedPlanIds = []; // To track subscribed plan IDs
+
+        foreach ($subscriptions as $subscription) {
+            $product_id = $subscription->productId;
+            $plan_id = $subscription->plan_id;
+            $product = ProductModel::where('product_id', $product_id)->first();
+            $planCode = $product->product_code;
+
+            // Add subscribed plan details to the array
+            $subscribedPlans[] = [
+                'planId' => $plan_id,
+                'planName' => $planCode,
+            ];
+
+            // Store subscribed plan IDs to exclude them from available plans
+            $subscribedPlanIds[] = $plan_id;
+        }
+
+        // Condition 3: Get available plans that are not in the subscribed list and have status = 1
+        $availablePlans = PlanModel::select('plan_id', 'plan_name')
+            ->whereIn('plan_id', $targetPlanIds)
+            ->whereNotIn('plan_id', $subscribedPlanIds)
+            ->where('status', 1)
+            ->get();
+
+        // Determine the response based on the number of subscriptions
+        if ($subscriptionCount == 2 && $availablePlans->isNotEmpty()) {
+            // Two plans are subscribed, one is available
+            return response()->json([
+                'statusCode' => '3000',
+                'SubscribedPlans' => $subscribedPlans,
+                'AvailablePlans' => $availablePlans,
+            ]);
+        } else {
+            // All plans are available
+            return response()->json([
+                'statusCode' => '3000',
+                'SubscribedPlans' => $subscribedPlans,
+                'AvailablePlans' => $availablePlans,
+            ]);
+        }
+    }
+
+
     // End Plan
 
     // Start Products
@@ -221,7 +396,14 @@ class GenericApiController extends Controller
             return $this->customerUSSDProduct($request);
         } elseif ($userType === 'Mobile' && $userRole === 'Customer' && $appPlatform === 'CustomerMobileApp') {
             return $this->customerMobileAppProduct($request);
-        } else {
+        }
+        elseif ($userType === 'USSD' && $userRole === 'Health' && $appPlatform === 'HealthInsurance') {
+            return $this->HealthInsuranceProduct($request);
+        }
+        elseif ($userType === 'USSD' && $userRole === 'Mobile' && $appPlatform === 'MobileInsurance') {
+            return $this->MobileInsuranceProduct($request);
+        }
+         else {
             return response()->json([
                 'error' => true,
                 'message' => 'Invalid header values',
@@ -309,6 +491,46 @@ class GenericApiController extends Controller
             'data' => $filteredProducts,
         ], 200);
     }
+
+    private function HealthInsuranceProduct(Request $request)
+    {
+        // Retrieve active products associated with the specified plan ID
+        $products = ProductModel::where('plan_id', '6')
+            ->where('status', 1)
+            ->get();
+        // Filter out null, zero, and empty string values
+        $filteredProducts = $products->map(function ($product) {
+            return collect($product)->filter(function ($value) {
+                return !is_null($value) && $value !== 0 && $value !== '';
+            });
+        });
+        return response()->json([
+            'status' => 'success',
+            'statusCode' => 3100,
+            'data' => $filteredProducts,
+        ], 200);
+    }
+
+    private function MobileInsuranceProduct(Request $request)
+    {
+        // Retrieve active products associated with the specified plan ID
+        $products = ProductModel::where('plan_id', '7')
+            ->where('status', 1)
+            ->get();
+        // Filter out null, zero, and empty string values
+        $filteredProducts = $products->map(function ($product) {
+            return collect($product)->filter(function ($value) {
+                return !is_null($value) && $value !== 0 && $value !== '';
+            });
+        });
+        return response()->json([
+            'status' => 'success',
+            'statusCode' => 3100,
+            'data' => $filteredProducts,
+        ], 200);
+    }
+
+
     // End Products
 
     // Start Subscription
@@ -342,7 +564,14 @@ class GenericApiController extends Controller
             return $this->customerMobileAppSubscription($request);
         } elseif ($userType === 'Mobile' && $userRole === 'Merchant' && $appPlatform === 'MerchantMobileApp') {
             return $this->merchantMobileAppSubscription($request);
-        } else {
+        }
+        elseif ($userType === 'USSD' && $userRole === 'Health' && $appPlatform === 'HealthInsurance') {
+            return $this->HealthInsuranceSubscribtion($request);
+        }
+        elseif ($userType === 'USSD' && $userRole === 'Mobile' && $appPlatform === 'MobileInsurance') {
+            return $this->MobileInsuranceSubscribtion($request);
+        }
+         else {
             return response()->json([
                 'error' => true,
                 'message' => 'Invalid header values',
@@ -470,7 +699,7 @@ class GenericApiController extends Controller
 
             // Construct the response
             $response = [
-                'error' => "false",
+                'error' => false,
                 'statusCode' => 2000,
                 'message' => 'Customer Subscribed Sucessfully',
                 'policy_subscription_id' => $subscription_data->subscription_id,
@@ -622,7 +851,7 @@ class GenericApiController extends Controller
 
             // Construct the response
             $response = [
-                'error' => "false",
+                'error' => false,
                 'statusCode' => 2000,
                 'message' => 'Customer Subscribed Sucessfully',
                 'policy_subscription_id' => $subscription_data->subscription_id,
@@ -661,7 +890,7 @@ class GenericApiController extends Controller
             'cpsOriginatorConversationId' => 'required|string',
             'cpsTransactionId' => 'required|string',
             'cpsResponse' => 'required|string',
-            'transactionStatus' => 'required|string',
+            'transactionStatus' => 'required',
             'subscriber_cnic' => 'required|numeric',
 
 
@@ -771,7 +1000,7 @@ class GenericApiController extends Controller
 
             // Construct the response
             $response = [
-                'error' => "false",
+                'error' => false,
                 'statusCode' => 2000,
                 'message' => 'Customer Subscribed Sucessfully',
                 'policy_subscription_id' => $subscription_data->subscription_id,
@@ -814,6 +1043,250 @@ class GenericApiController extends Controller
             'message' => 'Merchant Mobile App Subscription processed Panding',
         ]);
     }
+
+    private function HealthInsuranceSubscribtion(Request $request){
+
+        // Perform validation
+        $validator = Validator::make($request->all(), [
+            'plan_id' => 'required|integer',
+            'product_id' => 'required|integer',
+            'customer_msisdn' => 'required|string',
+            'transaction_amount' => 'required|numeric',
+            'cpsOriginatorConversationId' => 'required|string',
+            'cpsTransactionId' => 'required|string',
+            'cpsResponse' => 'required|string',
+
+        ]);
+        // Check for validation errors
+        if ($validator->fails()) {
+            return response()->json(['statusCode' => 400, 'message' => $validator->errors()], 400);
+        }
+        $subscriber_msisdn = $request->input("customer_msisdn");
+        $transaction_amount = $request->input("transaction_amount");
+        $cpsOriginatorConversationId = $request->input("cpsOriginatorConversationId");
+        $cpsTransactionId = $request->input("cpsTransactionId");
+        $planId = $request->input("plan_id");
+        $product_id = $request->input("product_id");
+        $cpsResponse = $request->input("cpsResponse");
+        $subscriber_cnic = "000000000000";
+        $transactionStatus = "1";
+        $product = ProductModel::where('plan_id', $planId)
+            ->where('product_id', $product_id)
+            ->first();
+        // Check if product exists
+        if (!$product) {
+            return response()->json(['statusCode' => 3101, 'message' => 'Product not found'], 404);
+        }
+        $transaction_amount = ProductModel::where('fee', $transaction_amount)
+            ->where('product_id', $product_id)
+            ->first();
+        if (!$transaction_amount) {
+            return response()->json(['statusCode' => 4001, 'message' => 'Transaction Amount not Same Product Amount'], 404);
+        }
+        $amount = $transaction_amount->fee;
+        //return "getting response of product:".$product;
+        $grace_period = 14;
+        $grace_period_time = date('Y-m-d H:i:s', strtotime("+$grace_period days"));
+        $recursive_charging_date = date('Y-m-d H:i:s', strtotime("+" . $product->duration . " days"));
+
+        $subscription = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
+            ->where('plan_id', $planId)
+            ->where('policy_status', 1)
+            ->first();
+
+        if ($subscription) {
+            $product_id = $subscription->productId;
+            $product = ProductModel::where('product_id', $product_id)->first();
+            $product_code_01 = $product->product_code;
+
+            return response()->json([
+                'error' => false,
+                'statusCode' => 4000,
+                'message' => 'Already subscribed to the plan.',
+                'Policy Number' => $subscription['subscription_id'],
+                'planCode' => $product_code_01,
+                'transactionAmount' => $subscription['transaction_amount'],
+                'Subscriber Number' =>  $subscription['subscriber_msisdn'],
+                'Subcription Time'  =>  $subscription['subscription_time']
+            ]);
+        } else {
+            $customer_subscription = CustomerSubscription::create([
+                'customer_id' => '0011' . $subscriber_msisdn,
+                'payer_cnic' => 1,
+                'payer_msisdn' => $subscriber_msisdn,
+                'subscriber_cnic' => $subscriber_cnic,
+                'subscriber_msisdn' => $subscriber_msisdn,
+                'beneficiary_name' => 'Need to Filled in Future',
+                'beneficiary_msisdn' => 0,
+                'transaction_amount' => $amount,
+                'transaction_status' => $transactionStatus,
+                'referenceId' => $cpsOriginatorConversationId,
+                'cps_transaction_id' => $cpsTransactionId,
+                'cps_response_text' => $cpsResponse,
+                'product_duration' => $product->duration,
+                'plan_id' => $planId,
+                'productId' => $product_id,
+                'policy_status' => 1,
+                'pulse' => "USSD Health Insurance Subscription",
+                'api_source' => "USSD Health Insurance Subscription",
+                'recursive_charging_date' => $recursive_charging_date,
+                'subscription_time' => now(),
+                'grace_period_time' => $grace_period_time,
+                'sales_agent' => 1,
+                'company_id' => 15
+            ]);
+
+            $subscription_data = CustomerSubscription::find($customer_subscription->subscription_id);
+            $product_id = $subscription_data->productId;
+            $product = ProductModel::find($product_id);
+            $planCode = $product->product_code;
+            $response = [
+                'error' => false,
+                'statusCode' => 2000,
+                'message' => 'Customer Subscribed Sucessfully',
+                'policy_subscription_id' => $subscription_data->subscription_id,
+                'Information' => [
+                    'subscriber_msisdn' => $subscription_data->subscriber_msisdn,
+                    'transaction_amount' => $subscription_data->transaction_amount,
+                    'transactionStatus' => $subscription_data->transaction_status,
+                    'cpsResponse' => $subscription_data->cps_response_text,
+                    'planId' => $subscription_data->plan_id,
+                    'productId' => $subscription_data->productId,
+                    'planCode' => $planCode,
+                    'plan_status' => $subscription_data->policy_status,
+                    'ApiSource' => $subscription_data->api_source,
+
+                ],
+                'statusCode' => 2000
+            ];
+            return response()->json($response);
+        }
+    }
+
+    private function MobileInsuranceSubscribtion(Request $request){
+
+        // Perform validation
+        $validator = Validator::make($request->all(), [
+            'plan_id' => 'required|integer',
+            'product_id' => 'required|integer',
+            'customer_msisdn' => 'required|string',
+            'transaction_amount' => 'required|numeric',
+            'cpsOriginatorConversationId' => 'required|string',
+            'cpsTransactionId' => 'required|string',
+            'cpsResponse' => 'required|string',
+            'Imei_number' => 'required|string',
+
+        ]);
+        // Check for validation errors
+        if ($validator->fails()) {
+            return response()->json(['statusCode' => 400, 'message' => $validator->errors()], 400);
+        }
+        $subscriber_msisdn = $request->input("customer_msisdn");
+        $transaction_amount = $request->input("transaction_amount");
+        $cpsOriginatorConversationId = $request->input("cpsOriginatorConversationId");
+        $cpsTransactionId = $request->input("cpsTransactionId");
+        $planId = $request->input("plan_id");
+        $product_id = $request->input("product_id");
+        $cpsResponse = $request->input("cpsResponse");
+        $subscriber_cnic = "000000000000";
+        $transactionStatus = "1";
+        $Imei_number = $request->input("Imei_number");
+        $product = ProductModel::where('plan_id', $planId)
+            ->where('product_id', $product_id)
+            ->first();
+        // Check if product exists
+        if (!$product) {
+            return response()->json(['statusCode' => 3101, 'message' => 'Product not found'], 404);
+        }
+        $transaction_amount = ProductModel::where('fee', $transaction_amount)
+            ->where('product_id', $product_id)
+            ->first();
+        if (!$transaction_amount) {
+            return response()->json(['statusCode' => 4001, 'message' => 'Transaction Amount not Same Product Amount'], 404);
+        }
+        $amount = $transaction_amount->fee;
+        //return "getting response of product:".$product;
+        $grace_period = 14;
+        $grace_period_time = date('Y-m-d H:i:s', strtotime("+$grace_period days"));
+        $recursive_charging_date = date('Y-m-d H:i:s', strtotime("+" . $product->duration . " days"));
+
+        $subscription = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
+            ->where('plan_id', $planId)
+            ->where('policy_status', 1)
+            ->first();
+
+        if ($subscription) {
+            $product_id = $subscription->productId;
+            $product = ProductModel::where('product_id', $product_id)->first();
+            $product_code_01 = $product->product_code;
+
+            return response()->json([
+                'error' => false,
+                'statusCode' => 4000,
+                'message' => 'Already subscribed to the plan.',
+                'Policy Number' => $subscription['subscription_id'],
+                'planCode' => $product_code_01,
+                'transactionAmount' => $subscription['transaction_amount'],
+                'Subscriber Number' =>  $subscription['subscriber_msisdn'],
+                'Subcription Time'  =>  $subscription['subscription_time']
+            ]);
+        } else {
+            $customer_subscription = CustomerSubscription::create([
+                'customer_id' => '0011' . $subscriber_msisdn,
+                'payer_cnic' => 1,
+                'payer_msisdn' => $subscriber_msisdn,
+                'subscriber_cnic' => $subscriber_cnic,
+                'subscriber_msisdn' => $subscriber_msisdn,
+                'beneficiary_name' => 'Need to Filled in Future',
+                'beneficiary_msisdn' => 0,
+                'transaction_amount' => $amount,
+                'transaction_status' => $transactionStatus,
+                'referenceId' => $cpsOriginatorConversationId,
+                'cps_transaction_id' => $cpsTransactionId,
+                'cps_response_text' => $cpsResponse,
+                'product_duration' => $product->duration,
+                'plan_id' => $planId,
+                'productId' => $product_id,
+                'policy_status' => 1,
+                'pulse' => "USSD Mobile Insurance Subscription",
+                'api_source' => "USSD Mobile Insurance Subscription",
+                'recursive_charging_date' => $recursive_charging_date,
+                'subscription_time' => now(),
+                'grace_period_time' => $grace_period_time,
+                'Imei_number'  => $Imei_number,
+                'sales_agent' => 1,
+                'company_id' => 15
+            ]);
+
+            $subscription_data = CustomerSubscription::find($customer_subscription->subscription_id);
+            $product_id = $subscription_data->productId;
+            $product = ProductModel::find($product_id);
+            $planCode = $product->product_code;
+            $response = [
+                'error' => false,
+                'statusCode' => 2000,
+                'message' => 'Customer Subscribed Sucessfully',
+                'policy_subscription_id' => $subscription_data->subscription_id,
+                'Information' => [
+                    'subscriber_msisdn' => $subscription_data->subscriber_msisdn,
+                    'transaction_amount' => $subscription_data->transaction_amount,
+                    'transactionStatus' => $subscription_data->transaction_status,
+                    'cpsResponse' => $subscription_data->cps_response_text,
+                    'planId' => $subscription_data->plan_id,
+                    'productId' => $subscription_data->productId,
+                    'planCode' => $planCode,
+                    'plan_status' => $subscription_data->policy_status,
+                    'ApiSource' => $subscription_data->api_source,
+                    'IMEI'  => $subscription_data->Imei_number,
+
+                ],
+                'statusCode' => 2000
+            ];
+            return response()->json($response);
+        }
+    }
+
+
     // End Subscription
 
     // Start UnSubscription
@@ -846,7 +1319,14 @@ class GenericApiController extends Controller
             return $this->customerMarchantUnSub($request);
         } elseif ($userType === 'Mobile' && $userRole === 'Customer' && $appPlatform === 'CustomerMobileApp') {
             return $this->customerMobileAppUnSub($request);
-        } else {
+        }
+        elseif ($userType === 'USSD' && $userRole === 'Health' && $appPlatform === 'HealthInsurance') {
+            return $this->customerUSSDUnSub($request);
+        }
+        elseif ($userType === 'USSD' && $userRole === 'Mobile' && $appPlatform === 'MobileInsurance') {
+            return $this->customerUSSDUnSub($request);
+        }
+         else {
             return response()->json([
                 'error' => true,
                 'message' => 'Invalid header values',
@@ -905,7 +1385,7 @@ class GenericApiController extends Controller
                 'message' => 'Subscription with the given ID not found in active subscriptions.',
             ], 404);
         }
-        $nonRefundableAmounts = ['4', '133', '163', '5', '10', '200', '2000', '1950', '1600', '5000'];
+        $nonRefundableAmounts = ['4', '133', '163', '5', '10', '200', '2000', '1950', '1600', '5000','12','300','3000'];
         if (in_array($subscription->transaction_amount, $nonRefundableAmounts)) {
             // Handle non-refundable unsubscription
             CustomerUnSubscription::create([
@@ -1134,7 +1614,7 @@ class GenericApiController extends Controller
             // Modified here: Changing keys to match the older response and including product_id
             return response()->json([
                 'error' => false,
-                'is_policy_data' => 'true',
+                'is_policy_data' => true,
                 'statusCode' => 4000,
                 'message' => 'Active Policies',
                 'Active Subscriptions' => [
@@ -1172,7 +1652,7 @@ class GenericApiController extends Controller
             // Modified here: Returning null instead of an empty array
             return response()->json([
                 'error' => true,
-                'is_policy_data' => 'false',
+                'is_policy_data' => false,
                 'statusCode' => 4004,
                 'message' => 'Customer Didnt Subscribed to any Policy',
                 'Active Subscriptions' => []
