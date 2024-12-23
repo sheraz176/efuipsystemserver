@@ -165,7 +165,7 @@
                     data: 'subscription_id', // Assuming 'subscription_id' is the ID of the subscription
                     name: 'action',
                     render: function(data, type, full, meta) {
-                        return '<a href="{{ route('refunded.unsubscribe-now', '') }}/' + data + '" class="btn btn-danger">Refund</a>';
+                        return '<a href="{{ route('refunded.unsubscribe-now-new', '') }}/' + data + '" class="btn btn-danger">Refund</a>';
                     }
                 },
 

@@ -341,7 +341,7 @@ Route::prefix('company-manager')->group(function () {
         Route::get('active/agent/Data', [DashboardController::class, 'AgentData'])->name('company.manager.agent.data');
 
          // Refundes Route
-        Route::get('refunded/unsubscribe-now/{subscriptionId}', [ManagerUnSubscription::class,'unsubscribeNow'])->name('refunded.unsubscribe-now');
+        Route::get('refunded/new/unsubscribe-now/{subscriptionId}', [ManagerUnSubscription::class,'unsubscribeNow'])->name('refunded.unsubscribe-now-new');
 
 
         Route::get('dashboard/ajex', [DashboardController::class, 'ajex'])->name('company.manager.ajex');
