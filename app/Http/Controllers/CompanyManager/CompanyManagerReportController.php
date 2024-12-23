@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\CompanyManager;
-use DataTables;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Subscription\CustomerSubscription;
@@ -13,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use App\Models\TeleSalesAgent;
 use App\Models\Refund\RefundedCustomer;
-
+use Yajra\DataTables\DataTables;
 
 class CompanyManagerReportController extends Controller
 {

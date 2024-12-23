@@ -8,16 +8,20 @@ use App\Models\Subscription\CustomerSubscription;
 use App\Models\Unsubscription\CustomerUnSubscription;
 use App\Models\Refund\RefundedCustomer;
 use Illuminate\Support\Facades\Log;
+use App\Models\Plans\PlanModel;
 use App\Models\logs;
 use Carbon\Carbon;
 use Illuminate\Support\Str;
 use Yajra\DataTables\DataTables;
+use Illuminate\Support\Facades\Http;
 
 
 class ManagerUnSubscription extends Controller
 {
     public function unsubscribeNow($subscriptionId)
 {
+    //  dd('hi');
+
     $superadmin = session('Superadmin');
     $username = $superadmin->username;
 
@@ -57,6 +61,32 @@ class ManagerUnSubscription extends Controller
         ]);
 
 
+        // sms code
+        $plan_id = $subscription->plan_id;
+        $msisdn =  $subscription->subscriber_msisdn;
+
+        $plan = PlanModel::where('plan_id',$plan_id)->first();
+        $plantext = $plan->plan_name;
+
+        $url = 'https://api.efulife.com/itssr/its_sendsms';
+        $payload = [
+          'MobileNo' => $msisdn,
+          'sender' => 'EFU-LIFE',
+          'SMS' => "Dear Customer, You have successfully unsubscribed from {$plantext}. Your refund will be processed shortly.",
+           ];
+        $headers = [
+           'Channelcode' => 'ITS',
+            'Authorization' => 'Bearer XXXXAAA489SMSTOKEFU',
+            'Content-Type' => 'application/json',
+        ];
+        try {
+            $response = Http::withHeaders($headers)->timeout(5)->post($url, $payload);
+            } catch (\Exception $e)
+            {
+              Log::error('SMS API call failed', ['error' => $e->getMessage()]);
+             }
+
+        // end sms code
 
         // Handle $unsubscribeResult as needed
         return redirect()->back()->with('success', 'Customer unsubscribed successfully.');
