@@ -339,7 +339,7 @@ class Usercontroller extends Controller
         }
 
         // Handle non-refundable amounts
-        $nonRefundableAmounts = ['4', '133', '163', '5', '10', '200', '2000', '1950', '1600'];
+        $nonRefundableAmounts = ['4', '199' ,'133', '163', '5', '10', '200', '2000', '1950', '1600'];
         if (in_array($subscription->transaction_amount, $nonRefundableAmounts)) {
             $this->handleUnsubscription($subscription, $subscriber_msisdn);
             return response()->json([

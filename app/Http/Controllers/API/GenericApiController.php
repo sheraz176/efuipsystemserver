@@ -431,7 +431,8 @@ class GenericApiController extends Controller
 
         // Retrieve active products associated with the specified plan ID
         $products = ProductModel::where('plan_id', $planId)
-            ->where('status', 1)
+            // ->where('status', 1)
+            ->where('api_status', 1)
             ->get();
 
         // Check if any products are available
@@ -475,7 +476,8 @@ class GenericApiController extends Controller
 
         // Retrieve active products associated with the specified plan ID
         $products = ProductModel::where('plan_id', $request->plan_id)
-            ->where('status', 1)
+            // ->where('status', 1)
+            ->where('api_status', 1)
             ->get();
 
         // Filter out null, zero, and empty string values
@@ -496,7 +498,8 @@ class GenericApiController extends Controller
     {
         // Retrieve active products associated with the specified plan ID
         $products = ProductModel::where('plan_id', '6')
-            ->where('status', 1)
+            // ->where('status', 1)
+            ->where('api_status', 1)
             ->get();
         // Filter out null, zero, and empty string values
         $filteredProducts = $products->map(function ($product) {
@@ -515,7 +518,8 @@ class GenericApiController extends Controller
     {
         // Retrieve active products associated with the specified plan ID
         $products = ProductModel::where('plan_id', '7')
-            ->where('status', 1)
+            // ->where('status', 1)
+            ->where('api_status', 1)
             ->get();
         // Filter out null, zero, and empty string values
         $filteredProducts = $products->map(function ($product) {
@@ -1385,7 +1389,7 @@ class GenericApiController extends Controller
                 'message' => 'Subscription with the given ID not found in active subscriptions.',
             ], 404);
         }
-        $nonRefundableAmounts = ['4', '133', '163', '5', '10', '200', '2000', '1950', '1600', '5000','12','300','3000'];
+        $nonRefundableAmounts = ['4', '133','199', '163', '5', '10', '200', '2000', '1950', '1600', '5000','12','300','3000'];
         if (in_array($subscription->transaction_amount, $nonRefundableAmounts)) {
             // Handle non-refundable unsubscription
             CustomerUnSubscription::create([
@@ -1454,7 +1458,7 @@ class GenericApiController extends Controller
                 'message' => 'Subscription with the given ID not found in active subscriptions.',
             ], 404);
         }
-        $nonRefundableAmounts = ['4', '133', '163', '5', '10', '200', '2000', '1950', '1600', '5000'];
+        $nonRefundableAmounts = ['4', '133', '199','163', '5', '10', '200', '2000', '1950', '1600', '5000'];
         if (in_array($subscription->transaction_amount, $nonRefundableAmounts)) {
             // Handle non-refundable unsubscription
             CustomerUnSubscription::create([
@@ -1523,7 +1527,7 @@ class GenericApiController extends Controller
                 'message' => 'Subscription with the given ID not found in active subscriptions.',
             ], 404);
         }
-        $nonRefundableAmounts = ['4', '133', '163', '5', '10', '200', '2000', '1950', '1600', '5000'];
+        $nonRefundableAmounts = ['4','199','133', '163', '5', '10', '200', '2000', '1950', '1600', '5000'];
         if (in_array($subscription->transaction_amount, $nonRefundableAmounts)) {
             // Handle non-refundable unsubscription
             CustomerUnSubscription::create([
@@ -1545,6 +1549,10 @@ class GenericApiController extends Controller
     // End UnSubscription
 
     // Start Active SubScription
+
+
+
+
 
     public function activesubscriptions(Request $request)
     {
@@ -1570,11 +1578,11 @@ class GenericApiController extends Controller
 
 
         if ($userType === 'USSD' && $userRole === 'Customer' && $appPlatform === 'CustomerUSSD') {
-            return $this->ActiveSubGetAll($request);
+            return $this->UssdActiveSubGetAll($request);
         } elseif ($userType === 'USSD' && $userRole === 'Merchant' && $appPlatform === 'MerchantUSSD') {
-            return $this->ActiveSubGetAll($request);
+            return $this->marchantActiveSubGetAll($request);
         } elseif ($userType === 'Mobile' && $userRole === 'Customer' && $appPlatform === 'CustomerMobileApp') {
-            return $this->ActiveSubGetAll($request);
+            return $this->mobileActiveSubGetAll($request);
         } else {
             return response()->json([
                 'error' => true,
@@ -1584,7 +1592,158 @@ class GenericApiController extends Controller
         }
     }
 
-    private function ActiveSubGetAll(Request $request)
+    private function UssdActiveSubGetAll(Request $request)
+    {
+
+        $subscriber_msisdn = $request->input("subscriber_msisdn");
+        $rules = [
+            'subscriber_msisdn' => 'required|numeric'
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        // Retrieve the subscription details
+        $subscription = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
+            ->where('policy_status', 1)
+            ->first();
+
+        if ($subscription) {
+            // Retrieve the product_id from the subscription
+            $product_id = $subscription->productId;
+
+
+            // Retrieve the planCode using the product_id
+            $product = ProductModel::where('product_id', $product_id)->first();
+            $planCode = $product->product_code;
+
+            // Modified here: Changing keys to match the older response and including product_id
+            return response()->json([
+                'error' => false,
+                'is_policy_data' => true,
+                'statusCode' => 4000,
+                'message' => 'Active Policies',
+                'ActiveSubscriptions' => [
+                    [
+                        'id' => $subscription->subscription_id,
+                        'customer_id' => $subscription->customer_id,
+                        'payer_cnic' => $subscription->payer_cnic,
+                        'payer_msisdn' => $subscription->payer_msisdn,
+                        'subscriber_cnic' => $subscription->subscriber_cnic,
+                        'subscriber_msisdn' => $subscription->subscriber_msisdn,
+                        'beneficinary_name' => $subscription->beneficinary_name,
+                        'benficinary_msisdn' => $subscription->benficinary_msisdn,
+                        'transaction_amount' => $subscription->transaction_amount,
+                        'transactionStatus' => $subscription->transaction_status,
+                        'cpsOriginatorConversationId' => $subscription->referenceId,
+                        'cpsTransactionId' => $subscription->cps_transaction_id,
+                        'cpsRefundTransactionId' => -1,
+                        'cpsResponse' => $subscription->cps_response_text,
+                        'planId' => $subscription->plan_id,
+                        'planCode' => $planCode, // Use the retrieved planCode here
+                        'plan_status' => 1,
+                        'pulse' => $subscription->pulse,
+                        'APIsource' => $subscription->api_source,
+                        'Recusive_charing_date' => $subscription->recursive_charging_date,
+                        'subcription_time' => $subscription->subscription_time,
+                        'grace_period_time' => $subscription->grace_period_time,
+                        'Sales_agent' => $subscription->sales_agent,
+                        'created_at' => $subscription->created_at,
+                        'updated_at' => $subscription->updated_at,
+                        'product_id' => $product_id  // Include product_id in the response
+                    ]
+                ]
+            ]);
+        } else {
+            // Modified here: Returning null instead of an empty array
+            return response()->json([
+                'error' => true,
+                'is_policy_data' => false,
+                'statusCode' => 4004,
+                'message' => 'Customer Didnt Subscribed to any Policy',
+                'Active Subscriptions' => []
+            ]);
+        }
+    }
+
+    private function marchantActiveSubGetAll(Request $request)
+    {
+
+        $subscriber_msisdn = $request->input("subscriber_msisdn");
+        $rules = [
+            'subscriber_msisdn' => 'required|numeric'
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        // Retrieve the subscription details
+        $subscription = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
+            ->where('policy_status', 1)
+            ->first();
+
+        if ($subscription) {
+            // Retrieve the product_id from the subscription
+            $product_id = $subscription->productId;
+
+
+            // Retrieve the planCode using the product_id
+            $product = ProductModel::where('product_id', $product_id)->first();
+            $planCode = $product->product_code;
+
+            // Modified here: Changing keys to match the older response and including product_id
+            return response()->json([
+                'error' => false,
+                'is_policy_data' => true,
+                'statusCode' => 4000,
+                'message' => 'Active Policies',
+                'Active Subscriptions' => [
+                    [
+                        'id' => $subscription->subscription_id,
+                        'customer_id' => $subscription->customer_id,
+                        'payer_cnic' => $subscription->payer_cnic,
+                        'payer_msisdn' => $subscription->payer_msisdn,
+                        'subscriber_cnic' => $subscription->subscriber_cnic,
+                        'subscriber_msisdn' => $subscription->subscriber_msisdn,
+                        'beneficinary_name' => $subscription->beneficinary_name,
+                        'benficinary_msisdn' => $subscription->benficinary_msisdn,
+                        'transaction_amount' => $subscription->transaction_amount,
+                        'transactionStatus' => $subscription->transaction_status,
+                        'cpsOriginatorConversationId' => $subscription->referenceId,
+                        'cpsTransactionId' => $subscription->cps_transaction_id,
+                        'cpsRefundTransactionId' => -1,
+                        'cpsResponse' => $subscription->cps_response_text,
+                        'planId' => $subscription->plan_id,
+                        'planCode' => $planCode, // Use the retrieved planCode here
+                        'plan_status' => 1,
+                        'pulse' => $subscription->pulse,
+                        'APIsource' => $subscription->api_source,
+                        'Recusive_charing_date' => $subscription->recursive_charging_date,
+                        'subcription_time' => $subscription->subscription_time,
+                        'grace_period_time' => $subscription->grace_period_time,
+                        'Sales_agent' => $subscription->sales_agent,
+                        'created_at' => $subscription->created_at,
+                        'updated_at' => $subscription->updated_at,
+                        'product_id' => $product_id  // Include product_id in the response
+                    ]
+                ]
+            ]);
+        } else {
+            // Modified here: Returning null instead of an empty array
+            return response()->json([
+                'error' => true,
+                'is_policy_data' => false,
+                'statusCode' => 4004,
+                'message' => 'Customer Didnt Subscribed to any Policy',
+                'Active Subscriptions' => []
+            ]);
+        }
+    }
+    private function mobileActiveSubGetAll(Request $request)
     {
 
         $subscriber_msisdn = $request->input("subscriber_msisdn");

@@ -53,6 +53,9 @@ class ConsentNumber extends Command
         // Iterate over subscriptions
         foreach ($consent_numbers as $consent_number) {
             $msisdn = $consent_number->msisdn;
+              //dd($msisdn);
+            $msisdnumber = preg_replace('/^92/', '0', $msisdn);
+              //dd($msisdnumber);
             $amount = $consent_number->amount;
             $consent = $consent_number->consent;
             $customer_cnic = $consent_number->customer_cnic;
@@ -108,7 +111,7 @@ class ConsentNumber extends Command
 
             $response = curl_exec($ch);
             Log::channel('consent_number_api')->info('Consent Number  Api.', [
-                'msisdn' => $msisdn,
+                'msisdn' => $msisdnumber,
                 'url' => $url,
                 'request-packet' => $body,
                 'response-data' => $response,
@@ -148,12 +151,12 @@ class ConsentNumber extends Command
                 $data = json_decode($decryptedData, true);
 
                 if ($data !== null && isset($data['resultCode']) && $data['resultCode'] === "0") {
-                    $customer_id = '0011' . $msisdn;
+                    $customer_id = '0011' . $msisdnumber;
                     $activation_time = date('Y-m-d H:i:s');
                     $grace_period_time = date('Y-m-d H:i:s', strtotime('+14 days'));
                     $future_time_recursive_formatted = date('Y-m-d H:i:s', strtotime("+" . $duration . " days"));
 
-                    $subscription = CustomerSubscription::where('subscriber_msisdn', $msisdn)
+                    $subscription = CustomerSubscription::where('subscriber_msisdn', $msisdnumber)
                         ->where('plan_id', $planId)
                         ->where('policy_status', 1)
                         ->exists();
@@ -161,9 +164,9 @@ class ConsentNumber extends Command
                     if (!$subscription) {
                         CustomerSubscription::create([
                             'customer_id' => $customer_id,
-                            'payer_msisdn' => $msisdn,
+                            'payer_msisdn' => $msisdnumber,
                             'subscriber_cnic' => $customer_cnic,
-                            'subscriber_msisdn' => $msisdn,
+                            'subscriber_msisdn' => $msisdnumber,
                             'beneficiary_name' => $beneficinary_name,
                             'beneficiary_msisdn' => $beneficiary_msisdn,
                               'payer_cnic' => $customer_cnic,
@@ -190,7 +193,7 @@ class ConsentNumber extends Command
 
                              // Create a new ConsentNumber instance
                              $ConsentData = new ConsentData();
-                             $ConsentData->msisdn = $msisdn;
+                             $ConsentData->msisdn = $msisdnumber;
                              $ConsentData->amount = $amount;
                              $ConsentData->resultCode = $data['resultCode'];
                              $ConsentData->response = $data['resultDesc'];
@@ -203,7 +206,8 @@ class ConsentNumber extends Command
 
 
                     }
-                }  else if ($data !== null) {
+                }
+                 else if ($data !== null) {
                     FailedSubscriptionsController::saveFailedTransactionDataautoDebit(
                         $data['transactionId'],
                         $data['resultCode'],
@@ -217,10 +221,9 @@ class ConsentNumber extends Command
                         $agent_id,
                         $company_id
                     );
-
                       // Create a new ConsentNumber instance
                       $ConsentData = new ConsentData();
-                      $ConsentData->msisdn = $msisdn;
+                      $ConsentData->msisdn = $msisdnumber;
                       $ConsentData->amount = $amount;
                       $ConsentData->resultCode = $data['resultCode'];
                       $ConsentData->response = $data['failedReason'];

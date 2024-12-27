@@ -86,7 +86,7 @@ class MobileApiController extends Controller
 
     // Retrieve active products associated with the specified plan ID
     $products = ProductModel::where('plan_id', '4')
-                            ->where('status', 1)
+                            // ->where('status', 1)
                             ->get();
 
     // Filter out null and zero values
@@ -299,7 +299,7 @@ class MobileApiController extends Controller
 
     // Handle non-refundable amounts
 
-    $nonRefundableAmounts = ['4', '133', '163', '5', '10', '200', '2000', '1950', '1600', '5000','12','300','3000'];
+    $nonRefundableAmounts = ['4', '133','199', '163', '5', '10', '200', '2000', '1950', '1600', '5000','12','300','3000'];
 
     if (in_array($subscription->transaction_amount, $nonRefundableAmounts)) {
         $this->handleUnsubscription($subscription, $subscriber_msisdn);
