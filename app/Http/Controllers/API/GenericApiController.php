@@ -1389,7 +1389,7 @@ class GenericApiController extends Controller
                 'message' => 'Subscription with the given ID not found in active subscriptions.',
             ], 404);
         }
-        $nonRefundableAmounts = ['4', '133','199', '163', '5', '10', '200', '2000', '1950', '1600', '5000','12','300','3000'];
+        $nonRefundableAmounts = ['4','9', '133','199', '163', '5', '10', '200', '2000', '1950', '1600', '5000','12','300','3000'];
         if (in_array($subscription->transaction_amount, $nonRefundableAmounts)) {
             // Handle non-refundable unsubscription
             CustomerUnSubscription::create([
@@ -1458,7 +1458,7 @@ class GenericApiController extends Controller
                 'message' => 'Subscription with the given ID not found in active subscriptions.',
             ], 404);
         }
-        $nonRefundableAmounts = ['4', '133', '199','163', '5', '10', '200', '2000', '1950', '1600', '5000'];
+        $nonRefundableAmounts = ['4','9', '133', '199','163', '5', '10', '200', '2000', '1950', '1600', '5000'];
         if (in_array($subscription->transaction_amount, $nonRefundableAmounts)) {
             // Handle non-refundable unsubscription
             CustomerUnSubscription::create([
@@ -1527,7 +1527,7 @@ class GenericApiController extends Controller
                 'message' => 'Subscription with the given ID not found in active subscriptions.',
             ], 404);
         }
-        $nonRefundableAmounts = ['4','199','133', '163', '5', '10', '200', '2000', '1950', '1600', '5000'];
+        $nonRefundableAmounts = ['4','9','199','133', '163', '5', '10', '200', '2000', '1950', '1600', '5000'];
         if (in_array($subscription->transaction_amount, $nonRefundableAmounts)) {
             // Handle non-refundable unsubscription
             CustomerUnSubscription::create([

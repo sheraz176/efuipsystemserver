@@ -123,8 +123,9 @@ class Charts extends Controller
 
     public function getMonthlyActiveSubscriptionChartData()
     {
-        // Fetch data from the database based on monthly active subscriptions
+        // Fetch data from the database based on monthly active subscriptions for the current year
         $data = CustomerSubscription::where('policy_status', 1)
+            ->whereYear('subscription_time', now()->year) // Filter for the current year
             ->selectRaw('MONTH(subscription_time) as month, COUNT(*) as count')
             ->groupBy('month')
             ->get();
@@ -133,43 +134,59 @@ class Charts extends Controller
         $labels = [];
         $values = [];
 
-        // Loop through months and set counts
+        // Loop through months (1 to 12) and set counts
         for ($month = 1; $month <= 12; $month++) {
+            // Get data for the current month
             $monthData = $data->where('month', $month)->first();
-            $labels[] = Carbon::create()->month($month)->format('F'); // Month name
+
+            // Set label to full month name (e.g., January, February, etc.)
+            $labels[] = Carbon::create()->month($month)->format('F');
+
+            // Set the count for the current month or 0 if no data is found
             $values[] = $monthData ? $monthData->count : 0;
         }
 
+        // Return the data as JSON for chart rendering
         return response()->json(['labels' => $labels, 'values' => $values]);
     }
 
 
+
     public function getMonthlySubscriptionUnsubscriptionChartData()
-    {
-        // Fetch data from the database based on monthly subscription and unsubscription counts
-        $data = CustomerSubscription::selectRaw('MONTH(subscription_time) as month,
+{
+    // Fetch current year
+    $currentYear = Carbon::now()->year;
+
+    // Fetch data from the database for the current year based on monthly subscription and unsubscription counts
+    $data = CustomerSubscription::selectRaw('MONTH(subscription_time) as month,
                                         SUM(CASE WHEN policy_status = 1 THEN 1 ELSE 0 END) as subscriptions,
                                         SUM(CASE WHEN policy_status = 0 THEN 1 ELSE 0 END) as unsubscriptions')
-            ->groupBy('month')
-            ->get();
+        ->whereYear('subscription_time', $currentYear) // Filter by current year
+        ->groupBy('month')
+        ->get();
 
-        // Format the data for the chart
-        $labels = [];
-        $subscriptionValues = [];
-        $unsubscriptionValues = [];
+    // Format the data for the chart
+    $labels = [];
+    $subscriptionValues = [];
+    $unsubscriptionValues = [];
 
-        // Loop through months and set counts
-        for ($month = 1; $month <= 12; $month++) {
-            $monthData = $data->where('month', $month)->first();
-            $labels[] = Carbon::create()->month($month)->format('F'); // Month name
-            $subscriptionValues[] = $monthData ? $monthData->subscriptions : 0;
-            $unsubscriptionValues[] = $monthData ? $monthData->unsubscriptions : 0;
-        }
-
-        return response()->json(['labels' => $labels, 'subscriptions' => $subscriptionValues, 'unsubscriptions' => $unsubscriptionValues]);
+    // Loop through months and set counts
+    for ($month = 1; $month <= 12; $month++) {
+        $monthData = $data->where('month', $month)->first();
+        $labels[] = Carbon::create()->month($month)->format('F'); // Month name
+        $subscriptionValues[] = $monthData ? $monthData->subscriptions : 0;
+        $unsubscriptionValues[] = $monthData ? $monthData->unsubscriptions : 0;
     }
 
-    public function getChartData(Request $request)
+    return response()->json([
+        'labels' => $labels,
+        'subscriptions' => $subscriptionValues,
+        'unsubscriptions' => $unsubscriptionValues,
+    ]);
+}
+
+
+public function getChartData(Request $request)
 {
     $companyId = $request->input('company_id');
     $timePeriod = $request->input('time_period', 'daily');
@@ -183,18 +200,26 @@ class Charts extends Controller
     // Determine the time grouping and data filtering based on the time period
     switch ($timePeriod) {
         case 'daily':
-            $query->selectRaw('DATE(created_at) as period, COUNT(*) as count');
-            break;
-        case 'monthly':
-            $query->selectRaw('MONTH(created_at) as period, COUNT(*) as count');
-            break;
-        case 'last7days':
-            $query->where('created_at', '>=', Carbon::now()->subDays(7))
+            // Filter data for the current year and group by date
+            $query->whereYear('created_at', now()->year)
                   ->selectRaw('DATE(created_at) as period, COUNT(*) as count');
             break;
+
+        case 'monthly':
+            // Filter data for the current year and group by month
+            $query->whereYear('created_at', now()->year)
+                  ->selectRaw('MONTH(created_at) as period, COUNT(*) as count');
+            break;
+
+        case 'last7days':
+            $query->where('created_at', '>=', now()->subDays(7))
+                  ->selectRaw('DATE(created_at) as period, COUNT(*) as count');
+            break;
+
         case 'yearly':
             $query->selectRaw('YEAR(created_at) as period, COUNT(*) as count');
             break;
+
         case 'hourly':
             $query->selectRaw('DATE_FORMAT(created_at, "%Y-%m-%d %H:00") as period, COUNT(*) as count');
             break;
@@ -204,17 +229,21 @@ class Charts extends Controller
                   ->orderBy('period')
                   ->get();
 
-    $labels = $data->map(function($item) use ($timePeriod) {
+    // Map labels based on time period
+    $labels = $data->map(function ($item) use ($timePeriod) {
         switch ($timePeriod) {
             case 'daily':
             case 'last7days':
                 return Carbon::parse($item->period)->format('Y-m-d'); // Format as YYYY-MM-DD
+
             case 'monthly':
-                return Carbon::create()->month($item->period)->format('F'); // Full month name
+                return Carbon::create()->month($item->period)->format('F'); // Full month name (e.g., January)
+
             case 'yearly':
                 return $item->period; // Year
+
             case 'hourly':
-                return Carbon::parse($item->period)->format('Y-m-d H:i'); // Format as YYYY-MM-DD HH:00
+                return Carbon::parse($item->period)->format('Y-m-d H:00'); // Format as YYYY-MM-DD HH:00
         }
     });
 
@@ -235,6 +264,8 @@ class Charts extends Controller
         ]
     ]);
 }
+
+
 
 public function getLineChartData(Request $request)
 {
@@ -328,8 +359,10 @@ public function RecusiveChargingChart(Request $request)
                                 ->count();
             $chartData[] = ['count' => $totalCount, 'label' => 'Today']; // Set label as 'Today'
         } elseif ($timePeriod == 'monthly') {
-            $chartData = $query->selectRaw('COUNT(*) as count, MONTHNAME(created_at) as label')
+            $chartData = $query->whereYear('created_at', now()->year) // Filter for the current year
+                               ->selectRaw('COUNT(*) as count, MONTHNAME(created_at) as label')
                                ->groupBy('label')
+                               ->orderByRaw('MONTH(created_at)')
                                ->get();
         } elseif ($timePeriod == 'last7days') {
             $chartData = $query->whereBetween('created_at', [now()->subDays(7), now()])
@@ -339,6 +372,7 @@ public function RecusiveChargingChart(Request $request)
         } elseif ($timePeriod == 'yearly') {
             $chartData = $query->selectRaw('COUNT(*) as count, YEAR(created_at) as label')
                                ->groupBy('label')
+                               ->orderBy('label')
                                ->get();
         }
     } else {
@@ -353,20 +387,17 @@ public function RecusiveChargingChart(Request $request)
 }
 
 
+
 public function LowBalaceChart(Request $request)
 {
-    // dd($request->all());
     $query = ConsentData::query();
 
-    // dd($query);
-
-
-    // Apply filter for company_id (company_id)
+    // Apply filter for company_id
     if ($request->has('company_id') && $request->company_id != '') {
         $query->where('company_id', $request->company_id);
     }
 
-    // Apply filter for cps_response (Cause)
+    // Apply filter for status (Cause)
     if ($request->has('cause') && $request->cause != '') {
         $query->where('status', $request->cause);
     }
@@ -382,10 +413,12 @@ public function LowBalaceChart(Request $request)
         if ($timePeriod == 'today') {
             $totalCount = $query->whereDate('created_at', now()->toDateString())
                                 ->count();
-            $chartData[] = ['count' => $totalCount, 'label' => 'Today']; // Set label as 'Today'
+            $chartData[] = ['count' => $totalCount, 'label' => 'Today'];
         } elseif ($timePeriod == 'monthly') {
-            $chartData = $query->selectRaw('COUNT(*) as count, MONTHNAME(created_at) as label')
+            $chartData = $query->whereYear('created_at', now()->year) // Filter for the current year
+                               ->selectRaw('COUNT(*) as count, MONTHNAME(created_at) as label')
                                ->groupBy('label')
+                               ->orderByRaw('MONTH(created_at)')
                                ->get();
         } elseif ($timePeriod == 'last7days') {
             $chartData = $query->whereBetween('created_at', [now()->subDays(7), now()])
@@ -395,18 +428,20 @@ public function LowBalaceChart(Request $request)
         } elseif ($timePeriod == 'yearly') {
             $chartData = $query->selectRaw('COUNT(*) as count, YEAR(created_at) as label')
                                ->groupBy('label')
+                               ->orderBy('label')
                                ->get();
         }
     } else {
         // Default to return data for today if no time filter is provided
         $totalCount = $query->whereDate('created_at', now()->toDateString())
                             ->count();
-        $chartData[] = ['count' => $totalCount, 'label' => 'Today']; // Set label as 'Today'
+        $chartData[] = ['count' => $totalCount, 'label' => 'Today'];
     }
 
     // Return the data as JSON for chart rendering
     return response()->json($chartData);
 }
+
 
 
 
