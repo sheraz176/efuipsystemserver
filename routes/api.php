@@ -17,6 +17,7 @@ use App\Http\Controllers\API\MarchantController;
 use App\Http\Controllers\API\USSDApiController;
 use App\Http\Controllers\API\USSDAPI23Controller;
 use App\Http\Controllers\API\GenericApiController;
+use App\Http\Controllers\API\ClaimController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -227,6 +228,34 @@ Route::prefix('v24')->group(function () {
 //End routes related to Generic Api Controller API
 
 
+//Start routes related to Claim Api Controller API
+Route::post("v25/login",[ClaimController::class,'login']);
+Route::group(['middleware' => 'auth:sanctum'], function(){
+    Route::prefix('v25')->group(function () {
+        Route::prefix('ClaimApi')->group(function () {
+
+            Route::post("submit/claim", [ClaimController::class, 'SubmitClaim'])
+                ->name('submit.claim');
+            Route::post("claim/details", [ClaimController::class, 'ClaimDetails'])
+                ->name('claim.details');
+            Route::post("claim/history", [ClaimController::class, 'ClaimHistory'])
+                ->name('claim.history');
+
+        });
+      });
+});
+//End routes related to CallDoctor Api Controller API
+
+//Start routes related to Claim Api Controller API
+Route::group(['middleware' => 'auth:sanctum'], function(){
+    Route::prefix('v25')->group(function () {
+        Route::prefix('CallDoctorApi')->group(function () {
+                Route::get("m/HealthDoctors",[ClaimController::class,'mHealthDoctors'])
+                ->name('m.HealthDoctors');
+        });
+      });
+});
+//End routes related to CallDoctor Api Controller API
 
 
    // Status Update Auto Debit Button Super Agent L Pannel
