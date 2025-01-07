@@ -10,6 +10,7 @@ use App\Models\Subscription\CustomerSubscription;
 use App\Http\Controllers\Subscription\FailedSubscriptionsController;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 
 class IVRSubscriptionController extends Controller
 {
@@ -46,12 +47,22 @@ class IVRSubscriptionController extends Controller
 
     public function ivr_subscription(Request $request)
     {
-
+              //dd($request->all());
                 $validator = Validator::make($request->all(), [
                     'plan_id' => 'required|integer',
                     'product_id' => 'required|integer',
                     'subscriber_msisdn' => 'required|string',
                 ]);
+
+                Log::channel('ivr_api')->info('Ivr Subscription Api.',[
+                    'plan_id' =>  $request->input('plan_id'),
+                    'product_id' => $request->input('product_id'),
+                    'subscriber_msisdn' => $request->input("subscriber_msisdn"),
+                    ]);
+
+
+
+
 
                 // Check if validation fails
                 if ($validator->fails()) {
@@ -66,10 +77,9 @@ class IVRSubscriptionController extends Controller
                 $planId = $request->input('plan_id');
                 $productId = $request->input('product_id');
                 $subscriber_msisdn = $request->input("subscriber_msisdn");
-		$subscriber_msisdn_portal = "0" . $subscriber_msisdn;
-		$subscriber_msisdn = "92" . $subscriber_msisdn;
-
-
+		$subscriber_msisdn_portal = $request->input("subscriber_msisdn");
+                   $subscriber_msisdn = "92" . substr($subscriber_msisdn, 1);
+                     //dd($subscriber_msisdn);
 
                 $subscription = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn_portal)
                         ->where('plan_id', $planId)
@@ -106,12 +116,17 @@ class IVRSubscriptionController extends Controller
                 $fee = $products->fee;
                 $duration = $products->duration;
 
+                $plan = PlanModel::where('plan_id', $planId)
+                ->where('status', 1)
+                ->first();
+                $plantext = $plan->plan_name;
 
                 //Generate a 32-digit unique referenceId
+                  //Generate a 32-digit unique referenceId
                 $referenceId = strval(mt_rand(100000000000000000, 999999999999999999));
 
                 // Additional body parameters
-                $type = 'autoPayment';
+                $type = 'sub';
 
                 // Replace these with your actual secret key and initial vector
                 $key = 'mYjC!nc3dibleY3k'; // Change this to your secret key
@@ -175,10 +190,13 @@ class IVRSubscriptionController extends Controller
 
                   // Logs
                Log::channel('ivr_api')->info('IVR Subscription Api.',[
+                'subscriber_msisdn' => $request->input("subscriber_msisdn"),
                 'url' => $url,
                 'request-packet' => $body,
                 'response-data' => $response,
                 ]);
+
+
 
                 // Check for cURL errors
                 if ($response === false) {
@@ -279,7 +297,7 @@ class IVRSubscriptionController extends Controller
                         'plan_id' =>$planId,
                         'productId' =>$productId,
                         'policy_status' =>1,
-                        'pulse' =>"Recusive Charging",
+                        'pulse' =>"ivr_subscription",
                         'api_source' => "IVR Subscription",
                         'recursive_charging_date' => $future_time_recursive_formatted,
                         'subscription_time' =>$activation_time,
@@ -290,7 +308,43 @@ class IVRSubscriptionController extends Controller
 
                     $CustomerSubscriptionDataID=$CustomerSubscriptionData->subscription_id;
 
+                            // SMS Code
+                           $url = 'https://api.efulife.com/itssr/its_sendsms';
 
+                           if ($plantext == 'EFU Term Takaful Plus Plan') {
+                              $link = "https://bit.ly/439oH0L";
+                           } else {
+                              $link = "https://bit.ly/3KagW3u";
+                             }
+
+                           $payload = [
+                             'MobileNo' => $subscriber_msisdn,
+                             'sender' => 'EFU-LIFE',
+                             'SMS' => "Dear Customer, You have successfully subscribed {$plantext}. for Rs {$fee}/-.T&Cs:{$link} ",
+                              ];
+
+                      $headers = [
+                           'Channelcode' => 'ITS',
+                            'Authorization' => 'Bearer XXXXAAA489SMSTOKEFU',
+                           'Content-Type' => 'application/json',
+                           ];
+
+                    try {
+                       // Set timeout for the request (e.g., 5 seconds)
+                       $response = Http::withHeaders($headers)->timeout(5)->post($url, $payload);
+
+                      // Optional: Log the response or check for successful response
+                      if ($response->successful()) {
+                      Log::info('SMS sent successfully', ['response' => $response->body()]);
+                    } else {
+                      Log::warning('SMS API response not successful', ['response' => $response->body()]);
+                       }
+                } catch (\Exception $e) {
+                   // Log the exception for debugging
+                         Log::error('SMS API call failed', ['error' => $e->getMessage()]);
+                           }
+
+             // End SMS Code
 
                             return response()->json([
                             'status' => 'success',
