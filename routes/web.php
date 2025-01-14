@@ -137,6 +137,7 @@ Route::prefix('basic-agent-l')->group(function () {
 
     Route::group(['middleware' => ['auth:agent', 'check.agent.login']], function () {
         Route::get('/dashboard', [AgentAuthBasicAgentLController::class, 'dashboard'])->name('basic-agent-l.dashboard');
+        Route::get('/agent/dashboard-data', [AgentAuthBasicAgentLController::class, 'getDashboardData'])->name('agent.dashboard.data');
         Route::get('/sales', [AgentSalesBasicAgentLController::class, 'sales'])->name('basic-agent-l.sales');
         Route::get('/transaction', [AgentSalesBasicAgentLController::class, 'transaction'])->name('basic-agent-l.transaction');
         Route::post('/logout', [AgentAuthBasicAgentLController::class, 'logout'])->name('basic-agent-l.logout');
@@ -174,7 +175,7 @@ Route::prefix('super-admin')->group(function () {
 
             //Export all Data
             Route::post('export/active/subription', [ExportController::class, 'exportactivesubription'])->name('superadmin.export-active-subription');
-            Route::post('export/complete/sale', [ExportController::class, 'exportcomplatesale'])->name('superadmin.export-complete.sale');\
+            Route::post('export/complete/sale', [ExportController::class, 'exportcomplatesale'])->name('superadmin.export-complete.sale');
             Route::post('export/failed/data', [ExportController::class, 'exportgetFailedData'])->name('superadmin.export.failed-data');
             Route::post('export/companies/cancelled_data_export', [ExportController::class, 'companies_cancelled_data_export'])->name('superadmin.companies.cancelled-data-export');
             Route::post('export/RefundedDataExport', [ExportController::class, 'RefundedDataExport'])->name('superadmin.RefundedDataExport');

@@ -92,9 +92,6 @@ class AgentAuthBasicAgentLController extends Controller
      */
     public function dashboard()
     {
-
-
-
         $agent = session('agent');
 
         if (!$agent) {
@@ -102,31 +99,47 @@ class AgentAuthBasicAgentLController extends Controller
             return redirect()->back()->withInput()->withErrors(['login' => 'Session Expired Kindly Re-login']);
         }
         else{
-            $agentId = $agent->agent_id;
-            $currentMonthTotal = CustomerSubscription::where('sales_agent', $agentId)
-                ->whereMonth('subscription_time', Carbon::now()->month)
-                ->sum('transaction_amount');
-
-            $currentMonthTotalCount = CustomerSubscription::where('sales_agent', $agentId)
-                ->whereMonth('subscription_time', Carbon::now()->month)
-                ->count();
-                //dd($currentMonthTotal);
-
-            $currentYearTotal = CustomerSubscription::where('sales_agent', $agentId)
-                ->whereYear('subscription_time', Carbon::now()->year)
-                ->sum('transaction_amount');
-
-            $currentDayTotal = CustomerSubscription::where('sales_agent', $agentId)
-                ->whereDate('subscription_time', Carbon::now()->toDateString())
-                ->sum('transaction_amount');
-
-            $currentDayTotalCount = CustomerSubscription::where('sales_agent', $agentId)
-                ->whereDate('subscription_time', Carbon::now()->toDateString())
-                ->count();
-
-                 return view('basic-agent-l.dashboard', compact('currentMonthTotal', 'currentYearTotal', 'currentDayTotal','currentMonthTotalCount','currentDayTotalCount', 'agent'));
+                 return view('basic-agent-l.dashboard', compact( 'agent'));
 
         }
 
     }
+
+    public function getDashboardData(Request $request)
+  {
+    $agent = session('agent');
+
+    if (!$agent) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Session Expired. Kindly Re-login.',
+        ], 401);
+    }
+
+    $agentId = $agent->agent_id;
+
+    $data = CustomerSubscription::select(
+        DB::raw("COUNT(CASE WHEN DATE(created_at) = CURRENT_DATE THEN 1 END) AS todaySubscriptionCount"),
+        DB::raw("COUNT(CASE WHEN YEAR(created_at) = YEAR(CURRENT_DATE) AND MONTH(created_at) = MONTH(CURRENT_DATE) THEN 1 END) AS currentMonthSubscriptionCount"),
+        DB::raw("COUNT(CASE WHEN YEAR(created_at) = YEAR(CURRENT_DATE) THEN 1 END) AS currentYearSubscriptionCount")
+    )
+    ->where('sales_agent', $agentId) // Filter by sales agent
+    ->first();
+
+    // Access the results
+    $todaySubscriptionCount = $data->todaySubscriptionCount;
+    $currentMonthSubscriptionCount = $data->currentMonthSubscriptionCount;
+    $currentYearSubscriptionCount = $data->currentYearSubscriptionCount;
+
+    return response()->json([
+        'status' => 'success',
+        'data' => [
+            'todaySalesCount' => $todaySubscriptionCount,
+            'currentMonthTotalCount' => $currentMonthSubscriptionCount,
+            'currentYearTotal' => $currentYearSubscriptionCount,
+        ],
+    ]);
+   }
+
+
 }

@@ -40,21 +40,31 @@ class downloadagent extends Command
 {
 
     $agentsData = [
-        ['Nosheen', 'Arzoo', 'Nosheen.Arzoo.tsm', 'Nosheen#Arzoo#tsm#2024', 'HD1141'],
-        ['Hera', 'Shafaqat', 'Hera.Shafaqat.tsm', 'Hera#Shafaqat#tsm#2024', 'HD1142'],
-        ['Abdullah', 'Arshad', 'Abdullah.Arshad.tsm', 'Abdullah#Arshad#tsm#2024', 'HD1143'],
-        ['Tahir', 'Naeem', 'Tahir.Naeem.tsm', 'Tahir#Naeem#tsm#2024', 'HD1144'],
-        ['Fatima', 'Aslam', 'Fatima.Aslam.tsm', 'Fatima#Aslam#tsm#2024', 'HD1145'],
-        ['Zeenat', 'Eman', 'Zeenat.Eman.tsm', 'Zeenat#Eman#tsm#2024', 'HD1146'],
-        ['Shiza', 'Dildar', 'Shiza.Dildar.tsm', 'Shiza#Dildar#tsm#2024', 'HD1147'],
-        ['Neha', 'Aslam', 'Neha.Aslam.tsm', 'Neha#Aslam#tsm#2024', 'HD1148'],
-        ['Zahra', 'Aftab', 'Zahra.Aftab.tsm', 'Zahra#Aftab#tsm#2024', 'HD1149'],
-        ['Wajiha', 'Ali', 'Wajiha.Ali.tsm', 'Wajiha#Ali#tsm#2024', 'HD1150'],
-        ['Maliha', 'Khan', 'Maliha.Khan.tsm', 'Maliha#Khan#tsm#2024', 'HD1151'],
+        ['Mariam', 'Jabbar', 'Mariam.Jabbar.abacus', 'Mariam#Jabbar#abacus#2025', 'Mariam.Jabbar.abacus@gmail.com'],
+        ['Rimsha', 'Arif', 'Rimsha.Arif.abacus', 'Rimsha#Arif#abacus#2025', 'Rimsha.Arif.abacus@gmail.com'],
+        ['Mahnoor', 'Vicky', 'Mahnoor.Vicky.abacus', 'Mahnoor#Vicky#abacus#2025', 'Mahnoor.Vicky.abacus@gmail.com'],
+        ['Laiba', 'Manzoor', 'Laiba.Manzoor.abacus', 'Laiba#Manzoor#abacus#2025', 'Laiba.Manzoor.abacus@gmail.com'],
+        ['Zainab', 'Anwar', 'Zainab.Anwar.abacus', 'Zainab#Anwar#abacus#2025', 'Zainab.Anwar.abacus@gmail.com'],
+        ['Saba', 'Shoukat', 'Saba.Shoukat.abacus', 'Saba#Shoukat#abacus#2025', 'Saba.Shoukat.abacus@gmail.com'],
+        ['Ayesha', 'Tariq', 'Ayesha.Tariq.abacus', 'Ayesha#Tariq#abacus#2025', 'Ayesha.Tariq.abacus@gmail.com'],
+        ['Nagina', 'Shahzadi', 'Nagina.Shahzadi.abacus', 'Nagina#Shahzadi#abacus#2025', 'Nagina.Shahzadi.abacus@gmail.com'],
+        ['Zoya', 'Murad', 'Zoya.Murad.abacus', 'Zoya#Murad#abacus#2025', 'Zoya.Murad.abacus@gmail.com'],
+        ['Iqra', 'Shahzadi', 'Iqra.Shahzadi.abacus', 'Iqra#Shahzadi#abacus#2025', 'Iqra.Shahzadi.abacus@gmail.com'],
+        ['Zainab', 'Ashraf', 'Zainab.Ashraf.abacus', 'Zainab#Ashraf#abacus#2025', 'Zainab.Ashraf.abacus@gmail.com'],
+        ['Aqsa', 'Fatima', 'Aqsa.Fatima.abacus', 'Aqsa#Fatima#abacus#2025', 'Aqsa.Fatima.abacus@gmail.com'],
+        ['Saleha', 'Naseem', 'Saleha.Naseem.abacus', 'Saleha#Naseem#abacus#2025', 'Saleha.Naseem.abacus@gmail.com'],
+        ['Aiman', 'Naeem', 'Aiman.Naeem.abacus', 'Aiman#Naeem#abacus#2025', 'Aiman.Naeem.abacus@gmail.com'],
+        ['Aroosa', 'Khalid', 'Aroosa.Khalid.abacus', 'Aroosa#Khalid#abacus#2025', 'Aroosa.Khalid.abacus@gmail.com'],
+        ['Kaukab', 'Talib', 'Kaukab.Talib.abacus', 'Kaukab#Talib#abacus#2025', 'Kaukab.Talib.abacus@gmail.com'],
+        ['Muskan', 'Kawal', 'Muskan.Kawal.abacus', 'Muskan#Kawal#abacus#2025', 'Muskan.Kawal.abacus@gmail.com'],
+        ['Noor', 'Ul Huda', 'Noor.Ul.Huda.abacus', 'Noor#Ul#Huda#abacus#2025', 'Noor.Ul.Huda.abacus@gmail.com'],
+        ['Zarish', 'Saleem', 'Zarish.Saleem.abacus', 'Zarish#Saleem#abacus#2025', 'Zarish.Saleem.abacus@gmail.com'],
+        ['Aleeza', 'Shahzad', 'Aleeza.Shahzad.abacus', 'Aleeza#Shahzad#abacus#2025', 'Aleeza.Shahzad.abacus@gmail.com'],
+        ['Sania', 'Nazir', 'Sania.Nazir.abacus', 'Sania#Nazir#abacus#2025', 'Sania.Nazir.abacus@gmail.com']
     ];
 
 
-    $headers = ['First Name', 'Last Name', 'Username', 'Password','id'];
+    $headers = ['First Name', 'Last Name', 'Username', 'Password','email'];
 
     // CSV File Generation
     $filePath = storage_path('app/agents.csv');

@@ -141,14 +141,14 @@
             </li>
             <!-- User interface -->
 
-            <li class="menu-header small text-uppercase"><span class="menu-header-text">Performance</span></li>
+            {{-- <li class="menu-header small text-uppercase"><span class="menu-header-text">Performance</span></li> --}}
             <!-- Forms -->
-            <li class="menu-item {{ Request::is('basic-agent-l/overall-reports') ? 'active' : '' }}">
+            {{-- <li class="menu-item {{ Request::is('basic-agent-l/overall-reports') ? 'active' : '' }}">
               <a href="{{ route('basic-agent-l.overall-reports') }}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Overall Sales Score</div>
               </a>
-            </li>
+            </li> --}}
             <!-- Misc -->
 
           </ul>

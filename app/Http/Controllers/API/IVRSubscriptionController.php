@@ -302,7 +302,7 @@ class IVRSubscriptionController extends Controller
                         'recursive_charging_date' => $future_time_recursive_formatted,
                         'subscription_time' =>$activation_time,
                         'grace_period_time' => $grace_period_time,
-                        'sales_agent' => -1,
+                        'sales_agent' => 1,
                         'company_id' =>14
                     ]);
 

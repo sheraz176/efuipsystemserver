@@ -39,79 +39,47 @@ class DashboardController extends Controller
     }
 
 
-public function ajex(Request $request)
-{
-    $companyId = Auth::guard('company_manager')->user()->company_id;
+    public function ajex(Request $request)
+    {
+        $companyId = Auth::guard('company_manager')->user()->company_id;
 
-    $todaySubscriptionCount = CustomerSubscription::where('company_id', $companyId)
-        ->whereDate('created_at', Carbon::today())
-        ->count();
+        // Batch queries for TeleSalesAgent
+        $teleSalesAgentStats = TeleSalesAgent::selectRaw("
+                SUM(CASE WHEN category = 0 AND islogin = 1 THEN 1 ELSE 0 END) AS liveAgents,
+                SUM(CASE WHEN category = 0 AND status = 1 THEN 1 ELSE 0 END) AS activeAgents,
+                SUM(CASE WHEN category = 1 AND islogin = 1 THEN 1 ELSE 0 END) AS liveAgentsWFH,
+                SUM(CASE WHEN category = 1 AND status = 1 THEN 1 ELSE 0 END) AS activeAgentsWFH
+            ")
+            ->where('company_id', $companyId)
+            ->first();
 
-    // Count of live agents (currently logged in)
-    $liveAgents = TeleSalesAgent::where('company_id', $companyId)
-        ->where('category', '0')
-        ->where('islogin', '1')
-        ->count();
+        // Batch queries for CustomerSubscription
+        $subscriptionStats = CustomerSubscription::selectRaw("
+                COUNT(CASE WHEN DATE(created_at) = CURRENT_DATE THEN 1 END) AS todaySubscriptionCount,
+                COUNT(CASE WHEN YEAR(created_at) = YEAR(CURRENT_DATE) AND MONTH(created_at) = MONTH(CURRENT_DATE) THEN 1 END) AS currentMonthSubscriptionCount,
+                COUNT(CASE WHEN YEAR(created_at) = YEAR(CURRENT_DATE) THEN 1 END) AS currentYearSubscriptionCount,
+                SUM(CASE WHEN DATE(created_at) = CURRENT_DATE THEN transaction_amount ELSE 0 END) AS dailyTransactionSum,
+                SUM(CASE WHEN YEAR(created_at) = YEAR(CURRENT_DATE) AND MONTH(created_at) = MONTH(CURRENT_DATE) THEN transaction_amount ELSE 0 END) AS monthlyTransactionSum,
+                SUM(CASE WHEN YEAR(created_at) = YEAR(CURRENT_DATE) THEN transaction_amount ELSE 0 END) AS yearlyTransactionSum
+            ")
+            ->where('company_id', $companyId)
+            ->first();
 
-    // Count of active agents
-    $activeAgents = TeleSalesAgent::where('company_id', $companyId)
-        ->where('category', '0')
-        ->where('status', '1')
-        ->count();
+        // Format the results for response
+        return response()->json([
+            'liveAgents' => number_format($teleSalesAgentStats->liveAgents),
+            'activeAgents' => number_format($teleSalesAgentStats->activeAgents),
+            'liveAgentsWFH' => number_format($teleSalesAgentStats->liveAgentsWFH),
+            'activeAgentsWFH' => number_format($teleSalesAgentStats->activeAgentsWFH),
+            'todaySubscriptionCount' => number_format($subscriptionStats->todaySubscriptionCount),
+            'currentMonthSubscriptionCount' => number_format($subscriptionStats->currentMonthSubscriptionCount),
+            'currentYearSubscriptionCount' => number_format($subscriptionStats->currentYearSubscriptionCount),
+            'dailyTransactionSum' => number_format($subscriptionStats->dailyTransactionSum, 2),
+            'monthlyTransactionSum' => number_format($subscriptionStats->monthlyTransactionSum, 2),
+            'yearlyTransactionSum' => number_format($subscriptionStats->yearlyTransactionSum, 2),
+        ]);
+    }
 
-        // Count of live agents (currently logged in)
-    $liveAgentsWFH = TeleSalesAgent::where('company_id', $companyId)
-    ->where('category', '1')
-    ->where('islogin', '1')
-    ->count();
-
-  // Count of active agents
-   $activeAgentsWFH = TeleSalesAgent::where('company_id', $companyId)
-    ->where('category', '1')
-    ->where('status', '1')
-    ->count();
-
-    // Count of current month's subscriptions
-    $currentMonthSubscriptionCount = CustomerSubscription::where('company_id', $companyId)
-        ->whereYear('created_at', Carbon::now()->year)
-        ->whereMonth('created_at', Carbon::now()->month)
-        ->count();
-
-    // Count of current year's subscriptions
-    $currentYearSubscriptionCount = CustomerSubscription::where('company_id', $companyId)
-        ->whereYear('created_at', Carbon::now()->year)
-        ->count();
-
-    // Sum of today's transactions
-    $dailyTransactionSum = CustomerSubscription::where('company_id', $companyId)
-        ->whereDate('created_at', Carbon::today())
-        ->sum('transaction_amount');
-
-    // Sum of monthly transaction amounts
-    $monthlyTransactionSum = CustomerSubscription::where('company_id', $companyId)
-        ->whereYear('created_at', Carbon::now()->year)
-        ->whereMonth('created_at', Carbon::now()->month)
-        ->sum('transaction_amount');
-
-    // Sum of yearly transaction amounts
-    $yearlyTransactionSum = CustomerSubscription::where('company_id', $companyId)
-        ->whereYear('created_at', Carbon::now()->year)
-        ->sum('transaction_amount');
-
-    // Format the numbers before returning
-    return response()->json([
-        'liveAgents' => number_format($liveAgents),
-        'todaySubscriptionCount' => number_format($todaySubscriptionCount),
-        'activeAgents' => number_format($activeAgents),
-        'liveAgentsWFH' => number_format($liveAgentsWFH),
-        'activeAgentsWFH' => number_format($activeAgentsWFH),
-        'currentMonthSubscriptionCount' => number_format($currentMonthSubscriptionCount),
-        'currentYearSubscriptionCount' => number_format($currentYearSubscriptionCount),
-        'dailyTransactionSum' => number_format($dailyTransactionSum, 2), // 2 decimal places
-        'monthlyTransactionSum' => number_format($monthlyTransactionSum, 2), // 2 decimal places
-        'yearlyTransactionSum' => number_format($yearlyTransactionSum, 2), // 2 decimal places
-    ]);
-}
 
 public function NetEnrollment(Request $request)
 {

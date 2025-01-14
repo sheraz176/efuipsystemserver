@@ -65,8 +65,8 @@
                               </div>
                             </div>
                           </div>
-                          <span class="fw-medium d-block mb-1">Monthly Sales</span>
-                          <h3 class="card-title mb-2">Rs.{{ $currentMonthTotal }}</h3>
+                          <span class="fw-medium d-block mb-1">Today Sales</span>
+                          <h3 class="card-title mb-2"><span id="todaySalesCount">0</span> </h3>
                           <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +10.50%</small>
                         </div>
                       </div>
@@ -97,8 +97,8 @@
                               </div>
                             </div>
                           </div>
-                          <span>Daily Sales</span>
-                          <h3 class="card-title text-nowrap mb-1">Rs.{{ $currentDayTotal }}</h3>
+                          <span>Current Month</span>
+                          <h3 class="card-title text-nowrap mb-1"><span id="currentMonthTotalCount">0</span></h3>
                           <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +28.42%</small>
                         </div>
                       </div>
@@ -110,8 +110,8 @@
                   <div class="card">
                     <div class="row row-bordered g-0">
                       <div class="col-md-8">
-                        <h5 class="card-header m-0 me-2 pb-3">Total Life Secured </h5>
-                        <div id="totalRevenueChart" class="px-2"></div>
+                        {{-- <h5 class="card-header m-0 me-2 pb-3">Total Life Secured </h5>
+                        <div id="totalRevenueChart" class="px-2"></div> --}}
                       </div>
                       <div class="col-md-4">
                         <div class="card-body">
@@ -124,12 +124,10 @@
                                 data-bs-toggle="dropdown"
                                 aria-haspopup="true"
                                 aria-expanded="false">
-                                2024
+                                2025
                               </button>
                               <div class="dropdown-menu dropdown-menu-end" aria-labelledby="growthReportId">
-                                <a class="dropdown-item" href="javascript:void(0);">2021</a>
-                                <a class="dropdown-item" href="javascript:void(0);">2020</a>
-                                <a class="dropdown-item" href="javascript:void(0);">2019</a>
+
                               </div>
                             </div>
                           </div>
@@ -142,12 +140,12 @@
                             <div class="me-2">
                               <span class="badge bg-label-primary p-2"><i class="bx bx-wallet text-primary"></i></span>
                             </div>
-                            <div class="d-flex flex-column">
+                            {{-- <div class="d-flex flex-column">
                               <small>2024</small>
                               <h6 class="mb-0">32.5k</h6>
-                            </div>
+                            </div> --}}
                           </div>
-                          <div class="d-flex">
+                          {{-- <div class="d-flex">
                             <div class="me-2">
                               <span class="badge bg-label-info p-2"><i class="bx bx-wallet text-info"></i></span>
                             </div>
@@ -155,7 +153,7 @@
                               <small>2021</small>
                               <h6 class="mb-0">41.2k</h6>
                             </div>
-                          </div>
+                          </div> --}}
                         </div>
                       </div>
                     </div>
@@ -164,64 +162,7 @@
                 <!--/ Total Revenue -->
                 <div class="col-12 col-md-8 col-lg-4 order-3 order-md-2">
                   <div class="row">
-                    <div class="col-6 mb-4">
-                      <div class="card">
-                        <div class="card-body">
-                          <div class="card-title d-flex align-items-start justify-content-between">
-                            <div class="avatar flex-shrink-0">
-                              <img src="{{ asset('/assets/img/icons/unicons/paypal.png')}}" alt="Credit Card" class="rounded" />
-                            </div>
-                            <div class="dropdown">
-                              <button
-                                class="btn p-0"
-                                type="button"
-                                id="cardOpt4"
-                                data-bs-toggle="dropdown"
-                                aria-haspopup="true"
-                                aria-expanded="false">
-                                <i class="bx bx-dots-vertical-rounded"></i>
-                              </button>
-                              <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt4">
-                                <a class="dropdown-item" href="javascript:void(0);">View More</a>
-                                <a class="dropdown-item" href="javascript:void(0);">Delete</a>
-                              </div>
-                            </div>
-                          </div>
-                          <span class="d-block mb-1">Monthly Lifes Secured</span>
-                          <h3 class="card-title text-nowrap mb-2">{{ $currentMonthTotalCount }}</h3>
-                          <small class="text-danger fw-medium"><i class="bx bx-down-arrow-alt"></i> -14.82%</small>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-6 mb-4">
-                      <div class="card">
-                        <div class="card-body">
-                          <div class="card-title d-flex align-items-start justify-content-between">
-                            <div class="avatar flex-shrink-0">
-                              <img src="{{ asset('/assets/img/icons/unicons/cc-primary.png')}}" alt="Credit Card" class="rounded" />
-                            </div>
-                            <div class="dropdown">
-                              <button
-                                class="btn p-0"
-                                type="button"
-                                id="cardOpt1"
-                                data-bs-toggle="dropdown"
-                                aria-haspopup="true"
-                                aria-expanded="false">
-                                <i class="bx bx-dots-vertical-rounded"></i>
-                              </button>
-                              <div class="dropdown-menu" aria-labelledby="cardOpt1">
-                                <a class="dropdown-item" href="javascript:void(0);">View More</a>
-                                <a class="dropdown-item" href="javascript:void(0);">Delete</a>
-                              </div>
-                            </div>
-                          </div>
-                          <span class="fw-medium d-block mb-1">Daily Life Secured</span>
-                          <h3 class="card-title mb-2">{{ $currentDayTotalCount }}</h3>
-                          <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +28.14%</small>
-                        </div>
-                      </div>
-                    </div>
+
                     <!-- </div>
     <div class="row"> -->
                     <div class="col-12 mb-4">
@@ -231,13 +172,13 @@
                             <div class="d-flex flex-sm-column flex-row align-items-start justify-content-between">
                               <div class="card-title">
                                 <h5 class="text-nowrap mb-2">{{ session('agent')->first_name }}'s Total This Year Sales</h5>
-                                <span class="badge bg-label-warning rounded-pill">Year 2024</span>
+                                <span class="badge bg-label-warning rounded-pill">Year 2025</span>
                               </div>
                               <div class="mt-sm-auto">
                                 <small class="text-success text-nowrap fw-medium"
                                   ><i class="bx bx-chevron-up"></i> 68.2%</small
                                 >
-                                <h3 class="mb-0">Rs.{{ $currentYearTotal }}</h3>
+                                <h3 class="mb-0"> <span id="currentYearTotal">0</span></h3>
                               </div>
                             </div>
                             <div id="profileReportChart"></div>
@@ -251,6 +192,45 @@
 
             </div>
 
+
+
+
+
+            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+            <script>
+                $(document).ready(function () {
+                    function fetchDashboardData() {
+                        $.ajax({
+                            url: "{{ route('agent.dashboard.data') }}",
+                            method: "GET",
+                            success: function (response) {
+                                if (response.status === 'success') {
+                                    // Update the dashboard with received data
+                                    $('#todaySalesCount').text(response.data.todaySalesCount);
+                                    $('#currentMonthTotalCount').text(response.data.currentMonthTotalCount);
+                                    $('#currentYearTotal').text(response.data.currentYearTotal);
+                                } else {
+                                    alert('Error: ' + response.message);
+                                }
+                            },
+                            error: function (xhr) {
+                                if (xhr.status === 401) {
+                                    alert('Session Expired. Please re-login.');
+                                    window.location.reload();
+                                } else {
+                                    alert('Something went wrong. Please try again later.');
+                                }
+                            }
+                        });
+                    }
+
+                    // Fetch data on page load
+                    fetchDashboardData();
+
+                    // Optionally, set up an interval to refresh data periodically
+                    setInterval(fetchDashboardData, 60000); // Refresh every 60 seconds
+                });
+            </script>
 
 
 @endsection()

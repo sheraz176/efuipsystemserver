@@ -231,6 +231,12 @@ return [
             'level' => 'info',
         ],
 
+        'Generic_api' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/Api/Generic_api.log'),
+            'level' => 'info',
+        ],
+
 
 
            // End Api Logs channels

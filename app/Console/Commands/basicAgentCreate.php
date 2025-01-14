@@ -44,28 +44,29 @@ class basicAgentCreate extends Command
     {
 
         $agentsData = [
-            ['Muneeb', 'Mubashir', 'Muneeb.Mubashir.sybrid', 'Muneeb#Mubashir#sybrid#2024', 'muneebfarooqui31@gmail.com'],
-            ['M Kamil', 'Ali', 'Kamil.Ali.sybrid', 'Kamil#Ali#sybrid#2024', 'hassankhan502133@gmail.com'],
-            ['Imtiaz', 'Ahmad', 'Imtiaz.Ahmad.sybrid', 'Imtiaz#Ahmad#sybrid#2024', 'wafaimtiaz00@gmail.com'],
-            ['Anwar', 'Saeed', 'Anwar.Saeed.sybrid', 'Anwar#Saeed#sybrid#2024', 'anwar0099saeed@gmail.com'],
-            ['Shan e', 'Hassan', 'ShaneHassan.sybrid', 'ShaneHassan#sybrid#2024', 'shanehassan50@gmail.com'],
-            ['Sardar Ali', 'Hassan', 'SardarAliHassan.sybrid', 'SardarAliHassan#sybrid#2024', 'sardaralihassanzahid01@gmail.com'],
-            ['Sardar Muhammad', 'Hassan', 'SardarMHassan.sybrid', 'SardarMHassan#sybrid#2024', 'sardarmhassan2002@gmail.com'],
-            ['Abdul', 'Baseer', 'AbdulBaseer.sybrid', 'AbdulBaseer#sybrid#2024', 'abdulbaseer8881@gmail.com'],
-            ['Muhammad', 'Usman', 'MuhammadUsman.sybrid', 'MuhammadUsman#sybrid#2024', 'ukdesigner007@gmail.com'],
-            ['Hafsa', 'Anwar', 'Hafsa.Anwar.sybrid', 'Hafsa#Anwar#sybrid#2024', 'sybfly5@gmail.com'],
-            ['Muhammad Sikandar', 'Abbasi', 'SikandarAbbasi.sybrid', 'SikandarAbbasi#sybrid#2024', 'sikandarabbasi112233@gmail.com'],
-            ['Sadaf', 'Mushtaq', 'SadafMushtaq.sybrid', 'SadafMushtaq#sybrid#2024', 'itxsadafrj9@gmail.com'],
-            ['Esha Bashir', 'Abbasi', 'EshaBashirAbbasi.sybrid', 'EshaBashirAbbasi#sybrid#2024', 'eshaabbasi66@gmail.com'],
-            ['Anam', 'Mustafa', 'AnamMustafa.sybrid', 'AnamMustafa#sybrid#2024', 'mustafaanum88@gmail.com'],
-            ['Faizan', 'Khurshid', 'FaizanKhurshid.sybrid', 'FaizanKhurshid#sybrid#2024', 'meerfaizankhursheed@gmail.com'],
-            ['Malaika', 'Arif', 'MalaikaArif.sybrid', 'MalaikaArif#sybrid#2024', 'malaikaarif33333@gmail.com'],
-            ['Mohsin', 'Naseer', 'MohsinNaseer.sybrid', 'MohsinNaseer#sybrid#2024', 'mohsinnaseer63@gmail.com'],
-            ['Abu', 'Huraira', 'AbuHuraira.sybrid', 'AbuHuraira#sybrid#2024', 'ahahxd8932@gmail.com'],
-            ['Hafiz Muhammad', 'Hashir Kiani', 'HashirKiani.sybrid', 'HashirKiani#sybrid#2024', 'hashirkiani15000@gmail.com'],
-            ['Umer', 'Nasir', 'UmerNasir.sybrid', 'UmerNasir#sybrid#2024', 'umernasir008@gmail.com'],
-            ['Shahzad', 'Ahmed', 'ShahzadAhmed.sybrid', 'ShahzadAhmed#sybrid#2024', 'shahzadinfo1436@gmail.com'],
+            ['Mariam', 'Jabbar', 'Mariam.Jabbar.abacus', 'Mariam#Jabbar#abacus#2025', 'Mariam.Jabbar.abacus@gmail.com'],
+            ['Rimsha', 'Arif', 'Rimsha.Arif.abacus', 'Rimsha#Arif#abacus#2025', 'Rimsha.Arif.abacus@gmail.com'],
+            ['Mahnoor', 'Vicky', 'Mahnoor.Vicky.abacus', 'Mahnoor#Vicky#abacus#2025', 'Mahnoor.Vicky.abacus@gmail.com'],
+            ['Laiba', 'Manzoor', 'Laiba.Manzoor.abacus', 'Laiba#Manzoor#abacus#2025', 'Laiba.Manzoor.abacus@gmail.com'],
+            ['Zainab', 'Anwar', 'Zainab.Anwar.abacus', 'Zainab#Anwar#abacus#2025', 'Zainab.Anwar.abacus@gmail.com'],
+            ['Saba', 'Shoukat', 'Saba.Shoukat.abacus', 'Saba#Shoukat#abacus#2025', 'Saba.Shoukat.abacus@gmail.com'],
+            ['Ayesha', 'Tariq', 'Ayesha.Tariq.abacus', 'Ayesha#Tariq#abacus#2025', 'Ayesha.Tariq.abacus@gmail.com'],
+            ['Nagina', 'Shahzadi', 'Nagina.Shahzadi.abacus', 'Nagina#Shahzadi#abacus#2025', 'Nagina.Shahzadi.abacus@gmail.com'],
+            ['Zoya', 'Murad', 'Zoya.Murad.abacus', 'Zoya#Murad#abacus#2025', 'Zoya.Murad.abacus@gmail.com'],
+            ['Iqra', 'Shahzadi', 'Iqra.Shahzadi.abacus', 'Iqra#Shahzadi#abacus#2025', 'Iqra.Shahzadi.abacus@gmail.com'],
+            ['Zainab', 'Ashraf', 'Zainab.Ashraf.abacus', 'Zainab#Ashraf#abacus#2025', 'Zainab.Ashraf.abacus@gmail.com'],
+            ['Aqsa', 'Fatima', 'Aqsa.Fatima.abacus', 'Aqsa#Fatima#abacus#2025', 'Aqsa.Fatima.abacus@gmail.com'],
+            ['Saleha', 'Naseem', 'Saleha.Naseem.abacus', 'Saleha#Naseem#abacus#2025', 'Saleha.Naseem.abacus@gmail.com'],
+            ['Aiman', 'Naeem', 'Aiman.Naeem.abacus', 'Aiman#Naeem#abacus#2025', 'Aiman.Naeem.abacus@gmail.com'],
+            ['Aroosa', 'Khalid', 'Aroosa.Khalid.abacus', 'Aroosa#Khalid#abacus#2025', 'Aroosa.Khalid.abacus@gmail.com'],
+            ['Kaukab', 'Talib', 'Kaukab.Talib.abacus', 'Kaukab#Talib#abacus#2025', 'Kaukab.Talib.abacus@gmail.com'],
+            ['Muskan', 'Kawal', 'Muskan.Kawal.abacus', 'Muskan#Kawal#abacus#2025', 'Muskan.Kawal.abacus@gmail.com'],
+            ['Noor', 'Ul Huda', 'Noor.Ul.Huda.abacus', 'Noor#Ul#Huda#abacus#2025', 'Noor.Ul.Huda.abacus@gmail.com'],
+            ['Zarish', 'Saleem', 'Zarish.Saleem.abacus', 'Zarish#Saleem#abacus#2025', 'Zarish.Saleem.abacus@gmail.com'],
+            ['Aleeza', 'Shahzad', 'Aleeza.Shahzad.abacus', 'Aleeza#Shahzad#abacus#2025', 'Aleeza.Shahzad.abacus@gmail.com'],
+            ['Sania', 'Nazir', 'Sania.Nazir.abacus', 'Sania#Nazir#abacus#2025', 'Sania.Nazir.abacus@gmail.com']
         ];
+
 
 
 
@@ -76,7 +77,7 @@ class basicAgentCreate extends Command
                 'username' => $data[2],
                 'email' => $data[4],
                 'status' => 1,
-                'company_id' => 12,
+                'company_id' => 2,
                 'password' => $data[3],
             ];
 

@@ -58,39 +58,37 @@ class AgentSalesBasicAgentLController extends Controller
     {
         $teleSalesAgent = session('agent');
 
-        // Access the agent_id attribute
+        if (!$teleSalesAgent) {
+            return response()->json(['error' => 'Session expired, please login again.'], 401);
+        }
+
         $agentId = $teleSalesAgent->agent_id;
 
         if ($request->ajax()) {
-            // Start building the query
-            $query = CustomerSubscription::select('*')->where('sales_agent', $agentId)->get();
+            $query = CustomerSubscription::with(['plan', 'products'])
+                ->where('sales_agent', $agentId)
+                ->select(['subscription_id','subscriber_msisdn','transaction_amount','subscription_time','cps_transaction_id', 'sales_agent', 'plan_id', 'productId', 'policy_status']);
 
-
-            return Datatables::of($query)->addIndexColumn()
-
-
-                ->addColumn('plan_name', function($data){
-                    return $data->plan->plan_name;
+            return Datatables::of($query)
+                ->addIndexColumn()
+                ->addColumn('plan_name', function ($data) {
+                    return $data->plan ? $data->plan->plan_name : 'N/A';
                 })
-                ->addColumn('product_name', function($data){
-                    return $data->products->product_name;
+                ->addColumn('product_name', function ($data) {
+                    return $data->products ? $data->products->product_name : 'N/A';
                 })
-                ->addColumn('policy_status', function($data) {
-                    if ($data->policy_status == 1) {
-                        return '<span style="color: green;">Active</span>';
-                    } else {
-                        return '<span style="color: red;">In Active</span>';
-                    }
+                ->addColumn('policy_status', function ($data) {
+                    return $data->policy_status == 1
+                    ? '<button class="btn btn-success btn-sm">Active</button>'
+                    : '<button class="btn btn-danger btn-sm">Inactive</button>';
                 })
-
-
-                ->rawColumns(['plan_name', 'product_name','policy_status'])
+                ->rawColumns(['policy_status'])
                 ->make(true);
         }
 
-
         return view('basic-agent-l.SucessSales');
     }
+
 
 
     public function FailedAgentReports(Request $request)
