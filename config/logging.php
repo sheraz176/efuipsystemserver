@@ -231,9 +231,9 @@ return [
             'level' => 'info',
         ],
 
-        'Generic_api' => [
+        'gen_api' => [
             'driver' => 'single',
-            'path' => storage_path('logs/Api/Generic_api.log'),
+            'path' => storage_path('logs/Api/gen_api.log'),
             'level' => 'info',
         ],
 

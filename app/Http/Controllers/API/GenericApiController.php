@@ -484,11 +484,12 @@ class GenericApiController extends Controller
         $userRole = $request->header('X-User-Role');
         $appPlatform = $request->header('X-App-Platform');
 
-            Log::channel('ivr_api')->info('Header Request  product Api.',[
-                    'user_type' =>  $userType,
-                    'user_role' => $userRole,
-                    'app_platform' => $appPlatform,
-                    ]);
+        Log::channel('gen_api')->info('Product Header Request Api.',[
+            'msisdn' => $request->msisdn,
+            'user_type' =>  $userType,
+            'user_role' => $userRole,
+            'app_platform' => $appPlatform,
+            ]);
 
         if ($userType === 'USSD' && $userRole === 'Customer' && $appPlatform === 'CustomerUSSD') {
             return $this->customerUSSDProduct($request);
@@ -717,11 +718,12 @@ class GenericApiController extends Controller
         $userRole = $request->header('X-User-Role');
         $appPlatform = $request->header('X-App-Platform');
 
-             Log::channel('ivr_api')->info('Header sub Request Api.',[
-                    'user_type' =>  $userType,
-                    'user_role' => $userRole,
-                    'app_platform' => $appPlatform,
-                    ]);
+        Log::channel('gen_api')->info('Subscription Header Request Api.',[
+            'msisdn' => $request->msisdn,
+            'user_type' =>  $userType,
+            'user_role' => $userRole,
+            'app_platform' => $appPlatform,
+            ]);
 
         if ($userType === 'USSD' && $userRole === 'Customer' && $appPlatform === 'CustomerUSSD') {
             return $this->customerUSSDSubscription($request);
@@ -1717,11 +1719,12 @@ class GenericApiController extends Controller
         $userRole = $request->header('X-User-Role');
         $appPlatform = $request->header('X-App-Platform');
 
-         Log::channel('ivr_api')->info('Header  unsub Request Api.',[
-                    'user_type' =>  $userType,
-                    'user_role' => $userRole,
-                    'app_platform' => $appPlatform,
-                    ]);
+        Log::channel('gen_api')->info('Un Subsecription Api Header Request Api.',[
+            'msisdn' => $request->msisdn,
+            'user_type' =>  $userType,
+            'user_role' => $userRole,
+            'app_platform' => $appPlatform,
+            ]);
 
 
         if ($userType === 'USSD' && $userRole === 'Customer' && $appPlatform === 'CustomerUSSD') {
@@ -1983,11 +1986,12 @@ class GenericApiController extends Controller
         $userRole = $request->header('X-User-Role');
         $appPlatform = $request->header('X-App-Platform');
 
-           Log::channel('ivr_api')->info('Header Request Api.',[
-                    'user_type' =>  $userType,
-                    'user_role' => $userRole,
-                    'app_platform' => $appPlatform,
-                    ]);
+        Log::channel('gen_api')->info('Active Subsecription Api Header Request Api.',[
+            'msisdn' => $request->msisdn,
+            'user_type' =>  $userType,
+            'user_role' => $userRole,
+            'app_platform' => $appPlatform,
+            ]);
 
         if ($userType === 'USSD' && $userRole === 'Customer' && $appPlatform === 'CustomerUSSD') {
             return $this->UssdActiveSubGetAll($request);
