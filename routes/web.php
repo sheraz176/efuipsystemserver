@@ -47,6 +47,7 @@ use App\Http\Controllers\BasicAgentL\AutoDebitProcessController;
 use App\Http\Controllers\SuperAdmin\processBulkRefund;
 use App\Http\Controllers\SuperAdmin\RefundedController;
 use App\Http\Controllers\SuperAdmin\ProcessBulkSubController;
+use App\Http\Controllers\Agent\AgentRefundedController;
 
 /*
 |--------------------------------------------------------------------------
@@ -84,23 +85,27 @@ Route::get('/clear', function () {
 
 
 
-Route::prefix('testing-agent')->group(function () {
+Route::prefix('refund-agent')->group(function () {
     Route::get('/login', [AgentAuthController::class, 'showLoginForm'])->name('agent.login');
     Route::post('/login', [AgentAuthController::class, 'login']);
 
     Route::middleware(['web', 'agent'])->group(function () {
         Route::get('/dashboard', [AgentAuthController::class, 'dashboard'])->name('agent.dashboard');
-        Route::get('/sales', [AgentSalesController::class, 'sales'])->name('agent.sales');
-        Route::get('/transaction', [AgentSalesController::class, 'transaction'])->name('agent.transaction');
         Route::post('/logout', [AgentAuthController::class, 'logout'])->name('agent.logout');
-        Route::get('/sucesssales', [AgentSalesController::class, 'showAgentData'])->name('agent.sucesssales');
-        Route::get('/Failedsucesssales', [AgentSalesController::class, 'FailedAgentReports'])->name('agent.Failedsucesssales');
 
-        Route::post('/transaction-controller-route', [PaymentController::class, 'transactionController'])->name('transaction-controller-route');
 
-        Route::post('/sms-delivery-route', [SmsDelivery::class, 'smsDelivery'])->name('sms-delivery-route');
-        Route::post('/check-subscription', [SubscriptionController::class, 'checkSubscription'])->name('check-subscription');
-        Route::get('/overall-reports', [ReportsController::class, 'overall_report'])->name('agent.overall-reports');
+        Route::get('/Refunded/Customer', [AgentRefundedController::class,'index'])->name('agent.refunded.customer');
+        Route::get('/Refunded/Customer/Search', [AgentRefundedController::class,'search'])->name('agent.refunded.customer.search');
+        Route::post('/refund/process', [AgentRefundedController::class, 'processRefund'])->name('agent.refund.process');
+
+        // Route::get('/sales', [AgentSalesController::class, 'sales'])->name('agent.sales');
+        // Route::get('/transaction', [AgentSalesController::class, 'transaction'])->name('agent.transaction');
+        // Route::get('/sucesssales', [AgentSalesController::class, 'showAgentData'])->name('agent.sucesssales');
+        // Route::get('/Failedsucesssales', [AgentSalesController::class, 'FailedAgentReports'])->name('agent.Failedsucesssales');
+        // Route::post('/transaction-controller-route', [PaymentController::class, 'transactionController'])->name('transaction-controller-route');
+        // Route::post('/sms-delivery-route', [SmsDelivery::class, 'smsDelivery'])->name('sms-delivery-route');
+        // Route::post('/check-subscription', [SubscriptionController::class, 'checkSubscription'])->name('check-subscription');
+        // Route::get('/overall-reports', [ReportsController::class, 'overall_report'])->name('agent.overall-reports');
 
 
 
