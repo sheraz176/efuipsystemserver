@@ -757,7 +757,7 @@ class GenericApiController extends Controller
         $validator = Validator::make($request->all(), [
             'plan_id' => 'required|integer',
             'product_id' => 'required|integer',
-            'customer_msisdn' => 'required|string',
+            'customer_msisdn' => 'required|string|regex:/^\d{11,12}$/',
             'transaction_amount' => 'required|numeric',
             'cpsOriginatorConversationId' => 'required|string',
             'cpsTransactionId' => 'required|string',
@@ -771,6 +771,10 @@ class GenericApiController extends Controller
         }
 
         $subscriber_msisdn = $request->input("customer_msisdn");
+        if (preg_match('/^92\d{10}$/', $subscriber_msisdn)) {
+            // Convert '92300XXXXXXX' to '0300XXXXXXX'
+            $subscriber_msisdn = '0' . substr($subscriber_msisdn, 2);
+        }
         $transaction_amount = $request->input("transaction_amount");
         $cpsOriginatorConversationId = $request->input("cpsOriginatorConversationId");
         $cpsTransactionId = $request->input("cpsTransactionId");
@@ -943,7 +947,7 @@ class GenericApiController extends Controller
         $validator = Validator::make($request->all(), [
             'plan_id' => 'required|integer',
             'product_id' => 'required|integer',
-            'customer_msisdn' => 'required|string',
+            'customer_msisdn' => 'required|string|regex:/^\d{11,12}$/',
             'marchant_msisdn' => 'required|string',
             'transaction_amount' => 'required|numeric',
             'cpsOriginatorConversationId' => 'required|string',
@@ -960,7 +964,13 @@ class GenericApiController extends Controller
         $subscriber_cnic = "000000000000";
         $transactionStatus = "1";
 
+
         $subscriber_msisdn = $request->input("customer_msisdn");
+        if (preg_match('/^92\d{10}$/', $subscriber_msisdn)) {
+            // Convert '92300XXXXXXX' to '0300XXXXXXX'
+            $subscriber_msisdn = '0' . substr($subscriber_msisdn, 2);
+        }
+
         $transaction_amount = $request->input("transaction_amount");
         $cpsOriginatorConversationId = $request->input("cpsOriginatorConversationId");
         $cpsTransactionId = $request->input("cpsTransactionId");
@@ -1145,16 +1155,13 @@ class GenericApiController extends Controller
         $validator = Validator::make($request->all(), [
             'plan_id' => 'required|integer',
             'product_id' => 'required|integer',
-            'customer_msisdn' => 'required|string',
+            'customer_msisdn' => 'required|string|regex:/^\d{11,12}$/',
             'transaction_amount' => 'required|numeric',
             'cpsOriginatorConversationId' => 'required|string',
             'cpsTransactionId' => 'required|string',
             'cpsResponse' => 'required|string',
             'transactionStatus' => 'required',
             'subscriber_cnic' => 'required|numeric',
-
-
-
         ]);
 
         // Check for validation errors
@@ -1164,6 +1171,10 @@ class GenericApiController extends Controller
 
         $subscriber_cnic = $request->input("subscriber_cnic");
         $subscriber_msisdn = $request->input("customer_msisdn");
+        if (preg_match('/^92\d{10}$/', $subscriber_msisdn)) {
+            // Convert '92300XXXXXXX' to '0300XXXXXXX'
+            $subscriber_msisdn = '0' . substr($subscriber_msisdn, 2);
+        }
         $transaction_amount = $request->input("transaction_amount");
         $transactionStatus = $request->input("transactionStatus");
         $cpsOriginatorConversationId = $request->input("cpsOriginatorConversationId");
@@ -1357,7 +1368,7 @@ class GenericApiController extends Controller
         $validator = Validator::make($request->all(), [
             'plan_id' => 'required|integer',
             'product_id' => 'required|integer',
-            'customer_msisdn' => 'required|string',
+            'customer_msisdn' => 'required|string|regex:/^\d{11,12}$/',
             'transaction_amount' => 'required|numeric',
             'cpsOriginatorConversationId' => 'required|string',
             'cpsTransactionId' => 'required|string',
@@ -1368,7 +1379,12 @@ class GenericApiController extends Controller
         if ($validator->fails()) {
             return response()->json(['statusCode' => 400, 'message' => $validator->errors()], 400);
         }
+
         $subscriber_msisdn = $request->input("customer_msisdn");
+        if (preg_match('/^92\d{10}$/', $subscriber_msisdn)) {
+            // Convert '92300XXXXXXX' to '0300XXXXXXX'
+            $subscriber_msisdn = '0' . substr($subscriber_msisdn, 2);
+        }
         $transaction_amount = $request->input("transaction_amount");
         $cpsOriginatorConversationId = $request->input("cpsOriginatorConversationId");
         $cpsTransactionId = $request->input("cpsTransactionId");
@@ -1526,7 +1542,7 @@ class GenericApiController extends Controller
         $validator = Validator::make($request->all(), [
             'plan_id' => 'required|integer',
             'product_id' => 'required|integer',
-            'customer_msisdn' => 'required|string',
+            'customer_msisdn' => 'required|string|regex:/^\d{11,12}$/',
             'transaction_amount' => 'required|numeric',
             'cpsOriginatorConversationId' => 'required|string',
             'cpsTransactionId' => 'required|string',
@@ -1539,6 +1555,10 @@ class GenericApiController extends Controller
             return response()->json(['statusCode' => 400, 'message' => $validator->errors()], 400);
         }
         $subscriber_msisdn = $request->input("customer_msisdn");
+        if (preg_match('/^92\d{10}$/', $subscriber_msisdn)) {
+            // Convert '92300XXXXXXX' to '0300XXXXXXX'
+            $subscriber_msisdn = '0' . substr($subscriber_msisdn, 2);
+        }
         $transaction_amount = $request->input("transaction_amount");
         $cpsOriginatorConversationId = $request->input("cpsOriginatorConversationId");
         $cpsTransactionId = $request->input("cpsTransactionId");
@@ -1720,7 +1740,7 @@ class GenericApiController extends Controller
         $appPlatform = $request->header('X-App-Platform');
 
         Log::channel('gen_api')->info('Un Subsecription Api Header Request Api.',[
-            'msisdn' => $request->msisdn,
+            'msisdn' => $request->subscriber_msisdn,
             'user_type' =>  $userType,
             'user_role' => $userRole,
             'app_platform' => $appPlatform,
@@ -1750,7 +1770,7 @@ class GenericApiController extends Controller
     {
         // Step 1: Validate the request to ensure `subscriber_msisdn` is provided
         $validator = Validator::make($request->all(), [
-            'subscriber_msisdn' => 'required|string',
+            'subscriber_msisdn' => 'required|string|regex:/^\d{11}$/',
         ]);
 
         if ($validator->fails()) {
@@ -1819,7 +1839,7 @@ class GenericApiController extends Controller
     {
         // Step 1: Validate the request to ensure `subscriber_msisdn` is provided
         $validator = Validator::make($request->all(), [
-            'subscriber_msisdn' => 'required|string',
+            'subscriber_msisdn' => 'required|string|regex:/^\d{11}$/',
         ]);
 
         if ($validator->fails()) {
@@ -1888,7 +1908,7 @@ class GenericApiController extends Controller
     {
         // Step 1: Validate the request to ensure `subscriber_msisdn` is provided
         $validator = Validator::make($request->all(), [
-            'subscriber_msisdn' => 'required|string',
+            'subscriber_msisdn' => 'required|string|regex:/^\d{11}$/',
         ]);
 
         if ($validator->fails()) {
@@ -1987,7 +2007,7 @@ class GenericApiController extends Controller
         $appPlatform = $request->header('X-App-Platform');
 
         Log::channel('gen_api')->info('Active Subsecription Api Header Request Api.',[
-            'msisdn' => $request->msisdn,
+            'msisdn' => $request->subscriber_msisdn,
             'user_type' =>  $userType,
             'user_role' => $userRole,
             'app_platform' => $appPlatform,
@@ -2012,7 +2032,7 @@ class GenericApiController extends Controller
     {
         $subscriber_msisdn = $request->input("subscriber_msisdn");
         $rules = [
-            'subscriber_msisdn' => 'required|numeric'
+            'subscriber_msisdn' => 'required|string|regex:/^\d{11}$/'
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -2089,7 +2109,7 @@ class GenericApiController extends Controller
     {
         $subscriber_msisdn = $request->input("subscriber_msisdn");
         $rules = [
-            'subscriber_msisdn' => 'required|numeric'
+            'subscriber_msisdn' => 'required|string|regex:/^\d{11}$/'
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -2162,7 +2182,7 @@ class GenericApiController extends Controller
     {
         $subscriber_msisdn = $request->input("subscriber_msisdn");
         $rules = [
-            'subscriber_msisdn' => 'required|numeric'
+            'subscriber_msisdn' => 'required|string|regex:/^\d{11}$/'
         ];
 
         $validator = Validator::make($request->all(), $rules);
