@@ -757,7 +757,7 @@ class GenericApiController extends Controller
         $validator = Validator::make($request->all(), [
             'plan_id' => 'required|integer',
             'product_id' => 'required|integer',
-            'customer_msisdn' => 'required|string|regex:/^\d{11,12}$/',
+            'customer_msisdn' => 'required|regex:/^\d{11,12}$/',
             'transaction_amount' => 'required|numeric',
             'cpsOriginatorConversationId' => 'required|string',
             'cpsTransactionId' => 'required|string',
@@ -947,8 +947,8 @@ class GenericApiController extends Controller
         $validator = Validator::make($request->all(), [
             'plan_id' => 'required|integer',
             'product_id' => 'required|integer',
-            'customer_msisdn' => 'required|string|regex:/^\d{11,12}$/',
-            'marchant_msisdn' => 'required|string',
+            'customer_msisdn' => 'required|regex:/^\d{11,12}$/',
+            'marchant_msisdn' => 'required',
             'transaction_amount' => 'required|numeric',
             'cpsOriginatorConversationId' => 'required|string',
             'cpsTransactionId' => 'required|string',
@@ -1155,7 +1155,7 @@ class GenericApiController extends Controller
         $validator = Validator::make($request->all(), [
             'plan_id' => 'required|integer',
             'product_id' => 'required|integer',
-            'customer_msisdn' => 'required|string|regex:/^\d{11,12}$/',
+            'customer_msisdn' => 'required|regex:/^\d{11,12}$/',
             'transaction_amount' => 'required|numeric',
             'cpsOriginatorConversationId' => 'required|string',
             'cpsTransactionId' => 'required|string',
@@ -1368,7 +1368,7 @@ class GenericApiController extends Controller
         $validator = Validator::make($request->all(), [
             'plan_id' => 'required|integer',
             'product_id' => 'required|integer',
-            'customer_msisdn' => 'required|string|regex:/^\d{11,12}$/',
+            'customer_msisdn' => 'required|regex:/^\d{11,12}$/',
             'transaction_amount' => 'required|numeric',
             'cpsOriginatorConversationId' => 'required|string',
             'cpsTransactionId' => 'required|string',
@@ -1542,7 +1542,7 @@ class GenericApiController extends Controller
         $validator = Validator::make($request->all(), [
             'plan_id' => 'required|integer',
             'product_id' => 'required|integer',
-            'customer_msisdn' => 'required|string|regex:/^\d{11,12}$/',
+            'customer_msisdn' => 'required|regex:/^\d{11,12}$/',
             'transaction_amount' => 'required|numeric',
             'cpsOriginatorConversationId' => 'required|string',
             'cpsTransactionId' => 'required|string',
@@ -1770,7 +1770,7 @@ class GenericApiController extends Controller
     {
         // Step 1: Validate the request to ensure `subscriber_msisdn` is provided
         $validator = Validator::make($request->all(), [
-            'subscriber_msisdn' => 'required|string|regex:/^\d{11}$/',
+            'subscriber_msisdn' => 'required|regex:/^\d{11,12}$/',
         ]);
 
         if ($validator->fails()) {
@@ -1780,8 +1780,15 @@ class GenericApiController extends Controller
                 'errors' => $validator->errors(),
             ], 400);
         }
+
+        $subscriber_msisdn = $request->input("subscriber_msisdn");
+        if (preg_match('/^92\d{10}$/', $subscriber_msisdn)) {
+            // Convert '92300XXXXXXX' to '0300XXXXXXX'
+            $subscriber_msisdn = '0' . substr($subscriber_msisdn, 2);
+        }
+
         // Step 2: Check for active subscriptions based on `subscriber_msisdn`
-        $subscriptions = CustomerSubscription::where('subscriber_msisdn', $request->subscriber_msisdn)
+        $subscriptions = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
             ->where('policy_status', 1) // Only active subscriptions
             ->get();
 
@@ -1839,7 +1846,7 @@ class GenericApiController extends Controller
     {
         // Step 1: Validate the request to ensure `subscriber_msisdn` is provided
         $validator = Validator::make($request->all(), [
-            'subscriber_msisdn' => 'required|string|regex:/^\d{11}$/',
+            'subscriber_msisdn' => 'required|regex:/^\d{11,12}$/',
         ]);
 
         if ($validator->fails()) {
@@ -1849,8 +1856,15 @@ class GenericApiController extends Controller
                 'errors' => $validator->errors(),
             ], 400);
         }
+
+        $subscriber_msisdn = $request->input("subscriber_msisdn");
+        if (preg_match('/^92\d{10}$/', $subscriber_msisdn)) {
+            // Convert '92300XXXXXXX' to '0300XXXXXXX'
+            $subscriber_msisdn = '0' . substr($subscriber_msisdn, 2);
+        }
+
         // Step 2: Check for active subscriptions based on `subscriber_msisdn`
-        $subscriptions = CustomerSubscription::where('subscriber_msisdn', $request->subscriber_msisdn)
+        $subscriptions = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
             ->where('policy_status', 1) // Only active subscriptions
             ->get();
 
@@ -1908,7 +1922,7 @@ class GenericApiController extends Controller
     {
         // Step 1: Validate the request to ensure `subscriber_msisdn` is provided
         $validator = Validator::make($request->all(), [
-            'subscriber_msisdn' => 'required|string|regex:/^\d{11}$/',
+            'subscriber_msisdn' => 'required|regex:/^\d{11,12}$/',
         ]);
 
         if ($validator->fails()) {
@@ -1918,8 +1932,15 @@ class GenericApiController extends Controller
                 'errors' => $validator->errors(),
             ], 400);
         }
+
+        $subscriber_msisdn = $request->input("subscriber_msisdn");
+        if (preg_match('/^92\d{10}$/', $subscriber_msisdn)) {
+            // Convert '92300XXXXXXX' to '0300XXXXXXX'
+            $subscriber_msisdn = '0' . substr($subscriber_msisdn, 2);
+        }
+
         // Step 2: Check for active subscriptions based on `subscriber_msisdn`
-        $subscriptions = CustomerSubscription::where('subscriber_msisdn', $request->subscriber_msisdn)
+        $subscriptions = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
             ->where('policy_status', 1) // Only active subscriptions
             ->get();
 
@@ -2032,12 +2053,18 @@ class GenericApiController extends Controller
     {
         $subscriber_msisdn = $request->input("subscriber_msisdn");
         $rules = [
-            'subscriber_msisdn' => 'required|string|regex:/^\d{11}$/'
+            'subscriber_msisdn' => 'required|regex:/^\d{11,12}$/'
         ];
 
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $subscriber_msisdn = $request->input("subscriber_msisdn");
+        if (preg_match('/^92\d{10}$/', $subscriber_msisdn)) {
+            // Convert '92300XXXXXXX' to '0300XXXXXXX'
+            $subscriber_msisdn = '0' . substr($subscriber_msisdn, 2);
         }
 
         // Retrieve all active subscriptions
@@ -2109,12 +2136,18 @@ class GenericApiController extends Controller
     {
         $subscriber_msisdn = $request->input("subscriber_msisdn");
         $rules = [
-            'subscriber_msisdn' => 'required|string|regex:/^\d{11}$/'
+            'subscriber_msisdn' => 'required|regex:/^\d{11,12}$/'
         ];
 
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 400);
+        }
+
+        $subscriber_msisdn = $request->input("subscriber_msisdn");
+        if (preg_match('/^92\d{10}$/', $subscriber_msisdn)) {
+            // Convert '92300XXXXXXX' to '0300XXXXXXX'
+            $subscriber_msisdn = '0' . substr($subscriber_msisdn, 2);
         }
 
         // Retrieve all active subscriptions
@@ -2182,7 +2215,7 @@ class GenericApiController extends Controller
     {
         $subscriber_msisdn = $request->input("subscriber_msisdn");
         $rules = [
-            'subscriber_msisdn' => 'required|string|regex:/^\d{11}$/'
+            'subscriber_msisdn' => 'required|regex:/^\d{11,12}$/'
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -2190,6 +2223,11 @@ class GenericApiController extends Controller
             return response()->json(['error' => $validator->errors()], 400);
         }
 
+        $subscriber_msisdn = $request->input("subscriber_msisdn");
+        if (preg_match('/^92\d{10}$/', $subscriber_msisdn)) {
+            // Convert '92300XXXXXXX' to '0300XXXXXXX'
+            $subscriber_msisdn = '0' . substr($subscriber_msisdn, 2);
+        }
         // Retrieve all active subscriptions
         $subscriptions = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
             ->where('policy_status', 1)

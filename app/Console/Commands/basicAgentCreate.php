@@ -44,30 +44,19 @@ class basicAgentCreate extends Command
     {
 
         $agentsData = [
-            ['Mariam', 'Jabbar', 'Mariam.Jabbar.abacus', 'Mariam#Jabbar#abacus#2025', 'Mariam.Jabbar.abacus@gmail.com'],
-            ['Rimsha', 'Arif', 'Rimsha.Arif.abacus', 'Rimsha#Arif#abacus#2025', 'Rimsha.Arif.abacus@gmail.com'],
-            ['Mahnoor', 'Vicky', 'Mahnoor.Vicky.abacus', 'Mahnoor#Vicky#abacus#2025', 'Mahnoor.Vicky.abacus@gmail.com'],
-            ['Laiba', 'Manzoor', 'Laiba.Manzoor.abacus', 'Laiba#Manzoor#abacus#2025', 'Laiba.Manzoor.abacus@gmail.com'],
-            ['Zainab', 'Anwar', 'Zainab.Anwar.abacus', 'Zainab#Anwar#abacus#2025', 'Zainab.Anwar.abacus@gmail.com'],
-            ['Saba', 'Shoukat', 'Saba.Shoukat.abacus', 'Saba#Shoukat#abacus#2025', 'Saba.Shoukat.abacus@gmail.com'],
-            ['Ayesha', 'Tariq', 'Ayesha.Tariq.abacus', 'Ayesha#Tariq#abacus#2025', 'Ayesha.Tariq.abacus@gmail.com'],
-            ['Nagina', 'Shahzadi', 'Nagina.Shahzadi.abacus', 'Nagina#Shahzadi#abacus#2025', 'Nagina.Shahzadi.abacus@gmail.com'],
-            ['Zoya', 'Murad', 'Zoya.Murad.abacus', 'Zoya#Murad#abacus#2025', 'Zoya.Murad.abacus@gmail.com'],
-            ['Iqra', 'Shahzadi', 'Iqra.Shahzadi.abacus', 'Iqra#Shahzadi#abacus#2025', 'Iqra.Shahzadi.abacus@gmail.com'],
-            ['Zainab', 'Ashraf', 'Zainab.Ashraf.abacus', 'Zainab#Ashraf#abacus#2025', 'Zainab.Ashraf.abacus@gmail.com'],
-            ['Aqsa', 'Fatima', 'Aqsa.Fatima.abacus', 'Aqsa#Fatima#abacus#2025', 'Aqsa.Fatima.abacus@gmail.com'],
-            ['Saleha', 'Naseem', 'Saleha.Naseem.abacus', 'Saleha#Naseem#abacus#2025', 'Saleha.Naseem.abacus@gmail.com'],
-            ['Aiman', 'Naeem', 'Aiman.Naeem.abacus', 'Aiman#Naeem#abacus#2025', 'Aiman.Naeem.abacus@gmail.com'],
-            ['Aroosa', 'Khalid', 'Aroosa.Khalid.abacus', 'Aroosa#Khalid#abacus#2025', 'Aroosa.Khalid.abacus@gmail.com'],
-            ['Kaukab', 'Talib', 'Kaukab.Talib.abacus', 'Kaukab#Talib#abacus#2025', 'Kaukab.Talib.abacus@gmail.com'],
-            ['Muskan', 'Kawal', 'Muskan.Kawal.abacus', 'Muskan#Kawal#abacus#2025', 'Muskan.Kawal.abacus@gmail.com'],
-            ['Noor', 'Ul Huda', 'Noor.Ul.Huda.abacus', 'Noor#Ul#Huda#abacus#2025', 'Noor.Ul.Huda.abacus@gmail.com'],
-            ['Zarish', 'Saleem', 'Zarish.Saleem.abacus', 'Zarish#Saleem#abacus#2025', 'Zarish.Saleem.abacus@gmail.com'],
-            ['Aleeza', 'Shahzad', 'Aleeza.Shahzad.abacus', 'Aleeza#Shahzad#abacus#2025', 'Aleeza.Shahzad.abacus@gmail.com'],
-            ['Sania', 'Nazir', 'Sania.Nazir.abacus', 'Sania#Nazir#abacus#2025', 'Sania.Nazir.abacus@gmail.com']
+            ['Ammara', 'Abbas', 'Ammara.Abbas.abacus', 'Ammara#Abbas#abacus#2025', 'Ammara.Abbas.abacus@gmail.com'],
+            ['Muqaddas', 'Fayyaz', 'Muqaddas.Fayyaz.abacus', 'Muqaddas#Fayyaz#abacus#2025', 'Muqaddas.Fayyaz.abacus@gmail.com'],
+            ['Anoosha', 'Irfan', 'Anoosha.Irfan.abacus', 'Anoosha#Irfan#abacus#2025', 'Anoosha.Irfan.abacus@gmail.com'],
+            ['Zunaira', 'Shahzad', 'Zunaira.Shahzad.abacus', 'Zunaira#Shahzad#abacus#2025', 'Zunaira.Shahzad.abacus@gmail.com'],
+            ['Aliza', 'Yousaf', 'Aliza.Yousaf.abacus', 'Aliza#Yousaf#abacus#2025', 'Aliza.Yousaf.abacus@gmail.com'],
+            ['Sumbal', 'Zahoor', 'Sumbal.Zahoor.abacus', 'Sumbal#Zahoor#abacus#2025', 'Sumbal.Zahoor.abacus@gmail.com'],
+            ['Kainat', 'Loan', 'Kainat.Loan.abacus', 'Kainat#Loan#abacus#2025', 'Kainat.Loan.abacus@gmail.com'],
+            ['Asma', 'Shaukat', 'Asma.Shaukat.abacus', 'Asma#Shaukat#abacus#2025', 'Asma.Shaukat.abacus@gmail.com'],
+            ['Alishba', 'Latif', 'Alishba.Latif.abacus', 'Alishba#Latif#abacus#2025', 'Alishba.Latif.abacus@gmail.com'],
+            ['Hina', 'Parveen', 'Hina.Parveen.abacus', 'Hina#Parveen#abacus#2025', 'Hina.Parveen.abacus@gmail.com'],
+            ['Maira', 'Naik Muhammad', 'Maira.Naik.Muhammad.abacus', 'Maira#Naik#Muhammad#abacus#2025', 'Maira.Naik.Muhammad.abacus@gmail.com'],
+            ['Iram', 'Akram', 'Iram.Akram.abacus', 'Iram#Akram#abacus#2025', 'Iram.Akram.abacus@gmail.com']
         ];
-
-
 
 
         foreach ($agentsData as $data) {
