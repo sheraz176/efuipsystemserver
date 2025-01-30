@@ -881,7 +881,8 @@ class GenericApiController extends Controller
                 ->where('status', 1)
                 ->first();
             $plantext = $plan->plan_name;
-            if ($plantext == 'EFU Term Takaful Plus Plan') {
+            $plan_id = $plan->plan_id;
+            if ($plan_id == 1) {
                 $link = "https://bit.ly/439oH0L";
             } else {
                 $link = "https://bit.ly/3KagW3u";
@@ -1085,12 +1086,12 @@ class GenericApiController extends Controller
                 ->where('status', 1)
                 ->first();
             $plantext = $plan->plan_name;
-            if ($plantext == 'EFU Term Takaful Plus Plan') {
+            $plan_id = $plan->plan_id;
+            if ($plan_id == 1) {
                 $link = "https://bit.ly/439oH0L";
             } else {
                 $link = "https://bit.ly/3KagW3u";
             }
-
             $payload = [
                 'MobileNo' => $subscriber_msisdn,
                 'sender' => 'EFU-LIFE',
@@ -1281,7 +1282,8 @@ class GenericApiController extends Controller
                 ->where('status', 1)
                 ->first();
             $plantext = $plan->plan_name;
-            if ($plantext == 'EFU Term Takaful Plus Plan') {
+            $plan_id = $plan->plan_id;
+            if ($plan_id == 1) {
                 $link = "https://bit.ly/439oH0L";
             } else {
                 $link = "https://bit.ly/3KagW3u";
@@ -1478,7 +1480,8 @@ class GenericApiController extends Controller
                 ->where('status', 1)
                 ->first();
             $plantext = $plan->plan_name;
-            if ($plantext == 'EFU Term Takaful Plus Plan') {
+            $plan_id = $plan->plan_id;
+            if ($plan_id == 1) {
                 $link = "https://bit.ly/439oH0L";
             } else {
                 $link = "https://bit.ly/3KagW3u";
@@ -1654,7 +1657,8 @@ class GenericApiController extends Controller
                 ->where('status', 1)
                 ->first();
             $plantext = $plan->plan_name;
-            if ($plantext == 'EFU Term Takaful Plus Plan') {
+            $plan_id = $plan->plan_id;
+            if ($plan_id == 1) {
                 $link = "https://bit.ly/439oH0L";
             } else {
                 $link = "https://bit.ly/3KagW3u";

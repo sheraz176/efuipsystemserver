@@ -311,10 +311,11 @@ class IVRSubscriptionController extends Controller
                             // SMS Code
                            $url = 'https://api.efulife.com/itssr/its_sendsms';
 
-                           if ($plantext == 'EFU Term Takaful Plus Plan') {
-                              $link = "https://bit.ly/439oH0L";
-                           } else {
-                              $link = "https://bit.ly/3KagW3u";
+                           $plan_id = $plan->plan_id;
+                             if ($plan_id == 1) {
+                                 $link = "https://bit.ly/439oH0L";
+                             } else {
+                                 $link = "https://bit.ly/3KagW3u";
                              }
 
                            $payload = [
