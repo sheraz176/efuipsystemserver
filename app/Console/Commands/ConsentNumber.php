@@ -23,14 +23,14 @@ class ConsentNumber extends Command
      *
      * @var string
      */
-    protected $signature = 'consent:number';
+    protected $signature = 'low:balance';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Consent Number Running';
+    protected $description = 'Low Balance Number Running';
 
 
     public function __construct()
@@ -46,6 +46,7 @@ class ConsentNumber extends Command
         $consent_numbers = Consent::where('status', 1)
             ->where('consent', '(DTMF),1')->where('response', 'Insufficient balance.')
             ->where('resultCode', '2009')
+             ->whereIn('company_id', [1, 2])
             ->get();
         //dd($consent_numbers);
 
