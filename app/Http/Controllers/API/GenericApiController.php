@@ -858,7 +858,7 @@ class GenericApiController extends Controller
                 'subscription_time' => now(),
                 'grace_period_time' => $grace_period_time,
                 'sales_agent' => 1,
-                'company_id' => 15
+                'company_id' => 18
             ]);
 
             // Retrieve subscription data

@@ -296,7 +296,7 @@ class IVRSubscriptionController extends Controller
                         'product_duration' =>$duration,
                         'plan_id' =>$planId,
                         'productId' =>$productId,
-                        'policy_status' =>1,
+                        'policy_status' => 1,
                         'pulse' =>"ivr_subscription",
                         'api_source' => "IVR Subscription",
                         'recursive_charging_date' => $future_time_recursive_formatted,
@@ -308,7 +308,7 @@ class IVRSubscriptionController extends Controller
 
                     $CustomerSubscriptionDataID=$CustomerSubscriptionData->subscription_id;
 
-                            // SMS Code
+                    // SMS Code
                            $url = 'https://api.efulife.com/itssr/its_sendsms';
 
                            $plan_id = $plan->plan_id;

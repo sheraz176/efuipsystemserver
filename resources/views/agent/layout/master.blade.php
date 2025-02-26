@@ -138,6 +138,20 @@
                 </a>
               </li>
 
+              <li class="menu-item {{ Request::is('refund-agent/bulk/file/upload/index') || Request::is('super-admin/bulk/file/upload/create') ? 'active' : '' }}">
+                <a href="{{ route('agent.builkmanager.index') }}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-collection"></i>
+                  <div data-i18n="Basic">Bulk Refunds Manager</div>
+                </a>
+              </li>
+
+              <li class="menu-item {{ Request::is('refund-agent/process/bulk/refund/File') ? 'active' : '' }}">
+                <a href="{{ route('agent.process.bulk.refund.file') }}" class="menu-link">
+                  <i class="menu-icon tf-icons bx bx-collection"></i>
+                  <div data-i18n="Basic">Bulk Refund File Run</div>
+                </a>
+              </li>
+
 
             <!-- Cards -->
             {{-- <li class="menu-item">

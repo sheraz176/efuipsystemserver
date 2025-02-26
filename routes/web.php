@@ -48,6 +48,9 @@ use App\Http\Controllers\SuperAdmin\processBulkRefund;
 use App\Http\Controllers\SuperAdmin\RefundedController;
 use App\Http\Controllers\SuperAdmin\ProcessBulkSubController;
 use App\Http\Controllers\Agent\AgentRefundedController;
+use App\Http\Controllers\Agent\AgentBulkManagerController;
+use App\Http\Controllers\Agent\AgentbulkFileController;
+use App\Http\Controllers\Agent\AgentprocessBulkRefund;
 
 /*
 |--------------------------------------------------------------------------
@@ -97,6 +100,28 @@ Route::prefix('refund-agent')->group(function () {
         Route::get('/Refunded/Customer', [AgentRefundedController::class,'index'])->name('agent.refunded.customer');
         Route::get('/Refunded/Customer/Search', [AgentRefundedController::class,'search'])->name('agent.refunded.customer.search');
         Route::post('/refund/process', [AgentRefundedController::class, 'processRefund'])->name('agent.refund.process');
+
+         //Start BulkManagerController
+         Route::get('bulk/file/upload/index', [AgentBulkManagerController::class, 'index'])->name('agent.builkmanager.index');
+         Route::get('bulk/file/upload/create', [AgentBulkManagerController::class, 'create'])->name('agent.builkmanager.create');
+         Route::post('bulk/file/upload/store', [AgentBulkManagerController::class, 'store'])->name('agent.builkmanager.store');
+         Route::get('bulk/file/upload/getData', [AgentBulkManagerController::class, 'getData'])->name('agent.builkmanager.getData');
+         Route::post('/file-upload', [AgentbulkFileController::class, 'upload'])->name('agent.file.upload');
+
+          Route::get('/process/bulk/refund/File', [AgentprocessBulkRefund::class, 'processfile'])->name('agent.process.bulk.refund.file');
+          Route::post('/process/bulk/refund', [AgentprocessBulkRefund::class, 'bilkulfileRun'])->name('agent.process.bulk.refund');
+          Route::get('/get-processed-results', [AgentprocessBulkRefund::class, 'getProcessedResults'])->name('agent.getProcessedResults');
+
+          Route::get('/download-sample-csv', [LogsController::class, 'downloadSampleCsv'])
+          ->name('agent.download.sample.csv');
+
+          Route::get('bulk/file/upload/index/logs', [LogsController::class, 'agentbulkmanagerindex'])->name('agent.builkmanager.logsindex');
+          Route::get('bulk/file/upload/logsData', [LogsController::class, 'agentbulkmanagerlogsData'])->name('agent.builkmanager.logsData');
+
+
+          //END BulkManagerController
+
+
 
         // Route::get('/sales', [AgentSalesController::class, 'sales'])->name('agent.sales');
         // Route::get('/transaction', [AgentSalesController::class, 'transaction'])->name('agent.transaction');

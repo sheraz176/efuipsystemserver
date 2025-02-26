@@ -36,52 +36,52 @@ class AutoDebitSubscriptionController extends Controller
             // Add validation rules for any other new parameters
         ]);
 
-                // Check if validation fails
-                if ($validator->fails()) {
-                    return response()->json([
-                        'messageCode' => 400,
-                        'message' => 'Validation failed',
-                        'errors' => $validator->errors(),
-                    ], 400);
-                }
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'messageCode' => 400,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 400);
+        }
 
-                $today = Carbon::now('Asia/Karachi')->format('Y-m-d');
-                $uniqueKey = $request->subscriber_msisdn . '_' . $today; // Generate unique key using MSISDN and today's date
+        $today = Carbon::now('Asia/Karachi')->format('Y-m-d');
+        $uniqueKey = $request->subscriber_msisdn . '_' . $today; // Generate unique key using MSISDN and today's date
 
-                // Check for existing request with the same unique key (MSISDN + Date)
-                $checking_request_number = CheckingRequest::where('unique_key', $uniqueKey)
-                    ->first();
+        // Check for existing request with the same unique key (MSISDN + Date)
+        $checking_request_number = CheckingRequest::where('unique_key', $uniqueKey)
+            ->first();
 
-                // If a record exists for today's request
-                if ($checking_request_number) {
-                    // Check if a request has already been processed (request_number >= 1)
-                    if ($checking_request_number->request_number >= 1) {
-                        return response()->json([
-                            'status' => 'Failed',
-                            'data' => [
-                                'messageCode' => 2003,
-                                'message' => "Information: The agent has already attempted a deduction for this number. If you are receiving this message, the amount has already been deducted from the customer's account.",
-                            ],
-                        ], 422);
-                    }
+        // If a record exists for today's request
+        if ($checking_request_number) {
+            // Check if a request has already been processed (request_number >= 1)
+            if ($checking_request_number->request_number >= 1) {
+                return response()->json([
+                    'status' => 'Failed',
+                    'data' => [
+                        'messageCode' => 2003,
+                        'message' => "Information: The agent has already attempted a deduction for this number. If you are receiving this message, the amount has already been deducted from the customer's account.",
+                    ],
+                ], 422);
+            }
 
-                    // Otherwise, proceed to update the request and prevent further hits
-                    $checking_request_number->is_processing = true; // Set to processing
-                    $checking_request_number->update();
-                } else {
-                    // If no request exists, create a new one
-                    $checking_request_number = new CheckingRequest();
-                    $checking_request_number->msisdn = $request->subscriber_msisdn;
-                    $checking_request_number->request_number = 0; // Initial request count
-                    $checking_request_number->unique_key = $uniqueKey; // Use MSISDN + Date
-                    $checking_request_number->is_processing = true; // Mark as processing
-                    $checking_request_number->save();
-                }
+            // Otherwise, proceed to update the request and prevent further hits
+            $checking_request_number->is_processing = true; // Set to processing
+            $checking_request_number->update();
+        } else {
+            // If no request exists, create a new one
+            $checking_request_number = new CheckingRequest();
+            $checking_request_number->msisdn = $request->subscriber_msisdn;
+            $checking_request_number->request_number = 0; // Initial request count
+            $checking_request_number->unique_key = $uniqueKey; // Use MSISDN + Date
+            $checking_request_number->is_processing = true; // Mark as processing
+            $checking_request_number->save();
+        }
 
-                // Proceed with Jazz system hit if request_number is 0
-                if ($checking_request_number->request_number == 0) {
-                    try {
-             // Code to hit the Jazz system...
+        // Proceed with Jazz system hit if request_number is 0
+        if ($checking_request_number->request_number == 0) {
+            try {
+                // Code to hit the Jazz system...
 
 
                 // Get request parameters
@@ -102,29 +102,29 @@ class AutoDebitSubscriptionController extends Controller
 
 
                 $subscription = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
-                        ->where('plan_id', $planId)
-                        ->where('policy_status', 1)
-                        ->exists();
+                    ->where('plan_id', $planId)
+                    ->where('policy_status', 1)
+                    ->exists();
 
-                    //$subscription->makeHidden(['created_at', 'updated_at']);
+                //$subscription->makeHidden(['created_at', 'updated_at']);
 
-                    if ($subscription) {
-                        // Record exists and status is 1 (subscribed)
+                if ($subscription) {
+                    // Record exists and status is 1 (subscribed)
                     return response()->json([
-                            'status' => 'Registered',
-                            'data' => [
-                                'messageCode' => 2001,
-                                'message' => 'Already subscribed to the plan.',
-                            ],
-                        ], 200);
-                    }
+                        'status' => 'Registered',
+                        'data' => [
+                            'messageCode' => 2001,
+                            'message' => 'Already subscribed to the plan.',
+                        ],
+                    ], 200);
+                }
 
 
                 $products = ProductModel::where('plan_id', $planId)
-                        ->where('product_id', $productId) // Add this line
-                        ->where('status', 1)
-                        ->select('fee', 'duration', 'status')
-                        ->first();
+                    ->where('product_id', $productId) // Add this line
+                    ->where('status', 1)
+                    ->select('fee', 'duration', 'status')
+                    ->first();
 
                 if (!$products) {
                     return response()->json([
@@ -138,9 +138,9 @@ class AutoDebitSubscriptionController extends Controller
                 $fee = $products->fee;
                 $duration = $products->duration;
 
-                 $plan = PlanModel::where('plan_id', $planId)
-                ->where('status', 1)
-                ->first();
+                $plan = PlanModel::where('plan_id', $planId)
+                    ->where('status', 1)
+                    ->first();
                 $plantext = $plan->plan_name;
 
 
@@ -211,12 +211,12 @@ class AutoDebitSubscriptionController extends Controller
                 $response = curl_exec($ch);
 
                 // Logs
-              Log::channel('auto_debit_api')->info('Auto Debit Api.',[
-               'Msisdn-number' => $subscriber_msisdn_deduction,
-               'url' => $url,
-               'request-packet' => $body,
-               'response-data' => $response,
-               ]);
+                Log::channel('auto_debit_api')->info('Auto Debit Api.', [
+                    'Msisdn-number' => $subscriber_msisdn_deduction,
+                    'url' => $url,
+                    'request-packet' => $body,
+                    'response-data' => $response,
+                ]);
 
                 // Check for cURL errors
                 if ($response === false) {
@@ -240,12 +240,12 @@ class AutoDebitSubscriptionController extends Controller
                 if (isset($response['data'])) {
                     $hexEncodedData = $response['data'];
 
-                     // Remove non-hexadecimal characters
+                    // Remove non-hexadecimal characters
                     $hexEncodedData = preg_replace('/[^0-9a-fA-F]/', '', $hexEncodedData);
                     // Ensure the length is even
-                   if (strlen($hexEncodedData) % 2 !== 0) {
-                    $hexEncodedData = '0' . $hexEncodedData;
-                      }
+                    if (strlen($hexEncodedData) % 2 !== 0) {
+                        $hexEncodedData = '0' . $hexEncodedData;
+                    }
 
                     $binaryData = hex2bin($hexEncodedData);
 
@@ -264,8 +264,8 @@ class AutoDebitSubscriptionController extends Controller
                     $referenceId = $data['referenceId'];
                     $accountNumber = $data['accountNumber'];
 
-                     // Logs Table;
-                     $logs = logs::create([
+                    // Logs Table;
+                    $logs = logs::create([
                         'msisdn' => $subscriber_msisdn_deduction,
                         'resultCode' => $resultCode,
                         'resultDesc' => $resultDesc,
@@ -276,234 +276,290 @@ class AutoDebitSubscriptionController extends Controller
                         'agent_id' => $request->input('agent_id'),
                         'super_agent_name' => $super_agent_name,
                         'source' => "AutoDebitApi",
-                        ]);
+                    ]);
 
 
                     //echo $resultCode;
-                    if ($data !== null && isset($data['resultCode']) && $data['resultCode'] === "0")
-                    {
+                    if ($data !== null && isset($data['resultCode']) && $data['resultCode'] === "0") {
 
-                    $customer_id = '0011' . $subscriber_msisdn;
-                    //Grace Period
-                    $grace_period='14';
+                        $customer_id = '0011' . $subscriber_msisdn;
+                        //Grace Period
+                        $grace_period = '14';
 
-                    $current_time = time(); // Get the current Unix timestamp
-                    $future_time = strtotime('+14 days', $current_time); // Add 14 days to the current time
+                        $current_time = time(); // Get the current Unix timestamp
+                        $future_time = strtotime('+14 days', $current_time); // Add 14 days to the current time
 
-                    $activation_time=date('Y-m-d H:i:s');
-                    // Format the future time if needed
-                    $grace_period_time = date('Y-m-d H:i:s', $future_time);
-
-
-                    //Recusive Charging Date
-
-                    $future_time_recursive = strtotime("+" . $duration . " days", $current_time);
-                    $future_time_recursive_formatted = date('Y-m-d H:i:s', $future_time_recursive);
+                        $activation_time = date('Y-m-d H:i:s');
+                        // Format the future time if needed
+                        $grace_period_time = date('Y-m-d H:i:s', $future_time);
 
 
-                    $subscription = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
-                        ->where('plan_id', $planId)
-                        ->where('policy_status', 1)
-                        ->exists();
+                        //Recusive Charging Date
+
+                        $future_time_recursive = strtotime("+" . $duration . " days", $current_time);
+                        $future_time_recursive_formatted = date('Y-m-d H:i:s', $future_time_recursive);
 
 
-                    if ($subscription) {
-                        // Record exists and status is 1 (subscribed)
-
-                    return response()->json([
-                            'status' => 'Registered',
-                            'data' => [
-                                'messageCode' => 2001,
-                                'message' => 'Already subscribed to the plan.',
-                            ],
-                        ], 200);
-
-                    }
-
-                    else {
-
-                    $CustomerSubscriptionData = CustomerSubscription::create([
-                        'customer_id'=> $customer_id,
-                        'payer_cnic' => -1,
-                        'payer_msisdn' => $subscriber_msisdn,
-                        'subscriber_cnic' =>$customer_cnic,
-                        'subscriber_msisdn' =>$subscriber_msisdn,
-                        'beneficiary_name' =>$beneficinary_name,
-                        'beneficiary_msisdn' =>$beneficiary_msisdn,
-                        'transaction_amount' =>$fee,
-                        'transaction_status' =>1,
-                        'referenceId' =>$referenceId,
-                        'cps_transaction_id' =>$transactionId,
-                        'cps_response_text' =>"Service Activated Sucessfully",
-                        'product_duration' =>$duration,
-                        'plan_id' =>$planId,
-                        'productId' =>$productId,
-                        'policy_status' =>1,
-                        'pulse' =>"Recusive Charging",
-                        'api_source' => "AutoDebit",
-                        'recursive_charging_date' => $future_time_recursive_formatted,
-                        'subscription_time' =>$activation_time,
-                        'grace_period_time' => $grace_period_time,
-                        'sales_agent' => $agent_id,
-                        'company_id' =>$company_id,
-                        'consent' => $consent,
-                    ]);
-
-                    $CustomerSubscriptionDataID=$CustomerSubscriptionData->subscription_id;
-
-                    $interestedCustomer = InterestedCustomer::where('customer_msisdn', $subscriber_msisdn)
-                                        ->where('deduction_applied', 0)
-                                        ->orderBy('id', 'desc') // Order by ID in descending order
-                                        ->first();
-                         // Update deduction_applied to 1 if a matching record is found
-                             if ($interestedCustomer) {
-                                 $interestedCustomer->update(['deduction_applied' => 1]);
-                             }
-
-                              // After successful hit, mark request_number to 1
-                        $checking_request_number->request_number = 1;
-                        $checking_request_number->is_processing = false; // Reset processing flag
-                        $checking_request_number->update();
-
-                       // SMS Code
-                           $url = 'https://api.efulife.com/itssr/its_sendsms';
-
-                             $plan_id = $plan->plan_id;
-                             if ($plan_id == 1) {
-                                 $link = "https://bit.ly/439oH0L";
-                             } else {
-                                 $link = "https://bit.ly/3KagW3u";
-                             }
+                        $subscription = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
+                            ->where('plan_id', $planId)
+                            ->where('policy_status', 1)
+                            ->exists();
 
 
-                           $payload = [
-                             'MobileNo' => $subscriber_msisdn,
-                             'sender' => 'EFU-LIFE',
-                             'SMS' => "Dear Customer, You have successfully subscribed {$plantext}. for Rs {$fee}/-.T&Cs:{$link} ",
-                              ];
-
-                      $headers = [
-                           'Channelcode' => 'ITS',
-                            'Authorization' => 'Bearer XXXXAAA489SMSTOKEFU',
-                           'Content-Type' => 'application/json',
-                           ];
-
-                    try {
-                       // Set timeout for the request (e.g., 5 seconds)
-                       $response = Http::withHeaders($headers)->timeout(5)->post($url, $payload);
-
-                      // Optional: Log the response or check for successful response
-                      if ($response->successful()) {
-                      Log::info('SMS sent successfully', ['response' => $response->body()]);
-                    } else {
-                      Log::warning('SMS API response not successful', ['response' => $response->body()]);
-                       }
-                } catch (\Exception $e) {
-                   // Log the exception for debugging
-                         Log::error('SMS API call failed', ['error' => $e->getMessage()]);
-                           }
-
-             // End SMS Code
+                        if ($subscription) {
+                            // Record exists and status is 1 (subscribed)
 
                             return response()->json([
-                            'status' => 'success',
+                                'status' => 'Registered',
+                                'data' => [
+                                    'messageCode' => 2001,
+                                    'message' => 'Already subscribed to the plan.',
+                                ],
+                            ], 200);
+                        } else {
+
+                            $CustomerSubscriptionData = CustomerSubscription::create([
+                                'customer_id' => $customer_id,
+                                'payer_cnic' => -1,
+                                'payer_msisdn' => $subscriber_msisdn,
+                                'subscriber_cnic' => $customer_cnic,
+                                'subscriber_msisdn' => $subscriber_msisdn,
+                                'beneficiary_name' => $beneficinary_name,
+                                'beneficiary_msisdn' => $beneficiary_msisdn,
+                                'transaction_amount' => $fee,
+                                'transaction_status' => 1,
+                                'referenceId' => $referenceId,
+                                'cps_transaction_id' => $transactionId,
+                                'cps_response_text' => "Service Activated Sucessfully",
+                                'product_duration' => $duration,
+                                'plan_id' => $planId,
+                                'productId' => $productId,
+                                'policy_status' => 1,
+                                'pulse' => "Recusive Charging",
+                                'api_source' => "AutoDebit",
+                                'recursive_charging_date' => $future_time_recursive_formatted,
+                                'subscription_time' => $activation_time,
+                                'grace_period_time' => $grace_period_time,
+                                'sales_agent' => $agent_id,
+                                'company_id' => $company_id,
+                                'consent' => $consent,
+                            ]);
+
+                            $CustomerSubscriptionDataID = $CustomerSubscriptionData->subscription_id;
+
+                            $interestedCustomer = InterestedCustomer::where('customer_msisdn', $subscriber_msisdn)
+                                ->where('deduction_applied', 0)
+                                ->orderBy('id', 'desc') // Order by ID in descending order
+                                ->first();
+                            // Update deduction_applied to 1 if a matching record is found
+                            if ($interestedCustomer) {
+                                $interestedCustomer->update(['deduction_applied' => 1]);
+                            }
+
+                            // After successful hit, mark request_number to 1
+                            $checking_request_number->request_number = 1;
+                            $checking_request_number->is_processing = false; // Reset processing flag
+                            $checking_request_number->update();
+
+                            // SMS Code
+                            $url = 'https://api.efulife.com/itssr/its_sendsms';
+
+                            $plan_id = $plan->plan_id;
+                            if ($plan_id == 1) {
+                                $link = "https://bit.ly/4d0OYD6";
+                            } elseif ($plan_id == 4) {
+                                $link = "https://bit.ly/4gnTEWv";
+                            } elseif ($plan_id == 5) {
+                                $link = "https://bit.ly/3MGrSXG";
+                            } else {
+                                $link = "https://bit.ly/3KagW3u";
+                            }
+
+                            if ($plan_id == 1) {
+                                $sms = "EFU Term Life deta hai aapko Rs. 10 lak tak ka life cover, Rs 10000 ka accidental hospitalization aur Rs 2000 tak ka OPD Cover.";
+                            } elseif ($plan_id == 4) {
+                                $sms = "EFU Family Health Insurance deta hai Rs 5 lakh tak ka family hospitalization cover, C- Section pe Rs 25000, muft doctor se online mashwara aur bohat kuch.";
+                            } elseif ($plan_id == 5) {
+                                $sms = "EFU Medical insurance deta hai Rs 7.5 lakh ka hospitalization cover, unlimited online doctor se mashwara aur Rs 10000 tak ka doctor ki fees, dawai aur lab test ka coverage";
+                            } else {
+                                $sms = "EFU Medical insurance deta hai Rs 7.5 lakh ka hospitalization cover, unlimited online doctor se mashwara aur Rs 10000 tak ka doctor ki fees, dawai aur lab test ka coverage";
+                            }
+
+
+                            $payload = [
+                                'MobileNo' => $subscriber_msisdn,
+                                'sender' => 'EFU-LIFE',
+                                'SMS' => "Dear Customer, you’ve successfully subscribed to {$plantext}. for PKR {$fee}/-.T&Cs:{$link} ",
+                            ];
+
+                            // Second SMS
+                            $payload2 = [
+                                'MobileNo' => $subscriber_msisdn,
+                                'sender' => 'EFU-LIFE',
+                                'SMS' => "Ab claim karna hua nihayat asan. Claim karnay k liye 042111333033 pe call kary ya apnay claim documents support@efulife.com pe email kary.",
+                            ];
+
+                              // 3rd SMS
+                              $payload3 = [
+                                'MobileNo' => $subscriber_msisdn,
+                                'sender' => 'EFU-LIFE',
+                                'SMS' => "Apki EFU insurance deti phone pe doctor se muft mashwaray ki sahoolat. Abhi hamaray doctor se mashwara lenay k liye dial kary 042111333033",
+                               ];
+
+                                  // 4rd SMS
+                              $payload4 = [
+                                'MobileNo' => $subscriber_msisdn,
+                                'sender' => 'EFU-LIFE',
+                                'SMS' => "1.Apka Family Health Insurance 2 din mein renew hone wala hai. Baraye karam apne wallet mein kam az kam Rs 199 ki yakeeni banayein taake aap aur aapki family is service se faida utha saky",
+                               ];
+
+                                       // 5th SMS
+                              $payload5 = [
+                                'MobileNo' => $subscriber_msisdn,
+                                'sender' => 'EFU-LIFE',
+                                'SMS' => $sms,
+                               ];
+
+                            $headers = [
+                                'Channelcode' => 'ITS',
+                                'Authorization' => 'Bearer XXXXAAA489SMSTOKEFU',
+                                'Content-Type' => 'application/json',
+                            ];
+
+                            try {
+                                // Set timeout for the request (e.g., 5 seconds)
+                                $response = Http::withHeaders($headers)->timeout(5)->post($url, $payload);
+
+                                // Optional: Log the response or check for successful response
+                                if ($response->successful()) {
+                                    Log::info('SMS sent successfully', ['response' => $response->body()]);
+                                } else {
+                                    Log::warning('SMS API response not successful', ['response' => $response->body()]);
+                                }
+
+                                // Send second SMS
+                                $response2 = Http::withHeaders($headers)->timeout(5)->post($url, $payload2);
+                                if ($response2->successful()) {
+                                    Log::info("Second SMS sent successfully", ['MobileNo' => $subscriber_msisdn]);
+                                } else {
+                                    Log::error("Failed to send second SMS", ['MobileNo' => $subscriber_msisdn, 'Response' => $response2->body()]);
+                                }
+
+                                $response3 = Http::withHeaders($headers)->timeout(5)->post($url, $payload3);
+                                if ($response3->successful()) {
+                                    Log::info("3rd SMS sent successfully", ['MobileNo' => $subscriber_msisdn]);
+                                } else {
+                                    Log::error("Failed to send second SMS", ['MobileNo' => $subscriber_msisdn, 'Response' => $response3->body()]);
+                                }
+
+                                $response4 = Http::withHeaders($headers)->timeout(5)->post($url, $payload4);
+                                if ($response4->successful()) {
+                                    Log::info("4th SMS sent successfully", ['MobileNo' => $subscriber_msisdn]);
+                                } else {
+                                    Log::error("Failed to send second SMS", ['MobileNo' => $subscriber_msisdn, 'Response' => $response4->body()]);
+                                }
+
+                                $response5 = Http::withHeaders($headers)->timeout(5)->post($url, $payload5);
+                                if ($response5->successful()) {
+                                    Log::info("5th SMS sent successfully", ['MobileNo' => $subscriber_msisdn]);
+                                } else {
+                                    Log::error("Failed to send second SMS", ['MobileNo' => $subscriber_msisdn, 'Response' => $response5->body()]);
+                                }
+
+                            } catch (\Exception $e) {
+                                // Log the exception for debugging
+                                Log::error('SMS API call failed', ['error' => $e->getMessage()]);
+                            }
+
+                            // End SMS Code
+
+                            return response()->json([
+                                'status' => 'success',
                                 'data' => [
                                     'messageCode' => 2002,
                                     'message' => 'Policy subscribed successfully <br> Policy ID ' . $CustomerSubscriptionDataID . ' <br> ' . $resultDesc . '<br> This is Your Transaction ID : <br>' . $transactionId,
                                     'policy_subscription_id' => $CustomerSubscriptionDataID,
                                 ],
                             ], 200);
+                        }
+                    } else if ($data !== null) {
+                        FailedSubscriptionsController::saveFailedTransactionDataautoDebit($transactionId, $resultCode, $resultDesc, $failedReason, $amount, $referenceId, $accountNumber, $planId, $productId, $agent_id, $company_id);
+
+                        // Create a new ConsentNumber instance
+                        $ConsentNumber = new ConsentNumber();
+                        $ConsentNumber->msisdn = $accountNumber;
+                        $ConsentNumber->amount = $amount;
+                        $ConsentNumber->resultCode = $resultCode;
+                        $ConsentNumber->response = $resultDesc;
+                        $ConsentNumber->consent = $consent;
+                        $ConsentNumber->customer_cnic = $customer_cnic;
+                        $ConsentNumber->beneficinary_name = $beneficinary_name;
+                        $ConsentNumber->beneficiary_msisdn = $beneficiary_msisdn;
+                        $ConsentNumber->agent_id = $agent_id;
+                        $ConsentNumber->company_id = $company_id;
+                        $ConsentNumber->planId = $planId;
+                        $ConsentNumber->productId = $productId;
+                        $ConsentNumber->status = "1";
+                        $ConsentNumber->save();
 
 
+                        $interestedCustomer = InterestedCustomer::where('customer_msisdn', $subscriber_msisdn)
+                            ->where('deduction_applied', 0)
+                            ->orderBy('id', 'desc') // Order by ID in descending order
+                            ->first();
+                        // Update deduction_applied to 1 if a matching record is found
+                        if ($interestedCustomer) {
+                            $interestedCustomer->update(['deduction_applied' => 1]);
+                        }
 
-                    }
-
-
-                    }
-                    else if ($data !== null)
-                    {
-                         FailedSubscriptionsController::saveFailedTransactionDataautoDebit($transactionId,$resultCode,$resultDesc,$failedReason,$amount,$referenceId,$accountNumber,$planId,$productId,$agent_id,$company_id);
-
-                                 // Create a new ConsentNumber instance
-                                $ConsentNumber = new ConsentNumber();
-                                $ConsentNumber->msisdn = $accountNumber;
-                                $ConsentNumber->amount = $amount;
-                                $ConsentNumber->resultCode = $resultCode;
-                                $ConsentNumber->response = $resultDesc;
-                                $ConsentNumber->consent = $consent;
-                                $ConsentNumber->customer_cnic = $customer_cnic;
-                                $ConsentNumber->beneficinary_name = $beneficinary_name;
-                                $ConsentNumber->beneficiary_msisdn = $beneficiary_msisdn;
-                                $ConsentNumber->agent_id = $agent_id;
-                                $ConsentNumber->company_id = $company_id;
-                                $ConsentNumber->planId = $planId;
-                                $ConsentNumber->productId = $productId;
-                                $ConsentNumber->status = "1";
-                                $ConsentNumber->save();
-
-
-                         $interestedCustomer = InterestedCustomer::where('customer_msisdn', $subscriber_msisdn)
-                                        ->where('deduction_applied', 0)
-                                        ->orderBy('id', 'desc') // Order by ID in descending order
-                                        ->first();
-                         // Update deduction_applied to 1 if a matching record is found
-                             if ($interestedCustomer) {
-                                 $interestedCustomer->update(['deduction_applied' => 1]);
-                             }
-
-                             // After successful hit, mark request_number to 1
+                        // After successful hit, mark request_number to 1
                         $checking_request_number->request_number = 1;
                         $checking_request_number->is_processing = false; // Reset processing flag
                         $checking_request_number->update();
 
-                         return response()->json([
+                        return response()->json([
                             'status' => 'Failed',
                             'data' => [
                                 'messageCode' => 2003,
                                 'message' => $resultDesc . ' Here is Your Transaction ID: ' . $transactionId,
                             ],
                         ], 422);
-                     }
-                }
-                else
-                    {
-                     return response()->json([
-                            'status' => 'Error',
-                            'data' => [
-                                'messageCode' => 500,
-                                'message' => 'Error In Response from JazzCash Payment Channel',
-                            ],
-                        ], 500);
-                    }
-
-             //End Code to hit the Jazz system...
-
-
-                    } catch (\Exception $e) {
-                        // Handle errors (rollback is_processing flag)
-                        $checking_request_number->is_processing = false;
-                        $checking_request_number->update();
-
-                        return response()->json([
-                            'status' => 'Failed',
-                            'data' => [
-                                'messageCode' => 500,
-                                'message' => "Error: There was an issue processing the request. Please try again later.",
-                            ],
-                        ], 500);
                     }
                 } else {
-                    // If request_number is not 0, no need to hit Jazz system again
                     return response()->json([
-                        'status' => 'Failed',
+                        'status' => 'Error',
                         'data' => [
-                            'messageCode' => 2003,
-                            'message' => "Information: The agent has already attempted a deduction for this number.",
+                            'messageCode' => 500,
+                            'message' => 'Error In Response from JazzCash Payment Channel',
                         ],
-                    ], 422);
+                    ], 500);
                 }
 
+                //End Code to hit the Jazz system...
 
 
+            } catch (\Exception $e) {
+                // Handle errors (rollback is_processing flag)
+                $checking_request_number->is_processing = false;
+                $checking_request_number->update();
+
+                return response()->json([
+                    'status' => 'Failed',
+                    'data' => [
+                        'messageCode' => 500,
+                        'message' => "Error: There was an issue processing the request. Please try again later.",
+                    ],
+                ], 500);
+            }
+        } else {
+            // If request_number is not 0, no need to hit Jazz system again
+            return response()->json([
+                'status' => 'Failed',
+                'data' => [
+                    'messageCode' => 2003,
+                    'message' => "Information: The agent has already attempted a deduction for this number.",
+                ],
+            ], 422);
+        }
     }
 }
