@@ -44,18 +44,27 @@ class basicAgentCreate extends Command
     {
 
         $agentsData = [
-            ['Maria', 'Safeer Abbasi', 'Maria.Safeer.Abbasi.sybrid', 'Maria#Safeer#Abbasi#sybrid#2025', 'abbasisidra0000@gmail.com'],
-            ['Alishba', 'Fazal', 'Alishba.Fazal.sybrid', 'Alishba#Fazal#sybrid#2025', 'aamiralvi30@yahoo.com'],
-            ['Laiba', 'Ashraf', 'Laiba.Ashraf.sybrid', 'Laiba#Ashraf#sybrid#2025', 'laibaashraf19@gmail.com'],
-            ['Muhammad', 'Daniyal', 'Muhammad.Daniyal.sybrid', 'Muhammad#Daniyal#sybrid#2025', 'muhammaddaniyalaltaf044@gmail.com'],
-            ['Faizan', 'Shaheen Abbasi', 'Faizan.Shaheen.Abbasi.sybrid', 'Faizan#Shaheen#Abbasi#sybrid#2025', 'faizanabbasi65757@gmail.com'],
-            ['Serosh', 'Qaiser', 'Serosh.Qaiser.sybrid', 'Serosh#Qaiser#sybrid#2025', 'sehroshqaiser@gmail.com'],
-            ['Matti', 'Ur Rehman', 'Matti.Ur.Rehman.sybrid', 'Matti#Ur#Rehman#sybrid#2025', 'ababa6369@gmail.com'],
-            ['Ali', 'Muhammad', 'Ali.Muhammad.sybrid', 'Ali#Muhammad#sybrid#2025', 'alimuhammad1008557@gmail.com'],
-            ['Fahad', 'Kazmi', 'Fahad.Kazmi.sybrid', 'Fahad#Kazmi#sybrid#2025', 'fahadkazmi545@gmail.com'],
-            ['Mirfa', 'Riaz', 'Mirfa.Riaz.sybrid', 'Mirfa#Riaz#sybrid#2025', 'mariamariaaslam51@gmail.com'],
-            ['Saqib', 'Abbasi', 'Saqib.Abbasi.sybrid', 'Saqib#Abbasi#sybrid#2025', 'sa6847@gmail.com'],
-            ['Iqra', 'Javaid', 'Iqra.Javaid.sybrid', 'Iqra#Javaid#sybrid#2025', 'shykhiqra7@gmail.com']
+            ['Maheen', 'Afzal', 'Maheen.Afzal.abacus', 'Maheen#Afzal#abacus#2025', 'Maheen.Afzal.abacus@gmail.com'],
+            ['Sania', 'Sajid', 'Sania.Sajid.abacus', 'Sania#Sajid#abacus#2025', 'Sania.Sajid.abacus@gmail.com'],
+            ['Parwasha', 'Ashiq', 'Parwasha.Ashiq.abacus', 'Parwasha#Ashiq#abacus#2025', 'Parwasha.Ashiq.abacus@gmail.com'],
+            ['Amna', 'Bibi', 'Amna.Bibi.abacus', 'Amna#Bibi#abacus#2025', 'Amna.Bibi.abacus@gmail.com'],
+            ['Noor', 'Fayyaz', 'Noor.Fayyaz.abacus', 'Noor#Fayyaz#abacus#2025', 'Noor.Fayyaz.abacus@gmail.com'],
+            ['Laila', 'Eram Saeed', 'Laila.EramSaeed.abacus', 'Laila#EramSaeed#abacus#2025', 'Laila.EramSaeed.abacus@gmail.com'],
+            ['Misbah', 'Shabbir', 'Misbah.Shabbir.abacus', 'Misbah#Shabbir#abacus#2025', 'Misbah.Shabbir.abacus@gmail.com'],
+            ['Syeda Sadia', 'Mansoor', 'SyedaSadia.Mansoor.abacus', 'SyedaSadia#Mansoor#abacus#2025', 'SyedaSadia.Mansoor.abacus@gmail.com'],
+            ['Alishba', 'Akram', 'Alishba.Akram.abacus', 'Alishba#Akram#abacus#2025', 'Alishba.Akram.abacus@gmail.com'],
+            ['Maha', 'Batool', 'Maha.Batool.abacus', 'Maha#Batool#abacus#2025', 'Maha.Batool.abacus@gmail.com'],
+            ['Nida', 'Iqbal', 'Nida.Iqbal.abacus', 'Nida#Iqbal#abacus#2025', 'Nida.Iqbal.abacus@gmail.com'],
+            ['Laiba', 'Noor', 'Laiba.Noor.abacus', 'Laiba#Noor#abacus#2025', 'Laiba.Noor.abacus@gmail.com'],
+            ['Imra', 'Bukhari', 'Imra.Bukhari.abacus', 'Imra#Bukhari#abacus#2025', 'Imra.Bukhari.abacus@gmail.com'],
+            ['Nimra', 'Idress', 'Nimra.Idress.abacus', 'Nimra#Idress#abacus#2025', 'Nimra.Idress.abacus@gmail.com'],
+            ['Saba', 'Shahzadi', 'Saba.Shahzadi.abacus', 'Saba#Shahzadi#abacus#2025', 'Saba.Shahzadi.abacus@gmail.com'],
+            ['Hafiza Ayesha', 'Imtiaz', 'HafizaAyesha.Imtiaz.abacus', 'HafizaAyesha#Imtiaz#abacus#2025', 'HafizaAyesha.Imtiaz.abacus@gmail.com'],
+            ['Taskeen', 'Zaman', 'Taskeen.Zaman.abacus', 'Taskeen#Zaman#abacus#2025', 'Taskeen.Zaman.abacus@gmail.com'],
+            ['Eman', 'Talib', 'Eman.Talib.abacus', 'Eman#Talib#abacus#2025', 'Eman.Talib.abacus@gmail.com'],
+            ['Minahil', 'Liaqat', 'Minahil.Liaqat.abacus', 'Minahil#Liaqat#abacus#2025', 'Minahil.Liaqat.abacus@gmail.com'],
+            ['Fareeha', 'Bashir', 'Fareeha.Bashir.abacus', 'Fareeha#Bashir#abacus#2025', 'Fareeha.Bashir.abacus@gmail.com'],
+            ['Fatima', 'Tabbasum', 'Fatima.Tabbasum.abacus', 'Fatima#Tabbasum#abacus#2025', 'Fatima.Tabbasum.abacus@gmail.com']
         ];
 
 
@@ -67,7 +76,7 @@ class basicAgentCreate extends Command
                 'username' => $data[2],
                 'email' => $data[4],
                 'status' => 1,
-                'company_id' => 12,
+                'company_id' => 2,
                 'password' => $data[3],
             ];
 

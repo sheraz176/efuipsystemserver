@@ -64,6 +64,7 @@ class ClaimController extends Controller
             $request->validate([
                 'msisdn' => 'required',
                 'product_id' => 'required',
+                'claim_amount' => 'requird',
                 'type' => 'required|in:hospitalization,medical_and_lab_expense', // Validate type is either hospitalization or medical_and_lab_expense
                 'doctor_prescription' => 'nullable|file|mimes:pdf,jpg,png',
                 'medical_bill' => 'nullable|file|mimes:pdf,jpg,png',
@@ -72,8 +73,8 @@ class ClaimController extends Controller
             ]);
 
             // Check if the claim msisdn exists in the CustomerSubscription table
-            $claim_msisdn = CustomerSubscription::where('plan_id', '5')
-                ->where('productId', $request->product_id)
+            $claim_msisdn = CustomerSubscription::
+                where('productId', $request->product_id)
                 ->where('subscriber_msisdn', $request->msisdn)
                 ->where('policy_status', 1)
                 ->first();
@@ -122,6 +123,7 @@ class ClaimController extends Controller
                 'status' => 'In Process', // Default status
                 'date' => now(),
                 'amount' => $amount,
+                'claim_amount' => $request->claim_amount,
                 'type' => $type,
                 'history_name' => $history_name,
                 'doctor_prescription' => $doctorPrescriptionPath, // Path for doctor prescription
@@ -167,6 +169,7 @@ class ClaimController extends Controller
                 return [
                     'history_name' => $claim->history_name,
                     'amount' => 'Rs. ' . number_format($claim->amount, 0), // Format the amount
+                    'claim_amount' => 'Rs. ' . number_format($claim->claim_amount, 0),
                     'date' => \Carbon\Carbon::parse($claim->date)->format('d M, Y'), // Format the date
                     'status' => $claim->status,
                 ];
@@ -222,6 +225,7 @@ class ClaimController extends Controller
             return [
                 'history_name' => $claim->history_name,
                 'amount' => 'Rs. ' . number_format($claim->amount, 0),
+                'claim_amount' => 'Rs. ' . number_format($claim->claim_amount, 0),
                 'date' => \Carbon\Carbon::parse($claim->date)->format('d M, Y'),
                 'status' => $claim->status,
                 'type' => $claim->type, // Include type

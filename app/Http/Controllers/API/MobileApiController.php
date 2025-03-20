@@ -86,6 +86,7 @@ class MobileApiController extends Controller
 
     // Retrieve active products associated with the specified plan ID
     $products = ProductModel::where('plan_id', '4')
+    ->where('api_status', 1)
                             // ->where('status', 1)
                             ->get();
 

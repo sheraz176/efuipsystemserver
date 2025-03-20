@@ -23,7 +23,7 @@ class Claim extends Model
         'medical_bill',
         'lab_bill',
         'other',
+        'claim_amount',
     ];
-
 
 }

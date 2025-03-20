@@ -33,6 +33,7 @@ class IVRSubscriptionController extends Controller
     // Retrieve active products associated with the specified plan ID
     $products = ProductModel::where('plan_id', $planId)
                             ->where('status', 1)
+                            ->where('api_status', 1)
                             ->get();
 
     return response()->json([
