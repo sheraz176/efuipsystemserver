@@ -241,6 +241,13 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
             Route::post("claim/history", [ClaimController::class, 'ClaimHistory'])
                 ->name('claim.history');
 
+            Route::post("claim/amounts", [ClaimController::class, 'Claimamounts'])
+                ->name('claim.amounts');
+            Route::post("claim/status", [ClaimController::class, 'Claimstatus'])
+                ->name('claim.status');
+
+
+
         });
       });
 });

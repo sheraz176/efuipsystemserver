@@ -43,16 +43,14 @@ class TsmAgent extends Command
     public function handle()
 {
     $agentsData = [
-        ['Muhammad', 'Ali', 'Muhammad.Ali.tsm.2025', 'Muhammad#Ali#tsm#2025', 'HD1208'],
-        ['Muhammad', 'Usama', 'Muhammad.Usama.tsm', 'Muhammad#Usama#tsm#2025', 'HD1209'],
-        ['Nimra', 'Altaf', 'Nimra.Altaf.tsm', 'Nimra#Altaf#tsm#2025', 'HD1210'],
-        ['Shair', 'Ali', 'Shair.Ali.tsm', 'Shair#Ali#tsm#2025', 'HD1211'],
-        ['Sadia', 'Rasheed', 'Sadia.Rasheed.tsm', 'Sadia#Rasheed#tsm#2025', 'HD1212'],
-        ['Asma', 'Asif', 'Asma.Asif.tsm', 'Asma#Asif#tsm#2025', 'HD1213'],
-        ['Sabahat', 'Safdar', 'Sabahat.Safdar.tsm', 'Sabahat#Safdar#tsm#2025', 'HD1215'],
-        ['Alishba', 'Khan', 'Alishba.Khan.tsm', 'Alishba#Khan#tsm#2025', 'HD1216'],
-        ['Anum', 'Amroz', 'Anum.Amroz.tsm', 'Anum#Amroz#tsm#2025', 'HD1217'],
-        ['Neha', 'Majeed', 'Neha.Majeed.tsm', 'Neha#Majeed#tsm#2025', 'HD1218'],
+        ['Raja', 'Hammad', 'Raja.Hammad.tsm.2025', 'Raja#Hammad#tsm#2025', 'HD1238'],
+        ['Imran', 'Ali', 'Imran.Ali.tsm.2025', 'Imran#Ali#tsm#2025', 'HD1239'],
+        ['Aqsa', 'Kiran', 'Aqsa.Kiran.tsm.2025', 'Aqsa#Kiran#tsm#2025', 'HD1240'],
+        ['Afshan', 'Kiran', 'Afshan.Kiran.tsm.2025', 'Afshan#Kiran#tsm#2025', 'HD1241'],
+        ['Iqra', 'Bukhari', 'Iqra.Bukhari.tsm.2025', 'Iqra#Bukhari#tsm#2025', 'HD1242'],
+        ['Saira', 'Basit', 'Saira.Basit.tsm.2025', 'Saira#Basit#tsm#2025', 'HD1243'],
+        ['Rizwana', 'Sharif', 'Rizwana.Sharif.tsm.2025', 'Rizwana#Sharif#tsm#2025', 'HD1244'],
+        ['Kishwar', 'Bibi', 'Kishwar.Bibi.tsm.2025', 'Kishwar#Bibi#tsm#2025', 'HD1245'],
     ];
 
 

@@ -175,7 +175,7 @@ Route::prefix('basic-agent-l')->group(function () {
         Route::get('/Failedsucesssales', [AgentSalesBasicAgentLController::class, 'FailedAgentReports'])->name('basic-agent-l.Failedsucesssales');
         // routes/web.php
         Route::post('/save-customer', [CustomerBasicAgentLController::class, 'saveCustomer'])->name('save-customer');
-        Route::post('/check-subscription', [SubscriptionController::class, 'checkSubscription'])->name('check-subscription-basic');
+        Route::post('/check-subscription', [SubscriptionController::class, 'checkSubscription'])->name('check-subscription');
         Route::get('/overall-reports', [ReportsController::class, 'overall_report_basic_agent_l'])->name('basic-agent-l.overall-reports');
 
         Route::get('/auto/debit/index', [AutoDebitProcessController::class, 'index'])->name('basic-agent-l.index');

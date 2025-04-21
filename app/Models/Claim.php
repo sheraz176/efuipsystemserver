@@ -24,6 +24,8 @@ class Claim extends Model
         'lab_bill',
         'other',
         'claim_amount',
+        'existingamount',
+        'remaining_amount',
     ];
 
 }

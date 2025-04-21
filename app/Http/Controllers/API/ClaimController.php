@@ -13,6 +13,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\Facades\Image;
 
 class ClaimController extends Controller
 {
@@ -57,91 +59,123 @@ class ClaimController extends Controller
         return response()->json($response, 201);
     }
 
-    public function SubmitClaim(Request $request)
-    {
-        try {
-            // Validate incoming request data
-            $request->validate([
-                'msisdn' => 'required',
-                'product_id' => 'required',
-                'claim_amount' => 'requird',
-                'type' => 'required|in:hospitalization,medical_and_lab_expense', // Validate type is either hospitalization or medical_and_lab_expense
-                'doctor_prescription' => 'nullable|file|mimes:pdf,jpg,png',
-                'medical_bill' => 'nullable|file|mimes:pdf,jpg,png',
-                'lab_bill' => 'nullable|file|mimes:pdf,jpg,png',
-                'other' => 'nullable|file|mimes:pdf,jpg,png',
-            ]);
 
-            // Check if the claim msisdn exists in the CustomerSubscription table
-            $claim_msisdn = CustomerSubscription::
-                where('productId', $request->product_id)
-                ->where('subscriber_msisdn', $request->msisdn)
-                ->where('policy_status', 1)
-                ->first();
 
-            // If no matching msisdn found, return an error response
-            if (!$claim_msisdn) {
-                return response()->json(['message' => 'Claim msisdn not found'], 404);
-            }
 
-            // Check if a claim already exists for the same msisdn, plan_id, and product_id
-            $existingClaim = Claim::where('msisdn', $request->msisdn)
-                ->where('plan_id', $claim_msisdn->plan_id)
-                ->where('product_id', $request->product_id)
-                ->first();
+public function SubmitClaim(Request $request)
+{
+    try {
+        // Validate incoming request data
+        $request->validate([
+            'msisdn' => 'required',
+            'claim_amount' => 'required',
+            'type' => 'required|in:hospitalization,medical_and_lab_expense',
+            'doctor_prescription' => 'nullable',
+            'medical_bill' => 'nullable',
+            'lab_bill' => 'nullable',
+            'other' => 'nullable',
+        ]);
 
-            if ($existingClaim) {
-                return response()->json(['message' => 'A claim has already been submitted for this product.'], 409);
-            }
+        // Check if the claim msisdn exists in the CustomerSubscription table
+        $claim_msisdn = CustomerSubscription::where('productId', '6')
+            ->where('subscriber_msisdn', $request->msisdn)
+            ->where('policy_status', 1)
+            ->first();
 
-            // Get the transaction amount from the found msisdn
-            $amount = $claim_msisdn->transaction_amount;
-            $plan_id = $claim_msisdn->plan_id;
-
-            // Check if the type is valid and assign appropriate values for `type` and `history_name`
-            $type = $history_name = null;
-
-            if ($request->type == 'hospitalization') {
-                $type = 'hospitalization';
-                $history_name = 'Hospital';
-            } elseif ($request->type == 'medical_and_lab_expense') {
-                $type = 'medical_and_lab_expense';
-                $history_name = 'Medicine';
-            }
-
-            // Handle the file uploads and store the file paths
-            $doctorPrescriptionPath = $request->file('doctor_prescription') ? $request->file('doctor_prescription')->store('claims_documents') : null;
-            $medicalBillPath = $request->file('medical_bill') ? $request->file('medical_bill')->store('claims_documents') : null;
-            $labBillPath = $request->file('lab_bill') ? $request->file('lab_bill')->store('claims_documents') : null;
-            $otherPath = $request->file('other') ? $request->file('other')->store('claims_documents') : null;
-
-            // Save the claim with the relevant data
-            $claim = Claim::create([
-                'msisdn' => $request->msisdn,
-                'plan_id' => $plan_id,
-                'product_id' => $request->product_id,
-                'status' => 'In Process', // Default status
-                'date' => now(),
-                'amount' => $amount,
-                'claim_amount' => $request->claim_amount,
-                'type' => $type,
-                'history_name' => $history_name,
-                'doctor_prescription' => $doctorPrescriptionPath, // Path for doctor prescription
-                'medical_bill' => $medicalBillPath, // Path for medical bill
-                'lab_bill' => $labBillPath, // Path for lab bill
-                'other' => $otherPath, // Path for other document
-            ]);
-
-            // Return a success response
-            return response()->json(['message' => 'Claim submitted successfully', 'data' => $claim], 200);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Handle validation errors
-            return response()->json(['message' => 'Validation Error', 'errors' => $e->errors()], 422);
-        } catch (\Exception $e) {
-            // Handle other exceptions
-            return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], 500);
+        if (!$claim_msisdn) {
+            return response()->json(['message' => 'Claim msisdn not found'], 404);
         }
+
+        $amount = $claim_msisdn->transaction_amount;
+        $plan_id = $claim_msisdn->plan_id;
+
+        $type = ($request->type == 'hospitalization') ? 'hospitalization' : 'medical_and_lab_expense';
+        $history_name = ($type == 'hospitalization') ? 'Hospital' : 'Medicine';
+
+        // Handle file uploads (both normal file and base64)
+        $fileFields = ['doctor_prescription', 'medical_bill', 'lab_bill', 'other'];
+        $claimData = [];
+
+        foreach ($fileFields as $field) {
+            if ($request->hasFile($field)) {
+                $file = $request->file($field);
+                $filename = time() . '_' . $field . '.' . $file->getClientOriginalExtension();
+                $path = Storage::disk('public')->putFileAs('claims/' . $field, $file, $filename);
+                $claimData[$field] = $path;
+            } elseif ($request->has($field) && !empty($request->{$field})) {
+                $binaryData = base64_decode($request->{$field});
+
+                if ($binaryData !== false) {
+                    $mimeType = $this->detectMimeType($binaryData);
+                    $extension = $this->getExtensionFromMimeType($mimeType);
+                    $filename = time() . '_' . $field . '.' . $extension;
+                    $path = 'claims/' . $field . '/' . $filename;
+
+                    Storage::disk('public')->makeDirectory('claims/' . $field);
+
+                    if (strpos($mimeType, 'image/') === 0 && $extension != 'pdf') {
+                        try {
+                            $img = Image::make($binaryData);
+                            $img->resize(1000, null, function ($constraint) {
+                                $constraint->aspectRatio();
+                                $constraint->upsize();
+                            });
+
+                            $encodedImage = $img->encode($extension);
+                            Storage::disk('public')->put($path, (string) $encodedImage);
+                        } catch (\Exception $e) {
+                            continue;
+                        }
+                    } else {
+                        Storage::disk('public')->put($path, $binaryData);
+                    }
+
+                    $claimData[$field] = $path;
+                }
+            }
+        }
+
+        // Save the claim
+        $claim = Claim::create(array_merge([
+            'msisdn' => $request->msisdn,
+            'plan_id' => $plan_id,
+            'product_id' => '6',
+            'status' => 'In Process',
+            'date' => now(),
+            'amount' => $amount,
+            'claim_amount' => $request->claim_amount,
+            'type' => $type,
+            'history_name' => $history_name,
+        ], $claimData));
+
+        return response()->json(['message' => 'Claim submitted successfully', 'data' => $claim], 200);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json(['message' => 'Validation Error', 'errors' => $e->errors()], 422);
+    } catch (\Exception $e) {
+        return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], 500);
     }
+}
+
+private function detectMimeType($binaryData)
+{
+    $finfo = new \finfo(FILEINFO_MIME_TYPE);
+    return $finfo->buffer($binaryData);
+}
+
+private function getExtensionFromMimeType($mimeType)
+{
+    $mimeToExt = [
+        'image/jpeg' => 'jpg',
+        'image/png' => 'png',
+        'image/gif' => 'gif',
+        'application/pdf' => 'pdf',
+        'image/bmp' => 'bmp',
+        'image/webp' => 'webp',
+        'image/tiff' => 'tiff',
+    ];
+
+    return $mimeToExt[$mimeType] ?? 'jpg';
+}
 
 
 
@@ -167,6 +201,7 @@ class ClaimController extends Controller
             // Format the response
             $formattedClaims = $ClaimHistory->map(function ($claim) {
                 return [
+                    'claim_id' => $claim->id,
                     'history_name' => $claim->history_name,
                     'amount' => 'Rs. ' . number_format($claim->amount, 0), // Format the amount
                     'claim_amount' => 'Rs. ' . number_format($claim->claim_amount, 0),
@@ -185,6 +220,127 @@ class ClaimController extends Controller
             return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], 500);
         }
     }
+
+    public function Claimamounts(Request $request)
+{
+    $request->validate([
+        'msisdn' => 'required|digits_between:10,13', // Validate MSISDN is provided and is of valid length
+    ]);
+
+    // Check if the claim MSISDN exists in the CustomerSubscription table
+    $claim_msisdn = CustomerSubscription::where('productId', '6')
+        ->where('subscriber_msisdn', $request->msisdn)
+        ->where('policy_status', 1)
+        ->first();
+
+    if (!$claim_msisdn) {
+        return response()->json(['message' => 'Claim MSISDN not found'], 404);
+    }
+
+    // Retrieve all claims for the same MSISDN, plan_id, and product_id
+    $existingClaims = Claim::where('msisdn', $request->msisdn)
+        ->where('plan_id', $claim_msisdn->plan_id)
+        ->where('product_id', '6')
+        ->where('status', 'approved')
+        ->get();
+
+    // Get the package amount from the ProductModel
+    $product = ProductModel::where('product_id', '6')->first();
+
+    // Initialize base amounts
+    $baseHospitalizationAmount = 20000;
+    $baseMedicalExpenseAmount = 10000;
+
+    // If no existing claims found, return response with base amounts and zero claims
+    if ($existingClaims->isEmpty()) {
+        return response()->json([
+            'msisdn' => $request->msisdn,
+            'plan_id' => $claim_msisdn->plan_id,
+            'product_id' => '6',
+            'package_amount' => $product->fee ?? 0, // Ensure fee exists
+            'Total_Hospitalization_Amount_existing' => $baseHospitalizationAmount,
+            'Total_Medical_Bill_Amount_existing' => $baseMedicalExpenseAmount,
+            'total_hospitalization_claimed_amount' => 0,
+            'remaining_hospitalization_amount' => '20000',
+            'total_medical_bill_claimed_amount' => 0,
+            'remaining_medical_bill_amount' => '10000',
+        ]);
+    }
+
+    // Calculate total claimed amounts separately
+    $totalHospitalizationClaimed = $existingClaims->where('type', 'hospitalization')->sum('claim_amount');
+    $totalMedicalExpenseClaimed = $existingClaims->where('type', 'medical_and_lab_expense')->sum('claim_amount');
+
+    // Calculate remaining amounts
+    $remainingHospitalizationAmount = max($baseHospitalizationAmount - $totalHospitalizationClaimed, 0);
+    $remainingMedicalExpenseAmount = max($baseMedicalExpenseAmount - $totalMedicalExpenseClaimed, 0);
+
+    // Update all claims with the new remaining amounts
+    foreach ($existingClaims as $claim) {
+        if ($claim->type == 'hospitalization') {
+            $claim->update([
+                'existingamount' => $baseHospitalizationAmount,
+                'remaining_amount' => $remainingHospitalizationAmount
+            ]);
+        } elseif ($claim->type == 'medical_and_lab_expense') {
+            $claim->update([
+                'existingamount' => $baseMedicalExpenseAmount,
+                'remaining_amount' => $remainingMedicalExpenseAmount
+            ]);
+        }
+    }
+
+    return response()->json([
+        'msisdn' => $request->msisdn,
+        'plan_id' => $claim_msisdn->plan_id,
+        'product_id' => '6',
+        'package_amount' => $product->fee ?? 0, // Ensure fee exists
+        'Total_Hospitalization_Amount_existing' => $baseHospitalizationAmount,
+        'Total_Medical_Bill_Amount_existing' => $baseMedicalExpenseAmount,
+        'total_hospitalization_claimed_amount' => $totalHospitalizationClaimed,
+        'remaining_hospitalization_amount' => $remainingHospitalizationAmount,
+        'total_medical_bill_claimed_amount' => $totalMedicalExpenseClaimed,
+        'remaining_medical_bill_amount' => $remainingMedicalExpenseAmount,
+    ]);
+}
+
+
+public function Claimstatus(Request $request)
+{
+    try {
+        $request->validate([
+            'claim_id' => 'required', // Validate claim_id exists in claims table
+            'msisdn' => 'required|digits_between:10,13', // Validate MSISDN
+            'status' => 'required|in:approved,pending,cancelled' // Ensure status is one of these values
+        ]);
+
+        // Find the claim record
+        $claim = Claim::where('id', $request->claim_id)
+            ->where('msisdn', $request->msisdn)
+            ->first();
+
+        if (!$claim) {
+            return response()->json(['message' => 'Claim not found'], 404);
+        }
+
+        // Update claim status
+        $claim->update([
+            'status' => $request->status
+        ]);
+
+        return response()->json([
+            'message' => 'Claim status updated successfully',
+            'claim_id' => $claim->id,
+            'msisdn' => $claim->msisdn,
+            'status' => $claim->status
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'An error occurred',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
 
 
     public function ClaimDetails(Request $request)
@@ -223,6 +379,7 @@ class ClaimController extends Controller
 
             // Map claim details with associated data
             return [
+                'claim_id' => $claim->id,
                 'history_name' => $claim->history_name,
                 'amount' => 'Rs. ' . number_format($claim->amount, 0),
                 'claim_amount' => 'Rs. ' . number_format($claim->claim_amount, 0),
@@ -250,7 +407,6 @@ class ClaimController extends Controller
         return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], 500);
     }
 }
-
 
 
 public function mHealthDoctors(Request $request)

@@ -441,12 +441,12 @@ function updateProductsDropdown(planId) {
     // Add options based on the selected plan
     if (plansAndProducts.hasOwnProperty(planId)) {
         plansAndProducts[planId].products.forEach(product => {
-            if (product.status === 1) { // Only add active products
-                const option = document.createElement('option');
-                option.value = product.product_id;
-                option.textContent = product.product_code;
-                productDropdown.appendChild(option);
-            }
+            if (product.duration === 365 && product.status === 1) { // Sirf 365 duration aur active products
+        const option = document.createElement('option');
+        option.value = product.product_id;
+        option.textContent = product.product_code;
+        productDropdown.appendChild(option);
+    }
         });
     }
      if (productDropdown.options.length > 0) {
