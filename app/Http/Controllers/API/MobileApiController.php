@@ -15,6 +15,7 @@ use App\Http\Controllers\Subscription\FailedSubscriptionsController;
 use Illuminate\Support\Facades\Validator;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Models\SMSMsisdn;
 
 class MobileApiController extends Controller
 {
@@ -229,6 +230,14 @@ class MobileApiController extends Controller
 
         $planCode = $product->product_code;
 
+          // SMS Code
+          $sms = new SMSMsisdn();
+          $sms->msisdn = $subscriber_msisdn;
+          $sms->plan_id = $planId;
+          $sms->product_id = $product_id;
+          $sms->status = "0";
+          $sms->save();
+            // End SMS Code
 
         // Construct the response
         $response = [

@@ -13,6 +13,7 @@ use App\Models\Unsubscription\CustomerUnSubscription;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
+use App\Models\SMSMsisdn;
 
 
 
@@ -200,6 +201,14 @@ public function Subscription(Request $request)
 
         $planCode = $product->product_code;
 
+              // SMS Code
+          $sms = new SMSMsisdn();
+          $sms->msisdn = $subscriber_msisdn;
+          $sms->plan_id = $planId;
+          $sms->product_id = $product_id;
+          $sms->status = "0";
+          $sms->save();
+            // End SMS Code
 
         // Construct the response
         $response = [

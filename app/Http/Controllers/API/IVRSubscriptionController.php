@@ -11,6 +11,8 @@ use App\Http\Controllers\Subscription\FailedSubscriptionsController;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
+use App\Models\SMSMsisdn;
+
 
 class IVRSubscriptionController extends Controller
 {
@@ -33,7 +35,6 @@ class IVRSubscriptionController extends Controller
     // Retrieve active products associated with the specified plan ID
     $products = ProductModel::where('plan_id', $planId)
                             ->where('status', 1)
-                            ->where('api_status', 1)
                             ->get();
 
     return response()->json([
@@ -310,43 +311,13 @@ class IVRSubscriptionController extends Controller
                     $CustomerSubscriptionDataID=$CustomerSubscriptionData->subscription_id;
 
                     // SMS Code
-                           $url = 'https://api.efulife.com/itssr/its_sendsms';
-
-                           $plan_id = $plan->plan_id;
-                             if ($plan_id == 1) {
-                                 $link = "https://bit.ly/439oH0L";
-                             } else {
-                                 $link = "https://bit.ly/3KagW3u";
-                             }
-
-                           $payload = [
-                             'MobileNo' => $subscriber_msisdn,
-                             'sender' => 'EFU-LIFE',
-                             'SMS' => "Dear Customer, You have successfully subscribed {$plantext}. for Rs {$fee}/-.T&Cs:{$link} ",
-                              ];
-
-                      $headers = [
-                           'Channelcode' => 'ITS',
-                            'Authorization' => 'Bearer XXXXAAA489SMSTOKEFU',
-                           'Content-Type' => 'application/json',
-                           ];
-
-                    try {
-                       // Set timeout for the request (e.g., 5 seconds)
-                       $response = Http::withHeaders($headers)->timeout(5)->post($url, $payload);
-
-                      // Optional: Log the response or check for successful response
-                      if ($response->successful()) {
-                      Log::info('SMS sent successfully', ['response' => $response->body()]);
-                    } else {
-                      Log::warning('SMS API response not successful', ['response' => $response->body()]);
-                       }
-                } catch (\Exception $e) {
-                   // Log the exception for debugging
-                         Log::error('SMS API call failed', ['error' => $e->getMessage()]);
-                           }
-
-             // End SMS Code
+                    $sms = new SMSMsisdn();
+                    $sms->msisdn = $subscriber_msisdn;
+                    $sms->plan_id = $planId;
+                    $sms->product_id = $productId;
+                    $sms->status = "0";
+                    $sms->save();
+                      // End SMS Code
 
                             return response()->json([
                             'status' => 'success',

@@ -45,37 +45,23 @@ class basicAgentCreate extends Command
 
 
         $agentsData = [
-            ['Sadaf', 'Sohail', 'Sadaf.Sohail.Sybrid', 'Sadaf#Sohail#Sybrid#2025', 'sadafsohail396@gmail.com'],
-            ['Hafsa', 'Hafeez', 'Hafsa.Hafeez.Sybrid', 'Hafsa#Hafeez#Sybrid#2025', 'hafsahafeez414@gmail.com'],
-            ['Warda', 'Kashif', 'Warda.Kashif.Sybrid', 'Warda#Kashif#Sybrid#2025', 'kashifwarda07@gmail.com'],
-            ['Shazia', 'Sadiq', 'Shazia.Sadiq.Sybrid', 'Shazia#Sadiq#Sybrid#2025', 'sadiqnaseeb5@gmail.com'],
-            ['Hania', 'Akram', 'Hania.Akram.Sybrid', 'Hania#Akram#Sybrid#2025', 'haniaarajputthanii@gmail.com'],
-            ['Eman', 'Fatima', 'Eman.Fatima.Sybrid', 'Eman#Fatima#Sybrid#2025', 'emansheikh3344@gmail.com'],
-            ['Humaira', 'Saleem', 'Humaira.Saleem.Sybrid', 'Humaira#Saleem#Sybrid#2025', 'humairasaleem844@gmail.com'],
-            ['Farwa', 'Kanwal', 'Farwa.Kanwal.Sybrid', 'Farwa#Kanwal#Sybrid#2025', 'zaidifarwa628@gmail.com'],
-            ['Laiba', 'Zulfiqar', 'Laiba.Zulfiqar.Sybrid', 'Laiba#Zulfiqar#Sybrid#2025', 'maherawaismaherawais08@gmail.com'],
-            ['Muskan', 'Tahir', 'Muskan.Tahir.Sybrid', 'Muskan#Tahir#Sybrid#2025', 'muskane342@gmail.com'],
-            ['Minahil', 'Noor', 'Minahil.Noor.Sybrid', 'Minahil#Noor#Sybrid#2025', 'minahil0714@gmail.com'],
-            ['Maria', 'Majeed', 'Maria.Majeed.Sybrid', 'Maria#Majeed#Sybrid#2025', 'emanmajeed010@gmail.com'],
-            ['Zohran', 'Hussain', 'Zohran.Hussain.Sybrid', 'Zohran#Hussain#Sybrid#2025', 'zagzab784@gmail.com'],
-            ['Maliha', 'Zulfiqar', 'Maliha.Zulfiqar.Sybrid', 'Maliha#Zulfiqar#Sybrid#2025', 'manokhan92900@gmail.com'],
-            ['Sawera', 'Kamran', 'Sawera.Kamran.Sybrid', 'Sawera#Kamran#Sybrid#2025', 'sawerakamran05@gmail.com'],
-            ['Nigah', 'Amjad', 'Nigah.Amjad.Sybrid', 'Nigah#Amjad#Sybrid#2025', 'aliniguu4@gmail.com'],
-            ['Mahnoor', 'Aziz', 'Mahnoor.Aziz.Sybrid', 'Mahnoor#Aziz#Sybrid#2025', 'mahnooraziz879@gmail.com'],
-            ['Maha', 'Noor', 'Maha.Noor.Sybrid', 'Maha#Noor#Sybrid#2025', 'mahanoor0072@gmail.com'],
-            ['Tehreem', 'Taqi', 'Tehreem.Taqi.Sybrid', 'Tehreem#Taqi#Sybrid#2025', 'szada4403@gmail.com'],
-            ['Eman', 'Sheraza', 'Eman.Sheraza.Sybrid', 'Eman#Sheraza#Sybrid#2025', 'syedaes098@gmail.com'],
-            ['Muhammad', 'Saad', 'Muhammad.Saad.Sybrid', 'Muhammad#Saad#Sybrid#2025', 'muhammadsaad4850@gmail.com'],
-            ['Danish', 'Hafeez', 'Danish.Hafeez.Sybrid', 'Danish#Hafeez#Sybrid#2025', 'danishhafeez856@gmail.com'],
-            ['Asad', 'UllahShafique', 'Asad.UllahShafique.Sybrid', 'Asad#UllahShafique#Sybrid#2025', 'meharhatim5@gmail.com'],
-            ['Ahmad', 'Azeem', 'Ahmad.Azeem.Sybrid', 'Ahmad#Azeem#Sybrid#2025', 'ahmadazeem1818@gmail.com'],
-            ['Rizwan', 'Haseeb', 'Rizwan.Haseeb.Sybrid', 'Rizwan#Haseeb#Sybrid#2025', 'rizwanhaseebm@gmail.com'],
-            ['Muhammad', 'Hasnain', 'Muhammad.Hasnain.Sybrid', 'Muhammad#Hasnain#Sybrid#2025', 'hasnainali8868689@gmail.com'],
-            ['Nabeel', 'Ahmad', 'Nabeel.Ahmad.Sybrid', 'Nabeel#Ahmad#Sybrid#2025', 'innocentcute125@gmail.com'],
-            ['Ali', 'Raza2', 'Ali.Raza2.Sybrid', 'Ali#Raza2#Sybrid#2025', 'aliimtiaz0010@gmail.com'],
-            ['Mazhar', 'AliSaddique', 'Mazhar.AliSaddique.Sybrid', 'Mazhar#AliSaddique#Sybrid#2025', 'mazharsiddiqui2244@gmail.com'],
-            ['Ahsan', 'Nawaz', 'Ahsan.Nawaz.Sybrid', 'Ahsan#Nawaz#Sybrid#2025', 'ahsannawaz8392@gmail.com'],
+            ['Rafia', 'Nizam', 'Rafia.Nizam.Waada', 'Rafia#Nizam#Waada#2025', 'rafia.nizam.waada@gmail.com'],
+            ['Talha', 'Shahbaz', 'Talha.Shahbaz.Waada', 'Talha#Shahbaz#Waada#2025', 'talha.shahbaz.waada@gmail.com'],
+            ['Nimra', 'Khalid', 'Nimra.Khalid.Waada', 'Nimra#Khalid#Waada#2025', 'nimra.khalid.waada@gmail.com'],
+            ['Mehak', 'Makesh', 'Mehak.Makesh.Waada', 'Mehak#Makesh#Waada#2025', 'mehak.mukesh.waada@gmail.com'],
+            ['Sheeza', 'Noor', 'Sheeza.Noor.Waada', 'Sheeza#Noor#Waada#2025', 'sheeza.noor10.waada@gmail.com'],
+            ['Mehreen', 'Zahid', 'Mehreen.Zahid.Waada', 'Mehreen#Zahid#Waada#2025', 'mehreen06.zahid.waada@gmail.com'],
+            ['Shabana', 'Bibi', 'Shabana.Bibi.Waada', 'Shabana#Bibi#Waada#2025', 'shabana.zahoor.waada@gmail.com'],
+            ['Fareeha', 'Ahmed', 'Fareeha.Ahmed.Waada', 'Fareeha#Ahmed#Waada#2025', 'fareha13.ahmed.waada@gmail.com'],
+            ['Mahrukh', 'Hanif', 'Mahrukh.Hanif.Waada', 'Mahrukh#Hanif#Waada#2025', 'mahrukh.hanif.waada@gmail.com'],
+            ['Asma', 'Siddique', 'Asma.Siddique.Waada', 'Asma#Siddique#Waada#2025', 'asma.siddique.waada@gmail.com'],
+            ['Mohsin', 'Khan', 'Mohsin.Khan.Waada', 'Mohsin#Khan#Waada#2025', 'mohsin.khan.waada@gmail.com'],
+            ['Mujahid', 'Bilal', 'Mujahid.Bilal.Waada', 'Mujahid#Bilal#Waada#2025', 'mujahid.bilal.waada@gmail.com'],
+            ['Ayesha', 'Nadeem', 'Ayesha.Nadeem.Waada', 'Ayesha#Nadeem#Waada#2025', 'ayesha.nadeem01.waada@gmail.com'],
+            ['Hira', 'Miraj', 'Hira.Miraj.Waada', 'Hira#Miraj#Waada#2025', 'Hira.miraj.waada@gmail.com'],
+            ['Zahira', 'Khan', 'Zahira.Khan.Waada', 'Zahira#Khan#Waada#2025', 'zahira.khan.waada@gmail.com'],
         ];
+
 
 
 
@@ -87,7 +73,7 @@ class basicAgentCreate extends Command
                 'username' => $data[2],
                 'email' => $data[4],
                 'status' => 1,
-                'company_id' => 12,
+                'company_id' => 19,
                 'password' => $data[3],
             ];
 
