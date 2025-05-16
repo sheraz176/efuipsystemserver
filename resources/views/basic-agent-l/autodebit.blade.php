@@ -110,15 +110,25 @@
                         </div>
                     </div>
                     <!-- Add other form fields as needed -->
-                    <button id="consent" class="btn btn-danger" type="button">Check Consent (DTMF) </button>
+                    <div class="d-flex gap-2">
+                        <button id="consent" class="btn btn-danger" type="button">
+                            Check Consent (DTMF)
+                        </button>
+
+                        <div id="autoDebitWrapper"></div>
+                    </div>
+
+                    <div id="consentMessage" style="color: #1d1a1e"></div>
 
 
-                    <button id="autoDebitButton" class="btn btn-primary" type="button" disabled>
+                    {{-- <button id="consent" class="btn btn-danger" type="button">Check Consent (DTMF) </button> --}}
+
+
+                    {{-- <button id="autoDebitButton" class="btn btn-primary" type="button" disabled>
                         <span id="buttonText">Proceed to Auto Debit</span>
                         <span id="buttonLoader" class="spinner-border spinner-border-sm" role="status"
                             aria-hidden="true" style="display: none;"></span>
-                    </button>
-                    <div id="consentMessage" style="color: #1d1a1e"></div>
+                    </button> --}}
 
 
 
@@ -216,24 +226,30 @@
     <script>
         $(document).ready(function() {
             $('#consent').click(function() {
-                // Assume MSISDN is fetched or available
-                var msisdn = $('#customerMsisdn').val(); // Replace with the actual MSISDN value
+                var msisdn = $('#customerMsisdn').val();
 
                 $.ajax({
-                    url: '{{ route('basic-agent-l.consent_check') }}', // Your backend route to check consent
+                    url: '{{ route('basic-agent-l.consent_check') }}',
                     method: 'POST',
                     data: {
                         msisdn: msisdn,
-                        _token: '{{ csrf_token() }}' // CSRF token for Laravel
+                        _token: '{{ csrf_token() }}'
                     },
                     success: function(response) {
                         if (response.consistent_provider == 1) {
-                            $('#autoDebitButton').prop('disabled', false); // Enable the button
+                            // Only append button if not already present
+                            if ($('#autoDebitButton').length === 0) {
+                                $('#autoDebitWrapper').html(`
+                                    <button id="autoDebitButton" class="btn btn-primary" type="button">
+                                        <span id="buttonText">Proceed to Auto Debit</span>
+                                        <span id="buttonLoader" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none;"></span>
+                                    </button>
+                                `);
+                            }
                         } else {
-                            $('#autoDebitButton').prop('disabled', true); // Disable the button
+                            $('#autoDebitWrapper').empty(); // Remove if invalid
                         }
 
-                        // Display the message
                         $('#consentMessage').text(response.message);
                     },
                     error: function(xhr, status, error) {
@@ -241,8 +257,112 @@
                     }
                 });
             });
+
+            // Use event delegation for dynamically created button
+      $(document).on('click', '#autoDebitButton', function() {
+                // Example Action: You can replace this with your actual logic
+                // alert('Auto Debit action triggered!');
+                 // disableAutoDebitButton();
+
+            // Show the loader and hide the button text
+            $('#buttonText').hide();
+            $('#buttonLoader').show();
+
+            // Get the values from form fields
+            var customer_msisdn = $('#customerMsisdn').val();
+            var customer_cnic = $('#customerCnic').val();
+            var plan_id = $('#plan_id').val();
+            var product_id = $('#product_id').val();
+            var beneficiary_msisdn = $('#beneficiaryMsisdn').val();
+            var beneficiary_cnic = $('#beneficiaryCnic').val();
+            var beneficinary_name = $('#beneficiaryName').val();
+            var company_id = $('#company_id').val();
+            var agent_id = $('#agent_id').val();
+            var consents = $('#consents').val();
+
+            // Construct the data object
+            var requestData = {
+                subscriber_msisdn: customer_msisdn,
+                customer_cnic: customer_cnic,
+                plan_id: plan_id,
+                product_id: product_id,
+                beneficiary_msisdn: beneficiary_msisdn,
+                beneficiary_cnic: beneficiary_cnic,
+                beneficinary_name: beneficinary_name,
+                agent_id: agent_id,
+                company_id: company_id,
+                consent: consents
+            };
+
+            // Perform AJAX call to ivr_subscription endpoint
+            $.ajax({
+                type: 'POST',
+                url: '{{ route('AutoDebitSubscription') }}',
+                data: requestData,
+                success: function(response) {
+                    // Handle success response
+                    $('#customerDataForm')[0].reset(); // Reset the form
+                    // Display success modal with response data
+                    $('#successModalBody').html(response.data.message);
+                    $('#successModal').modal('show');
+                },
+                error: function(xhr, textStatus, errorThrown) {
+                    // Handle error response
+                    $('#customerDataForm')[0].reset(); // Reset the form
+                    if (xhr.status === 422) {
+                        // Display failed modal with error message
+                        $('#failedModalBody').html(xhr.responseJSON.data.message);
+                        $('#failedModal').modal('show');
+                    } else {
+                        // Display error modal with error message
+                        $('#errorModal').modal('show');
+                    }
+                },
+                complete: function() {
+                    // Hide the loader and show the button text again
+                    $('#buttonText').show();
+                    $('#buttonLoader').hide();
+
+                    // Re-enable the button after the request is complete
+                    enableAutoDebitButton();
+                }
+            });
+
+                // Perform your AJAX call here
+            });
         });
     </script>
+
+{{-- <script>
+    $(document).ready(function() {
+        $('#consent').click(function() {
+            // Assume MSISDN is fetched or available
+            var msisdn = $('#customerMsisdn').val(); // Replace with the actual MSISDN value
+
+            $.ajax({
+                url: '{{ route('basic-agent-l.consent_check') }}', // Your backend route to check consent
+                method: 'POST',
+                data: {
+                    msisdn: msisdn,
+                    _token: '{{ csrf_token() }}' // CSRF token for Laravel
+                },
+                success: function(response) {
+                    if (response.consistent_provider == 1) {
+                        $('#autoDebitButton').prop('disabled', false); // Enable the button
+                    } else {
+                        $('#autoDebitButton').prop('disabled', true); // Disable the button
+                    }
+
+                    // Display the message
+                    $('#consentMessage').text(response.message);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    });
+</script> --}}
 
 
     <script>
@@ -346,73 +466,5 @@
 
 
 
-        $('#autoDebitButton').click(function() {
-            // Disable the button to prevent multiple clicks
-            disableAutoDebitButton();
-
-            // Show the loader and hide the button text
-            $('#buttonText').hide();
-            $('#buttonLoader').show();
-
-            // Get the values from form fields
-            var customer_msisdn = $('#customerMsisdn').val();
-            var customer_cnic = $('#customerCnic').val();
-            var plan_id = $('#plan_id').val();
-            var product_id = $('#product_id').val();
-            var beneficiary_msisdn = $('#beneficiaryMsisdn').val();
-            var beneficiary_cnic = $('#beneficiaryCnic').val();
-            var beneficinary_name = $('#beneficiaryName').val();
-            var company_id = $('#company_id').val();
-            var agent_id = $('#agent_id').val();
-            var consents = $('#consents').val();
-
-            // Construct the data object
-            var requestData = {
-                subscriber_msisdn: customer_msisdn,
-                customer_cnic: customer_cnic,
-                plan_id: plan_id,
-                product_id: product_id,
-                beneficiary_msisdn: beneficiary_msisdn,
-                beneficiary_cnic: beneficiary_cnic,
-                beneficinary_name: beneficinary_name,
-                agent_id: agent_id,
-                company_id: company_id,
-                consent: consents
-            };
-
-            // Perform AJAX call to ivr_subscription endpoint
-            $.ajax({
-                type: 'POST',
-                url: '{{ route('AutoDebitSubscription') }}',
-                data: requestData,
-                success: function(response) {
-                    // Handle success response
-                    $('#customerDataForm')[0].reset(); // Reset the form
-                    // Display success modal with response data
-                    $('#successModalBody').html(response.data.message);
-                    $('#successModal').modal('show');
-                },
-                error: function(xhr, textStatus, errorThrown) {
-                    // Handle error response
-                    $('#customerDataForm')[0].reset(); // Reset the form
-                    if (xhr.status === 422) {
-                        // Display failed modal with error message
-                        $('#failedModalBody').html(xhr.responseJSON.data.message);
-                        $('#failedModal').modal('show');
-                    } else {
-                        // Display error modal with error message
-                        $('#errorModal').modal('show');
-                    }
-                },
-                complete: function() {
-                    // Hide the loader and show the button text again
-                    $('#buttonText').show();
-                    $('#buttonLoader').hide();
-
-                    // Re-enable the button after the request is complete
-                    enableAutoDebitButton();
-                }
-            });
-        });
     </script>
 @endpush

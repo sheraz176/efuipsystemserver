@@ -40,22 +40,15 @@ class downloadagent extends Command
 {
 
     $agentsData = [
-        ['Rafia', 'Nizam', 'Rafia.Nizam.Waada', 'Rafia#Nizam#Waada#2025', 'rafia.nizam.waada@gmail.com'],
-        ['Talha', 'Shahbaz', 'Talha.Shahbaz.Waada', 'Talha#Shahbaz#Waada#2025', 'talha.shahbaz.waada@gmail.com'],
-        ['Nimra', 'Khalid', 'Nimra.Khalid.Waada', 'Nimra#Khalid#Waada#2025', 'nimra.khalid.waada@gmail.com'],
-        ['Mehak', 'Makesh', 'Mehak.Makesh.Waada', 'Mehak#Makesh#Waada#2025', 'mehak.mukesh.waada@gmail.com'],
-        ['Sheeza', 'Noor', 'Sheeza.Noor.Waada', 'Sheeza#Noor#Waada#2025', 'sheeza.noor10.waada@gmail.com'],
-        ['Mehreen', 'Zahid', 'Mehreen.Zahid.Waada', 'Mehreen#Zahid#Waada#2025', 'mehreen06.zahid.waada@gmail.com'],
-        ['Shabana', 'Bibi', 'Shabana.Bibi.Waada', 'Shabana#Bibi#Waada#2025', 'shabana.zahoor.waada@gmail.com'],
-        ['Fareeha', 'Ahmed', 'Fareeha.Ahmed.Waada', 'Fareeha#Ahmed#Waada#2025', 'fareha13.ahmed.waada@gmail.com'],
-        ['Mahrukh', 'Hanif', 'Mahrukh.Hanif.Waada', 'Mahrukh#Hanif#Waada#2025', 'mahrukh.hanif.waada@gmail.com'],
-        ['Asma', 'Siddique', 'Asma.Siddique.Waada', 'Asma#Siddique#Waada#2025', 'asma.siddique.waada@gmail.com'],
-        ['Mohsin', 'Khan', 'Mohsin.Khan.Waada', 'Mohsin#Khan#Waada#2025', 'mohsin.khan.waada@gmail.com'],
-        ['Mujahid', 'Bilal', 'Mujahid.Bilal.Waada', 'Mujahid#Bilal#Waada#2025', 'mujahid.bilal.waada@gmail.com'],
-        ['Ayesha', 'Nadeem', 'Ayesha.Nadeem.Waada', 'Ayesha#Nadeem#Waada#2025', 'ayesha.nadeem01.waada@gmail.com'],
-        ['Hira', 'Miraj', 'Hira.Miraj.Waada', 'Hira#Miraj#Waada#2025', 'Hira.miraj.waada@gmail.com'],
-        ['Zahira', 'Khan', 'Zahira.Khan.Waada', 'Zahira#Khan#Waada#2025', 'zahira.khan.waada@gmail.com'],
+        ['Muhammad Usman', 'Muhammad Sarwar', 'Muhammad.Usman.Waada', 'Muhammad#Usman#Waada#2025', 'usman.sarwar.waada@gmail.com'],
+        ['Usama', 'Ahmed', 'Usama.Ahmed.Waada', 'Usama#Ahmed#Waada#2025', 'usama.ahmed.waada@gmail.com'],
+        ['Nimra', 'Anees', 'Nimra.Anees.Waada', 'Nimra#Anees#Waada#2025', 'nimra.anis.waada@gmal.com'],
+        ['Muhammad Humza', 'Junaid Jilani', 'MuhammadHumza.JunaidJilani.Waada', 'MuhammadHumza#JunaidJilani#Waada#2025', 'Humza.jilani.waada@gmail.com'],
+        ['Komal', 'Riaz', 'Komal.Riaz.Waada', 'Komal#Riaz#Waada#2025', 'komal1.riaz.waada@gmail.com'],
+        ['Hadiqa', 'Anees', 'Hadiqa.Anees.Waada', 'Hadiqa#Anees#Waada#2025', 'hadiqa.anis.waada@gmail.com'],
+        ['Muhammad Sumair', 'Shamim Iqbal', 'MuhammadSumair.ShamimIqbal.Waada', 'MuhammadSumair#ShamimIqbal#Waada#2025', 'm.sumairkhan.waada@gmail.com'],
     ];
+
 
 
 

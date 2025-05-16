@@ -39,5 +39,7 @@ class SuperDash extends Model
                             'TodaySubscriptionsCount',
                             'TotalSubscriptionCount',
                             'TotalCount',
+                            'totalWaada',
+                            'activeWaadaIVR',
                         ];
 }

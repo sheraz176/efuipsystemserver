@@ -43,15 +43,23 @@ class TsmAgent extends Command
     public function handle()
 {
     $agentsData = [
-        ['Raja', 'Hammad', 'Raja.Hammad.tsm.2025', 'Raja#Hammad#tsm#2025', 'HD1238'],
-        ['Imran', 'Ali', 'Imran.Ali.tsm.2025', 'Imran#Ali#tsm#2025', 'HD1239'],
-        ['Aqsa', 'Kiran', 'Aqsa.Kiran.tsm.2025', 'Aqsa#Kiran#tsm#2025', 'HD1240'],
-        ['Afshan', 'Kiran', 'Afshan.Kiran.tsm.2025', 'Afshan#Kiran#tsm#2025', 'HD1241'],
-        ['Iqra', 'Bukhari', 'Iqra.Bukhari.tsm.2025', 'Iqra#Bukhari#tsm#2025', 'HD1242'],
-        ['Saira', 'Basit', 'Saira.Basit.tsm.2025', 'Saira#Basit#tsm#2025', 'HD1243'],
-        ['Rizwana', 'Sharif', 'Rizwana.Sharif.tsm.2025', 'Rizwana#Sharif#tsm#2025', 'HD1244'],
-        ['Kishwar', 'Bibi', 'Kishwar.Bibi.tsm.2025', 'Kishwar#Bibi#tsm#2025', 'HD1245'],
+        ['Wajiha', 'Qureshi', 'Wajiha.Qureshi.tsm.2025', 'Wajiha#Qureshi#tsm#2025', 'HD162'],
+        ['Ayesha', 'Mehmood', 'Ayesha.Mehmood.tsm.2025', 'Ayesha#Mehmood#tsm#2025', 'HD446'],
+        ['Sajjad', 'Ali', 'Sajjad.Ali.tsm.2025', 'Sajjad#Ali#tsm#2025', 'HD727'],
+        ['Anita', 'Kanwel', 'Anita.Kanwel.tsm.2025', 'Anita#Kanwel#tsm#2025', 'HD772'],
+        ['Tasmia', 'Khan', 'Tasmia.Khan.tsm.2025', 'Tasmia#Khan#tsm#2025', 'EP-36'],
+        ['Kinza', 'Mushtaq', 'Kinza.Mushtaq.tsm.2025', 'Kinza#Mushtaq#tsm#2025', 'HD805'],
+        ['Hamza', 'Arshad', 'Hamza.Arshad.tsm.2025', 'Hamza#Arshad#tsm#2025', 'HD1016'],
+        ['Roma', 'Sadiq', 'Roma.Sadiq.tsm.2025', 'Roma#Sadiq#tsm#2025', 'HD1020'],
+        ['Komal', 'two', 'Komal.two.tsm.2025', 'Komal##tsm#2025', 'HD1169'],
+        ['Mehak', 'Riaz', 'Mehak.Riaz.tsm.2025', 'Mehak#Riaz#tsm#2025', 'HD1174'],
+        ['Nayyer', 'Usman', 'Nayyer.Usman.tsm.2025', 'Nayyer#Usman#tsm#2025', 'HD1197'],
+        ['Zohaib', 'Hassan', 'Zohaib.Hassan.tsm.2025', 'Zohaib#Hassan#tsm#2025', 'HD1198'],
+        ['Mubashra', 'Tofeeq', 'Mubashra.Tofeeq.tsm.2025', 'Mubashra#Tofeeq#tsm#2025', 'HD1223'],
+        ['Ayesha', 'Jan', 'Ayesha.Jan.tsm.2025', 'Ayesha#Jan#tsm#2025', 'HD1231'],
+        ['Kiran', 'Akeem', 'Kiran.Akeem.tsm.2025', 'Kiran#Akeem#tsm#2025', 'HD1225'],
     ];
+
 
 
     foreach ($agentsData as $data) {

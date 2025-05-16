@@ -317,14 +317,14 @@
                                         class="rounded" />
                                 </div>
                             </div>
-                            <span class="d-block mb-1">Active JazzIVR Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"><span id="totalJazzIVR">
-                                {{ $superDashRecord ? $superDashRecord->totalJazzIVR : 'No data available' }}
+                            <span class="d-block mb-1">Active Waada Agents</span>
+                            <h3 class="card-title text-nowrap mb-2"><span id="totalWaada">
+                                {{ $superDashRecord ? $superDashRecord->totalWaada : 'No data available' }}
                                 </span></h3>
-                            <span class="d-block mb-1" style="color: rgb(244, 87, 24);font-weight: bold;">Live JazzIVR
+                            <span class="d-block mb-1" style="color: rgb(244, 87, 24);font-weight: bold;">Live Waada
                                 Agents</span>
-                            <h3 class="card-title text-nowrap mb-2"><span id="activeJazzIVR">
-                                {{ $superDashRecord ? $superDashRecord->activeJazzIVR : 'No data available' }}
+                            <h3 class="card-title text-nowrap mb-2"><span id="activeWaadaIVR">
+                                {{ $superDashRecord ? $superDashRecord->activeWaadaIVR : 'No data available' }}
                                 </span></h3>
                         </div>
                     </div>
@@ -1000,6 +1000,9 @@
 
                         $('#totalactive').text(data.totalactive);
                         $('#totallive').text(data.totallive);
+
+                        $('#totalWaada').text(data.totalWaada);
+                        $('#totalWaada').text(data.totalWaada);
 
                         $('#todaySubscriptionCount').text(data.todaySubscriptionCount);
                         $('#currentMonthSubscriptionCount').text(data.currentMonthSubscriptionCount);

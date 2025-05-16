@@ -96,6 +96,9 @@ class SuperAdminAuth extends Controller
             'totalJazzIVR' => TeleSalesAgent::where('company_id', '14')->where('status','1')->count(),
             'activeJazzIVR' => TeleSalesAgent::where('company_id', '14')->where('islogin', '1')->count(),
 
+            'totalWaada' => TeleSalesAgent::where('company_id', '19')->where('status','1')->count(),
+            'activeWaadaIVR' => TeleSalesAgent::where('company_id', '19')->where('islogin', '1')->count(),
+
             'totalactive' => TeleSalesAgent::where('status','1')->count(),
             'totallive' => TeleSalesAgent::where('islogin', '1')->count(),
 
