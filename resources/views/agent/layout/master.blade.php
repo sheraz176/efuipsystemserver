@@ -152,6 +152,13 @@
                 </a>
               </li>
 
+           <li class="menu-item">
+              <a href="{{ route('superadmin.claim.customerinformation') }}" id = "salespagebutton" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-collection"></i>
+                <div data-i18n="Basic">Submit Claims</div>
+              </a>
+            </li>
+
 
             <!-- Cards -->
             {{-- <li class="menu-item">

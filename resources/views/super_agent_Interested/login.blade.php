@@ -69,7 +69,7 @@
                 </a>
               </div>
               <!-- /Logo -->
-              <h4 class="mb-2">Welcome to Telesales Portal! (Super Agent Interested)👋</h4>
+              <h4 class="mb-2">Welcome to Telesales Portal! (Claims)👋</h4>
               <p class="mb-4">Please sign-in to your agent account credentials Provied by IT Support</p>
               @if(session('status'))
               <div class="alert alert-success">

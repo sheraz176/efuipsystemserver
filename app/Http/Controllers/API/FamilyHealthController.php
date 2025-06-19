@@ -10,75 +10,39 @@ use App\Models\Subscription\CustomerSubscription;
 use App\Http\Controllers\Subscription\FailedSubscriptionsController;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;
-use Carbon\Carbon;
-use App\Models\Verifycode;
 use Illuminate\Support\Facades\Http;
+use App\Models\SMSMsisdn;
 use Illuminate\Support\Str;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
-class LandingPageSubscription extends Controller
+
+class FamilyHealthController extends Controller
 {
 
-        public function login(Request $request)
-    {
-
-        //dd($request->all());
-
-        // Check for required headers
-        if (
-            !$request->hasHeader('Authorization') ||
-            !$request->hasHeader('X-User-Type') ||
-            !$request->hasHeader('X-User-Role') ||
-            !$request->hasHeader('X-App-Platform')
-        ) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Required headers are missing',
-                'messageCode' => 400
-            ], 400);
-        }
-
-        // Get header values
-        $userType = $request->header('X-User-Type');
-        $userRole = $request->header('X-User-Role');
-        $appPlatform = $request->header('X-App-Platform');
-
-
-        if ($userType === 'Landingpage' && $userRole === 'XLandingpage' && $appPlatform === 'EFULandingPageApi') {
-            return $this->xlogin($request);
-        }  else {
-            return response()->json([
-                'error' => true,
-                'message' => 'Invalid header values',
-                'messageCode' => 401
-            ], 401);
-        }
-    }
-
-    private function xlogin(Request $request)
+      public function login(Request $request)
     {
 
         // Validate the request
-        // $validator = Validator::make($request->all(), [
-        //     'name' => 'required',
-        //     'password' => 'required',
-        // ]);
+        $validator = Validator::make($request->all(), [
+            'name' => 'required',
+            'password' => 'required',
+        ]);
 
-        // if ($validator->fails()) {
-        //     return response()->json([
-        //         'messageCode' => 400,
-        //         'message' => 'Validation failed',
-        //         'errors' => $validator->errors(),
-        //     ], 400);
-        // }
-               $username = "sheeraz.jazzcash";
-               $password = "123456";
+        if ($validator->fails()) {
+            return response()->json([
+                'messageCode' => 400,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 400);
+        }
+
         // Attempt to retrieve the user
-        $user = User::where('name', $username)->first();
+        $user = User::where('name', $request->name)->first();
 
         // Check if user exists and password matches
-        if (!$user || !Hash::check($password, $user->password)) {
+        if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
                 'message' => ['These credentials do not match our records.'],
             ], 404);
@@ -97,202 +61,52 @@ class LandingPageSubscription extends Controller
         return response()->json($response, 201);
     }
 
-
-     public function getPlans(Request $request)
+    public function getPlans(Request $request)
     {
 
-        // Check for required headers
-        if (
-            !$request->hasHeader('Authorization') ||
-            !$request->hasHeader('X-User-Type') ||
-            !$request->hasHeader('X-User-Role') ||
-            !$request->hasHeader('X-App-Platform')
-        ) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Required headers are missing',
-                'messageCode' => 400
-            ], 400);
-        }
-
-        // Get header values
-        $userType = $request->header('X-User-Type');
-        $userRole = $request->header('X-User-Role');
-        $appPlatform = $request->header('X-App-Platform');
-
-
-        if ($userType === 'Landingpage' && $userRole === 'XLandingpage' && $appPlatform === 'EFULandingPageApi') {
-            return $this->xgetPlans($request);
-        }  else {
-            return response()->json([
-                'error' => true,
-                'message' => 'Invalid header values',
-                'messageCode' => 401
-            ], 401);
-        }
-    }
-
-    public function xgetPlans(Request $request)
-    {
-
-        $activePlans = PlanModel::select('plan_id', 'plan_name', 'status')->where('status', 1)->get();
+        $activePlans = PlanModel::select('plan_id', 'plan_name', 'status')
+            ->where("plan_id", "4")->where('status', 1)->get();
         return response()->json([
             'status' => 'success',
             'data' => $activePlans,
         ])->setStatusCode(200);
     }
 
-
-     public function getProducts(Request $request)
+    public function getProducts(Request $request)
     {
 
-        // Check for required headers
-        if (
-            !$request->hasHeader('Authorization') ||
-            !$request->hasHeader('X-User-Type') ||
-            !$request->hasHeader('X-User-Role') ||
-            !$request->hasHeader('X-App-Platform')
-        ) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Required headers are missing',
-                'messageCode' => 400
-            ], 400);
-        }
+        $planId = "4";
 
-        // Get header values
-        $userType = $request->header('X-User-Type');
-        $userRole = $request->header('X-User-Role');
-        $appPlatform = $request->header('X-App-Platform');
-
-
-        if ($userType === 'Landingpage' && $userRole === 'XLandingpage' && $appPlatform === 'EFULandingPageApi') {
-            return $this->xgetProducts($request);
-        }  else {
-            return response()->json([
-                'error' => true,
-                'message' => 'Invalid header values',
-                'messageCode' => 401
-            ], 401);
-        }
-    }
-
-    public function xgetProducts(Request $request)
-    {
-        $planId = $request->input('plan_id');
-
+        // Retrieve active products associated with the specified plan ID
         $products = ProductModel::where('plan_id', $planId)
-            ->where('api_status', 1)
-            ->get()
-            ->map(function ($product) {
-                return collect($product)->filter(function ($value) {
-                    return !is_null($value);
-                });
-            });
+             ->where('product_id',"10")
+            ->get();
 
         return response()->json([
             'status' => 'success',
             'data' => $products,
-        ], 200);
+        ])->setStatusCode(200);
     }
 
 
-      public function landing_page_subscription(Request $request)
+    public function family_ivr_subscription(Request $request)
     {
-
-        // Check for required headers
-        if (
-            !$request->hasHeader('Authorization') ||
-            !$request->hasHeader('X-User-Type') ||
-            !$request->hasHeader('X-User-Role') ||
-            !$request->hasHeader('X-App-Platform')
-        ) {
-            return response()->json([
-                'error' => true,
-                'message' => 'Required headers are missing',
-                'messageCode' => 400
-            ], 400);
-        }
-
-        // Get header values
-        $userType = $request->header('X-User-Type');
-        $userRole = $request->header('X-User-Role');
-        $appPlatform = $request->header('X-App-Platform');
-
-
-        if ($userType === 'Landingpage' && $userRole === 'XLandingpage' && $appPlatform === 'EFULandingPageApi') {
-            return $this->x_landing_page_subscription($request);
-        }  else {
-            return response()->json([
-                'error' => true,
-                'message' => 'Invalid header values',
-                'messageCode' => 401
-            ], 401);
-        }
-    }
-
-
-       public function sendVerificationCode(Request $request)
-{
-    $request->validate([
-        'msisdn' => 'required|digits_between:10,15'
-    ]);
-
-    $msisdn = $request->input('msisdn');
-    $code = rand(1000, 9999); // 4 digit random code
-    $sms = "your key is $code";
-
-    try {
-        // Send SMS
-        $response = Http::timeout(10)
-            ->withHeaders([
-                'Authorization' => 'Bearer XXXXAAA489SMSTOKEFU',
-                'Channelcode' => 'ITS',
-            ])
-            ->post('http://api.efulife.com/itssr/its_sendsms', [
-                'MobileNo' => $msisdn,
-                'sender' => '98902',
-                'SMS' => $sms,
-                'telco' => '',
-            ]);
-
-        // Save in database
-        Verifycode::create([
-            'msisdn' => $msisdn,
-            'code' => $code,
-            'status' => 0 // default status (pending/unverified)
-        ]);
-
-        return response()->json([
-            'msisdn' => $msisdn,
-            'code' => $code,
-            'status' => true,
-            'message' => 'Verification code sent successfully.',
-            'response' => $response->json()
-        ]);
-
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => false,
-            'message' => 'Failed to send verification code.',
-            'error' => $e->getMessage()
-        ], 500);
-    }
-}
-
-
-
-
-
-    private function x_landing_page_subscription(Request $request)
-    {
-
+        //dd($request->all());
         $validator = Validator::make($request->all(), [
             'plan_id' => 'required|integer',
             'product_id' => 'required|integer',
             'subscriber_msisdn' => 'required|string',
-              'otp' => 'required',
         ]);
+
+        Log::channel('ivr_api')->info('Ivr Subscription Api.', [
+            'plan_id' =>  $request->input('plan_id'),
+            'product_id' => $request->input('product_id'),
+            'subscriber_msisdn' => $request->input("subscriber_msisdn"),
+        ]);
+
+
+
+
 
         // Check if validation fails
         if ($validator->fails()) {
@@ -303,49 +117,15 @@ class LandingPageSubscription extends Controller
             ], 400);
         }
 
-
-
-          $msisdn = $request->subscriber_msisdn;
-             $otp = $request->otp;
-
-    // Get the latest OTP record for the MSISDN
-    $verify = Verifycode::where('msisdn', $msisdn)
-                ->orderBy('id', 'desc')
-                ->first();
-
-    if (!$verify) {
-        return response()->json([
-            'status' => false,
-            'message' => 'No OTP found for this number.',
-        ], 404);
-    }
-
-    // Match OTP
-    if ($verify->code !== $otp) {
-        return response()->json([
-            'status' => false,
-            'message' => 'OTP mismatch.',
-        ], 401);
-    }
-
-    // Update status to verified
-    $verify->status = 1;
-    $verify->save();
-
         // Get request parameters
         $planId = $request->input('plan_id');
         $productId = $request->input('product_id');
         $subscriber_msisdn = $request->input("subscriber_msisdn");
-        $subscriber_msisdn_without_zero = ltrim($request->input("subscriber_msisdn"), '0');
+        $subscriber_msisdn_portal = $request->input("subscriber_msisdn");
+        $subscriber_msisdn = "92" . substr($subscriber_msisdn, 1);
+        //dd($subscriber_msisdn);
 
-
-
-
-        $subscriber_msisdn_jazzcash = "92" . $subscriber_msisdn_without_zero;
-
-
-
-        $subscription = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
+        $subscription = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn_portal)
             ->where('plan_id', $planId)
             ->where('policy_status', 1)
             ->exists();
@@ -366,7 +146,7 @@ class LandingPageSubscription extends Controller
 
         $products = ProductModel::where('plan_id', $planId)
             ->where('product_id', $productId) // Add this line
-            ->where('status', 1)
+            ->where('api_status', 1)
             ->select('fee', 'duration', 'status')
             ->first();
 
@@ -380,19 +160,24 @@ class LandingPageSubscription extends Controller
         $fee = $products->fee;
         $duration = $products->duration;
 
+        $plan = PlanModel::where('plan_id', $planId)
+            ->where('status', 1)
+            ->first();
+        $plantext = $plan->plan_name;
 
+        //Generate a 32-digit unique referenceId
         //Generate a 32-digit unique referenceId
         $referenceId = strval(mt_rand(100000000000000000, 999999999999999999));
 
         // Additional body parameters
-        $type = 'autoPayment';
+        $type = 'sub';
 
         // Replace these with your actual secret key and initial vector
         $key = 'mYjC!nc3dibleY3k'; // Change this to your secret key
         $iv = 'Myin!tv3ctorjCM@'; // Change this to your initial vector
 
         $data = json_encode([
-            'accountNumber' => $subscriber_msisdn_jazzcash,
+            'accountNumber' => $subscriber_msisdn,
             'amount'        => $fee,
             'referenceId'   => $referenceId,
             'type'          => $type,
@@ -417,7 +202,7 @@ class LandingPageSubscription extends Controller
         // Output the encrypted data in hex
         //echo "Encrypted Data (Hex): $hexEncryptedData\n";
 
-        $url = 'https://gateway-sandbox.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/sub_autoPayment';
+        $url = 'https://gateway.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/sub_autoPayment';
 
         $headers = [
             'X-CLIENT-ID: 946658113e89d870aad2e47f715c2b72',
@@ -448,11 +233,14 @@ class LandingPageSubscription extends Controller
         $response = curl_exec($ch);
 
         // Logs
-        Log::channel('landing_page_subscription_api')->info('Landing Page Subscription Api.', [
+        Log::channel('ivr_api')->info('IVR Family Health Subscription Api.', [
+            'subscriber_msisdn' => $request->input("subscriber_msisdn"),
             'url' => $url,
             'request-packet' => $body,
             'response-data' => $response,
         ]);
+
+
 
         // Check for cURL errors
         if ($response === false) {
@@ -515,7 +303,7 @@ class LandingPageSubscription extends Controller
                 $future_time_recursive_formatted = date('Y-m-d H:i:s', $future_time_recursive);
 
 
-                $subscription = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
+                $subscription = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn_portal)
                     ->where('plan_id', $planId)
                     ->where('policy_status', 1)
                     ->exists();
@@ -536,9 +324,9 @@ class LandingPageSubscription extends Controller
                     $CustomerSubscriptionData = CustomerSubscription::create([
                         'customer_id' => $customer_id,
                         'payer_cnic' => -1,
-                        'payer_msisdn' => $subscriber_msisdn,
+                        'payer_msisdn' => $subscriber_msisdn_portal,
                         'subscriber_cnic' => -1,
-                        'subscriber_msisdn' => $subscriber_msisdn,
+                        'subscriber_msisdn' => $subscriber_msisdn_portal,
                         'beneficiary_name' => -1,
                         'beneficiary_msisdn' => -1,
                         'transaction_amount' => $fee,
@@ -550,18 +338,25 @@ class LandingPageSubscription extends Controller
                         'plan_id' => $planId,
                         'productId' => $productId,
                         'policy_status' => 1,
-                        'pulse' => "Recusive Charging",
-                        'api_source' => "Landing Page",
+                        'pulse' => "ivr_subscription",
+                        'api_source' => "IVR Subscription",
                         'recursive_charging_date' => $future_time_recursive_formatted,
                         'subscription_time' => $activation_time,
                         'grace_period_time' => $grace_period_time,
-                        'sales_agent' => -1,
-                        'company_id' => 16
+                        'sales_agent' => 1,
+                        'company_id' => 14
                     ]);
 
                     $CustomerSubscriptionDataID = $CustomerSubscriptionData->subscription_id;
 
-
+                    // SMS Code
+                     $sms = new SMSMsisdn();
+                     $sms->msisdn = $subscriber_msisdn;
+                     $sms->plan_id = $planId;
+                     $sms->product_id = $productId;
+                     $sms->status = "0";
+                     $sms->save();
+                    // End SMS Code
 
                     return response()->json([
                         'status' => 'success',
@@ -573,7 +368,7 @@ class LandingPageSubscription extends Controller
                     ], 200);
                 }
             } else {
-                FailedSubscriptionsController::saveFailedTransactionLandingPage($transactionId, $resultCode, $resultDesc, $failedReason, $amount, $referenceId, $accountNumber, $planId, $productId, -1, 16);
+                FailedSubscriptionsController::saveFailedTransactionData($transactionId, $resultCode, $resultDesc, $failedReason, $amount, $referenceId, $accountNumber, $planId, $productId, -1, 14);
                 return response()->json([
                     'status' => 'Failed',
                     'data' => [
@@ -592,7 +387,4 @@ class LandingPageSubscription extends Controller
             ], 500);
         }
     }
-
-
-
 }

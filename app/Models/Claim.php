@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Plans\ProductModel;
+use App\Models\Plans\PlanModel;
 
 class Claim extends Model
 {
@@ -27,5 +29,20 @@ class Claim extends Model
         'existingamount',
         'remaining_amount',
     ];
+
+
+    public function plan()
+    {
+        return $this->belongsTo(PlanModel::class, 'plan_id');
+    }
+
+
+
+    public function product()
+    {
+        return $this->belongsTo(ProductModel::class, 'product_id');
+    }
+
+
 
 }

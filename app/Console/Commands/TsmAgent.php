@@ -42,23 +42,39 @@ class TsmAgent extends Command
      */
     public function handle()
 {
-    $agentsData = [
-        ['Wajiha', 'Qureshi', 'Wajiha.Qureshi.tsm.2025', 'Wajiha#Qureshi#tsm#2025', 'HD162'],
-        ['Ayesha', 'Mehmood', 'Ayesha.Mehmood.tsm.2025', 'Ayesha#Mehmood#tsm#2025', 'HD446'],
-        ['Sajjad', 'Ali', 'Sajjad.Ali.tsm.2025', 'Sajjad#Ali#tsm#2025', 'HD727'],
-        ['Anita', 'Kanwel', 'Anita.Kanwel.tsm.2025', 'Anita#Kanwel#tsm#2025', 'HD772'],
-        ['Tasmia', 'Khan', 'Tasmia.Khan.tsm.2025', 'Tasmia#Khan#tsm#2025', 'EP-36'],
-        ['Kinza', 'Mushtaq', 'Kinza.Mushtaq.tsm.2025', 'Kinza#Mushtaq#tsm#2025', 'HD805'],
-        ['Hamza', 'Arshad', 'Hamza.Arshad.tsm.2025', 'Hamza#Arshad#tsm#2025', 'HD1016'],
-        ['Roma', 'Sadiq', 'Roma.Sadiq.tsm.2025', 'Roma#Sadiq#tsm#2025', 'HD1020'],
-        ['Komal', 'two', 'Komal.two.tsm.2025', 'Komal##tsm#2025', 'HD1169'],
-        ['Mehak', 'Riaz', 'Mehak.Riaz.tsm.2025', 'Mehak#Riaz#tsm#2025', 'HD1174'],
-        ['Nayyer', 'Usman', 'Nayyer.Usman.tsm.2025', 'Nayyer#Usman#tsm#2025', 'HD1197'],
-        ['Zohaib', 'Hassan', 'Zohaib.Hassan.tsm.2025', 'Zohaib#Hassan#tsm#2025', 'HD1198'],
-        ['Mubashra', 'Tofeeq', 'Mubashra.Tofeeq.tsm.2025', 'Mubashra#Tofeeq#tsm#2025', 'HD1223'],
-        ['Ayesha', 'Jan', 'Ayesha.Jan.tsm.2025', 'Ayesha#Jan#tsm#2025', 'HD1231'],
-        ['Kiran', 'Akeem', 'Kiran.Akeem.tsm.2025', 'Kiran#Akeem#tsm#2025', 'HD1225'],
-    ];
+
+
+  $agentsData = [
+    ['Salman', 'Ahmed', 'Salman.Ahmed.tsm.2025', 'Salman#Ahmed#tsm#2025', 'HD1307'],
+    ['Faiza', 'Rashid', 'Faiza.Rashid.tsm.2025', 'Faiza#Rashid#tsm#2025', 'HD1308'],
+    ['Shafaq', 'Naveed', 'Shafaq.Naveed.tsm.2025', 'Shafaq#Naveed#tsm#2025', 'HD1309'],
+    ['Minahil', 'Mazhar', 'Minahil.Mazhar.tsm.2025', 'Minahil#Mazhar#tsm#2025', 'HD1310'],
+    ['Rachel', 'HanookGill', 'Rachel.Hanook.Gill.tsm.2025', 'Rachel#Hanook Gill#tsm#2025', 'HD1311'],
+    ['Shahnaz', 'Imran', 'Shahnaz.Imran.tsm.2025', 'Shahnaz#Imran#tsm#2025', 'HD1312'],
+    ['Aliza', 'Sharif', 'Aliza.Sharif.tsm.2025', 'Aliza#Sharif#tsm#2025', 'HD1313'],
+    ['Abdul', 'Rehman', 'Abdul.Rehman.tsm.2025', 'Abdul#Rehman#tsm#2025', 'HD1314'],
+    ['Sadiq', 'Hussain', 'Sadiq.Hussain.tsm.2025', 'Sadiq#Hussain#tsm#2025', 'HD1315'],
+    ['Fardeen', 'Khan', 'Fardeen.Khan.tsm.2025', 'Fardeen#Khan#tsm#2025', 'HD1316'],
+    ['Muhammad', 'Sumeel', 'Muhammad.Sumeel.tsm.2025', 'Muhammad#Sumeel#tsm#2025', 'HD1181'],
+    ['Saira', 'Bano', 'Saira.Bano.tsm.2025', 'Saira#Bano#tsm#2025', 'HD678'],
+    ['MUHAMMAD', 'SALMAN', 'MUHAMMAD.SALMAN.tsm.2025', 'MUHAMMAD#SALMAN#tsm#2025', 'HD296'],
+    ['SANA', 'ASIF', 'SANA.ASIF.tsm.2025', 'SANA#ASIF#tsm#2025', 'HD363'],
+    ['TAHIRA', 'TABASUM', 'TAHIRA.TABASUM.tsm.2025', 'TAHIRA#TABASUM#tsm#2025', 'HD719'],
+    ['AROOJ', 'ASLAM', 'AROOJ.ASLAM.tsm.2025', 'AROOJ#ASLAM#tsm#2025', 'HD862'],
+    ['ZOHA', 'RIAZ', 'ZOHA.RIAZ.tsm.2025', 'ZOHA#RIAZ#tsm#2025', 'HD905'],
+    ['AIMA', 'IMRAN', 'AIMA.IMRAN.tsm.2025', 'AIMA#IMRAN#tsm#2025', 'HD1040'],
+    ['KHADIJA', '2nd', 'KHADIJA.2nd.tsm.2025', 'KHADIJA##tsm#2025', 'HD1048'],
+    ['SADIA', 'SHAHZADI', 'SADIA.SHAHZADI.tsm.2025', 'SADIA#SHAHZADI#tsm#2025', 'Hd1052'],
+    ['MAMOONA', 'RAMZAN', 'MAMOONA.RAMZAN.tsm.2025', 'MAMOONA#RAMZAN#tsm#2025', 'HD1164'],
+    ['MUHAMMAD', 'SAIFULLAH', 'MUHAMMAD.SAIFULLAH.tsm.2025', 'MUHAMMAD#SAIFULLAH#tsm#2025', 'HD1188'],
+    ['SAHER', 'SAFARISH', 'SAHER.SAFARISH.tsm.2025', 'SAHER#SAFARISH#tsm#2025', 'HD1176'],
+    ['AREEBA', 'BABAR', 'AREEBA.BABAR.tsm.2025', 'AREEBA#BABAR#tsm#2025', 'HD1196'],
+    ['NUZHAT', 'NAYYAB', 'NUZHAT.NAYYAB.tsm.2025', 'NUZHAT#NAYYAB#tsm#2025', 'HD1224'],
+    ['MAHNOOR', 'YASEEN', 'MAHNOOR.YASEEN.tsm.2025', 'MAHNOOR#YASEEN#tsm#2025', 'HD1237'],
+];
+
+
+
 
 
 

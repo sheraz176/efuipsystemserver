@@ -39,15 +39,19 @@ class downloadagent extends Command
     public function handle()
 {
 
-    $agentsData = [
-        ['Muhammad Usman', 'Muhammad Sarwar', 'Muhammad.Usman.Waada', 'Muhammad#Usman#Waada#2025', 'usman.sarwar.waada@gmail.com'],
-        ['Usama', 'Ahmed', 'Usama.Ahmed.Waada', 'Usama#Ahmed#Waada#2025', 'usama.ahmed.waada@gmail.com'],
-        ['Nimra', 'Anees', 'Nimra.Anees.Waada', 'Nimra#Anees#Waada#2025', 'nimra.anis.waada@gmal.com'],
-        ['Muhammad Humza', 'Junaid Jilani', 'MuhammadHumza.JunaidJilani.Waada', 'MuhammadHumza#JunaidJilani#Waada#2025', 'Humza.jilani.waada@gmail.com'],
-        ['Komal', 'Riaz', 'Komal.Riaz.Waada', 'Komal#Riaz#Waada#2025', 'komal1.riaz.waada@gmail.com'],
-        ['Hadiqa', 'Anees', 'Hadiqa.Anees.Waada', 'Hadiqa#Anees#Waada#2025', 'hadiqa.anis.waada@gmail.com'],
-        ['Muhammad Sumair', 'Shamim Iqbal', 'MuhammadSumair.ShamimIqbal.Waada', 'MuhammadSumair#ShamimIqbal#Waada#2025', 'm.sumairkhan.waada@gmail.com'],
-    ];
+     $agentsData = [
+    ['Muqadas', 'Dilawer', 'muqadas.dilawer.abacus', 'Muqadas#Dilawer##abacus#2025', 'muqadas.dilawer.abacus@gmail.com'],
+    ['Akasha', 'Fatima', 'akasha.fatima.abacus', 'Akasha#Fatima##abacus#2025', 'akasha.fatima.abacus@gmail.com'],
+    ['Alisha', 'Safdar', 'alisha.safdar.abacus', 'Alisha#Safdar##abacus#2025', 'alisha.safdar.abacus@gmail.com'],
+    ['Mahnoor', 'Shahzadi', 'mahnoor.shahzadi.abacus', 'Mahnoor#Shahzadi##abacus#2025', 'mahnoor.shahzadi.abacus@gmail.com'],
+    ['Maryam', 'Javed', 'maryam.javed.abacus', 'Maryam#Javed##abacus#2025', 'maryam.javed.abacus@gmail.com'],
+    ['Hira', 'Azeem', 'hira.azeem.abacus', 'Hira#Azeem##abacus#2025', 'hira.azeem.abacus@gmail.com'],
+    ['Sania', 'Khan', 'sania.khan.abacus', 'Sania#Khan##abacus#2025', 'sania.khan.abacus@gmail.com'],
+    ['Maha', 'Jamal', 'maha.jamal.abacus', 'Maha#Jamal##abacus#2025', 'maha.jamal.abacus@gmail.com'],
+    ['Iqra', 'Iqbal', 'iqra.iqbal.abacus', 'Iqra#Iqbal##abacus#2025', 'iqra.iqbal.abacus@gmail.com'],
+    ['Rabia', 'Ashraf', 'rabia.ashraf.abacus', 'Rabia#Ashraf##abacus#2025', 'rabia.ashraf.abacus@gmail.com'],
+    ['Muqadas', 'Naeem', 'muqadas.naeem.abacus', 'Muqadas#Naeem##abacus#2025', 'muqadas.naeem.abacus@gmail.com'],
+];
 
 
 

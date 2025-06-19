@@ -99,44 +99,22 @@ public function SubmitClaim(Request $request)
         foreach ($fileFields as $field) {
             if ($request->hasFile($field)) {
                 $file = $request->file($field);
-                $filename = time() . '_' . $field . '.' . $file->getClientOriginalExtension();
-                $path = Storage::disk('public')->putFileAs('claims/' . $field, $file, $filename);
-                $claimData[$field] = $path;
+                $base64 = base64_encode(file_get_contents($file));
+
+                $claimData[$field] = [
+                    'type' => $file->getClientOriginalExtension(),
+                    'base64' => $base64
+                ];
             } elseif ($request->has($field) && !empty($request->{$field})) {
-                $binaryData = base64_decode($request->{$field});
-
-                if ($binaryData !== false) {
-                    $mimeType = $this->detectMimeType($binaryData);
-                    $extension = $this->getExtensionFromMimeType($mimeType);
-                    $filename = time() . '_' . $field . '.' . $extension;
-                    $path = 'claims/' . $field . '/' . $filename;
-
-                    Storage::disk('public')->makeDirectory('claims/' . $field);
-
-                    if (strpos($mimeType, 'image/') === 0 && $extension != 'pdf') {
-                        try {
-                            $img = Image::make($binaryData);
-                            $img->resize(1000, null, function ($constraint) {
-                                $constraint->aspectRatio();
-                                $constraint->upsize();
-                            });
-
-                            $encodedImage = $img->encode($extension);
-                            Storage::disk('public')->put($path, (string) $encodedImage);
-                        } catch (\Exception $e) {
-                            continue;
-                        }
-                    } else {
-                        Storage::disk('public')->put($path, $binaryData);
-                    }
-
-                    $claimData[$field] = $path;
-                }
+                $claimData[$field] = [
+                    'type' => $request->input($field . '_type'), // Assume type is sent separately
+                    'base64' => $request->{$field}
+                ];
             }
         }
 
-        // Save the claim
-        $claim = Claim::create(array_merge([
+        // Save the claim without file paths
+        $claim = Claim::create([
             'msisdn' => $request->msisdn,
             'plan_id' => $plan_id,
             'product_id' => '6',
@@ -146,9 +124,14 @@ public function SubmitClaim(Request $request)
             'claim_amount' => $request->claim_amount,
             'type' => $type,
             'history_name' => $history_name,
-        ], $claimData));
+        ]);
 
-        return response()->json(['message' => 'Claim submitted successfully', 'data' => $claim], 200);
+        return response()->json([
+            'message' => 'Claim submitted successfully',
+            'data' => array_merge($claim->toArray(), [
+                'documents' => $claimData
+            ])
+        ], 200);
     } catch (\Illuminate\Validation\ValidationException $e) {
         return response()->json(['message' => 'Validation Error', 'errors' => $e->errors()], 422);
     } catch (\Exception $e) {

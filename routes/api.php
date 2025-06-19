@@ -18,6 +18,8 @@ use App\Http\Controllers\API\USSDApiController;
 use App\Http\Controllers\API\USSDAPI23Controller;
 use App\Http\Controllers\API\GenericApiController;
 use App\Http\Controllers\API\ClaimController;
+use App\Http\Controllers\API\FamilyHealthController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -28,6 +30,9 @@ use App\Http\Controllers\API\ClaimController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+
+
 
 Route::prefix('v1')->group(function () {
     Route::prefix('ivr')->group(function () {
@@ -124,8 +129,14 @@ Route::prefix('v3')->group(function () {
 
 
 
+Route::post("landingpage/login",[LandingPageSubscription::class,'login']);
 Route::prefix('v1')->group(function () {
     Route::prefix('landing-page')->group(function () {
+
+        Route::group(['middleware' => 'auth:sanctum'], function(){
+
+            // routes/api.php ya web.php (jahan use karna chahain)
+   Route::post('/send-verification-code', [LandingPageSubscription::class, 'sendVerificationCode']);
 
         Route::post("/subscription-lp", [LandingPageSubscription::class, 'landing_page_subscription'])
     ->name('subscription_lp'); // Example route name
@@ -138,6 +149,8 @@ Route::prefix('v1')->group(function () {
         // Other routes related to IVR can be added here
     });
 });
+
+ });
 
 
 
@@ -263,6 +276,24 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
       });
 });
 //End routes related to CallDoctor Api Controller API
+
+
+Route::post("familyhealth/login",[FamilyHealthController::class,'login']);
+Route::prefix('v22')->group(function () {
+    Route::prefix('familyhealth')->group(function () {
+
+	Route::get("/getPlans", [FamilyHealthController::class, 'getPlans'])
+    ->name('get_plans_lp');
+
+    	Route::post("/getProducts", [FamilyHealthController::class, 'getProducts'])
+    ->name('get_products_lp');
+
+     Route::post("/subscription-family-ivr", [FamilyHealthController::class, 'family_ivr_subscription'])
+    ->name('subscription_family_ivr');
+
+});
+
+ });
 
 
    // Status Update Auto Debit Button Super Agent L Pannel

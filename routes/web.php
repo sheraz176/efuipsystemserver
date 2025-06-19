@@ -51,6 +51,7 @@ use App\Http\Controllers\Agent\AgentRefundedController;
 use App\Http\Controllers\Agent\AgentBulkManagerController;
 use App\Http\Controllers\Agent\AgentbulkFileController;
 use App\Http\Controllers\Agent\AgentprocessBulkRefund;
+use App\Http\Controllers\claims\ClaimsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -117,6 +118,13 @@ Route::prefix('refund-agent')->group(function () {
 
           Route::get('bulk/file/upload/index/logs', [LogsController::class, 'agentbulkmanagerindex'])->name('agent.builkmanager.logsindex');
           Route::get('bulk/file/upload/logsData', [LogsController::class, 'agentbulkmanagerlogsData'])->name('agent.builkmanager.logsData');
+
+
+
+        Route::get('claim/customer/information', [ClaimsController::class,'index'])->name('superadmin.claim.customerinformation');
+        Route::get('claim/customer/information/Search', [ClaimsController::class,'search'])->name('superadmin.claim.customerinformation.search');
+        Route::post('/submit-claim', [ClaimsController::class, 'SubmitClaim'])->name('superadmin.claim.submit');
+
 
 
           //END BulkManagerController
@@ -487,17 +495,24 @@ Route::prefix('super-agent-l')->group(function () {
 
  // Route group for super-agent-Interested dashboard requiring authentication
 
-Route::prefix('super-agent-Interested')->group(function () {
-    Route::get('/Interested/login', [SuperAgentAuthControllerInterested::class, 'showLoginForm'])->name('super_agent_interested.login');
-    Route::post('/Interested/login', [SuperAgentAuthControllerInterested::class, 'login'])->name('super_agent_interested.login.submit');
-    Route::post('/Interested/logout', [SuperAgentAuthControllerInterested::class, 'logout'])->name('super_agent_interested.logout');
+Route::prefix('claims')->group(function () {
+    Route::get('/login', [SuperAgentAuthControllerInterested::class, 'showLoginForm'])->name('super_agent_interested.login');
+    Route::post('/login', [SuperAgentAuthControllerInterested::class, 'login'])->name('super_agent_interested.login.submit');
+    Route::post('/logout', [SuperAgentAuthControllerInterested::class, 'logout'])->name('super_agent_interested.logout');
 
 
     Route::middleware(['super_agent_auth'])->group(function () {
-        Route::get('/Interested/dashboard', [SuperAgentDashboardControllerInterested::class, 'index'])->name('super_agent_interested.dashboard');
+        Route::get('/claim/dashboard', [SuperAgentDashboardControllerInterested::class, 'index'])->name('super_agent_interested.dashboard');
         Route::get('/Interested/customer-form', [CustomerDataInterested::class, 'showForm'])->name('super_agent_interested.showForm');;
         Route::post('/Interested/fetch-customer-data', [CustomerDataInterested::class, 'fetchCustomerData'])->name('super_agent_interested.fetch_customer_data');
         Route::post('/Interested/Interested-customer-data', [CustomerDataInterested::class, 'interestedCustomerData'])->name('super_agent_interested.interested_customer_data');
+
+        Route::get('claims', [ClaimsController::class, 'showClaimIndex'])->name('superadmin.claims');
+        Route::get('get-claims-data', [ClaimsController::class, 'getClaimsData'])->name('superadmin.get-claims-data');
+        Route::post('export-recusive-charging-data', [ClaimsController::class, 'export'])->name('superadmin.export-claim-data'); // make sure this exists
+        Route::post('/claim/update-status', [ClaimsController::class, 'updateClaimStatus'])->name('claim.update.status');
+        Route::post('/claim/update-amount', [ClaimsController::class, 'updateAmount'])->name('claim.update.amount');
+
 
     });
 });
