@@ -270,6 +270,9 @@ public function companies_cancelled_data(Request $request)
             ->addColumn('subscription_time', function ($data) {
                 return $data->customer_subscription->subscription_time;
             })
+             ->addColumn('consistent_provider', function($data){
+                return $data->customer_subscription->consent;
+             })
             ->rawColumns(['subscriber_msisdn','cps_transaction_id', 'transaction_amount', 'plan_name', 'product_name', 'company_name', 'subscription_time'])
             ->make(true);
     }

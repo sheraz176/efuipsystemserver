@@ -61,7 +61,6 @@ class ClaimController extends Controller
 
 
 
-
 public function SubmitClaim(Request $request)
 {
     try {
@@ -77,7 +76,7 @@ public function SubmitClaim(Request $request)
         ]);
 
         // Check if the claim msisdn exists in the CustomerSubscription table
-        $claim_msisdn = CustomerSubscription::where('productId', '6')
+        $claim_msisdn = CustomerSubscription::where('plan_id',[4, 5])
             ->where('subscriber_msisdn', $request->msisdn)
             ->where('policy_status', 1)
             ->first();
@@ -88,6 +87,7 @@ public function SubmitClaim(Request $request)
 
         $amount = $claim_msisdn->transaction_amount;
         $plan_id = $claim_msisdn->plan_id;
+        $product_id = $claim_msisdn->productId;
 
         $type = ($request->type == 'hospitalization') ? 'hospitalization' : 'medical_and_lab_expense';
         $history_name = ($type == 'hospitalization') ? 'Hospital' : 'Medicine';
@@ -117,7 +117,7 @@ public function SubmitClaim(Request $request)
         $claim = Claim::create([
             'msisdn' => $request->msisdn,
             'plan_id' => $plan_id,
-            'product_id' => '6',
+            'product_id' => $product_id,
             'status' => 'In Process',
             'date' => now(),
             'amount' => $amount,
@@ -138,6 +138,8 @@ public function SubmitClaim(Request $request)
         return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], 500);
     }
 }
+
+
 
 private function detectMimeType($binaryData)
 {
@@ -211,10 +213,12 @@ private function getExtensionFromMimeType($mimeType)
     ]);
 
     // Check if the claim MSISDN exists in the CustomerSubscription table
-    $claim_msisdn = CustomerSubscription::where('productId', '6')
+    $claim_msisdn = CustomerSubscription::where('plan_id',[4, 5])
         ->where('subscriber_msisdn', $request->msisdn)
         ->where('policy_status', 1)
         ->first();
+
+
 
     if (!$claim_msisdn) {
         return response()->json(['message' => 'Claim MSISDN not found'], 404);
@@ -223,12 +227,13 @@ private function getExtensionFromMimeType($mimeType)
     // Retrieve all claims for the same MSISDN, plan_id, and product_id
     $existingClaims = Claim::where('msisdn', $request->msisdn)
         ->where('plan_id', $claim_msisdn->plan_id)
-        ->where('product_id', '6')
         ->where('status', 'approved')
         ->get();
 
     // Get the package amount from the ProductModel
-    $product = ProductModel::where('product_id', '6')->first();
+    $product = ProductModel::where('product_id', $claim_msisdn->productId)->first();
+
+
 
     // Initialize base amounts
     $baseHospitalizationAmount = 20000;
@@ -239,7 +244,7 @@ private function getExtensionFromMimeType($mimeType)
         return response()->json([
             'msisdn' => $request->msisdn,
             'plan_id' => $claim_msisdn->plan_id,
-            'product_id' => '6',
+            'product_id' => $claim_msisdn->productId,
             'package_amount' => $product->fee ?? 0, // Ensure fee exists
             'Total_Hospitalization_Amount_existing' => $baseHospitalizationAmount,
             'Total_Medical_Bill_Amount_existing' => $baseMedicalExpenseAmount,
@@ -276,7 +281,7 @@ private function getExtensionFromMimeType($mimeType)
     return response()->json([
         'msisdn' => $request->msisdn,
         'plan_id' => $claim_msisdn->plan_id,
-        'product_id' => '6',
+        'product_id' => $claim_msisdn->productId,
         'package_amount' => $product->fee ?? 0, // Ensure fee exists
         'Total_Hospitalization_Amount_existing' => $baseHospitalizationAmount,
         'Total_Medical_Bill_Amount_existing' => $baseMedicalExpenseAmount,
@@ -348,7 +353,6 @@ public function Claimstatus(Request $request)
         $detailedClaims = $ClaimDetails->map(function ($claim) {
             // Fetch product details
             $product = ProductModel::where('product_id', $claim->product_id)
-                ->where('api_status', 1)
                 ->first();
 
             $product_name = $product ? $product->product_name : 'N/A';

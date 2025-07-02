@@ -74,6 +74,7 @@
                                 <th>Reference ID</th>
                                 <th>Subscription Date</th>
                                 <th>UnSubscriotion Date</th>
+                                <th>Consent</th>
                             </tr>
                         </thead>
 
@@ -147,6 +148,8 @@
             { data: 'referenceId', name: 'referenceId' },
             { data: 'subscription_time', name: 'subscription_time' },
             { data: 'unsubscription_datetime', name: 'unsubscription_datetime' },
+            { data: 'consistent_provider', name: 'consistent_provider' },
+
 
             ]
         });

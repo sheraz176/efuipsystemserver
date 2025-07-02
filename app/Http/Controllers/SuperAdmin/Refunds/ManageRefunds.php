@@ -113,6 +113,9 @@ class ManageRefunds extends Controller
                 ->addColumn('subscription_time', function ($data) {
                     return $data->customer_subscription->subscription_time;
                 })
+               ->addColumn('consistent_provider', function($data){
+                return $data->customer_subscription->consent;
+                })
                 ->addColumn('unsubscription_datetime', function ($data) {
                     $data_count = count($data->customer_unsubscription);
                     if ($data_count > 0) {
@@ -121,7 +124,7 @@ class ManageRefunds extends Controller
                         return "";
                     }
                 })
-                ->rawColumns(['subscriber_msisdn', 'transaction_amount', 'plan_name', 'product_name', 'company_name', 'subscription_time', 'unsubscription_datetime'])
+                ->rawColumns(['subscriber_msisdn', 'transaction_amount', 'plan_name', 'product_name', 'company_name', 'subscription_time', 'unsubscription_datetime','consistent_provider'])
                 ->make(true);
         }
     }

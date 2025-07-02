@@ -174,6 +174,7 @@ class AutoDebitSubscriptionController extends Controller
 
                 // echo "Request Plain Data (RPD): $data\n";
 
+
                 $encryptedData = openssl_encrypt($data, 'aes-128-cbc', $key, OPENSSL_RAW_DATA, $iv);
 
                 // Convert the encrypted binary data to hex

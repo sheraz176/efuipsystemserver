@@ -44,33 +44,12 @@ class TsmAgent extends Command
 {
 
 
-  $agentsData = [
-    ['Salman', 'Ahmed', 'Salman.Ahmed.tsm.2025', 'Salman#Ahmed#tsm#2025', 'HD1307'],
-    ['Faiza', 'Rashid', 'Faiza.Rashid.tsm.2025', 'Faiza#Rashid#tsm#2025', 'HD1308'],
-    ['Shafaq', 'Naveed', 'Shafaq.Naveed.tsm.2025', 'Shafaq#Naveed#tsm#2025', 'HD1309'],
-    ['Minahil', 'Mazhar', 'Minahil.Mazhar.tsm.2025', 'Minahil#Mazhar#tsm#2025', 'HD1310'],
-    ['Rachel', 'HanookGill', 'Rachel.Hanook.Gill.tsm.2025', 'Rachel#Hanook Gill#tsm#2025', 'HD1311'],
-    ['Shahnaz', 'Imran', 'Shahnaz.Imran.tsm.2025', 'Shahnaz#Imran#tsm#2025', 'HD1312'],
-    ['Aliza', 'Sharif', 'Aliza.Sharif.tsm.2025', 'Aliza#Sharif#tsm#2025', 'HD1313'],
-    ['Abdul', 'Rehman', 'Abdul.Rehman.tsm.2025', 'Abdul#Rehman#tsm#2025', 'HD1314'],
-    ['Sadiq', 'Hussain', 'Sadiq.Hussain.tsm.2025', 'Sadiq#Hussain#tsm#2025', 'HD1315'],
-    ['Fardeen', 'Khan', 'Fardeen.Khan.tsm.2025', 'Fardeen#Khan#tsm#2025', 'HD1316'],
-    ['Muhammad', 'Sumeel', 'Muhammad.Sumeel.tsm.2025', 'Muhammad#Sumeel#tsm#2025', 'HD1181'],
-    ['Saira', 'Bano', 'Saira.Bano.tsm.2025', 'Saira#Bano#tsm#2025', 'HD678'],
-    ['MUHAMMAD', 'SALMAN', 'MUHAMMAD.SALMAN.tsm.2025', 'MUHAMMAD#SALMAN#tsm#2025', 'HD296'],
-    ['SANA', 'ASIF', 'SANA.ASIF.tsm.2025', 'SANA#ASIF#tsm#2025', 'HD363'],
-    ['TAHIRA', 'TABASUM', 'TAHIRA.TABASUM.tsm.2025', 'TAHIRA#TABASUM#tsm#2025', 'HD719'],
-    ['AROOJ', 'ASLAM', 'AROOJ.ASLAM.tsm.2025', 'AROOJ#ASLAM#tsm#2025', 'HD862'],
-    ['ZOHA', 'RIAZ', 'ZOHA.RIAZ.tsm.2025', 'ZOHA#RIAZ#tsm#2025', 'HD905'],
-    ['AIMA', 'IMRAN', 'AIMA.IMRAN.tsm.2025', 'AIMA#IMRAN#tsm#2025', 'HD1040'],
-    ['KHADIJA', '2nd', 'KHADIJA.2nd.tsm.2025', 'KHADIJA##tsm#2025', 'HD1048'],
-    ['SADIA', 'SHAHZADI', 'SADIA.SHAHZADI.tsm.2025', 'SADIA#SHAHZADI#tsm#2025', 'Hd1052'],
-    ['MAMOONA', 'RAMZAN', 'MAMOONA.RAMZAN.tsm.2025', 'MAMOONA#RAMZAN#tsm#2025', 'HD1164'],
-    ['MUHAMMAD', 'SAIFULLAH', 'MUHAMMAD.SAIFULLAH.tsm.2025', 'MUHAMMAD#SAIFULLAH#tsm#2025', 'HD1188'],
-    ['SAHER', 'SAFARISH', 'SAHER.SAFARISH.tsm.2025', 'SAHER#SAFARISH#tsm#2025', 'HD1176'],
-    ['AREEBA', 'BABAR', 'AREEBA.BABAR.tsm.2025', 'AREEBA#BABAR#tsm#2025', 'HD1196'],
-    ['NUZHAT', 'NAYYAB', 'NUZHAT.NAYYAB.tsm.2025', 'NUZHAT#NAYYAB#tsm#2025', 'HD1224'],
-    ['MAHNOOR', 'YASEEN', 'MAHNOOR.YASEEN.tsm.2025', 'MAHNOOR#YASEEN#tsm#2025', 'HD1237'],
+$agentsData = [
+    ['Bazraqa', 'Rubab', 'Bazraqa.Rubab.tsm.2025', 'Bazraqa#Rubab#tsm#2025', 'HD1318'],
+    ['Samra', 'Akram', 'Samra.Akram.tsm.2025', 'Samra#Akram#tsm#2025', 'HD1319'],
+    ['Aqsa', 'Asghar', 'Aqsa.Asghar.tsm.2025', 'Aqsa#Asghar#tsm#2025', 'HD1320'],
+    ['Fateh', 'Munawar', 'Fateh.Munawar.tsm.2025', 'Fateh#Munawar#tsm#2025', 'HD1321'],
+    ['Muhammad', 'Muaz', 'Muhammad.Muaz.tsm.2025', 'Muhammad#Muaz#tsm#2025', 'HD1322'],
 ];
 
 

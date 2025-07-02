@@ -301,6 +301,7 @@ class IVRSubscriptionController extends Controller
                         'policy_status' => 1,
                         'pulse' =>"ivr_subscription",
                         'api_source' => "IVR Subscription",
+                        'consent' => "DTMF-1",
                         'recursive_charging_date' => $future_time_recursive_formatted,
                         'subscription_time' =>$activation_time,
                         'grace_period_time' => $grace_period_time,

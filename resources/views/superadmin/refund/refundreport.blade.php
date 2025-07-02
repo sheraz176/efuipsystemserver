@@ -68,6 +68,7 @@
                                     <th>Medium</th>
                                     <th>Subscription Date</th>
                                     <th>Unsubscription Date</th>
+                                     <th>Consent</th>
                                 </tr>
                             </thead>
 
@@ -140,6 +141,8 @@
                      { data: 'medium', name: 'medium' },
                      { data: 'subscription_time', name: 'subscription_time' },
                      { data: 'unsubscription_datetime', name: 'unsubscription_datetime' },
+                     { data: 'consistent_provider', name: 'consistent_provider' },
+
                 ]
             });
 
