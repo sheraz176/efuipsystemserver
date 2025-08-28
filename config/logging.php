@@ -237,6 +237,12 @@ return [
             'level' => 'info',
         ],
 
+         'sms_api' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/Api/sms_api.log'),
+            'level' => 'info',
+        ],
+
 
 
            // End Api Logs channels

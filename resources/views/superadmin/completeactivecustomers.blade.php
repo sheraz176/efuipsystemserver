@@ -57,6 +57,7 @@
                                     <th>Next Charging Date</th>
                                     <th>Subscription Date</th>
                                     <th>Free Look Period</th>
+                                     <th>Consent</th>
                                 </tr>
                             </thead>
 
@@ -166,6 +167,10 @@
                     {
                         data: 'grace_period_time',
                         name: 'grace_period_time'
+                    },
+                     {
+                        data: 'consistent_provider',
+                        name: 'consistent_provider'
                     },
                 ]
             });

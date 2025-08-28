@@ -314,8 +314,11 @@ public function get_active_subscription_data(Request $request)
               ->addColumn('product_name', function($data){
                   return $data->products->product_name;
               })
+                ->addColumn('consistent_provider', function($data){
+                return $data->consent;
+             })
 
-              ->rawColumns(['company_name', 'plan_name', 'product_name'])
+              ->rawColumns(['company_name', 'plan_name', 'product_name','consistent_provider'])
               ->make(true);
       }
 

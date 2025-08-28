@@ -230,4 +230,66 @@ class NetEntrollmentApiController extends Controller
         }
     }
 
+
+     public function recusiveCharging(Request $request)
+{
+    // Check if date filter is present
+    if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+        $dateRange = explode(' to ', $request->input('dateFilter'));
+        $startDate = $dateRange[0];
+        $endDate = $dateRange[1];
+
+        // Build query
+        $query = RecusiveChargingData::select([
+            'recusive_charging_data.*',
+            'plans.plan_name',
+            'products.product_name',
+        ])
+        ->join('plans', 'recusive_charging_data.plan_id', '=', 'plans.plan_id')
+        ->join('products', 'recusive_charging_data.product_id', '=', 'products.product_id')
+        ->with(['plan', 'product'])
+        ->where('cps_response','Process service request successfully.')
+        ->whereDate('recusive_charging_data.created_at', '>=', $startDate)
+        ->whereDate('recusive_charging_data.created_at', '<=', $endDate);
+
+        $data = $query->get();
+
+        // Prepare formatted rows
+        $rows = [];
+        foreach ($data as $item) {
+            $rows[] = [
+                'Subscription ID' => $item->subscription_id,
+                'Customer MSISDN' => $item->customer_msisdn,
+                'Plan Name' => $item->plan_name,
+                'Product Name' => $item->product_name,
+                'Transaction ID' => $item->tid,
+                'Reference ID' => $item->reference_id,
+                'Amount' => $item->amount,
+                'CPS Response' => $item->cps_response,
+                'Next Charging Date' => $item->charging_date,
+                'Duration' => $item->duration,
+                'Created At' => $item->created_at,
+            ];
+        }
+
+        $response = [
+            'status' => 'Success',
+            'message' => 'Recursive Charging Data Fetched Successfully',
+            'RecursiveChargingData' => $rows,
+        ];
+
+        // Logging
+        Log::channel('net_entrollment_api')->info('Recursive Charging API.', [
+            'response-data' => 'Recursive Charging Data Fetched Successfully',
+        ]);
+
+        return response()->json($response, 200);
+    } else {
+        return response()->json([
+            'status' => 'Error',
+            'message' => 'Date filter is required to fetch data.',
+        ], 400);
+    }
+}
+
 }

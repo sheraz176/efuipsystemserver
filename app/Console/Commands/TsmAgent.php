@@ -45,11 +45,22 @@ class TsmAgent extends Command
 
 
 $agentsData = [
-    ['Bazraqa', 'Rubab', 'Bazraqa.Rubab.tsm.2025', 'Bazraqa#Rubab#tsm#2025', 'HD1318'],
-    ['Samra', 'Akram', 'Samra.Akram.tsm.2025', 'Samra#Akram#tsm#2025', 'HD1319'],
-    ['Aqsa', 'Asghar', 'Aqsa.Asghar.tsm.2025', 'Aqsa#Asghar#tsm#2025', 'HD1320'],
-    ['Fateh', 'Munawar', 'Fateh.Munawar.tsm.2025', 'Fateh#Munawar#tsm#2025', 'HD1321'],
-    ['Muhammad', 'Muaz', 'Muhammad.Muaz.tsm.2025', 'Muhammad#Muaz#tsm#2025', 'HD1322'],
+    ['Samia', 'Asif', 'Samia.Asif.tsm.2025', 'Samia#Asif#tsm#2025', 'HD-1368'],
+    ['Mehwish', 'Shafie', 'Mehwish.Shafie.tsm.2025', 'Mehwish#Shafie#tsm#2025', 'HD-1369'],
+    ['Faizan', 'Baig', 'Faizan.Baig.tsm.2025', 'Faizan#Baig#tsm#2025', 'HD-1370'],
+    ['Iqra', 'Naeem', 'Iqra.Naeem.tsm.2025', 'Iqra#Naeem#tsm#2025', 'HD-1371'],
+    ['Nabiha', 'Arooj', 'Nabiha.Arooj.tsm.2025', 'Nabiha#Arooj#tsm#2025', 'HD-1372'],
+    ['Hamda', 'Bashir', 'Hamda.Bashir.tsm.2025', 'Hamda#Bashir#tsm#2025', 'HD-1373'],
+    ['Muhammad', 'MuhammadIqbal', 'Muhammad.MuhammadIqbal.tsm.2025', 'Muhammad#Muhammad Iqbal#tsm#2025', 'HD-1374'],
+    ['Bisma', 'Kaynaat', 'Bisma.Kaynaat.tsm.2025', 'Bisma#Kaynaat#tsm#2025', 'HD-1375'],
+    ['Aqleema', 'Nawaz', 'Aqleema.Nawaz.tsm.2025', 'Aqleema#Nawaz#tsm#2025', 'HD-1376'],
+    ['Usama', 'Haider', 'Usama.Haider.tsm.2025', 'Usama#Haider#tsm#2025', 'HD-1377'],
+    ['Muhammad', 'Talha', 'Muhammad.Talha.tsm.2025', 'Muhammad#Talha#tsm#2025', 'HD-1378'],
+    ['Roman', 'Ilyas', 'Roman.Ilyas.tsm.2025', 'Roman#Ilyas#tsm#2025', 'HD-1379'],
+    ['Ali', 'Raza', 'Ali.Raza.tsm.2025', 'Ali#Raza#tsm#2025', 'HD-1380'],
+    ['Ghulam', 'Muhammad', 'Ghulam.Muhammad.tsm.2025', 'Ghulam#Muhammad#tsm#2025', 'HD-1381'],
+    ['Karamat', 'Ali', 'Karamat.Ali.tsm.2025', 'Karamat#Ali#tsm#2025', 'HD-1382'],
+    ['Wajiha', 'Tariq', 'Wajiha.Tariq.tsm.2025', 'Wajiha#Tariq#tsm#2025', 'HD-1383'],
 ];
 
 

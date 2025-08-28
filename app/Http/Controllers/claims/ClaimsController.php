@@ -30,58 +30,61 @@ public function getClaimsData(Request $request)
     ->leftJoin('products', 'claims.product_id', '=', 'products.product_id');
 
     // Date filter
-    if ($request->has('dateFilter') && $request->dateFilter) {
+    if ($request->filled('dateFilter')) {
         $dates = explode(' to ', $request->dateFilter);
         if (count($dates) === 2) {
             $query->whereBetween('claims.date', [$dates[0], $dates[1]]);
         }
     }
 
-    return DataTables::of($query)
-        ->addColumn('id', function ($row) {
-            return isset($row->id) ? "CLM{$row->id}" : '-';
-           })
-        ->addColumn('plan_name', function ($row) {
-            return $row->plan_name ?? '-';
-        })
-        ->addColumn('product_name', function ($row) {
-            return $row->product_name ?? '-';
-        })
-        ->addColumn('doctor_prescription', function ($row) {
-            return $row->doctor_prescription
-                ? '<a href="' . asset('storage/app/public/' . $row->doctor_prescription) . '" target="_blank" class="btn btn-sm btn-primary">View</a>'
-                : '-';
-        })
-        ->addColumn('medical_bill', function ($row) {
-            return $row->medical_bill
-                ? '<a href="' . asset('storage/app/public/' . $row->medical_bill) . '" target="_blank" class="btn btn-sm btn-info">View</a>'
-                : '-';
-        })
-        ->addColumn('lab_bill', function ($row) {
-            return $row->lab_bill
-                ? '<a href="' . asset('storage/app/public/' . $row->lab_bill) . '" target="_blank" class="btn btn-sm btn-warning">View</a>'
-                : '-';
-        })
-        ->addColumn('status_action', function ($row) {
-        if ($row->status === 'In Process') {
-           return '
-              <button class="btn btn-success btn-sm approve-btn" data-id="'.$row->id.'">Approve</button>
-               <button class="btn btn-danger btn-sm reject-btn" data-id="'.$row->id.'">Reject</button>
-        ';
-        }
-            return '<span class="badge bg-'.($row->status === 'Approved' ? 'success' : 'danger').'">'.$row->status.'</span>';
-        })
-       ->addColumn('edit_amount', function ($row) {
-    if ($row->status === 'Reject') {
-        return ''; // No button for rejected claims
+    // Status filter
+    if ($request->filled('status')) {
+        $query->where('claims.status', $request->status);
     }
 
-    return '<button class="btn btn-primary btn-sm edit-amount-btn" data-id="' . $row->id . '" data-amount="' . $row->claim_amount . '">Update Claim Amount</button>';
-})
-        ->rawColumns(['id','doctor_prescription', 'medical_bill', 'lab_bill', 'status_action','edit_amount'])
+    // Type filter
+    if ($request->filled('type')) {
+        $query->where('claims.type', 'LIKE', '%' . $request->type . '%');
+    }
 
+    return DataTables::of($query)
+        ->addColumn('id', fn($row) => isset($row->id) ? "CLM{$row->id}" : '-')
+        ->addColumn('plan_name', fn($row) => $row->plan_name ?? '-')
+        ->addColumn('product_name', fn($row) => $row->product_name ?? '-')
+        ->addColumn('doctor_prescription', fn($row) =>
+            $row->doctor_prescription
+                ? '<a href="' . asset('/storage/' . $row->doctor_prescription) . '" target="_blank" class="btn btn-sm btn-primary">View</a>'
+                : '-')
+        ->addColumn('medical_bill', fn($row) =>
+            $row->medical_bill
+                ? '<a href="' . asset('/storage/' . $row->medical_bill) . '" target="_blank" class="btn btn-sm btn-info">View</a>'
+                : '-')
+        ->addColumn('lab_bill', fn($row) =>
+            $row->lab_bill
+                ? '<a href="' . asset('/storage/' . $row->lab_bill) . '" target="_blank" class="btn btn-sm btn-warning">View</a>'
+                : '-')
+        ->addColumn('other', fn($row) =>
+            $row->other
+                ? '<a href="' . asset('/storage/' . $row->other) . '" target="_blank" class="btn btn-sm btn-warning">View</a>'
+                : '-')
+        ->addColumn('status_action', function ($row) {
+            if ($row->status === 'In Process') {
+                return '
+                    <button class="btn btn-success btn-sm approve-btn" data-id="'.$row->id.'">Approve</button>
+                    <button class="btn btn-danger btn-sm reject-btn" data-id="'.$row->id.'">Reject</button>
+                ';
+            }
+            return '<span class="badge bg-'.($row->status === 'Approved' ? 'success' : 'danger').'">'.$row->status.'</span>';
+        })
+        ->addColumn('edit_amount', function ($row) {
+            return $row->status !== 'Reject'
+                ? '<button class="btn btn-primary btn-sm edit-amount-btn" data-id="' . $row->id . '" data-amount="' . $row->claim_amount . '">Update Claim Amount</button>'
+                : '';
+        })
+        ->rawColumns(['id', 'doctor_prescription', 'medical_bill', 'lab_bill', 'status_action', 'edit_amount', 'other'])
         ->make(true);
 }
+
 
 
    public function export(Request $request)
@@ -284,7 +287,7 @@ public function updateAmount(Request $request)
             'history_name' => $history_name,
         ]);
 
-        // ✅ Send SMS notification
+        // ? Send SMS notification
         $smsMessage = "Claim Submission (In Process):\nYour claim (Ref: CLM{$claim->id}) has been received and is under review. We will update you on the status shortly. For queries, call 042-111-333-033.";
 
         $response = Http::withHeaders([

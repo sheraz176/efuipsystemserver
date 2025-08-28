@@ -98,7 +98,7 @@ class GenericApiController extends Controller
          elseif ($userType === 'USSD' && $userRole === 'Merchant' && $appPlatform === 'MerchantUSSDAPP') {
         return $this->customerUSSDPlanMarchantAPP($request);
          }
-            elseif ($userType === 'Mobile' && $userRole === 'Merchant' && $appPlatform === 'MerchantMobileAPP') {
+           elseif ($userType === 'Mobile' && $userRole === 'Merchant' && $appPlatform === 'MerchantMobileAPP') {
         return $this->customerMobilePlanMarchantAPP($request);
          }
          elseif ($userType === 'Mobile' && $userRole === 'Customer' && $appPlatform === 'CustomerMobileApp') {
@@ -373,17 +373,6 @@ class GenericApiController extends Controller
     }
 
 
-    private function customerMobilePlanMarchantAPP(Request $request)
-    {
-        $activePlans = PlanModel::select('plan_id', 'plan_name', 'status')->where('status', 1)->get();
-        return response()
-            ->json([
-                'status' => 'success',
-                'statusCode' => '3000',
-                'data' => $activePlans,
-            ]);
-    }
-
     private function customerMobileAppPlan(Request $request)
     {
         $activePlans = PlanModel::select('plan_id', 'plan_name', 'status')->where('status', 1)->get();
@@ -563,6 +552,16 @@ class GenericApiController extends Controller
         }
     }
 
+      private function customerMobilePlanMarchantAPP(Request $request)
+    {
+        $activePlans = PlanModel::select('plan_id', 'plan_name', 'status')->where('status', 1)->get();
+        return response()
+            ->json([
+                'status' => 'success',
+                'statusCode' => '3000',
+                'data' => $activePlans,
+            ]);
+    }
 
     // End Plan
 
@@ -607,13 +606,14 @@ class GenericApiController extends Controller
             return $this->customerUSSDProductMerchantAPP($request);
         }
 
+        elseif ($userType === 'Mobile' && $userRole === 'Customer' && $appPlatform === 'CustomerMobileApp') {
+            return $this->customerMobileAppProduct($request);
+        }
+
           elseif ($userType === 'Mobile' && $userRole === 'Merchant' && $appPlatform === 'MerchantMobileAPP') {
             return $this->customerMobileProductMerchantAPP($request);
         }
 
-        elseif ($userType === 'Mobile' && $userRole === 'Customer' && $appPlatform === 'CustomerMobileApp') {
-            return $this->customerMobileAppProduct($request);
-        }
          elseif ($userType === 'USSD' && $userRole === 'Health' && $appPlatform === 'HealthInsurance') {
             return $this->HealthInsuranceProduct($request);
         } elseif ($userType === 'USSD' && $userRole === 'Mobile' && $appPlatform === 'MobileInsurance') {
@@ -791,42 +791,6 @@ class GenericApiController extends Controller
     }
 
 
-     private function customerMobileProductMerchantAPP(Request $request)
-    {
-
-        // Validate the request
-        $validator = Validator::make($request->all(), [
-            'plan_id' => 'required|integer',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'messageCode' => 400,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 400);
-        }
-
-        // Retrieve active products associated with the specified plan ID
-        $products = ProductModel::where('plan_id', $request->plan_id)
-            // ->where('status', 1)
-            ->where('api_status', 1)
-            ->get();
-
-        // Filter out null, zero, and empty string values
-        $filteredProducts = $products->map(function ($product) {
-            return collect($product)->filter(function ($value) {
-                return !is_null($value) && $value !== 0 && $value !== '';
-            });
-        });
-
-        return response()->json([
-            'status' => 'success',
-            'statusCode' => 3100,
-            'data' => $filteredProducts,
-        ], 200);
-    }
-
     private function customerMobileAppProduct(Request $request)
     {
 
@@ -862,8 +826,6 @@ class GenericApiController extends Controller
             'data' => $filteredProducts,
         ], 200);
     }
-
-
 
     private function HealthInsuranceProduct(Request $request)
     {
@@ -905,6 +867,41 @@ class GenericApiController extends Controller
         ], 200);
     }
 
+     private function customerMobileProductMerchantAPP(Request $request)
+    {
+
+        // Validate the request
+        $validator = Validator::make($request->all(), [
+            'plan_id' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'messageCode' => 400,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 400);
+        }
+
+        // Retrieve active products associated with the specified plan ID
+        $products = ProductModel::where('plan_id', $request->plan_id)
+            // ->where('status', 1)
+            ->where('api_status', 1)
+            ->get();
+
+        // Filter out null, zero, and empty string values
+        $filteredProducts = $products->map(function ($product) {
+            return collect($product)->filter(function ($value) {
+                return !is_null($value) && $value !== 0 && $value !== '';
+            });
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'statusCode' => 3100,
+            'data' => $filteredProducts,
+        ], 200);
+    }
 
     // End Products
 
@@ -950,23 +947,21 @@ class GenericApiController extends Controller
             return $this->merchantUSSDSubscriptionAPP($request);
         }
 
+        elseif ($userType === 'Mobile' && $userRole === 'Customer' && $appPlatform === 'CustomerMobileApp') {
+            return $this->customerMobileAppSubscription($request);
+        }
+
          elseif ($userType === 'Mobile' && $userRole === 'Merchant' && $appPlatform === 'MerchantMobileAPP') {
             return $this->merchantMobileSubscriptionAPP($request);
         }
 
-        elseif ($userType === 'Mobile' && $userRole === 'Customer' && $appPlatform === 'CustomerMobileApp') {
-            return $this->customerMobileAppSubscription($request);
-        } elseif ($userType === 'Mobile' && $userRole === 'Merchant' && $appPlatform === 'MerchantMobileApp') {
+        elseif ($userType === 'Mobile' && $userRole === 'Merchant' && $appPlatform === 'MerchantMobileApps') {
             return $this->merchantMobileAppSubscription($request);
         } elseif ($userType === 'USSD' && $userRole === 'Health' && $appPlatform === 'HealthInsurance') {
             return $this->HealthInsuranceSubscribtion($request);
         } elseif ($userType === 'USSD' && $userRole === 'Mobile' && $appPlatform === 'MobileInsurance') {
             return $this->MobileInsuranceSubscribtion($request);
-        }
-
-
-
-        else {
+        } else {
             return response()->json([
                 'error' => true,
                 'message' => 'Invalid header values',
@@ -1487,184 +1482,6 @@ class GenericApiController extends Controller
     }
 
 
-
-    private function merchantMobileSubscriptionAPP(Request $request)
-    {
-        // Logic specific to Customer Mobile App
-
-
-
-        // Perform validation
-        $validator = Validator::make($request->all(), [
-            'plan_id' => 'required|integer',
-            'product_id' => 'required|integer',
-            'customer_msisdn' => 'required|regex:/^\d{11,12}$/',
-            'transaction_amount' => 'required|numeric',
-            'cpsOriginatorConversationId' => 'required|string',
-            'cpsTransactionId' => 'required|string',
-            'cpsResponse' => 'required|string',
-            'transactionStatus' => 'required',
-            'subscriber_cnic' => 'required|numeric',
-        ]);
-
-        // Check for validation errors
-        if ($validator->fails()) {
-            return response()->json(['error' => "true", 'statusCode' => 400, 'message' => $validator->errors()], 400);
-        }
-
-        $subscriber_cnic = $request->input("subscriber_cnic");
-        $subscriber_msisdn = $request->input("customer_msisdn");
-        if (preg_match('/^92\d{10}$/', $subscriber_msisdn)) {
-            // Convert '92300XXXXXXX' to '0300XXXXXXX'
-            $subscriber_msisdn = '0' . substr($subscriber_msisdn, 2);
-        }
-        $transaction_amount = $request->input("transaction_amount");
-        $transactionStatus = $request->input("transactionStatus");
-        $cpsOriginatorConversationId = $request->input("cpsOriginatorConversationId");
-        $cpsTransactionId = $request->input("cpsTransactionId");
-        $cpsResponse = $request->input("cpsResponse");
-        $planId = $request->input("plan_id");
-        $product_id = $request->input("product_id");
-        // $APIsource = $request->input("APIsource");
-
-        $product = ProductModel::where('plan_id', $planId)
-            ->where('product_id', $product_id)
-            ->first();
-
-        // Check if product exists
-        if (!$product) {
-            return response()->json(['error' => "true", 'statusCode' => 3101, 'message' => 'Product not found'], 404);
-        }
-
-        Log::channel('Generic_api')->info('Mobile Subscription Api.',[
-            'plan_id' =>  $request->input('plan_id'),
-            'product_id' => $request->input('product_id'),
-            'subscriber_msisdn' => $subscriber_msisdn,
-            ]);
-
-        $transaction_amount = ProductModel::where('fee', $transaction_amount)
-            ->where('product_id', $product_id)
-            ->first();
-        if (!$transaction_amount) {
-            return response()->json(['error' => "true", 'statusCode' => 4001, 'message' => 'Transaction Amount not Same Product Amount'], 404);
-        }
-        $amount = $transaction_amount->fee;
-        //return "getting response of product:".$product;
-
-        $grace_period = 14;
-        $grace_period_time = date('Y-m-d H:i:s', strtotime("+$grace_period days"));
-        $recursive_charging_date = date('Y-m-d H:i:s', strtotime("+" . $product->duration . " days"));
-
-
-
-        $subscription = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
-            ->where('plan_id', $planId)
-            ->where('policy_status', 1)
-            ->first();
-
-        if ($subscription) {
-            $product_id = $subscription->productId;
-            $product = ProductModel::where('product_id', $product_id)->first();
-            $product_code_01 = $product->product_code;
-
-            return response()->json([
-                'error' => false,
-                'statusCode' => 4000,
-                'message' => 'Already subscribed to the plan.',
-                'Policy Number' => $subscription['subscription_id'],
-                'planCode' => $product_code_01,
-                'transactionAmount' => $subscription['transaction_amount'],
-                'Subscriber Number' =>  $subscription['subscriber_msisdn'],
-                'Subcription Time'  =>  $subscription['subscription_time']
-            ]);
-        } else {
-            $customer_subscription = CustomerSubscription::create([
-                'customer_id' => '0011' . $subscriber_msisdn,
-                'payer_cnic' => 1,
-                'payer_msisdn' => $subscriber_msisdn,
-                'subscriber_cnic' => $subscriber_cnic,
-                'subscriber_msisdn' => $subscriber_msisdn,
-                'beneficiary_name' => 'Need to Filled in Future',
-                'beneficiary_msisdn' => 0,
-                'transaction_amount' => $amount,
-                'transaction_status' => $transactionStatus,
-                'referenceId' => $cpsOriginatorConversationId,
-                'cps_transaction_id' => $cpsTransactionId,
-                'cps_response_text' => $cpsResponse,
-                'product_duration' => $product->duration,
-                'plan_id' => $planId,
-                'productId' => $product_id,
-                'policy_status' => 1,
-                'pulse' => 'Recursive Charging',
-                'api_source' => 'Merchant Mobile APP Subscription',
-                'recursive_charging_date' => $recursive_charging_date,
-                'subscription_time' => now(),
-                'grace_period_time' => $grace_period_time,
-                'sales_agent' => 1,
-                'company_id' => 15
-            ]);
-
-            // Retrieve subscription data
-            $subscription_data = CustomerSubscription::find($customer_subscription->subscription_id);
-
-
-
-            $product_id = $subscription_data->productId;
-
-            // Retrieve the product details based on the product_id
-
-            $product = ProductModel::find($product_id);
-
-            $planCode = $product->product_code;
-
-                 // SMS Code
-            $sms = new SMSMsisdn();
-            $sms->msisdn = $subscriber_msisdn;
-            $sms->plan_id = $planId;
-            $sms->product_id = $product_id;
-            $sms->status = "0";
-            $sms->save();
-            // End SMS Code
-
-            // Construct the response
-            $response = [
-                'error' => false,
-                'statusCode' => 2000,
-                'message' => 'Customer Subscribed Sucessfully',
-                'policy_subscription_id' => $subscription_data->subscription_id,
-                'Information' => [
-                    'customer_id' => $subscription_data->customer_id,
-                    'payer_cnic' => $subscription_data->payer_cnic,
-                    'payer_msisdn' => $subscription_data->payer_msisdn,
-                    'subscriber_cnic' => $subscription_data->subscriber_cnic,
-                    'subscriber_msisdn' => $subscription_data->subscriber_msisdn,
-                    'beneficinary_name' => $subscription_data->beneficinary_name,
-                    'benficinary_msisdn' => $subscription_data->benficinary_msisdn,
-                    'transaction_amount' => $subscription_data->transaction_amount,
-                    'transactionStatus' => $subscription_data->transaction_status,
-                    'cpsOriginatorConversationId' => $subscription_data->referenceId,
-                    'cpsTransactionId' => $subscription_data->cps_transaction_id,
-                    'cpsResponse' => $subscription_data->cps_response_text,
-                    'planId' => $subscription_data->plan_id,
-                    'productId' => $subscription_data->productId,
-                    'planCode' => $planCode,
-                    'plan_status' => $subscription_data->policy_status,
-                    'pulse' => $subscription_data->pulse,
-                    'APIsource' => $subscription_data->api_source,
-                    'Recusive_charing_date' => $subscription_data->recursive_charging_date,
-                    'subcription_time' => $subscription_data->subscription_time,
-                    'grace_period_time' => $subscription_data->grace_period_time,
-                    'Sales_agent' => $subscription_data->sales_agent,
-                    'id' => $subscription_data->subscription_id
-                ],
-                'statusCode' => 2000
-            ];
-
-            // Return the response
-            return response()->json($response);
-        }
-    }
-
     private function customerMobileAppSubscription(Request $request)
     {
         // Logic specific to Customer Mobile App
@@ -2141,6 +1958,193 @@ class GenericApiController extends Controller
         }
     }
 
+     private function merchantMobileSubscriptionAPP(Request $request)
+    {
+        // Logic specific to Customer Mobile App
+
+
+
+        // Perform validation
+        $validator = Validator::make($request->all(), [
+            'plan_id' => 'required|integer',
+            'product_id' => 'required|integer',
+            'customer_msisdn' => 'required|regex:/^\d{11,12}$/',
+            'transaction_amount' => 'required|numeric',
+            'cpsOriginatorConversationId' => 'required|string',
+            'cpsTransactionId' => 'required|string',
+            'cpsResponse' => 'required|string',
+            'transactionStatus' => 'required',
+            'subscriber_cnic' => 'required|numeric',
+             'marchant_mobile' => 'required',
+        ]);
+
+        // Check for validation errors
+        if ($validator->fails()) {
+            return response()->json(['error' => "true", 'statusCode' => 400, 'message' => $validator->errors()], 400);
+        }
+
+        $subscriber_cnic = $request->input("subscriber_cnic");
+        $subscriber_msisdn = $request->input("customer_msisdn");
+        if (preg_match('/^92\d{10}$/', $subscriber_msisdn)) {
+            // Convert '92300XXXXXXX' to '0300XXXXXXX'
+            $subscriber_msisdn = '0' . substr($subscriber_msisdn, 2);
+        }
+        $transaction_amount = $request->input("transaction_amount");
+        $transactionStatus = $request->input("transactionStatus");
+        $cpsOriginatorConversationId = $request->input("cpsOriginatorConversationId");
+        $cpsTransactionId = $request->input("cpsTransactionId");
+        $cpsResponse = $request->input("cpsResponse");
+        $planId = $request->input("plan_id");
+        $product_id = $request->input("product_id");
+         $marchant_mobile = $request->input("marchant_mobile");
+        // $APIsource = $request->input("APIsource");
+
+        $product = ProductModel::where('plan_id', $planId)
+            ->where('product_id', $product_id)
+            ->first();
+
+        // Check if product exists
+        if (!$product) {
+            return response()->json(['error' => "true", 'statusCode' => 3101, 'message' => 'Product not found'], 404);
+        }
+
+        Log::channel('Generic_api')->info('Mobile Subscription Api.',[
+            'plan_id' =>  $request->input('plan_id'),
+            'product_id' => $request->input('product_id'),
+            'subscriber_msisdn' => $subscriber_msisdn,
+            ]);
+
+        $transaction_amount = ProductModel::where('fee', $transaction_amount)
+            ->where('product_id', $product_id)
+            ->first();
+        if (!$transaction_amount) {
+            return response()->json(['error' => "true", 'statusCode' => 4001, 'message' => 'Transaction Amount not Same Product Amount'], 404);
+        }
+        $amount = $transaction_amount->fee;
+        //return "getting response of product:".$product;
+
+        $grace_period = 14;
+        $grace_period_time = date('Y-m-d H:i:s', strtotime("+$grace_period days"));
+        $recursive_charging_date = date('Y-m-d H:i:s', strtotime("+" . $product->duration . " days"));
+
+
+
+        $subscription = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
+            ->where('plan_id', $planId)
+            ->where('policy_status', 1)
+            ->first();
+
+        if ($subscription) {
+            $product_id = $subscription->productId;
+            $product = ProductModel::where('product_id', $product_id)->first();
+            $product_code_01 = $product->product_code;
+
+            return response()->json([
+                'error' => false,
+                'statusCode' => 4000,
+                'message' => 'Already subscribed to the plan.',
+                'Policy Number' => $subscription['subscription_id'],
+                'planCode' => $product_code_01,
+                'transactionAmount' => $subscription['transaction_amount'],
+                'Subscriber Number' =>  $subscription['subscriber_msisdn'],
+                'Subcription Time'  =>  $subscription['subscription_time']
+            ]);
+        } else {
+
+               $MarchantSubscriptionData = MarchantModel::create([
+                'customer_msisdn' => $marchant_mobile,
+                'amount' => $amount,
+                'status' => 'success'
+            ]);
+
+            $customer_subscription = CustomerSubscription::create([
+                'marchant_id' => $MarchantSubscriptionData->id,
+                'customer_id' => '0011' . $subscriber_msisdn,
+                'payer_cnic' => 1,
+                'payer_msisdn' => $subscriber_msisdn,
+                'subscriber_cnic' => $subscriber_cnic,
+                'subscriber_msisdn' => $subscriber_msisdn,
+                'beneficiary_name' => 'Need to Filled in Future',
+                'beneficiary_msisdn' => 0,
+                'transaction_amount' => $amount,
+                'transaction_status' => $transactionStatus,
+                'referenceId' => $cpsOriginatorConversationId,
+                'cps_transaction_id' => $cpsTransactionId,
+                'cps_response_text' => $cpsResponse,
+                'product_duration' => $product->duration,
+                'plan_id' => $planId,
+                'productId' => $product_id,
+                'policy_status' => 1,
+                'pulse' => 'Recursive Charging',
+                'api_source' => 'Merchant Mobile APP Subscription',
+                'recursive_charging_date' => $recursive_charging_date,
+                'subscription_time' => now(),
+                'grace_period_time' => $grace_period_time,
+                'sales_agent' => 1,
+                'company_id' => 15
+            ]);
+
+            // Retrieve subscription data
+            $subscription_data = CustomerSubscription::find($customer_subscription->subscription_id);
+
+
+
+            $product_id = $subscription_data->productId;
+
+            // Retrieve the product details based on the product_id
+
+            $product = ProductModel::find($product_id);
+
+            $planCode = $product->product_code;
+
+                 // SMS Code
+            $sms = new SMSMsisdn();
+            $sms->msisdn = $subscriber_msisdn;
+            $sms->plan_id = $planId;
+            $sms->product_id = $product_id;
+            $sms->status = "0";
+            $sms->save();
+            // End SMS Code
+
+            // Construct the response
+            $response = [
+                'error' => false,
+                'statusCode' => 2000,
+                'message' => 'Customer Subscribed Sucessfully',
+                'policy_subscription_id' => $subscription_data->subscription_id,
+                'Information' => [
+                    'customer_id' => $subscription_data->customer_id,
+                    'payer_cnic' => $subscription_data->payer_cnic,
+                    'payer_msisdn' => $subscription_data->payer_msisdn,
+                    'subscriber_cnic' => $subscription_data->subscriber_cnic,
+                    'subscriber_msisdn' => $subscription_data->subscriber_msisdn,
+                    'beneficinary_name' => $subscription_data->beneficinary_name,
+                    'benficinary_msisdn' => $subscription_data->benficinary_msisdn,
+                    'transaction_amount' => $subscription_data->transaction_amount,
+                    'transactionStatus' => $subscription_data->transaction_status,
+                    'cpsOriginatorConversationId' => $subscription_data->referenceId,
+                    'cpsTransactionId' => $subscription_data->cps_transaction_id,
+                    'cpsResponse' => $subscription_data->cps_response_text,
+                    'planId' => $subscription_data->plan_id,
+                    'productId' => $subscription_data->productId,
+                    'planCode' => $planCode,
+                    'plan_status' => $subscription_data->policy_status,
+                    'pulse' => $subscription_data->pulse,
+                    'APIsource' => $subscription_data->api_source,
+                    'Recusive_charing_date' => $subscription_data->recursive_charging_date,
+                    'subcription_time' => $subscription_data->subscription_time,
+                    'grace_period_time' => $subscription_data->grace_period_time,
+                    'Sales_agent' => $subscription_data->sales_agent,
+                    'id' => $subscription_data->subscription_id,
+                    'marchant_id' => $subscription_data->marchant_id,
+                ],
+                'statusCode' => 2000
+            ];
+
+            // Return the response
+            return response()->json($response);
+        }
+    }
 
     // End Subscription
 
@@ -2179,17 +2183,17 @@ class GenericApiController extends Controller
             return $this->customerUSSDUnSub($request);
         } elseif ($userType === 'USSD' && $userRole === 'Merchant' && $appPlatform === 'MerchantUSSD') {
             return $this->customerMarchantUnSub($request);
-        }
-
-        elseif ($userType === 'Mobile' && $userRole === 'Merchant' && $appPlatform === 'MerchantMobileAPP') {
-            return $this->customerMerchantMobileAppUnSub($request);
-        }
-
-        elseif ($userType === 'Mobile' && $userRole === 'Customer' && $appPlatform === 'CustomerMobileApp') {
+        } elseif ($userType === 'Mobile' && $userRole === 'Customer' && $appPlatform === 'CustomerMobileApp') {
             return $this->customerMobileAppUnSub($request);
         } elseif ($userType === 'USSD' && $userRole === 'Health' && $appPlatform === 'HealthInsurance') {
             return $this->customerUSSDUnSub($request);
-        } elseif ($userType === 'USSD' && $userRole === 'Mobile' && $appPlatform === 'MobileInsurance') {
+        }
+
+         elseif ($userType === 'Mobile' && $userRole === 'Merchant' && $appPlatform === 'MerchantMobileAPP') {
+            return $this->customerMerchantMobileAppUnSub($request);
+        }
+
+        elseif ($userType === 'USSD' && $userRole === 'Mobile' && $appPlatform === 'MobileInsurance') {
             return $this->customerUSSDUnSub($request);
         } else {
             return response()->json([
@@ -2257,7 +2261,7 @@ class GenericApiController extends Controller
                 'message' => 'Subscription with the given ID not found in active subscriptions.',
             ], 404);
         }
-        $nonRefundableAmounts = ['4','9','133','199', '163', '5', '10', '200', '2000', '1950', '1600', '5000','12','300','3000','2950','299','2900'];
+        $nonRefundableAmounts = ['4','9','133','199', '163', '5', '10', '200', '2000', '1950', '1600', '5000','12','300','3000','2950','299','2900','1','2'];
         if (in_array($subscription->transaction_amount, $nonRefundableAmounts)) {
             // Handle non-refundable unsubscription
             CustomerUnSubscription::create([
@@ -2333,7 +2337,7 @@ class GenericApiController extends Controller
                 'message' => 'Subscription with the given ID not found in active subscriptions.',
             ], 404);
         }
-        $nonRefundableAmounts = ['4','9','133','199', '163', '5', '10', '200', '2000', '1950', '1600', '5000','12','300','3000','2950','299','2900'];
+        $nonRefundableAmounts = ['4','9','133','199', '163', '5', '10', '200', '2000', '1950', '1600', '5000','12','300','3000','2950','299','2900','1','2'];
         if (in_array($subscription->transaction_amount, $nonRefundableAmounts)) {
             // Handle non-refundable unsubscription
             CustomerUnSubscription::create([
@@ -2348,6 +2352,82 @@ class GenericApiController extends Controller
                 'statusCode' => 2001,
                 'refund' => 'false',
                 'medium' => 'Marchant USSD',
+                'message' => 'Package unsubscribed successfully. You are not eligible for a refund.',
+            ]);
+        }
+    }
+    private function customerMobileAppUnSub(Request $request)
+    {
+        // Step 1: Validate the request to ensure `subscriber_msisdn` is provided
+        $validator = Validator::make($request->all(), [
+            'subscriber_msisdn' => 'required|regex:/^\d{11,12}$/',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 400);
+        }
+
+        $subscriber_msisdn = $request->input("subscriber_msisdn");
+        if (preg_match('/^92\d{10}$/', $subscriber_msisdn)) {
+            // Convert '92300XXXXXXX' to '0300XXXXXXX'
+            $subscriber_msisdn = '0' . substr($subscriber_msisdn, 2);
+        }
+
+        // Step 2: Check for active subscriptions based on `subscriber_msisdn`
+        $subscriptions = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
+            ->where('policy_status', 1) // Only active subscriptions
+            ->get();
+
+        // If no active subscriptions are found, return a message
+        if ($subscriptions->isEmpty()) {
+            return response()->json([
+                'statusCode' => 4004,
+                'message' => 'No active subscriptions found for this subscriber.',
+            ], 404);
+        }
+        // Step 3: If active subscriptions are found, return them to the user
+        if (!$request->has('subscription_id')) {
+            return response()->json([
+                'statusCode' => 4000,
+                'message' => 'Active subscriptions found.',
+                'subscriptions' => $subscriptions->map(function ($subscription) {
+                    return [
+                        'subscription_id' => $subscription->subscription_id,
+                        'plan_id' => $subscription->plan_id,
+                        'transaction_amount' => $subscription->transaction_amount,
+                    ];
+                }),
+            ]);
+        }
+        // Step 4: If `subscription_id` is provided, proceed to unsubscribe
+        $subscriptionId = $request->input('subscription_id');
+        $subscription = $subscriptions->where('subscription_id', $subscriptionId)->first();
+
+        if (!$subscription) {
+            return response()->json([
+                'statusCode' => 4004,
+                'message' => 'Subscription with the given ID not found in active subscriptions.',
+            ], 404);
+        }
+        $nonRefundableAmounts = ['4','9','133','199', '163', '5', '10', '200', '2000', '1950', '1600', '5000','12','300','3000','2950','299','2900','1','2'];
+        if (in_array($subscription->transaction_amount, $nonRefundableAmounts)) {
+            // Handle non-refundable unsubscription
+            CustomerUnSubscription::create([
+                'unsubscription_datetime' => now(),
+                'medium' => 'Jazz Application',
+                'subscription_id' => $subscription->subscription_id,
+                'refunded_id' => '1',
+            ]);
+            $subscription->update(['policy_status' => 0]);
+
+            return response()->json([
+                'statusCode' => 2001,
+                'refund' => 'false',
+                'medium' => 'Jazz Application',
                 'message' => 'Package unsubscribed successfully. You are not eligible for a refund.',
             ]);
         }
@@ -2425,84 +2505,6 @@ class GenericApiController extends Controller
                 'statusCode' => 2001,
                 'refund' => 'false',
                 'medium' => 'Marchant Mobile App',
-                'message' => 'Package unsubscribed successfully. You are not eligible for a refund.',
-            ]);
-        }
-    }
-
-
-    private function customerMobileAppUnSub(Request $request)
-    {
-        // Step 1: Validate the request to ensure `subscriber_msisdn` is provided
-        $validator = Validator::make($request->all(), [
-            'subscriber_msisdn' => 'required|regex:/^\d{11,12}$/',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'statusCode' => 400,
-                'message' => 'Validation failed',
-                'errors' => $validator->errors(),
-            ], 400);
-        }
-
-        $subscriber_msisdn = $request->input("subscriber_msisdn");
-        if (preg_match('/^92\d{10}$/', $subscriber_msisdn)) {
-            // Convert '92300XXXXXXX' to '0300XXXXXXX'
-            $subscriber_msisdn = '0' . substr($subscriber_msisdn, 2);
-        }
-
-        // Step 2: Check for active subscriptions based on `subscriber_msisdn`
-        $subscriptions = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
-            ->where('policy_status', 1) // Only active subscriptions
-            ->get();
-
-        // If no active subscriptions are found, return a message
-        if ($subscriptions->isEmpty()) {
-            return response()->json([
-                'statusCode' => 4004,
-                'message' => 'No active subscriptions found for this subscriber.',
-            ], 404);
-        }
-        // Step 3: If active subscriptions are found, return them to the user
-        if (!$request->has('subscription_id')) {
-            return response()->json([
-                'statusCode' => 4000,
-                'message' => 'Active subscriptions found.',
-                'subscriptions' => $subscriptions->map(function ($subscription) {
-                    return [
-                        'subscription_id' => $subscription->subscription_id,
-                        'plan_id' => $subscription->plan_id,
-                        'transaction_amount' => $subscription->transaction_amount,
-                    ];
-                }),
-            ]);
-        }
-        // Step 4: If `subscription_id` is provided, proceed to unsubscribe
-        $subscriptionId = $request->input('subscription_id');
-        $subscription = $subscriptions->where('subscription_id', $subscriptionId)->first();
-
-        if (!$subscription) {
-            return response()->json([
-                'statusCode' => 4004,
-                'message' => 'Subscription with the given ID not found in active subscriptions.',
-            ], 404);
-        }
-        $nonRefundableAmounts = ['4','9','133','199', '163', '5', '10', '200', '2000', '1950', '1600', '5000','12','300','3000','2950','299','2900'];
-        if (in_array($subscription->transaction_amount, $nonRefundableAmounts)) {
-            // Handle non-refundable unsubscription
-            CustomerUnSubscription::create([
-                'unsubscription_datetime' => now(),
-                'medium' => 'Jazz Application',
-                'subscription_id' => $subscription->subscription_id,
-                'refunded_id' => '1',
-            ]);
-            $subscription->update(['policy_status' => 0]);
-
-            return response()->json([
-                'statusCode' => 2001,
-                'refund' => 'false',
-                'medium' => 'Jazz Application',
                 'message' => 'Package unsubscribed successfully. You are not eligible for a refund.',
             ]);
         }
@@ -2886,8 +2888,6 @@ class GenericApiController extends Controller
             ]);
         }
     }
-
-
 
 
     // End Active SubScription

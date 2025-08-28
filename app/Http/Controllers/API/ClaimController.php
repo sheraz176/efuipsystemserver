@@ -60,7 +60,6 @@ class ClaimController extends Controller
     }
 
 
-
 public function SubmitClaim(Request $request)
 {
     try {
@@ -69,16 +68,16 @@ public function SubmitClaim(Request $request)
             'msisdn' => 'required',
             'claim_amount' => 'required',
             'type' => 'required|in:hospitalization,medical_and_lab_expense',
-            'doctor_prescription' => 'nullable',
-            'medical_bill' => 'nullable',
-            'lab_bill' => 'nullable',
-            'other' => 'nullable',
+            'doctor_prescription' => 'nullable|array',
+            'medical_bill' => 'nullable|array',
+            'lab_bill' => 'nullable|array',
+            'other' => 'nullable|array',
         ]);
 
         // Check if the claim msisdn exists in the CustomerSubscription table
-        $claim_msisdn = CustomerSubscription::where('plan_id',[4, 5])
-            ->where('subscriber_msisdn', $request->msisdn)
-            ->where('policy_status', 1)
+          $claim_msisdn = CustomerSubscription::whereIn('plan_id', [4, 5])
+           ->where('subscriber_msisdn', $request->msisdn)
+          ->where('policy_status', 1)
             ->first();
 
         if (!$claim_msisdn) {
@@ -89,32 +88,31 @@ public function SubmitClaim(Request $request)
         $plan_id = $claim_msisdn->plan_id;
         $product_id = $claim_msisdn->productId;
 
+
         $type = ($request->type == 'hospitalization') ? 'hospitalization' : 'medical_and_lab_expense';
         $history_name = ($type == 'hospitalization') ? 'Hospital' : 'Medicine';
 
-        // Handle file uploads (both normal file and base64)
+        // Handle base64 image uploads
         $fileFields = ['doctor_prescription', 'medical_bill', 'lab_bill', 'other'];
         $claimData = [];
 
         foreach ($fileFields as $field) {
-            if ($request->hasFile($field)) {
-                $file = $request->file($field);
-                $base64 = base64_encode(file_get_contents($file));
+            if ($request->has($field) && is_array($request->{$field})) {
+                $fileData = $request->{$field};
 
-                $claimData[$field] = [
-                    'type' => $file->getClientOriginalExtension(),
-                    'base64' => $base64
-                ];
-            } elseif ($request->has($field) && !empty($request->{$field})) {
-                $claimData[$field] = [
-                    'type' => $request->input($field . '_type'), // Assume type is sent separately
-                    'base64' => $request->{$field}
-                ];
+                if (!empty($fileData['base64']) && !empty($fileData['type'])) {
+                    $extension = strtolower($fileData['type']); // e.g., "png"
+                    $filename = time() . '_' . $field . '.' . $extension;
+                    $path = 'claims/' . $field . '/' . $filename;
+
+                    Storage::disk('public')->put($path, base64_decode($fileData['base64']));
+                    $claimData[$field] = $path;
+                }
             }
         }
 
-        // Save the claim without file paths
-        $claim = Claim::create([
+        // Save the claim
+        $claim = Claim::create(array_merge([
             'msisdn' => $request->msisdn,
             'plan_id' => $plan_id,
             'product_id' => $product_id,
@@ -124,21 +122,15 @@ public function SubmitClaim(Request $request)
             'claim_amount' => $request->claim_amount,
             'type' => $type,
             'history_name' => $history_name,
-        ]);
+        ], $claimData));
 
-        return response()->json([
-            'message' => 'Claim submitted successfully',
-            'data' => array_merge($claim->toArray(), [
-                'documents' => $claimData
-            ])
-        ], 200);
+        return response()->json(['message' => 'Claim submitted successfully', 'data' => $claim], 200);
     } catch (\Illuminate\Validation\ValidationException $e) {
         return response()->json(['message' => 'Validation Error', 'errors' => $e->errors()], 422);
     } catch (\Exception $e) {
         return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], 500);
     }
 }
-
 
 
 private function detectMimeType($binaryData)
@@ -210,15 +202,16 @@ private function getExtensionFromMimeType($mimeType)
 {
     $request->validate([
         'msisdn' => 'required|digits_between:10,13', // Validate MSISDN is provided and is of valid length
+        'subscription_id ' => 'required', // Validate MSISDN is provided and is of valid length
     ]);
 
     // Check if the claim MSISDN exists in the CustomerSubscription table
-    $claim_msisdn = CustomerSubscription::where('plan_id',[4, 5])
-        ->where('subscriber_msisdn', $request->msisdn)
-        ->where('policy_status', 1)
-        ->first();
-
-
+    $claim_msisdn = CustomerSubscription::whereIn('plan_id', [4, 5])
+    ->where('subscriber_msisdn', $request->msisdn)
+    ->where('subscription_id', $request->subscription_id)
+    ->where('policy_status', 1)
+    ->first();
+     //dd($claim_msisdn);
 
     if (!$claim_msisdn) {
         return response()->json(['message' => 'Claim MSISDN not found'], 404);
@@ -230,17 +223,30 @@ private function getExtensionFromMimeType($mimeType)
         ->where('status', 'approved')
         ->get();
 
+      //dd($existingClaims);
+
     // Get the package amount from the ProductModel
     $product = ProductModel::where('product_id', $claim_msisdn->productId)->first();
 
-
+    //dd($product);
 
     // Initialize base amounts
     $baseHospitalizationAmount = 20000;
-    $baseMedicalExpenseAmount = 10000;
+
+    //dd($baseHospitalizationAmount);
+    //$baseMedicalExpenseAmount = 10000;
+
+   if($claim_msisdn->plan_id == "4"){
+         $baseMedicalExpenseAmount = 750000;
+    }
+    else{
+         $baseMedicalExpenseAmount = 850000;
+    }
+
 
     // If no existing claims found, return response with base amounts and zero claims
     if ($existingClaims->isEmpty()) {
+      //dd('hi');
         return response()->json([
             'msisdn' => $request->msisdn,
             'plan_id' => $claim_msisdn->plan_id,
@@ -251,7 +257,7 @@ private function getExtensionFromMimeType($mimeType)
             'total_hospitalization_claimed_amount' => 0,
             'remaining_hospitalization_amount' => '20000',
             'total_medical_bill_claimed_amount' => 0,
-            'remaining_medical_bill_amount' => '10000',
+            'remaining_medical_bill_amount' => $baseMedicalExpenseAmount,
         ]);
     }
 
@@ -261,11 +267,14 @@ private function getExtensionFromMimeType($mimeType)
 
     // Calculate remaining amounts
     $remainingHospitalizationAmount = max($baseHospitalizationAmount - $totalHospitalizationClaimed, 0);
+    //dd($remainingHospitalizationAmount);
     $remainingMedicalExpenseAmount = max($baseMedicalExpenseAmount - $totalMedicalExpenseClaimed, 0);
+     //dd($remainingMedicalExpenseAmount);
 
     // Update all claims with the new remaining amounts
     foreach ($existingClaims as $claim) {
         if ($claim->type == 'hospitalization') {
+             //dd('hi');
             $claim->update([
                 'existingamount' => $baseHospitalizationAmount,
                 'remaining_amount' => $remainingHospitalizationAmount
@@ -278,20 +287,20 @@ private function getExtensionFromMimeType($mimeType)
         }
     }
 
-    return response()->json([
-        'msisdn' => $request->msisdn,
-        'plan_id' => $claim_msisdn->plan_id,
-        'product_id' => $claim_msisdn->productId,
-        'package_amount' => $product->fee ?? 0, // Ensure fee exists
-        'Total_Hospitalization_Amount_existing' => $baseHospitalizationAmount,
-        'Total_Medical_Bill_Amount_existing' => $baseMedicalExpenseAmount,
-        'total_hospitalization_claimed_amount' => $totalHospitalizationClaimed,
-        'remaining_hospitalization_amount' => $remainingHospitalizationAmount,
-        'total_medical_bill_claimed_amount' => $totalMedicalExpenseClaimed,
-        'remaining_medical_bill_amount' => $remainingMedicalExpenseAmount,
-    ]);
-}
+ return response()->json([
+    'msisdn' => $request->msisdn ?? 0,
+    'plan_id' => $claim_msisdn->plan_id ?? 0,
+    'product_id' => $claim_msisdn->productId ?? 0,
+    'package_amount' => $product->fee ?? 0, // Ensure fee exists
+    'Total_Hospitalization_Amount_existing' => $baseHospitalizationAmount ?? 0,
+    'Total_Medical_Bill_Amount_existing' => $baseMedicalExpenseAmount ?? 0,
+    'total_hospitalization_claimed_amount' => $totalHospitalizationClaimed ?? 0,
+    'remaining_hospitalization_amount' => $remainingHospitalizationAmount ?? 0,
+    'total_medical_bill_claimed_amount' => $totalMedicalExpenseClaimed ?? 0,
+    'remaining_medical_bill_amount' => $remainingMedicalExpenseAmount ?? 0,
+]);
 
+}
 
 public function Claimstatus(Request $request)
 {

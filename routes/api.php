@@ -19,6 +19,8 @@ use App\Http\Controllers\API\USSDAPI23Controller;
 use App\Http\Controllers\API\GenericApiController;
 use App\Http\Controllers\API\ClaimController;
 use App\Http\Controllers\API\FamilyHealthController;
+use App\Http\Controllers\API\PolicyController;
+use App\Http\Controllers\API\IVRTsmController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +32,12 @@ use App\Http\Controllers\API\FamilyHealthController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+  Route::post("/family/health", [PolicyController::class, 'family_policy_sub_api'])
+            ->name('family.health');
+  Route::post("/medical/health", [PolicyController::class, 'medical_policy_sub_api'])
+            ->name('medical.health');
+
 
 
 
@@ -296,6 +304,25 @@ Route::prefix('v22')->group(function () {
  });
 
 
+ Route::post("IVR/TSM/login",[IVRTsmController::class,'login']);
+ Route::group(['middleware' => 'auth:sanctum'], function(){
+Route::prefix('Tsm')->group(function () {
+    Route::prefix('IVR')->group(function () {
+
+	Route::get("/getPlans", [IVRTsmController::class, 'getPlans'])
+    ->name('get_plans_lp');
+
+    	Route::post("/getProducts", [IVRTsmController::class, 'getProducts'])
+    ->name('get_products_lp');
+
+     Route::post("/subscription-tsm-ivr", [IVRTsmController::class, 'tsm_ivr_subscription'])
+    ->name('subscription_tsm_ivr');
+
+});
+ });
+});
+
+
    // Status Update Auto Debit Button Super Agent L Pannel
    Route::post('/InterestedCustomerStatusUpdate', [CustomApiController::class, 'status_update'])->name('InterestedCustomerStatusUpdate');
 
@@ -304,6 +331,8 @@ Route::prefix('v22')->group(function () {
 
    //  Api NetEnrollment Report
    Route::post('/NetEnrollment', [NetEntrollmentApiController::class, 'NetEnrollment'])->name('NetEnrollment');
+    Route::post('/recusiveCharging', [NetEntrollmentApiController::class, 'recusiveCharging'])->name('recusiveCharging');
+
    Route::post('/TotalActiveSubscription', [NetEntrollmentApiController::class, 'ActiveSubscription'])->name('TotalActiveSubscription');
    Route::post('/RefundedTransaction', [NetEntrollmentApiController::class, 'RefundedTransaction'])->name('RefundedTransaction');
 

@@ -50,11 +50,30 @@ class RecusiveCharging extends Command
             $today = Carbon::now()->toDateString();
 
             // Query subscriptions with recursive charging date due today and policy_status = 1
-            $subscriptions = DB::table('customer_subscriptions')
-                ->select('subscription_id', DB::raw("CONCAT('92', SUBSTRING(subscriber_msisdn, -10)) AS subscriber_msisdn"), 'transaction_amount', 'consecutiveFailureCount', 'recursive_charging_date', 'product_duration', 'plan_id', 'productId')
-                ->whereDate('recursive_charging_date', $today)
-                ->where('policy_status', 1)->whereIn('transaction_amount',[10,200,2000,1950])
-                ->get();
+
+              $subscriptions = DB::table('customer_subscriptions')
+    ->select(
+        'subscription_id',
+        DB::raw("CONCAT('92', SUBSTRING(subscriber_msisdn, -10)) AS subscriber_msisdn"),
+        'transaction_amount',
+        'consecutiveFailureCount',
+        'recursive_charging_date',
+        'product_duration',
+        'plan_id',
+        'productId'
+    )
+    ->whereDate('recursive_charging_date', $today)
+    ->where('policy_status', 1)
+    ->where(function ($query) {
+        $query->whereIn('transaction_amount', [10, 200, 299])
+              ->orWhere(function ($q) {
+                  $q->where('transaction_amount', 1)
+                    ->where('plan_id', 4);
+              });
+    })
+    ->get();
+
+           //dd($subscriptions);
 
             // Iterate over subscriptions
             foreach ($subscriptions as $subscription) {
