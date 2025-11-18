@@ -23,6 +23,13 @@ class SuperAdminReports extends Controller
         return view('superadmin.completesales');
     }
 
+
+     public function refundagentindex()
+    {
+        return view('super_agent_Interested.netenrollment');
+    }
+
+
     public function getData(Request $request)
 {
     if ($request->ajax()) {
@@ -329,6 +336,13 @@ public function get_active_subscription_data(Request $request)
         $recusiveChargingDatacount = RecusiveChargingData::whereDate('created_at', Carbon::today())
         ->count();
     return view('superadmin.recusive-charging.index',compact('recusiveChargingDatacount'));
+    }
+
+     public function agent_recusive_charging_data_index()
+    {
+        $recusiveChargingDatacount = RecusiveChargingData::whereDate('created_at', Carbon::today())
+        ->count();
+      return view('super_agent_Interested.recusivechargingindex',compact('recusiveChargingDatacount'));
     }
 
 

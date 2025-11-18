@@ -126,6 +126,7 @@ class NetEntrollmentApiController extends Controller
                     'Next Charging Date' => $item->recursive_charging_date,
                     'Subscription Date' => $item->subscription_time,
                     'Free Look Period' => $item->grace_period_time,
+                    'Policy Status' => $item->policy_status,
                 ];
             }
 

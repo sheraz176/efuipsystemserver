@@ -24,19 +24,913 @@ class PolicyController extends Controller
 {
 
 
-    public function family_policy_sub_api(Request $request)
+
+
+    public function family_plan_new(Request $request)
     {
 
         $msisdn = preg_replace('/[^0-9]/', '', $request->subscriber_msisdn);
 
-// Case 1: Agar number 92 se start ho aur 12 digit ka ho
-if (substr($msisdn, 0, 2) === '92' && strlen($msisdn) === 12) {
-    $msisdn = '0' . substr($msisdn, 2);
-}
-// Case 2: Agar sirf 10 digit ka ho (e.g. 3008758478)
-elseif (strlen($msisdn) === 10) {
-    $msisdn = '0' . $msisdn;
-}
+        // Case 1: Agar number 92 se start ho aur 12 digit ka ho
+        if (substr($msisdn, 0, 2) === '92' && strlen($msisdn) === 12) {
+            $msisdn = '0' . substr($msisdn, 2);
+        }
+        // Case 2: Agar sirf 10 digit ka ho (e.g. 3008758478)
+        elseif (strlen($msisdn) === 10) {
+            $msisdn = '0' . $msisdn;
+        }
+
+        // Update request
+        $request->merge([
+            'subscriber_msisdn' => $msisdn
+        ]);
+
+        $validator = Validator::make($request->all(), [
+            'subscriber_msisdn' => [
+                'required',
+                'string',
+                'regex:/^0[0-9]{10}$/'
+            ],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'messageCode' => 422,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ]);
+        }
+
+        $planId = "4";
+
+        $products = ProductModel::where('plan_id', $planId)
+            ->where('fee', "2950")
+            ->first();
+
+        if (!$products) {
+            return response()->json([
+                'messageCode' => 500,
+                'message' => 'Product not found or inactive.',
+            ]);
+        }
+
+        $fee = $products->fee;
+        $duration = $products->duration;
+        $productId = $products->product_id;
+
+        $current_time = time();
+        $future_time = strtotime('+14 days', $current_time);
+        $grace_period_time = date('Y-m-d H:i:s', $future_time);
+
+        $future_time_recursive = strtotime("+{$duration} days", $current_time);
+        $future_time_recursive_formatted = date('Y-m-d H:i:s', $future_time_recursive);
+
+        // $activation_time = "2025-06-27 16:30:34";
+
+        // Random IDs
+        $referenceId = str_pad(mt_rand(1, 999999999), 9, '0', STR_PAD_LEFT)
+            . str_pad(mt_rand(1, 999999999), 9, '0', STR_PAD_LEFT);
+
+        $transactionId = str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT)
+            . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
+        $existing = CustomerSubscription::where('subscriber_msisdn', $msisdn)
+            ->where('transaction_amount', $fee)
+            ->where('policy_status', 1)
+            ->first();
+
+        if ($existing) {
+            if ($existing->company_id != 20) {
+                // Unsubscribe kar do
+                $existing->update(['policy_status' => 0]);
+
+                Log::channel('sms_api')->info('Policy unsubscribed due to different company.', [
+                    'sub_msisdn' => $existing->subscriber_msisdn,
+                    'company_id' => $existing->company_id,
+                    'unsubscribed_at' => now()->toDateTimeString(),
+                ]);
+
+                $subscription = CustomerSubscription::create([
+                    'customer_id' => "1",
+                    'payer_cnic' => "1",
+                    'payer_msisdn' => $msisdn,
+                    'subscriber_cnic' => "36602-8634422-7",
+                    'subscriber_msisdn' => $msisdn,
+                    'beneficiary_name' => "jahangir khan",
+                    'beneficiary_msisdn' => $msisdn,
+                    'transaction_amount' => $fee,
+                    'transaction_status' => 1,
+                    'referenceId' => $referenceId,
+                    'cps_transaction_id' => $transactionId,
+                    'cps_response_text' => "Service Activated Successfully",
+                    'product_duration' => $duration,
+                    'plan_id' => $planId,
+                    'productId' => $productId,
+                    'policy_status' => 1,
+                    'pulse' => 'LFDT',
+                    'api_source' => 'LFDT',
+                    'recursive_charging_date' => "2026-07-31 16:30:34",
+                    'subscription_time' => "2025-07-31 16:30:34",
+                    'grace_period_time' => "2025-07-31 16:30:34",
+                    'sales_agent' => "1",
+                    'company_id' => 20,
+                    'consent' => "(DTMF),1",
+                    'created_at' => "2025-07-31 16:30:34",
+                    'updated_at' => "2025-07-31 16:30:34",
+                ]);
+
+                Log::channel('sms_api')->info('Service Activated Successfully LFDT.', [
+                    'MobileNo' => $request->subscriber_msisdn,
+                    'plan' => "Family Health Insurance",
+                    'plan_id' => $planId,
+                    'productId' => $productId,
+                    'amount' => $fee,
+                    'Sub Date' => "2025-07-31 16:30:34",
+                    'code' => "2010",
+                ]);
+
+
+                return response()->json([
+                    'messageCode' => 200,
+                    'message' => 'Previous company policy unsubscribed successfully.',
+                    'sub_msisdn' => $existing->subscriber_msisdn,
+                ]);
+            } else {
+                // Same company (20) hai ? already subscribed
+                Log::channel('sms_api')->info('Already subscribed to this policy.', [
+                    'sub_msisdn' => $existing->subscriber_msisdn,
+                    'Sub Date' => $existing->created_at,
+                ]);
+
+                return response()->json([
+                    'messageCode' => 409,
+                    'message' => 'Already subscribed to this policy.',
+                    'sub_msisdn' => $existing->subscriber_msisdn,
+                ]);
+            }
+        }
+
+
+        $subscription = CustomerSubscription::create([
+            'customer_id' => "1",
+            'payer_cnic' => "1",
+            'payer_msisdn' => $msisdn,
+            'subscriber_cnic' => "36602-8634422-7",
+            'subscriber_msisdn' => $msisdn,
+            'beneficiary_name' => "jahangir khan",
+            'beneficiary_msisdn' => $msisdn,
+            'transaction_amount' => $fee,
+            'transaction_status' => 1,
+            'referenceId' => $referenceId,
+            'cps_transaction_id' => $transactionId,
+            'cps_response_text' => "Service Activated Successfully",
+            'product_duration' => $duration,
+            'plan_id' => $planId,
+            'productId' => $productId,
+            'policy_status' => 1,
+            'pulse' => 'LFDT',
+            'api_source' => 'LFDT',
+            'recursive_charging_date' => "2026-07-31 16:30:34",
+            'subscription_time' => "2025-07-31 16:30:34",
+            'grace_period_time' => "2025-07-31 16:30:34",
+            'sales_agent' => "1",
+            'company_id' => 20,
+            'consent' => "(DTMF),1",
+            'created_at' => "2025-07-31 16:30:34",
+            'updated_at' => "2025-07-31 16:30:34",
+        ]);
+
+        Log::channel('sms_api')->info('Service Activated Successfully LFDT.', [
+            'MobileNo' => $request->subscriber_msisdn,
+            'plan' => "Family Health Insurance",
+            'plan_id' => $planId,
+            'productId' => $productId,
+            'amount' => $fee,
+            'Sub Date' => "2025-07-31 16:30:34",
+            'code' => "2010",
+        ]);
+
+
+        // $sms = new SMSMsisdn();
+        // $sms->msisdn = $request->subscriber_msisdn;
+        // $sms->plan_id = $planId;
+        // $sms->product_id = $productId;
+        // $sms->status = "0";
+        // $sms->save();
+
+
+
+        return response()->json([
+            'messageCode' => 200,
+            'plan' => "Family Health Insurance",
+            'message' => 'Subscription created successfully.',
+            'data' => $subscription
+        ]);
+    }
+
+ public function term_life_new(Request $request)
+    {
+
+        $msisdn = preg_replace('/[^0-9]/', '', $request->subscriber_msisdn);
+
+        // Case 1: Agar number 92 se start ho aur 12 digit ka ho
+        if (substr($msisdn, 0, 2) === '92' && strlen($msisdn) === 12) {
+            $msisdn = '0' . substr($msisdn, 2);
+        }
+        // Case 2: Agar sirf 10 digit ka ho (e.g. 3008758478)
+        elseif (strlen($msisdn) === 10) {
+            $msisdn = '0' . $msisdn;
+        }
+
+        // Update request
+        $request->merge([
+            'subscriber_msisdn' => $msisdn
+        ]);
+
+        $validator = Validator::make($request->all(), [
+            'subscriber_msisdn' => [
+                'required',
+                'string',
+                'regex:/^0[0-9]{10}$/'
+            ],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'messageCode' => 422,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ]);
+        }
+
+        $planId = "1";
+
+        $products = ProductModel::where('plan_id', $planId)
+            ->where('fee', "2000")
+            ->first();
+
+        if (!$products) {
+            return response()->json([
+                'messageCode' => 500,
+                'message' => 'Product not found or inactive.',
+            ]);
+        }
+
+        $fee = $products->fee;
+        $duration = $products->duration;
+        $productId = $products->product_id;
+
+        $current_time = time();
+        $future_time = strtotime('+14 days', $current_time);
+        $grace_period_time = date('Y-m-d H:i:s', $future_time);
+
+        $future_time_recursive = strtotime("+{$duration} days", $current_time);
+        $future_time_recursive_formatted = date('Y-m-d H:i:s', $future_time_recursive);
+
+        // $activation_time = "2025-06-27 16:30:34";
+
+        // Random IDs
+        $referenceId = str_pad(mt_rand(1, 999999999), 9, '0', STR_PAD_LEFT)
+            . str_pad(mt_rand(1, 999999999), 9, '0', STR_PAD_LEFT);
+
+        $transactionId = str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT)
+            . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
+        $existing = CustomerSubscription::where('subscriber_msisdn', $msisdn)
+            ->where('transaction_amount', $fee)
+            ->where('policy_status', 1)
+            ->first();
+
+        if ($existing) {
+            if ($existing->company_id != 20) {
+                // Unsubscribe kar do
+                $existing->update(['policy_status' => 0]);
+
+                Log::channel('sms_api')->info('Policy unsubscribed due to different company.', [
+                    'sub_msisdn' => $existing->subscriber_msisdn,
+                    'company_id' => $existing->company_id,
+                    'unsubscribed_at' => now()->toDateTimeString(),
+                ]);
+
+                $subscription = CustomerSubscription::create([
+                    'customer_id' => "1",
+                    'payer_cnic' => "1",
+                    'payer_msisdn' => $msisdn,
+                    'subscriber_cnic' => "36602-8634422-7",
+                    'subscriber_msisdn' => $msisdn,
+                    'beneficiary_name' => "jahangir khan",
+                    'beneficiary_msisdn' => $msisdn,
+                    'transaction_amount' => $fee,
+                    'transaction_status' => 1,
+                    'referenceId' => $referenceId,
+                    'cps_transaction_id' => $transactionId,
+                    'cps_response_text' => "Service Activated Successfully",
+                    'product_duration' => $duration,
+                    'plan_id' => $planId,
+                    'productId' => $productId,
+                    'policy_status' => 1,
+                    'pulse' => 'LFDT',
+                    'api_source' => 'LFDT',
+                    'recursive_charging_date' => "2026-08-27 16:30:34",
+                    'subscription_time' => "2025-08-27 16:30:34",
+                    'grace_period_time' => "2025-08-27 16:30:34",
+                    'sales_agent' => "1",
+                    'company_id' => 20,
+                    'consent' => "(DTMF),1",
+                    'created_at' => "2025-08-27 16:30:34",
+                    'updated_at' => "2025-08-27 16:30:34",
+                ]);
+
+                Log::channel('sms_api')->info('Service Activated Successfully LFDT.', [
+                    'MobileNo' => $request->subscriber_msisdn,
+                    'plan' => "term life  Insurance",
+                    'plan_id' => $planId,
+                    'productId' => $productId,
+                    'amount' => $fee,
+                    'Sub Date' => "2025-08-27 16:30:34",
+                    'code' => "2010",
+                ]);
+
+
+                return response()->json([
+                    'messageCode' => 200,
+                    'message' => 'Previous company policy unsubscribed successfully.',
+                    'sub_msisdn' => $existing->subscriber_msisdn,
+                ]);
+            } else {
+                // Same company (20) hai ? already subscribed
+                Log::channel('sms_api')->info('Already subscribed to this policy.', [
+                    'sub_msisdn' => $existing->subscriber_msisdn,
+                    'Sub Date' => $existing->created_at,
+                ]);
+
+                return response()->json([
+                    'messageCode' => 409,
+                    'message' => 'Already subscribed to this policy.',
+                    'sub_msisdn' => $existing->subscriber_msisdn,
+                ]);
+            }
+        }
+
+
+        $subscription = CustomerSubscription::create([
+            'customer_id' => "1",
+            'payer_cnic' => "1",
+            'payer_msisdn' => $msisdn,
+            'subscriber_cnic' => "36602-8634422-7",
+            'subscriber_msisdn' => $msisdn,
+            'beneficiary_name' => "jahangir khan",
+            'beneficiary_msisdn' => $msisdn,
+            'transaction_amount' => $fee,
+            'transaction_status' => 1,
+            'referenceId' => $referenceId,
+            'cps_transaction_id' => $transactionId,
+            'cps_response_text' => "Service Activated Successfully",
+            'product_duration' => $duration,
+            'plan_id' => $planId,
+            'productId' => $productId,
+            'policy_status' => 1,
+            'pulse' => 'LFDT',
+            'api_source' => 'LFDT',
+            'recursive_charging_date' => "2026-08-27 16:30:34",
+            'subscription_time' => "2025-08-27 16:30:34",
+            'grace_period_time' => "2025-08-27 16:30:34",
+            'sales_agent' => "1",
+            'company_id' => 20,
+            'consent' => "(DTMF),1",
+            'created_at' => "2025-08-27 16:30:34",
+            'updated_at' => "2025-08-27 16:30:34",
+        ]);
+
+        Log::channel('sms_api')->info('Service Activated Successfully LFDT.', [
+            'MobileNo' => $request->subscriber_msisdn,
+            'plan' => "term life  Insurance",
+            'plan_id' => $planId,
+            'productId' => $productId,
+            'amount' => $fee,
+            'Sub Date' => "2025-08-27 16:30:34",
+            'code' => "2010",
+        ]);
+
+
+        // $sms = new SMSMsisdn();
+        // $sms->msisdn = $request->subscriber_msisdn;
+        // $sms->plan_id = $planId;
+        // $sms->product_id = $productId;
+        // $sms->status = "0";
+        // $sms->save();
+
+
+
+        return response()->json([
+            'messageCode' => 200,
+            'plan' => "term life Insurance",
+            'message' => 'Subscription created successfully.',
+            'data' => $subscription
+        ]);
+    }
+
+
+
+
+    public function family_policy_sub_api_lftd(Request $request)
+    {
+
+        $msisdn = preg_replace('/[^0-9]/', '', $request->subscriber_msisdn);
+
+        // Case 1: Agar number 92 se start ho aur 12 digit ka ho
+        if (substr($msisdn, 0, 2) === '92' && strlen($msisdn) === 12) {
+            $msisdn = '0' . substr($msisdn, 2);
+        }
+        // Case 2: Agar sirf 10 digit ka ho (e.g. 3008758478)
+        elseif (strlen($msisdn) === 10) {
+            $msisdn = '0' . $msisdn;
+        }
+
+        // Update request
+        $request->merge([
+            'subscriber_msisdn' => $msisdn
+        ]);
+
+        $validator = Validator::make($request->all(), [
+            'subscriber_msisdn' => [
+                'required',
+                'string',
+                'regex:/^0[0-9]{10}$/'
+            ],
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'messageCode' => 422,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ]);
+        }
+
+        $planId = "4";
+
+        $products = ProductModel::where('plan_id', $planId)
+            ->where('fee', "1950")
+            ->first();
+
+        if (!$products) {
+            return response()->json([
+                'messageCode' => 500,
+                'message' => 'Product not found or inactive.',
+            ]);
+        }
+
+        $fee = $products->fee;
+        $duration = $products->duration;
+        $productId = $products->product_id;
+
+        $current_time = time();
+        $future_time = strtotime('+14 days', $current_time);
+        $grace_period_time = date('Y-m-d H:i:s', $future_time);
+
+        $future_time_recursive = strtotime("+{$duration} days", $current_time);
+        $future_time_recursive_formatted = date('Y-m-d H:i:s', $future_time_recursive);
+
+        // $activation_time = "2025-06-27 16:30:34";
+
+        // Random IDs
+        $referenceId = str_pad(mt_rand(1, 999999999), 9, '0', STR_PAD_LEFT)
+            . str_pad(mt_rand(1, 999999999), 9, '0', STR_PAD_LEFT);
+
+        $transactionId = str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT)
+            . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
+
+        $existing = CustomerSubscription::where('subscriber_msisdn', $msisdn)
+            ->where('transaction_amount', $fee)
+            ->where('policy_status', 1)
+            ->first();
+
+        if ($existing) {
+            return response()->json([
+                'messageCode' => 409,
+                'message' => 'Already subscribed to this policy.',
+                'sub_msisdn' => $existing->subscriber_msisdn,
+            ]);
+        }
+
+        $subscription = CustomerSubscription::create([
+            'customer_id' => "1",
+            'payer_cnic' => "1",
+            'payer_msisdn' => $msisdn,
+            'subscriber_cnic' => "266028634422-7",
+            'subscriber_msisdn' => $msisdn,
+            'beneficiary_name' => "jahangir khan",
+            'beneficiary_msisdn' => $msisdn,
+            'transaction_amount' => $fee,
+            'transaction_status' => 1,
+            'referenceId' => $referenceId,
+            'cps_transaction_id' => $transactionId,
+            'cps_response_text' => "Service Activated Successfully",
+            'product_duration' => $duration,
+            'plan_id' => $planId,
+            'productId' => $productId,
+            'policy_status' => 1,
+            'pulse' => 'LFDT',
+            'api_source' => 'LFDT',
+            'recursive_charging_date' => $future_time_recursive_formatted,
+            'subscription_time' => now(),
+            'grace_period_time' => $grace_period_time,
+            'sales_agent' => "1",
+            'company_id' => 20,
+            'consent' => "(DTMF),1",
+        ]);
+
+        Log::channel('sms_api')->info('Service Activated Successfully Behbud.', [
+            'MobileNo' => $request->subscriber_msisdn,
+            'plan' => "Family Health Insurance",
+            'plan_id' => $planId,
+            'productId' => $productId,
+            'amount' => $fee,
+            'code' => "2010",
+        ]);
+
+
+        $sms = new SMSMsisdn();
+        $sms->msisdn = $request->subscriber_msisdn;
+        $sms->plan_id = $planId;
+        $sms->product_id = $productId;
+        $sms->status = "0";
+        $sms->save();
+
+
+
+        return response()->json([
+            'messageCode' => 200,
+            'plan' => "Family Health Insurance",
+            'message' => 'Subscription created successfully.',
+            'data' => $subscription
+        ]);
+    }
+
+    public function medical_2025(Request $request)
+    {
+        try {
+            // Clean subscriber_msisdn before validation
+            $msisdn = preg_replace('/[^0-9]/', '', $request->subscriber_msisdn);
+
+            if (substr($msisdn, 0, 2) === '92' && strlen($msisdn) === 12) {
+                $msisdn = '0' . substr($msisdn, 2);
+            } elseif (strlen($msisdn) === 10) {
+                $msisdn = '0' . $msisdn;
+            }
+
+            // Update request
+            $request->merge(['subscriber_msisdn' => $msisdn]);
+
+            // ? Validation
+            $validator = Validator::make($request->all(), [
+                'subscriber_msisdn' => ['required', 'string', 'regex:/^0[0-9]{10}$/'],
+                'amount' => 'required|integer',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'messageCode' => 422,
+                    'message' => 'Validation failed',
+                    'errors' => $validator->errors(),
+                ]);
+            }
+
+            $planId = 5;
+
+            $products = ProductModel::where('plan_id', $planId)
+                ->where('fee', $request->amount)
+                ->first();
+
+            if (!$products) {
+                return response()->json([
+                    'messageCode' => 404,
+                    'message' => 'Product not found or inactive.',
+                ]);
+            }
+
+            $fee = $products->fee;
+            $duration = $products->duration;
+            $productId = $products->product_id;
+
+            $current_time = time();
+            $future_time = strtotime('+14 days', $current_time);
+            $grace_period_time = date('Y-m-d H:i:s', $future_time);
+
+            $future_time_recursive = strtotime("+{$duration} days", $current_time);
+            $future_time_recursive_formatted = date('Y-m-d H:i:s', $future_time_recursive);
+
+            // Random IDs
+            $referenceId = str_pad(mt_rand(1, 999999999), 9, '0', STR_PAD_LEFT)
+                . str_pad(mt_rand(1, 999999999), 9, '0', STR_PAD_LEFT);
+
+            $transactionId = str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT)
+                . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
+
+            // ? Check existing subscription
+            $existing = CustomerSubscription::where('subscriber_msisdn', $request->subscriber_msisdn)
+                ->where('transaction_amount', $fee)
+                ->where('policy_status', 1)
+                ->first();
+
+            if ($existing) {
+                if ($existing->company_id == 20) {
+                    return response()->json([
+                        'messageCode' => 409,
+                        'message' => 'Already subscribed to this policy under company 20.',
+                    ]);
+                } else {
+                    $existing->update(['policy_status' => 0]);
+                }
+            }
+
+            // ? Create new subscription
+            $subscription = CustomerSubscription::create([
+                'customer_id' => 1,
+                'payer_cnic' => '1',
+                'payer_msisdn' => $request->subscriber_msisdn,
+                'subscriber_cnic' => '3660286244227',
+                'subscriber_msisdn' => $request->subscriber_msisdn,
+                'beneficiary_name' => 'ch100',
+                'beneficiary_msisdn' => $request->subscriber_msisdn,
+                'transaction_amount' => $fee,
+                'transaction_status' => 1,
+                'referenceId' => $referenceId,
+                'cps_transaction_id' => $transactionId,
+                'cps_response_text' => 'Service Activated Successfully',
+                'product_duration' => $duration,
+                'plan_id' => $planId,
+                'productId' => $productId,
+                'policy_status' => 1,
+                'pulse' => 'LFDT',
+                'api_source' => 'LFDT',
+                'recursive_charging_date' => "2026-09-30 18:52:05",
+                'subscription_time' => "2025-09-30 18:52:05",
+                'grace_period_time' => $grace_period_time,
+                'sales_agent' => 1,
+                'company_id' => 20,
+                'consent' => '(DTMF),1',
+                'created_at' => "2025-09-30 18:52:05",
+                'updated_at' => "2025-09-30 18:52:05",
+            ]);
+
+            Log::channel('sms_api')->info('Service Activated Successfully.', [
+                'MobileNo' => $request->subscriber_msisdn,
+                'plan' => 'Medical',
+                'plan_id' => $planId,
+                'productId' => $productId,
+                'amount' => $fee,
+                'code' => '2011',
+            ]);
+
+            // ? Optional SMS sending
+            if ($planId == 5) {
+                $plan = PlanModel::where('plan_id', $planId)->where('status', 1)->first();
+                $product = ProductModel::where('plan_id', $planId)
+                    ->where('product_id', $productId)
+                    ->where('status', 1)
+                    ->first();
+
+                $this->sendMedicalSMS($request->subscriber_msisdn, $planId, $productId, $fee);
+            }
+
+            return response()->json([
+                'messageCode' => 200,
+                'plan' => 'Medical',
+                'message' => 'Subscription created successfully.',
+                'data' => $subscription,
+            ]);
+        } catch (\Exception $e) {
+            // ? Log the error and return the actual reason
+            Log::error('medical_2025 ERROR', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json([
+                'messageCode' => 500,
+                'message' => 'Internal Server Error',
+                'error' => $e->getMessage(),
+                'line' => $e->getLine(),
+            ]);
+        }
+    }
+
+
+
+    public function uploadMedicalCSV(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:csv,txt|max:2048',
+        ]);
+
+        // ? Upload CSV file from Postman
+        $file = $request->file('file');
+        $filePath = $file->getRealPath();
+
+        $handle = fopen($filePath, "r");
+        if (!$handle) {
+            return response()->json([
+                'status' => false,
+                'message' => "Unable to open uploaded CSV file"
+            ], 500);
+        }
+
+        $planId = 5;
+        $amount = 2900;
+        $processed = 0;
+        $skipped = [];
+
+        while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+            $subscriber_msisdn = preg_replace('/[^0-9]/', '', $data[0] ?? '');
+
+            // ? Normalize MSISDN
+            if (substr($subscriber_msisdn, 0, 2) === '92' && strlen($subscriber_msisdn) === 12) {
+                $subscriber_msisdn = '0' . substr($subscriber_msisdn, 2);
+            } elseif (strlen($subscriber_msisdn) === 10) {
+                $subscriber_msisdn = '0' . $subscriber_msisdn;
+            }
+
+            if (!preg_match('/^0[0-9]{10}$/', $subscriber_msisdn)) {
+                Log::channel('sms_api')->warning("Invalid MSISDN skipped: {$subscriber_msisdn}");
+                continue;
+            }
+
+            $product = ProductModel::where('plan_id', $planId)
+                ->where('fee', $amount)
+                ->first();
+
+            if (!$product) {
+                continue;
+            }
+
+            // ? Check if already subscribed
+            // ? Check if already subscribed
+            $existing = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
+                ->where('policy_status', 1)
+                ->first();
+
+            if ($existing) {
+                if ($existing->company_id == 20) {
+                    // ? Company 20 wale skip kar do
+                    Log::channel('sms_api')->info("Already subscribed under company_id 20, skipping new policy.", [
+                        'MobileNo' => $subscriber_msisdn,
+                        'plan_id' => $planId,
+                        'productId' => $product->product_id,
+                        'company_id' => $existing->company_id,
+                    ]);
+                    $skipped[] = $subscriber_msisdn;
+                    continue;
+                } else {
+                    // ? Company != 20 ? unsub kardo (policy_status = 0)
+                    $existing->update(['policy_status' => 0]);
+
+                    Log::channel('sms_api')->info("Previous policy unsubscribed for re-subscription.", [
+                        'MobileNo' => $subscriber_msisdn,
+                        'old_plan_id' => $existing->plan_id,
+                        'old_productId' => $existing->productId,
+                        'company_id' => $existing->company_id,
+                    ]);
+                }
+            }
+            // ? IDs & Dates
+            $referenceId = uniqid() . rand(1000, 9999);
+            $transactionId = uniqid() . rand(1000, 9999);
+
+            $current_time = time();
+            $grace_period_time = date('Y-m-d H:i:s', strtotime('+14 days', $current_time));
+            $recursive_date = date('Y-m-d H:i:s', strtotime("+{$product->duration} days", $current_time));
+
+            // ? New subscription create
+            $subscription = CustomerSubscription::create([
+                'customer_id' => "1",
+                'payer_cnic' => "1",
+                'payer_msisdn' => $amount,
+                'subscriber_cnic' => "3660286244227",
+                'subscriber_msisdn' => $subscriber_msisdn,
+                'beneficiary_name' => "jahangirkhann",
+                'beneficiary_msisdn' => $subscriber_msisdn,
+                'transaction_amount' => $product->fee,
+                'transaction_status' => 1,
+                'referenceId' => $referenceId,
+                'cps_transaction_id' => $transactionId,
+                'cps_response_text' => "Service Activated Successfully",
+                'product_duration' => $product->duration,
+                'plan_id' => $planId,
+                'productId' => $product->product_id,
+                'policy_status' => 1,
+                'pulse' => "LFDT",
+                'api_source' => "LFDT",
+                'recursive_charging_date' => $recursive_date,
+                'subscription_time' => "2025-09-30 23:53:34", // ? always current datetime
+                'grace_period_time' => $grace_period_time,
+                'sales_agent' => "1",
+                'company_id' => "20",
+                'consent' => "(DTMF),1",
+            ]);
+
+            Log::channel('sms_api')->info("Service Activated Successfully", [
+                'MobileNo' => $subscriber_msisdn,
+                'plan_id' => $planId,
+                'productId' => $product->product_id,
+            ]);
+
+            // ? SMS send
+            $this->sendMedicalSMS($subscriber_msisdn, $planId, $product->product_id, $product->fee);
+
+            $processed++;
+        }
+
+        fclose($handle);
+
+        return response()->json([
+            'status' => true,
+            'message' => "CSV processed successfully",
+            'processed' => $processed,
+            'skipped_already_subscribed' => $skipped,
+        ]);
+    }
+
+
+    private function sendMedicalSMS($subscriber_msisdn, $planId, $productId, $amount)
+    {
+        $smsList = [
+            "JazzCash khaas offer! Apko muntakhib medical insurance mil rahi hai bina izafi charges. Aaj hi dawai ka bill refund muft hasil karein. Call 042111333033”",
+            "EFU Medical Insurance deta hai Rs 8.5 lakh ka hospitalization cover, unlimited online doctor se mashwara aur Rs 10000 tak ka doctor ki fees, dawai aur lab test ka coverage.",
+            "Aapki EFU insurance deti hai phone par doctor se muft mashwara. Abhi hamare doctor se mashwara lene ke liye 042111333033 par call karein",
+        ];
+
+        $key    = 'mYjC!nc3dibleY3k';   // 16 characters
+        $iv     = 'Myin!tv3ctorjCM@';   // 16 characters
+        $cipher = 'AES-128-CBC';
+
+        foreach ($smsList as $message) {
+            $payload = [
+                'msisdn'      => $subscriber_msisdn,
+                'content'     => $message,
+                'referenceId' => uniqid(),
+            ];
+
+            $jsonData        = json_encode($payload);
+            $encryptedBinary = openssl_encrypt($jsonData, $cipher, $key, OPENSSL_RAW_DATA, $iv);
+            $encryptedHex    = bin2hex($encryptedBinary);
+
+            $requestBody = json_encode(['data' => $encryptedHex]);
+
+            $ch = curl_init('https://gateway.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/notification');
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $requestBody);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'Content-Type: application/json',
+                'X-CLIENT-ID: 946658113e89d870aad2e47f715c2b72',
+                'X-CLIENT-SECRET: e5a0279efbd7bd797e472d0ce9eebb69',
+                'X-PARTNER-ID: 946658113e89d870aad2e47f715c2b72',
+            ]);
+
+            $response = curl_exec($ch);
+            $error    = curl_error($ch);
+            curl_close($ch);
+
+            if ($error) {
+                Log::channel('sms_api')->error("JazzCash SMS send error", [
+                    'MobileNo' => $subscriber_msisdn,
+                    'sms'      => $message,
+                    'error'    => $error
+                ]);
+            } else {
+                Log::channel('sms_api')->info("JazzCash SMS Sent", [
+                    'MobileNo' => $subscriber_msisdn,
+                    'sms'      => $message,
+                    'response' => $response
+                ]);
+            }
+
+            sleep(2); // thoda delay
+        }
+    }
+
+
+
+
+
+
+
+
+    public function family_policy_sub_api_behbud(Request $request)
+    {
+
+        $msisdn = preg_replace('/[^0-9]/', '', $request->subscriber_msisdn);
+
+        // Case 1: Agar number 92 se start ho aur 12 digit ka ho
+        if (substr($msisdn, 0, 2) === '92' && strlen($msisdn) === 12) {
+            $msisdn = '0' . substr($msisdn, 2);
+        }
+        // Case 2: Agar sirf 10 digit ka ho (e.g. 3008758478)
+        elseif (strlen($msisdn) === 10) {
+            $msisdn = '0' . $msisdn;
+        }
 
         // Update request
         $request->merge([
@@ -144,12 +1038,12 @@ elseif (strlen($msisdn) === 10) {
         ]);
 
 
-            $sms = new SMSMsisdn();
-             $sms->msisdn = $request->subscriber_msisdn;
-             $sms->plan_id = $planId;
-              $sms->product_id = $productId;
-             $sms->status = "0";
-            $sms->save();
+        $sms = new SMSMsisdn();
+        $sms->msisdn = $request->subscriber_msisdn;
+        $sms->plan_id = $planId;
+        $sms->product_id = $productId;
+        $sms->status = "0";
+        $sms->save();
 
 
         // âœ… Send SMS only if plan_id = 4
@@ -206,6 +1100,370 @@ elseif (strlen($msisdn) === 10) {
         return response()->json([
             'messageCode' => 200,
             'plan' => "Family Health Insurance",
+            'message' => 'Subscription created successfully.',
+            'data' => $subscription
+        ]);
+    }
+
+    public function family_policy_sub_api(Request $request)
+    {
+
+        // Clean subscriber_msisdn before validation
+        $msisdn = preg_replace('/[^0-9]/', '', $request->subscriber_msisdn);
+
+        if (substr($msisdn, 0, 2) === '92' && strlen($msisdn) === 12) {
+            // Starts with 92 (like 92300...)
+            $msisdn = '0' . substr($msisdn, 2);
+        } elseif (strlen($msisdn) === 10) {
+            // Like 300....
+            $msisdn = '0' . $msisdn;
+        }
+
+        // Update request
+        $request->merge([
+            'subscriber_msisdn' => $msisdn
+        ]);
+
+        $validator = Validator::make($request->all(), [
+            'subscriber_msisdn' => [
+                'required',
+                'string',
+                'regex:/^0[0-9]{10}$/'
+            ],
+            'amount' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'messageCode' => 422,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ]);
+        }
+
+        $planId = "4";
+
+        $products = ProductModel::where('plan_id', $planId)
+            ->where('fee', $request->amount)
+            ->first();
+
+        if (!$products) {
+            return response()->json([
+                'messageCode' => 500,
+                'message' => 'Product not found or inactive.',
+            ]);
+        }
+
+        $fee = $products->fee;
+        $duration = $products->duration;
+        $productId = $products->product_id;
+
+        $current_time = time();
+        $future_time = strtotime('+14 days', $current_time);
+        $grace_period_time = date('Y-m-d H:i:s', $future_time);
+
+        $future_time_recursive = strtotime("+{$duration} days", $current_time);
+        $future_time_recursive_formatted = date('Y-m-d H:i:s', $future_time_recursive);
+
+        // $activation_time = "2025-06-27 16:30:34";
+
+        // Random IDs
+        $referenceId = str_pad(mt_rand(1, 999999999), 9, '0', STR_PAD_LEFT)
+            . str_pad(mt_rand(1, 999999999), 9, '0', STR_PAD_LEFT);
+
+        $transactionId = str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT)
+            . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
+
+        // ? Check existing subscription
+        $existing = CustomerSubscription::where('subscriber_msisdn', $request->subscriber_msisdn)
+            ->where('transaction_amount', $fee)
+            ->where('policy_status', 1)
+            ->first();
+
+        if ($existing) {
+            if ($existing->company_id == 20) {
+                return response()->json([
+                    'messageCode' => 409,
+                    'message' => 'Already subscribed to this policy under company 20.',
+                ]);
+            } else {
+                $existing->update(['policy_status' => 0]);
+            }
+        }
+
+        $subscription = CustomerSubscription::create([
+            'customer_id' => "1",
+            'payer_cnic' => "1",
+            'payer_msisdn' => $request->amount,
+            'subscriber_cnic' => "3660286244227",
+            'subscriber_msisdn' => $request->subscriber_msisdn,
+            'beneficiary_name' => "ch101",
+            'beneficiary_msisdn' => $request->subscriber_msisdn,
+            'transaction_amount' => $fee,
+            'transaction_status' => 1,
+            'referenceId' => $referenceId,
+            'cps_transaction_id' => $transactionId,
+            'cps_response_text' => "Service Activated Successfully",
+            'product_duration' => $duration,
+            'plan_id' => $planId,
+            'productId' => $productId,
+            'policy_status' => 1,
+            'pulse' => "LFDT",
+            'api_source' => "LFDT",
+            'recursive_charging_date' => "2026-09-30 16:30:34",
+            'subscription_time' => "2025-09-30 16:30:34",
+            'grace_period_time' => "2025-09-30 16:30:34",
+            'sales_agent' => "1",
+            'company_id' => "20",
+            'consent' => "(DTMF),1",
+            'created_at' => "2025-09-30 16:30:34",
+            'updated_at' => "2025-09-30 16:30:34",
+
+        ]);
+
+        Log::channel('sms_api')->info('Service Activated Successfully.', [
+            'MobileNo' => $request->subscriber_msisdn,
+            'plan' => "Family Health Insurance",
+            'plan_id' => $planId,
+            'productId' => $productId,
+            'amount' => $fee,
+            'code' => "2010",
+        ]);
+
+        // âœ… Send SMS only if plan_id = 4
+        if ($planId == 4) {
+            $plan = PlanModel::where('plan_id', $planId)->where('status', 1)->first();
+            $product = ProductModel::where('plan_id', $planId)
+                ->where('product_id', $productId)
+                ->where('status', 1)->first();
+
+            if ($plan && $product) {
+                $fee = $product->fee;
+                $plantext = $plan->plan_name;
+                $link = "https://bit.ly/4gnTEWv";
+                $sms = "Family Health Insurance:
+Aap ka bharosa wapis jeetnay ke liye JazzCash ne aapka Family Health Insurance bina kisi charges k activate kardia hai. Claim ke liye call karen: 042111333033";
+
+                $url = 'https://api.efulife.com/itssr/its_sendsms';
+                $headers = [
+                    'Channelcode' => 'ITS',
+                    'Authorization' => 'Bearer XXXXAAA489SMSTOKEFU',
+                    'Content-Type' => 'application/json',
+                ];
+
+                $subscriber_msisdn = $request->subscriber_msisdn;
+
+                $payloads = [
+
+                    [
+                        'MobileNo' => $subscriber_msisdn,
+                        'sender' => 'EFU-LIFE',
+                        'SMS' => $sms,
+                    ],
+                ];
+
+                foreach ($payloads as $payload) {
+                    try {
+                        $response = Http::withHeaders($headers)->post($url, $payload);
+
+                        if ($response->successful()) {
+
+                            Log::channel('sms_api')->info('SMS sent successfully.', [
+                                'plan' => "Family Health Insurance",
+                                'MobileNo' => $subscriber_msisdn
+                            ]);
+                        } else {
+                            Log::error("SMS failed", ['response' => $response->body()]);
+                        }
+                    } catch (\Exception $e) {
+                        Log::error("SMS send exception", ['error' => $e->getMessage()]);
+                    }
+                }
+            }
+        }
+
+        return response()->json([
+            'messageCode' => 200,
+            'plan' => "Family Health Insurance",
+            'message' => 'Subscription created successfully.',
+            'data' => $subscription
+        ]);
+    }
+
+
+
+
+    public function termlife_2025(Request $request)
+    {
+
+        // Clean subscriber_msisdn before validation
+        $msisdn = preg_replace('/[^0-9]/', '', $request->subscriber_msisdn);
+
+        if (substr($msisdn, 0, 2) === '92' && strlen($msisdn) === 12) {
+            // Starts with 92 (like 92300...)
+            $msisdn = '0' . substr($msisdn, 2);
+        } elseif (strlen($msisdn) === 10) {
+            // Like 300....
+            $msisdn = '0' . $msisdn;
+        }
+
+        // Update request
+        $request->merge([
+            'subscriber_msisdn' => $msisdn
+        ]);
+
+        $validator = Validator::make($request->all(), [
+            'subscriber_msisdn' => [
+                'required',
+                'string',
+                'regex:/^0[0-9]{10}$/'
+            ],
+            'amount' => 'required|integer',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'messageCode' => 422,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ]);
+        }
+
+        $planId = "1";
+
+        $products = ProductModel::where('plan_id', $planId)
+            ->where('fee', $request->amount)
+            ->first();
+
+        if (!$products) {
+            return response()->json([
+                'messageCode' => 500,
+                'message' => 'Product not found or inactive.',
+            ]);
+        }
+
+        $fee = $products->fee;
+        $duration = $products->duration;
+        $productId = $products->product_id;
+
+        $current_time = time();
+        $future_time = strtotime('+14 days', $current_time);
+        $grace_period_time = date('Y-m-d H:i:s', $future_time);
+
+        $future_time_recursive = strtotime("+{$duration} days", $current_time);
+        $future_time_recursive_formatted = date('Y-m-d H:i:s', $future_time_recursive);
+
+        // $activation_time = "2025-06-27 16:30:34";
+
+        // Random IDs
+        $referenceId = str_pad(mt_rand(1, 999999999), 9, '0', STR_PAD_LEFT)
+            . str_pad(mt_rand(1, 999999999), 9, '0', STR_PAD_LEFT);
+
+        $transactionId = str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT)
+            . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
+
+        $existing = CustomerSubscription::where('subscriber_msisdn', $request->subscriber_msisdn)
+            ->where('transaction_amount', $fee)
+            ->where('policy_status', 1)
+            ->first();
+
+        if ($existing) {
+            return response()->json([
+                'messageCode' => 409,
+                'message' => 'Already subscribed to this policy.',
+                'sub_msisdn' => $existing->subscriber_msisdn,
+            ]);
+        }
+
+        $subscription = CustomerSubscription::create([
+            'customer_id' => "1",
+            'payer_cnic' => "1",
+            'payer_msisdn' => $request->amount,
+            'subscriber_cnic' => "3660286244227",
+            'subscriber_msisdn' => $request->subscriber_msisdn,
+            'beneficiary_name' => "jahangirkhann",
+            'beneficiary_msisdn' => $request->subscriber_msisdn,
+            'transaction_amount' => $fee,
+            'transaction_status' => 1,
+            'referenceId' => $referenceId,
+            'cps_transaction_id' => $transactionId,
+            'cps_response_text' => "Service Activated Successfully",
+            'product_duration' => $duration,
+            'plan_id' => $planId,
+            'productId' => $productId,
+            'policy_status' => 1,
+            'pulse' => "LFDT",
+            'api_source' => "LFDT",
+            'recursive_charging_date' => $future_time_recursive_formatted,
+            'subscription_time' => now(),
+            'grace_period_time' => $grace_period_time,
+            'sales_agent' => "1",
+            'company_id' => "20",
+            'consent' => "(DTMF),1",
+        ]);
+
+        Log::channel('sms_api')->info('Service Activated Successfully.', [
+            'MobileNo' => $request->subscriber_msisdn,
+            'plan' => " Term Life Insurance",
+            'plan_id' => $planId,
+            'productId' => $productId,
+            'amount' => $fee,
+            'code' => "2012",
+        ]);
+
+        if ($planId == 1) {
+            $plan = PlanModel::where('plan_id', $planId)->where('status', 1)->first();
+            $product = ProductModel::where('plan_id', $planId)
+                ->where('product_id', $productId)
+                ->where('status', 1)->first();
+
+            if ($plan && $product) {
+                $fee = $product->fee;
+                $plantext = $plan->plan_name;
+                $link = "https://bit.ly/4gnTEWv";
+                $sms = "Aap ka bharosa wapis jeetnay ke liye JazzCash ne aapka Term Life Insurance bina kisi charges k activate kardia hai. Claim ke liye call karen: 042111333033";
+
+                $url = 'https://api.efulife.com/itssr/its_sendsms';
+                $headers = [
+                    'Channelcode' => 'ITS',
+                    'Authorization' => 'Bearer XXXXAAA489SMSTOKEFU',
+                    'Content-Type' => 'application/json',
+                ];
+
+                $subscriber_msisdn = $request->subscriber_msisdn;
+
+                $payloads = [
+
+                    [
+                        'MobileNo' => $subscriber_msisdn,
+                        'sender' => 'EFU-LIFE',
+                        'SMS' => $sms,
+                    ],
+                ];
+
+                foreach ($payloads as $payload) {
+                    try {
+                        $response = Http::withHeaders($headers)->post($url, $payload);
+
+                        if ($response->successful()) {
+
+                            Log::channel('sms_api')->info('SMS sent successfully.', [
+                                'plan' => "Term Life Insurance",
+                                'MobileNo' => $subscriber_msisdn
+                            ]);
+                        } else {
+                            Log::error("SMS failed", ['response' => $response->body()]);
+                        }
+                    } catch (\Exception $e) {
+                        Log::error("SMS send exception", ['error' => $e->getMessage()]);
+                    }
+                }
+            }
+        }
+
+        return response()->json([
+            'messageCode' => 200,
+            'plan' => "Term Life Insurance",
             'message' => 'Subscription created successfully.',
             'data' => $subscription
         ]);
@@ -385,7 +1643,6 @@ elseif (strlen($msisdn) === 10) {
             'data' => $subscription
         ]);
     }
-
 
     public function JazzIVR(Request $request)
     {
@@ -674,10 +1931,18 @@ elseif (strlen($msisdn) === 10) {
 
                     // SMS Code
 
-                    $this->sendJazzSmsNotification($subscriber_msisdn, [
-                        "Dear customer, Thank you for your trust. Rs.1 has been deducted for Family Health Insurance from your wallet. Policy T&C https://bit.ly/4gnTEWv",
-                        "Apni health expense claim asani se JazzCash app se submit karein ya 042-111-333-033 par call karein. Apna experience hum se zaroor share karein!",
-                    ]);
+                    try {
+                        $this->sendJazzSmsNotification($subscriber_msisdn, [
+                            "Dear customer, Thank you for your trust. Rs.1 has been deducted for Family Health Insurance from your wallet. Policy T&C https://bit.ly/4gnTEWv",
+                            "Apni health expense claim asani se JazzCash app se submit karein ya 042-111-333-033 par call karein. Apna experience hum se zaroor share karein!",
+                        ]);
+                    } catch (\Throwable $e) {
+                        Log::error('SMS Notification Error: ' . $e->getMessage(), [
+                            'line' => $e->getLine(),
+                            'file' => $e->getFile(),
+                        ]);
+                    }
+
 
 
 

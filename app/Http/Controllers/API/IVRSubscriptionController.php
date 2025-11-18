@@ -32,15 +32,15 @@ class IVRSubscriptionController extends Controller
 
         $planId = $request->input('plan_id');
 
-    // Retrieve active products associated with the specified plan ID
-    $products = ProductModel::where('plan_id', $planId)
+            // Retrieve active products associated with the specified plan ID
+          $products = ProductModel::where('plan_id', $planId)
                             ->where('status', 1)
                             ->get();
 
-    return response()->json([
-        'status' => 'success',
-        'data' => $products,
-    ])->setStatusCode(200);
+            return response()->json([
+                   'status' => 'success',
+                    'data' => $products,
+                 ])->setStatusCode(200);
 
     }
 

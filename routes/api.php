@@ -21,6 +21,7 @@ use App\Http\Controllers\API\ClaimController;
 use App\Http\Controllers\API\FamilyHealthController;
 use App\Http\Controllers\API\PolicyController;
 use App\Http\Controllers\API\IVRTsmController;
+use App\Http\Controllers\API\AiBotsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +39,20 @@ use App\Http\Controllers\API\IVRTsmController;
   Route::post("/medical/health", [PolicyController::class, 'medical_policy_sub_api'])
             ->name('medical.health');
 
+
+
+Route::prefix('vv23')->group(function () {
+    Route::prefix('Aibots')->group(function () {
+
+           Route::get("/getPlans", [AiBotsController::class, 'getPlans'])
+            ->name('get_plans');
+           Route::post("/getProducts", [AiBotsController::class, 'getProducts'])
+            ->name('get_products');
+            Route::post("/subscription", [AiBotsController::class, 'AI_bots_subscription'])
+             ->name('subscription');
+
+    });
+});
 
 
 

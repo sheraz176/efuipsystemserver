@@ -134,15 +134,50 @@
               </a>
             </li>
 
-            <li class="menu-header small text-uppercase"><span class="menu-header-text">Claims</span></li>
+
+
+
+               @if(session('agent')->username == "reportagent2025")
+
+                 <li class="menu-header small text-uppercase"><span class="menu-header-text">Reports</span></li>
             <!-- Cards -->
 
-            <li class="menu-item">
+
+    <li class="menu-item">
+        <a href="{{ route('refundagent.netenrollment') }}" class="menu-link" onclick="closeSubmenu(this)">
+            <i class="menu-icon tf-icons bx bx-collection"></i>
+            <div data-i18n="Basic">Net Enrollment Report</div>
+        </a>
+    </li>
+
+    <li class="menu-item">
+        <a href="{{ route('agent.refunds-reports') }}" class="menu-link" onclick="closeSubmenu(this)">
+            <i class="menu-icon tf-icons bx bx-collection"></i>
+            <div data-i18n="Basic">Refunded Reports</div>
+        </a>
+    </li>
+
+    <li class="menu-item">
+        <a href="{{ route('agent.recusive-charging-data-index') }}" class="menu-link" onclick="closeSubmenu(this)">
+            <i class="menu-icon tf-icons bx bx-collection"></i>
+            <div data-i18n="Basic">Recursive Charging Report</div>
+        </a>
+    </li>
+
+@else
+  <li class="menu-header small text-uppercase"><span class="menu-header-text">Claims</span></li>
+            <!-- Cards -->
+
+       <li class="menu-item">
               <a href="{{ route('superadmin.claims') }}" id = "salespagebutton" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Claims</div>
               </a>
             </li>
+
+
+@endif
+
 
 
 

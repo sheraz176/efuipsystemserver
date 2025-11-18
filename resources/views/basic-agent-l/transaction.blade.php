@@ -441,12 +441,23 @@ function updateProductsDropdown(planId) {
     // Add options based on the selected plan
     if (plansAndProducts.hasOwnProperty(planId)) {
         plansAndProducts[planId].products.forEach(product => {
-            if (product.duration === 365 && product.status === 1) { // Sirf 365 duration aur active products
-        const option = document.createElement('option');
-        option.value = product.product_id;
-        option.textContent = product.product_code;
-        productDropdown.appendChild(option);
-    }
+
+
+               // Laravel session value ko JS me inject kar rahe hain
+        const companyId = {{ session("agent")->company_id }};
+
+        // Agar company 1 ya 2 hai aur product_id 4 hai to skip karo
+        if ((companyId === 1 || companyId === 2) && product.product_id === 4) {
+            return; // Skip this product
+        }
+
+
+            if (product.status === 1) { // Only add active products
+                const option = document.createElement('option');
+                option.value = product.product_id;
+                option.textContent = product.product_code;
+                productDropdown.appendChild(option);
+            }
         });
     }
      if (productDropdown.options.length > 0) {

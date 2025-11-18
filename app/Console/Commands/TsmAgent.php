@@ -45,25 +45,15 @@ class TsmAgent extends Command
 
 
 $agentsData = [
-    ['Samia', 'Asif', 'Samia.Asif.tsm.2025', 'Samia#Asif#tsm#2025', 'HD-1368'],
-    ['Mehwish', 'Shafie', 'Mehwish.Shafie.tsm.2025', 'Mehwish#Shafie#tsm#2025', 'HD-1369'],
-    ['Faizan', 'Baig', 'Faizan.Baig.tsm.2025', 'Faizan#Baig#tsm#2025', 'HD-1370'],
-    ['Iqra', 'Naeem', 'Iqra.Naeem.tsm.2025', 'Iqra#Naeem#tsm#2025', 'HD-1371'],
-    ['Nabiha', 'Arooj', 'Nabiha.Arooj.tsm.2025', 'Nabiha#Arooj#tsm#2025', 'HD-1372'],
-    ['Hamda', 'Bashir', 'Hamda.Bashir.tsm.2025', 'Hamda#Bashir#tsm#2025', 'HD-1373'],
-    ['Muhammad', 'MuhammadIqbal', 'Muhammad.MuhammadIqbal.tsm.2025', 'Muhammad#Muhammad Iqbal#tsm#2025', 'HD-1374'],
-    ['Bisma', 'Kaynaat', 'Bisma.Kaynaat.tsm.2025', 'Bisma#Kaynaat#tsm#2025', 'HD-1375'],
-    ['Aqleema', 'Nawaz', 'Aqleema.Nawaz.tsm.2025', 'Aqleema#Nawaz#tsm#2025', 'HD-1376'],
-    ['Usama', 'Haider', 'Usama.Haider.tsm.2025', 'Usama#Haider#tsm#2025', 'HD-1377'],
-    ['Muhammad', 'Talha', 'Muhammad.Talha.tsm.2025', 'Muhammad#Talha#tsm#2025', 'HD-1378'],
-    ['Roman', 'Ilyas', 'Roman.Ilyas.tsm.2025', 'Roman#Ilyas#tsm#2025', 'HD-1379'],
-    ['Ali', 'Raza', 'Ali.Raza.tsm.2025', 'Ali#Raza#tsm#2025', 'HD-1380'],
-    ['Ghulam', 'Muhammad', 'Ghulam.Muhammad.tsm.2025', 'Ghulam#Muhammad#tsm#2025', 'HD-1381'],
-    ['Karamat', 'Ali', 'Karamat.Ali.tsm.2025', 'Karamat#Ali#tsm#2025', 'HD-1382'],
-    ['Wajiha', 'Tariq', 'Wajiha.Tariq.tsm.2025', 'Wajiha#Tariq#tsm#2025', 'HD-1383'],
+    ['Sana', 'Shoukat', 'Sana.Shoukat.tsm.2025', 'Sana#Shoukat#tsm#2025', 'HD-1480'],
+    ['Shahzaib', 'Ahmed', 'Shahzaib.Ahmed.tsm.2025', 'Shahzaib#Ahmed#tsm#2025', 'HD-1481'],
+    ['Muhammad Umair', 'Shah', 'MuhammadUmair.Shah.tsm.2025', 'Muhammad Umair#Shah#tsm#2025', 'HD-1482'],
+    ['Syed Faizan', 'Ali', 'SyedFaizan.Ali.tsm.2025', 'Syed Faizan#Ali#tsm#2025', 'HD-1483'],
+    ['Noman', 'Fayyaz', 'Noman.Fayyaz.tsm.2025', 'Noman#Fayyaz#tsm#2025', 'HD-1484'],
+    ['Syed Abbas', 'Akbar Naqvi', 'SyedAbbas.AkbarNaqvi.tsm.2025', 'Syed Abbas#Akbar Naqvi#tsm#2025', 'HD-1485'],
+    ['Saad', 'Butt', 'Saad.Butt.tsm.2025', 'Saad#Butt#tsm#2025', 'HD-1486'],
+    ['Seemab', 'Mushtaq', 'Seemab.Mushtaq.tsm.2025', 'Seemab#Mushtaq#tsm#2025', 'HD-1487'],
 ];
-
-
 
 
 

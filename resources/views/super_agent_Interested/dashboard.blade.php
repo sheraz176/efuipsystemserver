@@ -14,7 +14,7 @@
                     <div class="d-flex align-items-end row">
                       <div class="col-sm-7">
                         <div class="card-body">
-                          <h5 class="card-title text-primary">Welcome {{ session('agent')->username }}🎉 (Claims Pannel)</h5>
+                          <h5 class="card-title text-primary">Welcome {{ session('agent')->username }}🎉</h5>
 
                           {{-- <p class="mb-4">
                             You have done <span class="fw-medium">72%</span> more sales today. Check your new badge in

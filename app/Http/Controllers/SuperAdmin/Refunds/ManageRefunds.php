@@ -72,6 +72,12 @@ class ManageRefunds extends Controller
         return view('superadmin.refund.refundreport', compact('companies'));
     }
 
+     public function refundReportsagent(Request $request)
+    {
+        $companies = CompanyProfile::all();
+        return view('super_agent_Interested.refundreport', compact('companies'));
+    }
+
     public function getRefundedData(Request $request)
     {
         if ($request->ajax()) {

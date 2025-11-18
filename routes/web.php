@@ -514,6 +514,20 @@ Route::prefix('super-agent-l')->group(function () {
         Route::post('/claim/update-status', [ClaimsController::class, 'updateClaimStatus'])->name('claim.update.status');
         Route::post('/claim/update-amount', [ClaimsController::class, 'updateAmount'])->name('claim.update.amount');
 
+             Route::get('Netenrollment', [SuperAdminReports::class, 'refundagentindex'])->name('refundagent.netenrollment');
+           Route::get('Netenrollment/getData', [SuperAdminReports::class, 'getData'])->name('refundagent.getData');
+          Route::post('refund/export/complete/sale', [ExportController::class, 'exportcomplatesale'])->name('refund.export-complete.sale');
+
+       Route::get('agent/refunds-reports', [ManageRefunds::class, 'refundReportsagent'])->name('agent.refunds-reports');
+        Route::get('agent/manage-refunds/getRefundedData', [ManageRefunds::class, 'getRefundedData'])->name('agent.manage-refunds.getRefundedData');
+         Route::post('agent/export/RefundedDataExport', [ExportController::class, 'RefundedDataExport'])->name('agent.RefundedDataExport');
+
+           Route::get('agent/recusive/chargingdataindex', [SuperAdminReports::class, 'agent_recusive_charging_data_index'])->name('agent.recusive-charging-data-index');
+        Route::get('agent/recusive/getchargingdataindex', [SuperAdminReports::class, 'get_recusive_charging_data'])->name('agent.get-recusive-charging-data');
+                 Route::post('agent/export/export-recusive-charging-data', [ExportController::class, 'export_recusive_charing_data'])->name('agent.export-recusive-charging-data');
+
+
+
 
     });
 });
