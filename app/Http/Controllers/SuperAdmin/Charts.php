@@ -11,171 +11,171 @@ use App\Models\TeleSalesAgent;
 use App\Models\AgentCount;
 use App\Models\RecusiveChargingData;
 use App\Models\ConsentData;
+use Carbon\CarbonInterval;
+
 
 class Charts extends Controller
 {
 
     public function getSubscriptionChartData(Request $request)
-    {
-        $timeRange = $request->input('time_range');
-
-        // Define the time range intervals based on the selected time range
-        switch ($timeRange) {
-            case 'today':
-                $start = Carbon::today();
-                $end = Carbon::tomorrow();
-                $interval = 'hour';
-                break;
-            case 'yesterday':
-                $start = Carbon::yesterday();
-                $end = Carbon::today();
-                $interval = 'hour';
-                break;
-            case 'this_year':
-                // Fetch data for this year and group into months
-                $data = CustomerSubscription::whereYear('subscription_time', Carbon::now()->year)
-                    ->selectRaw("DATE_FORMAT(subscription_time, '%m-%Y') as label, COUNT(*) as count")
-                    ->groupBy('label')
-                    ->get();
-
-                // Initialize labels and values
-                $labels = [];
-                $values = [];
-
-                // Generate labels for each month of the year
-                for ($month = 1; $month <= 12; $month++) {
-                    $labels[] = str_pad($month, 2, '0', STR_PAD_LEFT) . '-' . Carbon::now()->year;
-                    $values[str_pad($month, 2, '0', STR_PAD_LEFT) . '-' . Carbon::now()->year] = 0; // Initialize count to 0
-                }
-
-                // Fill in counts from fetched data
-                foreach ($data as $subscription) {
-                    $values[$subscription->label] = $subscription->count;
-                }
-
-                // Prepare labels and values for response
-                $formattedLabels = array_keys($values);
-                $formattedValues = array_values($values);
-
-                return response()->json(['labels' => $formattedLabels, 'values' => $formattedValues]);
-
-                break;
-            case 'last_7_days':
-                $start = Carbon::now()->subDays(7);
-                $end = Carbon::now()->addDay();
-                $interval = 'day';
-                break;
-            case 'last_30_days':
-                $start = Carbon::now()->subDays(30);
-                $end = Carbon::now()->addDay();
-                $interval = 'day';
-                break;
-            case 'current_month':
-                $start = Carbon::now()->startOfMonth();
-                $end = Carbon::now()->endOfMonth()->addDay();
-                $interval = 'day';
-                break;
-            case 'last_month':
-                $start = Carbon::now()->subMonth()->startOfMonth();
-                $end = Carbon::now()->subMonth()->endOfMonth()->addDay();
-                $interval = 'day';
-                break;
-            default:
-                // Handle invalid time range
-                return response()->json(['error' => 'Invalid time range']);
-        }
-
-        // Fetch data based on the selected time range
-        $data = CustomerSubscription::whereBetween('subscription_time', [$start, $end])
-            ->selectRaw("DATE_FORMAT(subscription_time, '%Y-%m-%d" . ($interval === 'hour' ? ' %H:00:00' : '') . "') as label, COUNT(*) as count")
-            ->groupBy('label')
-            ->get();
-
-        // Generate labels with the complete range of time periods
-        $labels = [];
-        $values = [];
-        $current = clone $start;
-        while ($current < $end) {
-            $formattedLabel = $current->format('Y-m-d' . ($interval === 'hour' ? ' H:00:00' : ''));
-            $labels[] = $formattedLabel;
-            $values[$formattedLabel] = 0; // Initialize count to 0
-            $current->add($interval === 'hour' ? '1 hour' : '1 ' . $interval);
-        }
-
-        // Fill in counts from fetched data
-        foreach ($data as $subscription) {
-            $values[$subscription->label] = $subscription->count;
-        }
-
-        // Prepare labels and values for response
-        $formattedLabels = array_keys($values);
-        $formattedValues = array_values($values);
-
-        return response()->json(['labels' => $formattedLabels, 'values' => $formattedValues]);
-    }
-
-
-
-
-
-
-
-
-    public function getMonthlyActiveSubscriptionChartData()
-    {
-        // Fetch data from the database based on monthly active subscriptions for the current year
-        $data = CustomerSubscription::where('policy_status', 1)
-            ->whereYear('subscription_time', now()->year) // Filter for the current year
-            ->selectRaw('MONTH(subscription_time) as month, COUNT(*) as count')
-            ->groupBy('month')
-            ->get();
-
-        // Format the data for the chart
-        $labels = [];
-        $values = [];
-
-        // Loop through months (1 to 12) and set counts
-        for ($month = 1; $month <= 12; $month++) {
-            // Get data for the current month
-            $monthData = $data->where('month', $month)->first();
-
-            // Set label to full month name (e.g., January, February, etc.)
-            $labels[] = Carbon::create()->month($month)->format('F');
-
-            // Set the count for the current month or 0 if no data is found
-            $values[] = $monthData ? $monthData->count : 0;
-        }
-
-        // Return the data as JSON for chart rendering
-        return response()->json(['labels' => $labels, 'values' => $values]);
-    }
-
-
-
-    public function getMonthlySubscriptionUnsubscriptionChartData()
 {
-    // Fetch current year
-    $currentYear = Carbon::now()->year;
+    $timeRange = $request->input('time_range');
+    $labels = [];
+    $values = [];
+    $interval = 'day';
 
-    // Fetch data from the database for the current year based on monthly subscription and unsubscription counts
-    $data = CustomerSubscription::selectRaw('MONTH(subscription_time) as month,
-                                        SUM(CASE WHEN policy_status = 1 THEN 1 ELSE 0 END) as subscriptions,
-                                        SUM(CASE WHEN policy_status = 0 THEN 1 ELSE 0 END) as unsubscriptions')
-        ->whereYear('subscription_time', $currentYear) // Filter by current year
-        ->groupBy('month')
+    switch ($timeRange) {
+        case 'today':
+            $start = Carbon::today();
+            $end = Carbon::today()->endOfDay();
+            $interval = 'hour';
+            break;
+
+        case 'yesterday':
+            $start = Carbon::yesterday()->startOfDay();
+            $end = Carbon::yesterday()->endOfDay();
+            $interval = 'hour';
+            break;
+
+        case 'this_year':
+            $year = Carbon::now()->year;
+            $data = CustomerSubscription::whereYear('subscription_time', $year)
+                ->selectRaw("DATE_FORMAT(subscription_time, '%m-%Y') as label, COUNT(*) as count")
+                ->groupBy('label')
+                ->get();
+
+            // Generate monthly labels
+            for ($month = 1; $month <= 12; $month++) {
+                $monthLabel = str_pad($month, 2, '0', STR_PAD_LEFT) . '-' . $year;
+                $labels[] = $monthLabel;
+                $values[$monthLabel] = 0;
+            }
+
+            // Fill in counts
+            foreach ($data as $subscription) {
+                $values[$subscription->label] = $subscription->count;
+            }
+
+            return response()->json([
+                'labels' => array_keys($values),
+                'values' => array_values($values)
+            ]);
+
+        case 'last_7_days':
+            $start = Carbon::now()->subDays(6)->startOfDay(); // include today
+            $end = Carbon::now()->endOfDay();
+            break;
+
+        case 'last_30_days':
+            $start = Carbon::now()->subDays(29)->startOfDay(); // include today
+            $end = Carbon::now()->endOfDay();
+            break;
+
+        case 'current_month':
+            $start = Carbon::now()->startOfMonth();
+            $end = Carbon::now()->endOfMonth();
+            break;
+
+        case 'last_month':
+            $start = Carbon::now()->subMonth()->startOfMonth();
+            $end = Carbon::now()->subMonth()->endOfMonth();
+            break;
+
+        default:
+            return response()->json(['error' => 'Invalid time range']);
+    }
+
+    // Fetch counts from DB
+    $dateFormat = $interval === 'hour' ? '%Y-%m-%d %H:00:00' : '%Y-%m-%d';
+    $data = CustomerSubscription::whereBetween('subscription_time', [$start, $end])
+        ->selectRaw("DATE_FORMAT(subscription_time, '$dateFormat') as label, COUNT(*) as count")
+        ->groupBy('label')
         ->get();
 
-    // Format the data for the chart
+    // Initialize full range
+    $current = $start->copy();
+    while ($current <= $end) {
+        $label = $current->format($interval === 'hour' ? 'Y-m-d H:00:00' : 'Y-m-d');
+        $labels[] = $label;
+        $values[$label] = 0;
+        $current->add($interval === 'hour' ? CarbonInterval::hour() : CarbonInterval::day());
+    }
+
+    // Fill values
+    foreach ($data as $item) {
+        $values[$item->label] = $item->count;
+    }
+
+    return response()->json([
+        'labels' => array_keys($values),
+        'values' => array_values($values)
+    ]);
+}
+
+
+
+
+
+
+
+
+ public function getMonthlyActiveSubscriptionChartData()
+{
+    // Fetch month-wise subscription counts for the current year
+    $monthlyData = CustomerSubscription::where('policy_status', "1")
+        ->whereBetween('subscription_time', [
+            now()->startOfYear(),
+            now()->endOfYear()
+        ])
+        ->selectRaw('MONTH(subscription_time) as month, COUNT(*) as count')
+        ->groupBy('month')
+        ->pluck('count', 'month'); // pluck into [month => count] format
+
+    $labels = [];
+    $values = [];
+
+    // Loop through all months (1 to 12)
+    foreach (range(1, 12) as $month) {
+        $labels[] = Carbon::create()->month($month)->format('F'); // Month name
+        $values[] = $monthlyData->get($month, 0); // Get count or default 0
+    }
+
+    return response()->json([
+        'labels' => $labels,
+        'values' => $values
+    ]);
+}
+
+
+
+public function getMonthlySubscriptionUnsubscriptionChartData()
+{
+    $currentYear = now()->year;
+
+    // Fetch monthly grouped subscription and unsubscription counts in one query
+    $data = CustomerSubscription::selectRaw('
+            MONTH(subscription_time) as month,
+            COUNT(CASE WHEN policy_status = "1" THEN 1 END) as subscriptions,
+            COUNT(CASE WHEN policy_status = "0" THEN 1 END) as unsubscriptions
+        ')
+        ->whereBetween('subscription_time', [
+            Carbon::create($currentYear, 1, 1)->startOfDay(),
+            Carbon::create($currentYear, 12, 31)->endOfDay()
+        ])
+        ->groupBy('month')
+        ->orderBy('month')
+        ->get()
+        ->keyBy('month');
+
     $labels = [];
     $subscriptionValues = [];
     $unsubscriptionValues = [];
 
-    // Loop through months and set counts
+    // Fill chart data for all 12 months (even if there's no record for that month)
     for ($month = 1; $month <= 12; $month++) {
-        $monthData = $data->where('month', $month)->first();
-        $labels[] = Carbon::create()->month($month)->format('F'); // Month name
-        $subscriptionValues[] = $monthData ? $monthData->subscriptions : 0;
-        $unsubscriptionValues[] = $monthData ? $monthData->unsubscriptions : 0;
+        $labels[] = Carbon::create()->month($month)->format('F');
+        $subscriptionValues[] = $data->has($month) ? $data[$month]->subscriptions : 0;
+        $unsubscriptionValues[] = $data->has($month) ? $data[$month]->unsubscriptions : 0;
     }
 
     return response()->json([
@@ -191,7 +191,7 @@ public function getChartData(Request $request)
     $companyId = $request->input('company_id');
     $timePeriod = $request->input('time_period', 'daily');
 
-    $query = CustomerSubscription::where('policy_status', 1);
+    $query = CustomerSubscription::where('policy_status', "1");
 
     if ($companyId) {
         $query->where('company_id', $companyId);
@@ -279,7 +279,7 @@ public function getLineChartData(Request $request)
     ")
     ->whereDate('created_at', now()->format('Y-m-d')) // Filter for today's date
     ->where('created_at', '<', $currentTime) // Only include data for completed hours
-    ->where('policy_status', 1);
+    ->where('policy_status', "1");
 
     if ($companyId) {
         $query->where('company_id', $companyId);
@@ -392,53 +392,84 @@ public function LowBalaceChart(Request $request)
 {
     $query = ConsentData::query();
 
-    // Apply filter for company_id
-    if ($request->has('company_id') && $request->company_id != '') {
+    // Filter by company
+    if ($request->filled('company_id')) {
         $query->where('company_id', $request->company_id);
     }
 
-    // Apply filter for status (Cause)
-    if ($request->has('cause') && $request->cause != '') {
+    // Filter by cause/status
+    if ($request->filled('cause')) {
         $query->where('status', $request->cause);
     }
 
-    // Initialize an empty array to store chart data
     $chartData = [];
 
-    // Apply time period filter
-    if ($request->has('time_period')) {
-        $timePeriod = $request->time_period;
+    $timePeriod = $request->input('time_period', 'today');
 
-        // Handle different time periods
-        if ($timePeriod == 'today') {
-            $totalCount = $query->whereDate('created_at', now()->toDateString())
-                                ->count();
-            $chartData[] = ['count' => $totalCount, 'label' => 'Today'];
-        } elseif ($timePeriod == 'monthly') {
-            $chartData = $query->whereYear('created_at', now()->year) // Filter for the current year
-                               ->selectRaw('COUNT(*) as count, MONTHNAME(created_at) as label')
-                               ->groupBy('label')
-                               ->orderByRaw('MONTH(created_at)')
-                               ->get();
-        } elseif ($timePeriod == 'last7days') {
-            $chartData = $query->whereBetween('created_at', [now()->subDays(7), now()])
-                               ->selectRaw('COUNT(*) as count, DAYNAME(created_at) as label')
-                               ->groupBy('label')
-                               ->get();
-        } elseif ($timePeriod == 'yearly') {
-            $chartData = $query->selectRaw('COUNT(*) as count, YEAR(created_at) as label')
-                               ->groupBy('label')
-                               ->orderBy('label')
-                               ->get();
-        }
-    } else {
-        // Default to return data for today if no time filter is provided
-        $totalCount = $query->whereDate('created_at', now()->toDateString())
-                            ->count();
-        $chartData[] = ['count' => $totalCount, 'label' => 'Today'];
+    switch ($timePeriod) {
+        case 'today':
+            $count = $query->whereDate('created_at', now())->count();
+            $chartData[] = ['label' => 'Today', 'count' => $count];
+            break;
+
+        case 'monthly':
+            $data = $query->whereYear('created_at', now()->year)
+                ->selectRaw('MONTH(created_at) as month, COUNT(*) as count')
+                ->groupBy('month')
+                ->orderBy('month')
+                ->get()
+                ->keyBy('month');
+
+            foreach (range(1, 12) as $month) {
+                $chartData[] = [
+                    'label' => Carbon::create()->month($month)->format('F'),
+                    'count' => $data->has($month) ? $data[$month]->count : 0,
+                ];
+            }
+            break;
+
+        case 'last7days':
+            $start = now()->subDays(6)->startOfDay();
+            $end = now()->endOfDay();
+
+            $data = $query->whereBetween('created_at', [$start, $end])
+                ->selectRaw('DATE(created_at) as date, COUNT(*) as count')
+                ->groupBy('date')
+                ->orderBy('date')
+                ->get()
+                ->keyBy('date');
+
+            $days = [];
+            for ($i = 0; $i < 7; $i++) {
+                $date = $start->copy()->addDays($i)->toDateString();
+                $label = Carbon::parse($date)->format('D'); // Mon, Tue, etc.
+                $chartData[] = [
+                    'label' => $label,
+                    'count' => $data->has($date) ? $data[$date]->count : 0,
+                ];
+            }
+            break;
+
+        case 'yearly':
+            $data = $query->selectRaw('YEAR(created_at) as year, COUNT(*) as count')
+                ->groupBy('year')
+                ->orderBy('year')
+                ->get();
+
+            foreach ($data as $item) {
+                $chartData[] = [
+                    'label' => (string)$item->year,
+                    'count' => $item->count,
+                ];
+            }
+            break;
+
+        default:
+            $count = $query->whereDate('created_at', now())->count();
+            $chartData[] = ['label' => 'Today', 'count' => $count];
+            break;
     }
 
-    // Return the data as JSON for chart rendering
     return response()->json($chartData);
 }
 

@@ -28,6 +28,8 @@ class Claim extends Model
         'claim_amount',
         'existingamount',
         'remaining_amount',
+        'agent_id',
+        'chanel_name',
     ];
 
 

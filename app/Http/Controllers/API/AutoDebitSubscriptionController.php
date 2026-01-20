@@ -18,6 +18,8 @@ use App\Models\CheckingRequest;
 use App\Models\ConsentNumber;
 use Illuminate\Support\Facades\Http;
 use App\Models\SMSMsisdn;
+use App\Models\AutoDebitRequest;
+use App\Models\DefaultAgents;
 
 
 class AutoDebitSubscriptionController extends Controller
@@ -38,52 +40,52 @@ class AutoDebitSubscriptionController extends Controller
             // Add validation rules for any other new parameters
         ]);
 
-                // Check if validation fails
-                if ($validator->fails()) {
-                    return response()->json([
-                        'messageCode' => 400,
-                        'message' => 'Validation failed',
-                        'errors' => $validator->errors(),
-                    ], 400);
-                }
+        // Check if validation fails
+        if ($validator->fails()) {
+            return response()->json([
+                'messageCode' => 400,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors(),
+            ], 400);
+        }
 
-                $today = Carbon::now('Asia/Karachi')->format('Y-m-d');
-                $uniqueKey = $request->subscriber_msisdn . '_' . $today; // Generate unique key using MSISDN and today's date
+        $today = Carbon::now('Asia/Karachi')->format('Y-m-d');
+        $uniqueKey = $request->subscriber_msisdn . '_' . $today; // Generate unique key using MSISDN and today's date
 
-                // Check for existing request with the same unique key (MSISDN + Date)
-                $checking_request_number = CheckingRequest::where('unique_key', $uniqueKey)
-                    ->first();
+        // Check for existing request with the same unique key (MSISDN + Date)
+        $checking_request_number = CheckingRequest::where('unique_key', $uniqueKey)
+            ->first();
 
-                // If a record exists for today's request
-                if ($checking_request_number) {
-                    // Check if a request has already been processed (request_number >= 1)
-                    if ($checking_request_number->request_number >= 1) {
-                        return response()->json([
-                            'status' => 'Failed',
-                            'data' => [
-                                'messageCode' => 2003,
-                                'message' => "Information: The agent has already attempted a deduction for this number. If you are receiving this message, the amount has already been deducted from the customer's account.",
-                            ],
-                        ], 422);
-                    }
+        // If a record exists for today's request
+        if ($checking_request_number) {
+            // Check if a request has already been processed (request_number >= 1)
+            if ($checking_request_number->request_number >= 1) {
+                return response()->json([
+                    'status' => 'Failed',
+                    'data' => [
+                        'messageCode' => 2003,
+                        'message' => "Information: The agent has already attempted a deduction for this number. If you are receiving this message, the amount has already been deducted from the customer's account.",
+                    ],
+                ], 422);
+            }
 
-                    // Otherwise, proceed to update the request and prevent further hits
-                    $checking_request_number->is_processing = true; // Set to processing
-                    $checking_request_number->update();
-                } else {
-                    // If no request exists, create a new one
-                    $checking_request_number = new CheckingRequest();
-                    $checking_request_number->msisdn = $request->subscriber_msisdn;
-                    $checking_request_number->request_number = 0; // Initial request count
-                    $checking_request_number->unique_key = $uniqueKey; // Use MSISDN + Date
-                    $checking_request_number->is_processing = true; // Mark as processing
-                    $checking_request_number->save();
-                }
+            // Otherwise, proceed to update the request and prevent further hits
+            $checking_request_number->is_processing = true; // Set to processing
+            $checking_request_number->update();
+        } else {
+            // If no request exists, create a new one
+            $checking_request_number = new CheckingRequest();
+            $checking_request_number->msisdn = $request->subscriber_msisdn;
+            $checking_request_number->request_number = 0; // Initial request count
+            $checking_request_number->unique_key = $uniqueKey; // Use MSISDN + Date
+            $checking_request_number->is_processing = true; // Mark as processing
+            $checking_request_number->save();
+        }
 
-                // Proceed with Jazz system hit if request_number is 0
-                if ($checking_request_number->request_number == 0) {
-                    try {
-             // Code to hit the Jazz system...
+        // Proceed with Jazz system hit if request_number is 0
+        if ($checking_request_number->request_number == 0) {
+            try {
+                // Code to hit the Jazz system...
 
 
                 // Get request parameters
@@ -103,30 +105,92 @@ class AutoDebitSubscriptionController extends Controller
                 $super_agent_name = $request->input('super_agent_name');
 
 
-                $subscription = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
-                        ->where('plan_id', $planId)
-                        ->where('policy_status', 1)
-                        ->exists();
 
-                    //$subscription->makeHidden(['created_at', 'updated_at']);
 
-                    if ($subscription) {
-                        // Record exists and status is 1 (subscribed)
+                $autoDebitRequestData = AutoDebitRequest::where('msisdn', $request->input("subscriber_msisdn"))
+                    ->whereDate('created_at', Carbon::today())
+                    ->first();
+
+                if (!$autoDebitRequestData) {
                     return response()->json([
-                            'status' => 'Registered',
-                            'data' => [
-                                'messageCode' => 2001,
-                                'message' => 'Already subscribed to the plan.',
-                            ],
-                        ], 200);
-                    }
+                        'status' => 'Failed',
+                        'data' => [
+                            'messageCode' => 2003,
+                            'message' => 'Customer Msisdn Number is Not Available',
+                        ],
+                    ], 422);
+                }
+
+                $interested_customer_id = $autoDebitRequestData->interested_customer_id;
+
+                // Fetch consistent_provider
+                $customer = InterestedCustomer::where('id', $interested_customer_id)
+                    ->select('consistent_provider')
+                    ->orderBy('id', 'desc')
+                    ->first();
+
+                // ====== CHECK 1: Record missing OR consistent_provider is NULL ======
+                if (!$customer || is_null($customer->consistent_provider)) {
+
+                    DefaultAgents::create([
+                        'agent_name' => $super_agent_name,
+                        'agent_id' => $agent_id,
+                    ]);
+
+                    return response()->json([
+                        'status' => 'Failed',
+                        'data' => [
+                            'messageCode' => 2003,
+                             'message' => 'DTMF was not captured, and you have been added to the default agent list.'
+                        ],
+                    ], 422);
+                }
+
+                // ====== CHECK 2: consistent_provider not equal to 1 ======
+                if ($customer->consistent_provider != 1) {
+
+                    DefaultAgents::create([
+                        'agent_name' => $super_agent_name,
+                        'agent_id' => $agent_id,
+                    ]);
+
+                    return response()->json([
+                        'status' => 'Failed',
+                        'data' => [
+                            'messageCode' => 2003,
+                           'message' => 'DTMF was not captured, and you have been added to the default agent list.'
+                        ],
+                    ], 422);
+                }
+
+                // ========================================
+                // Continue your auto-debit logic...
+
+
+                $subscription = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
+                    ->where('plan_id', $planId)
+                    ->where('policy_status', 1)
+                    ->exists();
+
+                //$subscription->makeHidden(['created_at', 'updated_at']);
+
+                if ($subscription) {
+                    // Record exists and status is 1 (subscribed)
+                    return response()->json([
+                        'status' => 'Registered',
+                        'data' => [
+                            'messageCode' => 2001,
+                            'message' => 'Already subscribed to the plan.',
+                        ],
+                    ], 200);
+                }
 
 
                 $products = ProductModel::where('plan_id', $planId)
-                        ->where('product_id', $productId) // Add this line
-                        ->where('status', 1)
-                        ->select('fee', 'duration', 'status')
-                        ->first();
+                    ->where('product_id', $productId) // Add this line
+                    ->where('status', 1)
+                    ->select('fee', 'duration', 'status')
+                    ->first();
 
                 if (!$products) {
                     return response()->json([
@@ -140,9 +204,9 @@ class AutoDebitSubscriptionController extends Controller
                 $fee = $products->fee;
                 $duration = $products->duration;
 
-                 $plan = PlanModel::where('plan_id', $planId)
-                ->where('status', 1)
-                ->first();
+                $plan = PlanModel::where('plan_id', $planId)
+                    ->where('status', 1)
+                    ->first();
                 $plantext = $plan->plan_name;
 
 
@@ -214,12 +278,12 @@ class AutoDebitSubscriptionController extends Controller
                 $response = curl_exec($ch);
 
                 // Logs
-              Log::channel('auto_debit_api')->info('Auto Debit Api.',[
-               'Msisdn-number' => $subscriber_msisdn_deduction,
-               'url' => $url,
-               'request-packet' => $body,
-               'response-data' => $response,
-               ]);
+                Log::channel('auto_debit_api')->info('Auto Debit Api.', [
+                    'Msisdn-number' => $subscriber_msisdn_deduction,
+                    'url' => $url,
+                    'request-packet' => $body,
+                    'response-data' => $response,
+                ]);
 
                 // Check for cURL errors
                 if ($response === false) {
@@ -243,12 +307,12 @@ class AutoDebitSubscriptionController extends Controller
                 if (isset($response['data'])) {
                     $hexEncodedData = $response['data'];
 
-                     // Remove non-hexadecimal characters
+                    // Remove non-hexadecimal characters
                     $hexEncodedData = preg_replace('/[^0-9a-fA-F]/', '', $hexEncodedData);
                     // Ensure the length is even
-                   if (strlen($hexEncodedData) % 2 !== 0) {
-                    $hexEncodedData = '0' . $hexEncodedData;
-                      }
+                    if (strlen($hexEncodedData) % 2 !== 0) {
+                        $hexEncodedData = '0' . $hexEncodedData;
+                    }
 
                     $binaryData = hex2bin($hexEncodedData);
 
@@ -267,8 +331,8 @@ class AutoDebitSubscriptionController extends Controller
                     $referenceId = $data['referenceId'];
                     $accountNumber = $data['accountNumber'];
 
-                     // Logs Table;
-                     $logs = logs::create([
+                    // Logs Table;
+                    $logs = logs::create([
                         'msisdn' => $subscriber_msisdn_deduction,
                         'resultCode' => $resultCode,
                         'resultDesc' => $resultDesc,
@@ -279,98 +343,94 @@ class AutoDebitSubscriptionController extends Controller
                         'agent_id' => $request->input('agent_id'),
                         'super_agent_name' => $super_agent_name,
                         'source' => "AutoDebitApi",
-                        ]);
+                    ]);
 
 
                     //echo $resultCode;
-                    if ($data !== null && isset($data['resultCode']) && $data['resultCode'] === "0")
-                    {
+                    if ($data !== null && isset($data['resultCode']) && $data['resultCode'] === "0") {
 
-                    $customer_id = '0011' . $subscriber_msisdn;
-                    //Grace Period
-                    $grace_period='14';
+                        $customer_id = '0011' . $subscriber_msisdn;
+                        //Grace Period
+                        $grace_period = '14';
 
-                    $current_time = time(); // Get the current Unix timestamp
-                    $future_time = strtotime('+14 days', $current_time); // Add 14 days to the current time
+                        $current_time = time(); // Get the current Unix timestamp
+                        $future_time = strtotime('+14 days', $current_time); // Add 14 days to the current time
 
-                    $activation_time=date('Y-m-d H:i:s');
-                    // Format the future time if needed
-                    $grace_period_time = date('Y-m-d H:i:s', $future_time);
-
-
-                    //Recusive Charging Date
-
-                    $future_time_recursive = strtotime("+" . $duration . " days", $current_time);
-                    $future_time_recursive_formatted = date('Y-m-d H:i:s', $future_time_recursive);
+                        $activation_time = date('Y-m-d H:i:s');
+                        // Format the future time if needed
+                        $grace_period_time = date('Y-m-d H:i:s', $future_time);
 
 
-                    $subscription = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
-                        ->where('plan_id', $planId)
-                        ->where('policy_status', 1)
-                        ->exists();
+                        //Recusive Charging Date
+
+                        $future_time_recursive = strtotime("+" . $duration . " days", $current_time);
+                        $future_time_recursive_formatted = date('Y-m-d H:i:s', $future_time_recursive);
 
 
-                    if ($subscription) {
-                        // Record exists and status is 1 (subscribed)
+                        $subscription = CustomerSubscription::where('subscriber_msisdn', $subscriber_msisdn)
+                            ->where('plan_id', $planId)
+                            ->where('policy_status', 1)
+                            ->exists();
 
-                    return response()->json([
-                            'status' => 'Registered',
-                            'data' => [
-                                'messageCode' => 2001,
-                                'message' => 'Already subscribed to the plan.',
-                            ],
-                        ], 200);
 
-                    }
+                        if ($subscription) {
+                            // Record exists and status is 1 (subscribed)
 
-                    else {
+                            return response()->json([
+                                'status' => 'Registered',
+                                'data' => [
+                                    'messageCode' => 2001,
+                                    'message' => 'Already subscribed to the plan.',
+                                ],
+                            ], 200);
+                        } else {
 
-                    $CustomerSubscriptionData = CustomerSubscription::create([
-                        'customer_id'=> $customer_id,
-                        'payer_cnic' => -1,
-                        'payer_msisdn' => $subscriber_msisdn,
-                        'subscriber_cnic' =>$customer_cnic,
-                        'subscriber_msisdn' =>$subscriber_msisdn,
-                        'beneficiary_name' =>$beneficinary_name,
-                        'beneficiary_msisdn' =>$beneficiary_msisdn,
-                        'transaction_amount' =>$fee,
-                        'transaction_status' =>1,
-                        'referenceId' =>$referenceId,
-                        'cps_transaction_id' =>$transactionId,
-                        'cps_response_text' =>"Service Activated Sucessfully",
-                        'product_duration' =>$duration,
-                        'plan_id' =>$planId,
-                        'productId' =>$productId,
-                        'policy_status' =>1,
-                        'pulse' =>"Recusive Charging",
-                        'api_source' => "AutoDebit",
-                        'recursive_charging_date' => $future_time_recursive_formatted,
-                        'subscription_time' =>$activation_time,
-                        'grace_period_time' => $grace_period_time,
-                        'sales_agent' => $agent_id,
-                        'company_id' =>$company_id,
-                        'consent' => $consent,
-                    ]);
+                            $CustomerSubscriptionData = CustomerSubscription::create([
+                                'customer_id' => $customer_id,
+                                'payer_cnic' => -1,
+                                'payer_msisdn' => $subscriber_msisdn,
+                                'subscriber_cnic' => $customer_cnic,
+                                'subscriber_msisdn' => $subscriber_msisdn,
+                                'beneficiary_name' => $beneficinary_name,
+                                'beneficiary_msisdn' => $beneficiary_msisdn,
+                                'transaction_amount' => $fee,
+                                'transaction_status' => 1,
+                                'referenceId' => $referenceId,
+                                'cps_transaction_id' => $transactionId,
+                                'cps_response_text' => "Service Activated Sucessfully",
+                                'product_duration' => $duration,
+                                'plan_id' => $planId,
+                                'productId' => $productId,
+                                'policy_status' => 1,
+                                'pulse' => "Recusive Charging",
+                                'api_source' => "AutoDebit",
+                                'recursive_charging_date' => $future_time_recursive_formatted,
+                                'subscription_time' => $activation_time,
+                                'grace_period_time' => $grace_period_time,
+                                'sales_agent' => $agent_id,
+                                'company_id' => $company_id,
+                                'consent' => $consent,
+                            ]);
 
-                    $CustomerSubscriptionDataID=$CustomerSubscriptionData->subscription_id;
+                            $CustomerSubscriptionDataID = $CustomerSubscriptionData->subscription_id;
 
-                    $interestedCustomer = InterestedCustomer::where('customer_msisdn', $subscriber_msisdn)
-                                        ->where('deduction_applied', 0)
-                                        ->orderBy('id', 'desc') // Order by ID in descending order
-                                        ->first();
-                         // Update deduction_applied to 1 if a matching record is found
-                             if ($interestedCustomer) {
-                                 $interestedCustomer->update(['deduction_applied' => 1]);
-                             }
+                            $interestedCustomer = InterestedCustomer::where('customer_msisdn', $subscriber_msisdn)
+                                ->where('deduction_applied', 0)
+                                ->orderBy('id', 'desc') // Order by ID in descending order
+                                ->first();
+                            // Update deduction_applied to 1 if a matching record is found
+                            if ($interestedCustomer) {
+                                $interestedCustomer->update(['deduction_applied' => 1]);
+                            }
 
-                              // After successful hit, mark request_number to 1
-                        $checking_request_number->request_number = 1;
-                        $checking_request_number->is_processing = false; // Reset processing flag
-                        $checking_request_number->update();
+                            // After successful hit, mark request_number to 1
+                            $checking_request_number->request_number = 1;
+                            $checking_request_number->is_processing = false; // Reset processing flag
+                            $checking_request_number->update();
 
-                    // SMS Code
+                            // SMS Code
 
-                               $sms = new SMSMsisdn();
+                            $sms = new SMSMsisdn();
                             $sms->msisdn = $subscriber_msisdn;
                             $sms->plan_id = $planId;
                             $sms->product_id = $productId;
@@ -378,106 +438,94 @@ class AutoDebitSubscriptionController extends Controller
                             $sms->save();
 
 
-                   // End SMS Code
+                            // End SMS Code
                             return response()->json([
-                            'status' => 'success',
+                                'status' => 'success',
                                 'data' => [
                                     'messageCode' => 2002,
                                     'message' => 'Policy subscribed successfully <br> Policy ID ' . $CustomerSubscriptionDataID . ' <br> ' . $resultDesc . '<br> This is Your Transaction ID : <br>' . $transactionId,
                                     'policy_subscription_id' => $CustomerSubscriptionDataID,
                                 ],
                             ], 200);
+                        }
+                    } else if ($data !== null) {
+                        FailedSubscriptionsController::saveFailedTransactionDataautoDebit($transactionId, $resultCode, $resultDesc, $failedReason, $amount, $referenceId, $accountNumber, $planId, $productId, $agent_id, $company_id);
+
+                        // Create a new ConsentNumber instance
+                        $ConsentNumber = new ConsentNumber();
+                        $ConsentNumber->msisdn = $accountNumber;
+                        $ConsentNumber->amount = $amount;
+                        $ConsentNumber->resultCode = $resultCode;
+                        $ConsentNumber->response = $resultDesc;
+                        $ConsentNumber->consent = $consent;
+                        $ConsentNumber->customer_cnic = $customer_cnic;
+                        $ConsentNumber->beneficinary_name = $beneficinary_name;
+                        $ConsentNumber->beneficiary_msisdn = $beneficiary_msisdn;
+                        $ConsentNumber->agent_id = $agent_id;
+                        $ConsentNumber->company_id = $company_id;
+                        $ConsentNumber->planId = $planId;
+                        $ConsentNumber->productId = $productId;
+                        $ConsentNumber->status = "1";
+                        $ConsentNumber->save();
 
 
+                        $interestedCustomer = InterestedCustomer::where('customer_msisdn', $subscriber_msisdn)
+                            ->where('deduction_applied', 0)
+                            ->orderBy('id', 'desc') // Order by ID in descending order
+                            ->first();
+                        // Update deduction_applied to 1 if a matching record is found
+                        if ($interestedCustomer) {
+                            $interestedCustomer->update(['deduction_applied' => 1]);
+                        }
 
-                    }
-
-
-                    }
-                    else if ($data !== null)
-                    {
-                         FailedSubscriptionsController::saveFailedTransactionDataautoDebit($transactionId,$resultCode,$resultDesc,$failedReason,$amount,$referenceId,$accountNumber,$planId,$productId,$agent_id,$company_id);
-
-                                 // Create a new ConsentNumber instance
-                                $ConsentNumber = new ConsentNumber();
-                                $ConsentNumber->msisdn = $accountNumber;
-                                $ConsentNumber->amount = $amount;
-                                $ConsentNumber->resultCode = $resultCode;
-                                $ConsentNumber->response = $resultDesc;
-                                $ConsentNumber->consent = $consent;
-                                $ConsentNumber->customer_cnic = $customer_cnic;
-                                $ConsentNumber->beneficinary_name = $beneficinary_name;
-                                $ConsentNumber->beneficiary_msisdn = $beneficiary_msisdn;
-                                $ConsentNumber->agent_id = $agent_id;
-                                $ConsentNumber->company_id = $company_id;
-                                $ConsentNumber->planId = $planId;
-                                $ConsentNumber->productId = $productId;
-                                $ConsentNumber->status = "1";
-                                $ConsentNumber->save();
-
-
-                         $interestedCustomer = InterestedCustomer::where('customer_msisdn', $subscriber_msisdn)
-                                        ->where('deduction_applied', 0)
-                                        ->orderBy('id', 'desc') // Order by ID in descending order
-                                        ->first();
-                         // Update deduction_applied to 1 if a matching record is found
-                             if ($interestedCustomer) {
-                                 $interestedCustomer->update(['deduction_applied' => 1]);
-                             }
-
-                             // After successful hit, mark request_number to 1
+                        // After successful hit, mark request_number to 1
                         $checking_request_number->request_number = 1;
                         $checking_request_number->is_processing = false; // Reset processing flag
                         $checking_request_number->update();
 
-                         return response()->json([
+                        return response()->json([
                             'status' => 'Failed',
                             'data' => [
                                 'messageCode' => 2003,
                                 'message' => $resultDesc . ' Here is Your Transaction ID: ' . $transactionId,
                             ],
                         ], 422);
-                     }
-                }
-                else
-                    {
-                     return response()->json([
-                            'status' => 'Error',
-                            'data' => [
-                                'messageCode' => 500,
-                                'message' => 'Error In Response from JazzCash Payment Channel',
-                            ],
-                        ], 500);
-                    }
-
-             //End Code to hit the Jazz system...
-
-
-                    } catch (\Exception $e) {
-                        // Handle errors (rollback is_processing flag)
-                        $checking_request_number->is_processing = false;
-                        $checking_request_number->update();
-
-                        return response()->json([
-                            'status' => 'Failed',
-                            'data' => [
-                                'messageCode' => 500,
-                                'message' => "Error: There was an issue processing the request. Please try again later.",
-                            ],
-                        ], 500);
                     }
                 } else {
-                    // If request_number is not 0, no need to hit Jazz system again
                     return response()->json([
-                        'status' => 'Failed',
+                        'status' => 'Error',
                         'data' => [
-                            'messageCode' => 2003,
-                            'message' => "Information: The agent has already attempted a deduction for this number.",
+                            'messageCode' => 500,
+                            'message' => 'Error In Response from JazzCash Payment Channel',
                         ],
-                    ], 422);
+                    ], 500);
                 }
 
+                //End Code to hit the Jazz system...
 
 
+            } catch (\Exception $e) {
+                // Handle errors (rollback is_processing flag)
+                $checking_request_number->is_processing = false;
+                $checking_request_number->update();
+
+                return response()->json([
+                    'status' => 'Failed',
+                    'data' => [
+                        'messageCode' => 500,
+                        'message' => "Error: There was an issue processing the request. Please try again later.",
+                    ],
+                ], 500);
+            }
+        } else {
+            // If request_number is not 0, no need to hit Jazz system again
+            return response()->json([
+                'status' => 'Failed',
+                'data' => [
+                    'messageCode' => 2003,
+                    'message' => "Information: The agent has already attempted a deduction for this number.",
+                ],
+            ], 422);
+        }
     }
 }

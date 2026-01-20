@@ -508,6 +508,26 @@ Route::prefix('super-agent-l')->group(function () {
         Route::post('/Interested/fetch-customer-data', [CustomerDataInterested::class, 'fetchCustomerData'])->name('super_agent_interested.fetch_customer_data');
         Route::post('/Interested/Interested-customer-data', [CustomerDataInterested::class, 'interestedCustomerData'])->name('super_agent_interested.interested_customer_data');
 
+
+      Route::get('/claim/indexclaimcsv', [ClaimsController::class, 'indexclaimcsv'])->name('claims.indexclaimcsv');
+        Route::get('/claims/dummy-csv', [ClaimsController::class, 'downloadDummyCsv'])->name('claims.download.dummy.csv.two');
+      Route::post('/claims/bulk-upload', [ClaimsController::class, 'bulkUpload'])
+    ->name('claims.bulk.upload');
+     Route::get('/claim/indexclaimcsv/status/update', [ClaimsController::class, 'indexstatus'])->name('claims.status.indexclaimcsv');
+      Route::post('/claims/bulk-status-update', [ClaimsController::class, 'bulkStatusUpdate'])
+    ->name('claims.bulk.status.update');
+Route::get('/claims/dummy-status-csv', [ClaimsController::class, 'downloadStatusDummyCsv'])
+    ->name('claims.download.dummy.csv');
+
+
+
+
+       Route::get('/claim/upload/get', [ClaimsController::class, 'indexclaim'])
+       ->name('calims.indexclaim');
+
+        Route::post('/claims/upload', [ClaimsController::class, 'UploadClaim'])
+          ->name('claims.upload');
+
         Route::get('claims', [ClaimsController::class, 'showClaimIndex'])->name('superadmin.claims');
         Route::get('get-claims-data', [ClaimsController::class, 'getClaimsData'])->name('superadmin.get-claims-data');
         Route::post('export-recusive-charging-data', [ClaimsController::class, 'export'])->name('superadmin.export-claim-data'); // make sure this exists

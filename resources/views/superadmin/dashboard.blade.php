@@ -317,7 +317,7 @@
                                         class="rounded" />
                                 </div>
                             </div>
-                            <span class="d-block mb-1">Active Waada Agents</span>
+                               <span class="d-block mb-1">Active Waada Agents</span>
                             <h3 class="card-title text-nowrap mb-2"><span id="totalWaada">
                                 {{ $superDashRecord ? $superDashRecord->totalWaada : 'No data available' }}
                                 </span></h3>
@@ -498,78 +498,6 @@
             </div>
         </div>
 
-        <h4 class=""><span class="text-muted fw-light">Recusive Charging</span> Performance</h4>
-
-  <div class="col-xl-8 col-12 mb-4">
-    <div class="card">
-        <div class="card-header header-elements">
-            <div class="d-flex justify-content-between align-items-center">
-                <div class="d-flex justify-content-start align-items-center">
-                    <div class="me-2">
-                        <label for="causeFilter">Filter by Causes:</label>
-                        <select id="causeFilter" class="form-select">
-                            <option value="Process service request successfully.">Success Causes</option>
-                            <option value="Insufficient balance.">Failure Causes</option>
-                            <option value="">All Causes</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="timecauseFilter">Filter by Time Period:</label>
-                        <select id="timecauseFilter" class="form-select">
-                            <option value="last7days">Last 7 Days</option>
-                            <option value="today">Today</option>
-                            <option value="monthly">Monthly</option>
-                            <option value="yearly">Yearly</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="card-body">
-            <canvas id="barChart_Recusive" class="chartjs" data-height="500"></canvas>
-        </div>
-    </div>
-</div>
-
-<div class="col-4 mb-4">
-    <div class="card">
-        <div class="card-body">
-            <div class="card-title d-flex align-items-start justify-content-between">
-                <div class="avatar flex-shrink-0">
-                    <img src="{{ asset('/assets/img/icons/unicons/cc-primary.png') }}" alt="Credit Card"
-                        class="rounded" />
-                </div>
-            </div>
-            <span class="fw-medium d-block mb-1">Success Recusive Charging Count</span>
-            <h3 class="card-title mb-2"><span id="TodayRecusiveChargingCount">
-                {{ $superDashRecord ? $superDashRecord->TodayRecusiveChargingCount : 'No data available' }}
-                </span></h3>
-             <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
-                +  {{ $superDashRecord ? $superDashRecord->TodayRecusiveChargingCount : 'No data available' }}%</small>
-        </div>
-        <hr>
-        <div class="card-body">
-
-            <span class="fw-medium d-block mb-1">Last Month Recusive Charging Count</span>
-            <h3 class="card-title mb-2"><span id="LastMonthRecusiveChargingCount">
-                {{ $superDashRecord ? $superDashRecord->LastMonthRecusiveChargingCount : 'No data available' }}
-                </span></h3>
-             <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
-                +  {{ $superDashRecord ? $superDashRecord->LastMonthRecusiveChargingCount : 'No data available' }} %</small>
-        </div>
-        <hr>
-        <div class="card-body">
-
-            <span class="fw-medium d-block mb-1">Total Recusive Charging Count</span>
-            <h3 class="card-title mb-2"><span id="TotalRecusiveChargingCount">
-                {{ $superDashRecord ? $superDashRecord->TotalRecusiveChargingCount : 'No data available' }}
-                </span></h3>
-             <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
-                + {{ $superDashRecord ? $superDashRecord->TotalRecusiveChargingCount : 'No data available' }}%</small>
-        </div>
-    </div>
-
-</div>
 
 
 
@@ -658,75 +586,6 @@
 
 
         <!-- Net Enrollment Charts -->
-        <h4 class=""><span class="text-muted fw-light">Overall Net Enrollment</span> Performance</h4>
-
-        <div class="col-xl-8 col-12 mb-4">
-            <div class="card">
-                <div class="card-header header-elements">
-                    <div class="d-flex justify-content-between align-items-center">
-                        {{-- <h5 class="card-title mb-0">Net Enrollment </h5> --}}
-                        <div class="d-flex justify-content-start align-items-center">
-                            <div class="me-2">
-                                <label for="companyFilter">Filter by Company:</label>
-                                <select id="companyFilter" class="form-select">
-                                    <option value="">All Companies</option>
-                                    @foreach ($companies as $company)
-                                        <option value="{{ $company->id }}">{{ $company->company_name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label for="timeFilter">Filter by Time Period:</label>
-                                <select id="timeFilter" class="form-select">
-                                    <option value="daily">Daily</option>
-                                    <option value="monthly">Monthly</option>
-                                    <option value="last7days">Last 7 Days</option>
-                                    <option value="yearly">Yearly</option>
-                                    <option value="hourly">Hourly</option>
-                                </select>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <canvas id="barChart_netenrollment" class="chartjs" data-height="500"></canvas>
-                </div>
-            </div>
-        </div>
-        <div class="col-4 mb-4">
-            <div class="card">
-                <div class="card-body">
-                    <div class="card-title d-flex align-items-start justify-content-between">
-                        <div class="avatar flex-shrink-0">
-                            <img src="{{ asset('/assets/img/icons/unicons/cc-primary.png') }}" alt="Credit Card"
-                                class="rounded" />
-                        </div>
-                    </div>
-                    <span class="fw-medium d-block mb-1">Total Net Enrollment Count</span>
-                    <h3 class="card-title mb-2"><span id="NetEnrollmentCount">  {{ $superDashRecord ? $superDashRecord->NetEnrollmentCount : 'No data available' }}</span></h3>
-                    <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i>
-                        +  {{ $superDashRecord ? $superDashRecord->NetEnrollmentCount : 'No data available' }} %</small>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-4 " style="margin-left: 67%; margin-top:-25%;">
-            <div class="card">
-                <div class="card-body">
-                    <div class="card-title d-flex align-items-start justify-content-between">
-                        <div class="avatar flex-shrink-0">
-                            <img src="{{ asset('/assets/img/icons/unicons/cc-primary.png') }}" alt="Credit Card"
-                                class="rounded" />
-                        </div>
-                    </div>
-                    <span class="fw-medium d-block mb-1" style="color: rgb(244, 87, 24);font-weight: bold;">Total Live Net
-                        Enrollment Revenue</span>
-                    <h3 class="card-title mb-2"><span id="netentrollmentrevinus">  {{ $superDashRecord ? $superDashRecord->netentrollmentrevinus : 'No data available' }} </span></h3>
-
-                </div>
-            </div>
-        </div>
 
 
 
@@ -1001,7 +860,7 @@
                         $('#totalactive').text(data.totalactive);
                         $('#totallive').text(data.totallive);
 
-                        $('#totalWaada').text(data.totalWaada);
+                          $('#totalWaada').text(data.totalWaada);
                         $('#totalWaada').text(data.totalWaada);
 
                         $('#todaySubscriptionCount').text(data.todaySubscriptionCount);
@@ -1028,7 +887,7 @@
                 });
             }
             // Call updateStats function every 10 seconds
-            setInterval(updateStats, 10000);
+            setInterval(updateStats, 5 * 60 * 1000);
             // Initial call
             updateStats();
         </script>

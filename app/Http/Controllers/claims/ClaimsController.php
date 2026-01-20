@@ -8,7 +8,8 @@ use Yajra\DataTables\DataTables;
 use App\Models\Claim;
 use App\Models\Subscription\CustomerSubscription;
 use Illuminate\Support\Facades\Http;
-
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class ClaimsController extends Controller
 {
@@ -112,7 +113,7 @@ public function getClaimsData(Request $request)
 
     // Define column headers
     $headers = [
-        'MSISDN', 'Plan Name', 'Product Name', 'Status', 'Date', 'Amount', 'Type',
+        'Claim_id','MSISDN', 'Plan Name', 'Product Name', 'Status', 'Date', 'Amount', 'Type',
         'History Name', 'Doctor Prescription', 'Medical Bill', 'Lab Bill', 'Other',
         'Claim Amount', 'Existing Amount', 'Remaining Amount',
     ];
@@ -123,6 +124,7 @@ public function getClaimsData(Request $request)
 
     foreach ($data as $item) {
         $rows[] = [
+               $item->id,
             $item->msisdn,
             $item->plan_name,
             $item->product_name,
@@ -154,65 +156,80 @@ public function getClaimsData(Request $request)
     return response()->download($filePath)->deleteFileAfterSend(true);
 }
 
+ public function updateClaimStatus(Request $request)
+    {
 
-public function updateClaimStatus(Request $request)
-{
-    $request->validate([
-        'id' => 'required|exists:claims,id',
-        'status' => 'required|in:Approved,Reject',
-    ]);
-
-    $claim = Claim::find($request->id);
-    $claim->status = $request->status;
-    $claim->save();
-
-    // Build SMS message based on status
-    $claimRef = "CLM{$claim->id}";
-    $msisdn = $claim->msisdn;
-    $message = '';
-
-    if ($claim->status === 'Approved') {
-        $message = "Claim Approved:\nGood news! Your claim (Ref: {$claimRef}) has been approved. We will notify you once the settlement is processed. Thank you for your patience.";
-
-        // Optionally, immediately send the settlement message too:
-        $settlementMessage = "Claim Settled:\nYour claim (Ref: {$claimRef}) has been successfully settled. The payment has been processed. Thank you for choosing us.";
-
-        // Send both messages (approval + settlement)
-        Http::withHeaders([
-            'Authorization' => 'Bearer XXXXAAA489SMSTOKEFU',
-            'Channelcode' => 'ITS',
-        ])->post('http://api.efulife.com/itssr/its_sendsms', [
-            'MobileNo' => $msisdn,
-            'sender' => '98902',
-            'SMS' => $message,
-            'telco' => '',
+        //dd($request->all());
+        $request->validate([
+            'claim_id' => 'required|exists:claims,id',
+            'status' => 'required|in:Approved,Reject',
+            'rejection_reason' => 'required_if:status,Reject',
+            'other_reason' => 'nullable|string',
         ]);
 
-        Http::withHeaders([
-            'Authorization' => 'Bearer XXXXAAA489SMSTOKEFU',
-            'Channelcode' => 'ITS',
-        ])->post('http://api.efulife.com/itssr/its_sendsms', [
-            'MobileNo' => $msisdn,
-            'sender' => '98902',
-            'SMS' => $settlementMessage,
-            'telco' => '',
-        ]);
-    } elseif ($claim->status === 'Reject') {
-        $message = "Claim Rejected:\nYour claim (Ref: {$claimRef}) has been declined. For details or assistance, please contact us at 042-111-333-033.";
+        $claim = Claim::find($request->claim_id);
+        $claim->status = $request->status;
 
-        Http::withHeaders([
-            'Authorization' => 'Bearer XXXXAAA489SMSTOKEFU',
-            'Channelcode' => 'ITS',
-        ])->post('http://api.efulife.com/itssr/its_sendsms', [
-            'MobileNo' => $msisdn,
-            'sender' => '98902',
-            'SMS' => $message,
-            'telco' => '',
+        //dd($claim);
+
+        if ($request->status === 'Reject') {
+            $reason = $request->rejection_reason === 'Other'
+                ? $request->other_reason
+                : $request->rejection_reason;
+
+            $claim->rejection_reason = $reason;
+        }
+
+        $claim->save();
+
+        // Build SMS message
+        $claimRef = "CLM{$claim->id}";
+
+        //    dd($claim);
+        $msisdn = $claim->msisdn;
+        $message = '';
+
+        if ($claim->status === 'Approved') {
+            $message = "Claim Approved:\nYour claim (Ref: {$claimRef}) has been approved. Thank you!";
+            $settlementMessage = "Claim Settled:\nYour claim (Ref: {$claimRef}) has been settled. Thank you!";
+
+            Http::withHeaders([
+                'Authorization' => 'Bearer XXXXAAA489SMSTOKEFU',
+                'Channelcode' => 'ITS',
+            ])->post('http://api.efulife.com/itssr/its_sendsms', [
+                'MobileNo' => $msisdn,
+                'sender' => '98902',
+                'SMS' => $message,
+            ]);
+
+            Http::withHeaders([
+                'Authorization' => 'Bearer XXXXAAA489SMSTOKEFU',
+                'Channelcode' => 'ITS',
+            ])->post('http://api.efulife.com/itssr/its_sendsms', [
+                'MobileNo' => $msisdn,
+                'sender' => '98902',
+                'SMS' => $settlementMessage,
+            ]);
+        } elseif ($claim->status === 'Reject') {
+            $reasonText = $claim->rejection_reason;
+            $message = "Claim Rejected:\nYour claim (Ref: {$claimRef}) has been declined.\nReason: {$reasonText}\nFor assistance, contact 042-111-333-033.";
+
+            Http::withHeaders([
+                'Authorization' => 'Bearer XXXXAAA489SMSTOKEFU',
+                'Channelcode' => 'ITS',
+            ])->post('http://api.efulife.com/itssr/its_sendsms', [
+                'MobileNo' => $msisdn,
+                'sender' => '98902',
+                'SMS' => $message,
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status updated and SMS sent successfully.'
         ]);
     }
 
-    return response()->json(['success' => true, 'message' => 'Status updated and SMS sent successfully.']);
-}
 
 public function updateAmount(Request $request)
 {
@@ -312,5 +329,306 @@ public function updateAmount(Request $request)
         return back()->with('error', 'An error occurred: ' . $e->getMessage());
     }
 }
+
+public function UploadClaim(Request $request)
+{
+
+    // dd($request->all());
+    try {
+        // Validate incoming request data
+        $request->validate([
+            'msisdn' => 'required',
+            'claim_amount' => 'required',
+            'agent_id' => 'required',
+            'type' => 'required|in:hospitalization,medical_and_lab_expense',
+            'doctor_prescription' => 'nullable|array',
+            'medical_bill' => 'nullable|array',
+            'lab_bill' => 'nullable|array',
+            'other' => 'nullable|array',
+        ]);
+
+        // Check if the claim msisdn exists in the CustomerSubscription table
+          $claim_msisdn = CustomerSubscription::whereIn('plan_id', [4, 5])
+           ->where('subscriber_msisdn', $request->msisdn)
+          ->where('policy_status', 1)
+            ->first();
+
+        if (!$claim_msisdn) {
+            return response()->json(['message' => 'Claim msisdn not found'], 404);
+        }
+
+        $amount = $claim_msisdn->transaction_amount;
+        $plan_id = $claim_msisdn->plan_id;
+        $product_id = $claim_msisdn->productId;
+
+
+        $type = ($request->type == 'hospitalization') ? 'hospitalization' : 'medical_and_lab_expense';
+        $history_name = ($type == 'hospitalization') ? 'Hospital' : 'Medicine';
+
+        // Handle base64 image uploads
+        $fileFields = ['doctor_prescription', 'medical_bill', 'lab_bill', 'other'];
+        $claimData = [];
+
+        foreach ($fileFields as $field) {
+            if ($request->has($field) && is_array($request->{$field})) {
+                $fileData = $request->{$field};
+
+                if (!empty($fileData['base64']) && !empty($fileData['type'])) {
+                    $extension = strtolower($fileData['type']); // e.g., "png"
+                    $filename = time() . '_' . $field . '.' . $extension;
+                    $path = 'claims/' . $field . '/' . $filename;
+
+                    Storage::disk('public')->put($path, base64_decode($fileData['base64']));
+                    $claimData[$field] = $path;
+                }
+            }
+        }
+
+        // Save the claim
+        $claim = Claim::create(array_merge([
+            'msisdn' => $request->msisdn,
+            'plan_id' => $plan_id,
+            'product_id' => $product_id,
+            'status' => 'In Process',
+            'date' => now(),
+            'amount' => $amount,
+            'claim_amount' => $request->claim_amount,
+            'type' => $type,
+            'history_name' => $history_name,
+             'agent_id' => $request->agent_id,
+        ], $claimData));
+
+        return response()->json(['message' => 'Claim submitted successfully', 'data' => $claim], 200);
+    } catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json(['message' => 'Validation Error', 'errors' => $e->errors()], 422);
+    } catch (\Exception $e) {
+        return response()->json(['message' => 'An error occurred', 'error' => $e->getMessage()], 500);
+    }
+}
+
+
+ public function indexclaim(Request $request)
+{
+    return view('super_agent_Interested.uploadclaim');
+
+}
+
+
+
+
+    public function indexclaimcsv(Request $request)
+    {
+        return view('super_agent_Interested.uploadclaimsfile');
+    }
+
+    public function downloadDummyCsv()
+    {
+        $filename = "claim_dummy.csv";
+
+        $headers = [
+            "Content-Type" => "text/csv",
+            "Content-Disposition" => "attachment; filename=$filename",
+        ];
+
+        $callback = function () {
+            $file = fopen('php://output', 'w');
+
+            // CSV headers
+            fputcsv($file, ['msisdn', 'channel_name']);
+
+            // Dummy rows
+            for ($i = 1; $i <= 5; $i++) {
+                fputcsv($file, ['0300123456' . $i, 'Telesales']);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function bulkUpload(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt'
+        ]);
+
+        $file = fopen($request->file('csv_file')->getRealPath(), 'r');
+
+        $header = fgetcsv($file); // skip header
+
+        $total = 0;
+        $success = 0;
+        $failed = 0;
+        $errors = [];
+
+        while (($row = fgetcsv($file)) !== false) {
+            $total++;
+
+            $msisdn = trim($row[0]);
+            $channel = trim($row[1]);
+
+            if (!$msisdn || !$channel) {
+                $failed++;
+                $errors[] = [
+                    'msisdn' => $msisdn,
+                    'reason' => 'MSISDN or channel missing'
+                ];
+                continue;
+            }
+
+            $subscription = CustomerSubscription::whereIn('plan_id', [1, 4, 5])
+                ->where('subscriber_msisdn', $msisdn)
+                ->where('policy_status', 1)
+                ->first();
+
+            if (!$subscription) {
+                $failed++;
+                $errors[] = [
+                    'msisdn' => $msisdn,
+                    'reason' => 'Active subscription not found'
+                ];
+                continue;
+            }
+
+            try {
+                Claim::create([
+                    'msisdn' => $msisdn,
+                    'plan_id' => $subscription->plan_id,
+                    'product_id' => $subscription->productId,
+                    'amount' => $subscription->transaction_amount,
+                    'status' => 'In Process',
+                    'type' => 'hospitalization',
+                    'chanel_name' => $channel,
+                    'history_name' => 'Hospital',
+                    'date' => now(),
+                ]);
+
+                $success++;
+            } catch (\Exception $e) {
+                $failed++;
+                $errors[] = [
+                    'msisdn' => $msisdn,
+                    'reason' => $e->getMessage()
+                ];
+            }
+        }
+
+        fclose($file);
+
+        return response()->json([
+            'total' => $total,
+            'success' => $success,
+            'failed' => $failed,
+            'errors' => $errors
+        ]);
+    }
+
+
+    public function indexstatus(Request $request)
+    {
+        return view('super_agent_Interested.claimstatusindexclaimcsv');
+    }
+    public function downloadStatusDummyCsv()
+    {
+        $filename = "claim_status_dummy.csv";
+
+        $headers = [
+            "Content-Type" => "text/csv",
+            "Content-Disposition" => "attachment; filename=$filename",
+        ];
+
+        $callback = function () {
+            $file = fopen('php://output', 'w');
+
+            // CSV header
+            fputcsv($file, ['claim_id']);
+
+            // Dummy IDs
+            fputcsv($file, [101]);
+            fputcsv($file, [102]);
+            fputcsv($file, [103]);
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+    public function bulkStatusUpdate(Request $request)
+    {
+        $request->validate([
+            'csv_file' => 'required|file|mimes:csv,txt'
+        ]);
+
+        $file = fopen($request->file('csv_file')->getRealPath(), 'r');
+
+        $header = fgetcsv($file); // skip header
+
+        $total = 0;
+        $success = 0;
+        $failed = 0;
+        $errors = [];
+
+        while (($row = fgetcsv($file)) !== false) {
+            $total++;
+
+            $claimId = trim($row[0]);
+
+            if (!$claimId) {
+                $failed++;
+                $errors[] = [
+                    'claim_id' => null,
+                    'reason' => 'Claim ID missing'
+                ];
+                continue;
+            }
+
+            $claim = Claim::where('id', $claimId)->first();
+
+            if (!$claim) {
+                $failed++;
+                $errors[] = [
+                    'claim_id' => $claimId,
+                    'reason' => 'Claim not found'
+                ];
+                continue;
+            }
+
+            if ($claim->status === 'Approved') {
+                $failed++;
+                $errors[] = [
+                    'claim_id' => $claimId,
+                    'reason' => 'Already approved'
+                ];
+                continue;
+            }
+
+            try {
+                $claim->update([
+                    'status' => 'Approved'
+                ]);
+
+                $success++;
+            } catch (\Exception $e) {
+                $failed++;
+                $errors[] = [
+                    'claim_id' => $claimId,
+                    'reason' => $e->getMessage()
+                ];
+            }
+        }
+
+        fclose($file);
+
+        return response()->json([
+            'total' => $total,
+            'success' => $success,
+            'failed' => $failed,
+            'errors' => $errors
+        ]);
+    }
+
+
+
 
 }

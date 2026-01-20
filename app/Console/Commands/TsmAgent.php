@@ -44,16 +44,34 @@ class TsmAgent extends Command
 {
 
 
-$agentsData = [
-    ['Sana', 'Shoukat', 'Sana.Shoukat.tsm.2025', 'Sana#Shoukat#tsm#2025', 'HD-1480'],
-    ['Shahzaib', 'Ahmed', 'Shahzaib.Ahmed.tsm.2025', 'Shahzaib#Ahmed#tsm#2025', 'HD-1481'],
-    ['Muhammad Umair', 'Shah', 'MuhammadUmair.Shah.tsm.2025', 'Muhammad Umair#Shah#tsm#2025', 'HD-1482'],
-    ['Syed Faizan', 'Ali', 'SyedFaizan.Ali.tsm.2025', 'Syed Faizan#Ali#tsm#2025', 'HD-1483'],
-    ['Noman', 'Fayyaz', 'Noman.Fayyaz.tsm.2025', 'Noman#Fayyaz#tsm#2025', 'HD-1484'],
-    ['Syed Abbas', 'Akbar Naqvi', 'SyedAbbas.AkbarNaqvi.tsm.2025', 'Syed Abbas#Akbar Naqvi#tsm#2025', 'HD-1485'],
-    ['Saad', 'Butt', 'Saad.Butt.tsm.2025', 'Saad#Butt#tsm#2025', 'HD-1486'],
-    ['Seemab', 'Mushtaq', 'Seemab.Mushtaq.tsm.2025', 'Seemab#Mushtaq#tsm#2025', 'HD-1487'],
+   $agentsData = [
+    ['Ans', 'Shahzada', 'Ans.Shahzada.tsm.2025', 'Ans#Shahzada#tsm#2025', 'HD1527'],
+    ['Ad Hina', 'Javed', 'AdHina.Javed.tsm.2025', 'Ad Hina#Javed#tsm#2025', 'HD1528'],
+    ['Muhammad Ahmed', 'Butt', 'MuhammadAhmed.Butt.tsm.2025', 'MuhammadAhmed#Butt#tsm#2025', 'HD1529'],
+    ['Shazia', 'Mushtaq', 'Shazia.Mushtaq.tsm.2025', 'Shazia#Mushtaq#tsm#2025', 'HD1530'],
+    ['Muhammad Shaban', 'Akram', 'MuhammadShaban.Akram.tsm.2025', 'MuhammadShaban#Akram#tsm#2025', 'HD1531'],
+    ['Sumia', 'Rai', 'Sumia.Rai.tsm.2025', 'Sumia#Rai#tsm#2025', 'HD1532'],
+    ['Aqib', 'Imtiaz', 'Aqib.Imtiaz.tsm.2025', 'Aqib#Imtiaz#tsm#2025', 'HD1533'],
+    ['Misbah', 'Saleem', 'Misbah.Saleem.tsm.2025', 'Misbah#Saleem#tsm#2025', 'HD1534'],
+    ['Hussnain', 'Ali', 'Hussnain.Ali.tsm.2025', 'Hussnain#Ali#tsm#2025', 'HD1535'],
+    ['Hafsa', 'Umar', 'Hafsa.Umar.tsm.2025', 'Hafsa#Umar#tsm#2025', 'HD1536'],
+    ['Faizan', 'Sabir', 'Faizan.Sabir.tsm.2025', 'Faizan#Sabir#tsm#2025', 'HD1537'],
+    ['Seerat', 'Fatima', 'Seerat.Fatima.tsm.2025', 'Seerat#Fatima#tsm#2025', 'HD1538'],
+    ['Daniyal', 'Khan', 'Daniyal.Khan.tsm.2025', 'Daniyal#Khan#tsm#2025', 'HD1539'],
+    ['Maryam', 'Ghulam Farooq', 'Maryam.GhulamFarooq.tsm.2025', 'Maryam#GhulamFarooq#tsm#2025', 'HD1540'],
+    ['Muhammad Abu', 'Huraira', 'MuhammadAbu.Huraira.tsm.2025', 'Muhammad Abu#Huraira#tsm#2025', 'HD1541'],
+    ['Amna', 'Imtiaz', 'Amna.Imtiaz.tsm.2025', 'Amna#Imtiaz#tsm#2025', 'HD1542'],
+    ['Sibgha', 'Abdul Rasheed', 'Sibgha.AbdulRasheed.tsm.2025', 'Sibgha#AbdulRasheed#tsm#2025', 'HD1543'],
+    ['Muhammad', 'Rafiq', 'Muhammad.Rafiq.tsm.2025', 'Muhammad#Rafiq#tsm#2025', 'HD1544'],
+    ['Muhammad', 'Mubarik', 'Muhammad.Mubarik.tsm.2025', 'Muhammad#Mubarik#tsm#2025', 'HD1545'],
+    ['Hafifa', 'Arshad', 'Hafifa.Arshad.tsm.2025', 'Hafifa#Arshad#tsm#2025', 'HD1546'],
+    ['Muhammad Bilal', 'Shabbir', 'MuhammadBilal.Shabbir.tsm.2025', 'Muhammad Bilal#Shabbir#tsm#2025', 'HD1547'],
+    ['Oma Banin', 'Qazmi', 'OmaBanin.Qazmi.tsm.2025', 'OmaBanin#Qazmi#tsm#2025', 'HD1548'],
+    ['Syeda Farwa', 'Batool Kazmi', 'SyedaFarwa.BatoolKazmi.tsm.2025', 'SyedaFarwa#Batool Kazmi#tsm#2025', 'HD1105'],
+    ['Amna', 'Nadeem', 'Amna.Nadeem.tsm.2025', 'Amna#Nadeem#tsm#2025', 'HD1116'],
 ];
+
+
 
 
 

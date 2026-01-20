@@ -176,6 +176,32 @@
             </li>
 
 
+              <li class="menu-item">
+              <a href="{{ route('calims.indexclaim') }}" id = "salespagebutton" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-collection"></i>
+                <div data-i18n="Basic">Upload Claims</div>
+              </a>
+              </li>
+
+
+                 <li class="menu-item">
+              <a href="{{ route('claims.indexclaimcsv') }}" id = "salespagebutton" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-collection"></i>
+                <div data-i18n="Basic">Upload Claims File</div>
+              </a>
+              </li>
+
+                <li class="menu-item">
+              <a href="{{ route('claims.status.indexclaimcsv') }}" id = "salespagebutton" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-collection"></i>
+                <div data-i18n="Basic">Upload Claims Status</div>
+              </a>
+              </li>
+
+
+
+
+
 @endif
 
 

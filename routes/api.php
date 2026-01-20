@@ -22,6 +22,7 @@ use App\Http\Controllers\API\FamilyHealthController;
 use App\Http\Controllers\API\PolicyController;
 use App\Http\Controllers\API\IVRTsmController;
 use App\Http\Controllers\API\AiBotsController;
+use App\Http\Controllers\API\TermLifeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,6 +34,31 @@ use App\Http\Controllers\API\AiBotsController;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
+
+//Start routes related to Term Life Api Controller API
+
+Route::post("termlife/login",[TermLifeController::class,'login']);
+Route::group(['middleware' => 'auth:sanctum'], function(){
+Route::prefix('v25')->group(function () {
+    Route::prefix('Termlife')->group(function () {
+
+        Route::post("generic/get/plan", [TermLifeController::class, 'getPlans'])
+            ->name('genericgetplan');
+        Route::post("generic/get/products", [TermLifeController::class, 'getProducts'])
+            ->name('genericgetproducts');
+        Route::post("generic/Subscription", [TermLifeController::class, 'jazz_app_subscription'])
+            ->name('genericSubscription');
+            Route::POST("generic/UnSubscription",[TermLifeController::class,'unsubscribePackage'])
+            ->name('generic/UnSubscription');
+        Route::post("check/active/plan", [TermLifeController::class, 'activesubscriptions'])
+            ->name('checkactiveplan');
+
+    });
+});
+});
+
+//End routes related to Term Life Api Controller API
 
   Route::post("/family/health", [PolicyController::class, 'family_policy_sub_api'])
             ->name('family.health');

@@ -74,6 +74,7 @@
                             <th>Other</th>
                             <th>Existing Amount</th>
                             <th>Remaining Amount</th>
+                            <th>chanel_name</th>
                             <th>Amount</th>
                             <th>Claim Amount</th>
                             <th>Update Claim Amount</th>
@@ -111,6 +112,40 @@
     </div>
 
 
+<!-- Reject Reason Modal -->
+<div class="modal fade" id="rejectReasonModal" tabindex="-1" aria-labelledby="rejectReasonModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <form id="rejectReasonForm">
+            @csrf
+            <input type="hidden" name="claim_id" id="reject_claim_id">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Reject Reason</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label for="rejection_reason">Select Reason</label>
+                    <select name="rejection_reason" id="rejection_reason" class="form-control" required>
+                        <option value="">Select Reason</option>
+                        <option value="Not Eligible">Not Eligible</option>
+                        <option value="Invalid Documents">Invalid Documents</option>
+                        <option value="Ex-Gratia">Ex-Gratia</option>
+                        <option value="Other">Other</option>
+                    </select>
+
+                    <div class="mt-2" id="other_reason_div" style="display:none;">
+                        <label for="other_reason">Other Reason</label>
+                        <input type="text" name="other_reason" id="other_reason" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger">Reject Claim</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 
 
     <script>
@@ -167,6 +202,7 @@
                 { data: 'other', name: 'other' },
                 { data: 'existingamount', name: 'existingamount' },
                 { data: 'remaining_amount', name: 'remaining_amount' },
+                { data: 'chanel_name', name: 'chanel_name' },
                 { data: 'amount', name: 'amount' },
                 { data: 'claim_amount', name: 'claim_amount' },
                 { data: 'edit_amount', name: 'edit_amount', orderable: false, searchable: false },
@@ -179,28 +215,47 @@
             table.ajax.reload();
         });
 
-        // Approve/Reject
-        $(document).on('click', '.approve-btn, .reject-btn', function() {
-            let id = $(this).data('id');
-            let status = $(this).hasClass('approve-btn') ? 'Approved' : 'Reject';
+        $('#rejection_reason').on('change', function() {
+    if ($(this).val() === 'Other') {
+        $('#other_reason_div').show();
+        $('#other_reason').attr('required', true);
+    } else {
+        $('#other_reason_div').hide();
+        $('#other_reason').removeAttr('required');
+    }
+});
 
-            if (confirm(`Are you sure to mark as ${status}?`)) {
-                $.ajax({
-                    url: '{{ route('claim.update.status') }}',
-                    type: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        id: id,
-                        status: status
-                    },
-                    success: function(response) {
-                        toastr.success(response.message);
-                        table.ajax.reload();
-                        loadClaimStatusCounts(); // Optional: Update counters
-                    }
-                });
-            }
-        });
+
+        $(document).on('click', '.reject-btn', function() {
+    let claimId = $(this).data('id');
+    $('#reject_claim_id').val(claimId);
+    $('#rejection_reason').val('');
+    $('#other_reason_div').hide();
+    $('#other_reason').val('');
+    $('#rejectReasonModal').modal('show');
+});
+
+
+        // Approve/Reject
+       $('#rejectReasonForm').on('submit', function(e) {
+    e.preventDefault();
+
+    let data = $(this).serialize();
+    $.ajax({
+        url: '{{ route("claim.update.status") }}',
+        type: 'POST',
+        data: data + '&status=Reject',
+        success: function(response) {
+            toastr.success(response.message);
+            $('#rejectReasonModal').modal('hide');
+            $('#myTables').DataTable().ajax.reload(null, false);
+        },
+        error: function(xhr) {
+            toastr.error('Failed to update status.');
+        }
+    });
+});
+
 
         // Edit Claim Amount Modal
         $(document).on('click', '.edit-amount-btn', function() {
