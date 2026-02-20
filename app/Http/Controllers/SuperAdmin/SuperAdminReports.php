@@ -15,9 +15,115 @@ use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Yajra\DataTables\DataTables;
 use App\Models\ConsentData;
+use App\Models\HourlyTransactionSummary;
+
 
 class SuperAdminReports extends Controller
 {
+
+
+
+public function hourlySummary(Request $request)
+{
+    // Handle CSV export
+    if ($request->has('export')) {
+
+        $date = $request->dateFilter ?? HourlyTransactionSummary::max('summary_date');
+
+        $data = HourlyTransactionSummary::where('summary_date', $date)
+            ->orderBy('hour')
+            ->get([
+                'hour',
+                'call_center_count',
+                'call_center_amount',
+                'ivr_count',
+                'ivr_amount',
+                'merchant_count',
+                'merchant_amount',
+                'app_count',
+                'app_amount',
+                'recursive_count',
+                'recursive_amount',
+                'summary_date'
+            ]);
+
+        $filename = "hourly_summary_{$date}.csv";
+
+        $headers = [
+            "Content-Type" => "text/csv",
+            "Content-Disposition" => "attachment; filename={$filename}",
+        ];
+
+        $columns = [
+            'Hour',
+            'Call Center Count',
+            'Call Center Amount',
+            'IVR Count',
+            'IVR Amount',
+            'Merchant Count',
+            'Merchant Amount',
+            'App Count',
+            'App Amount',
+            'Recursive Count',
+            'Recursive Amount',
+            'Summary Date'
+        ];
+
+        $callback = function() use ($data, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($data as $row) {
+                fputcsv($file, [
+                    $row->hour,
+                    $row->call_center_count,
+                    $row->call_center_amount,
+                    $row->ivr_count,
+                    $row->ivr_amount,
+                    $row->merchant_count,
+                    $row->merchant_amount,
+                    $row->app_count,
+                    $row->app_amount,
+                    $row->recursive_count,
+                    $row->recursive_amount,
+                    $row->summary_date->format('Y-m-d'),
+                ]);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    // Otherwise, show view & DataTable
+    $latestDate = $request->dateFilter ?? HourlyTransactionSummary::max('summary_date');
+
+    if ($request->ajax()) {
+        $query = HourlyTransactionSummary::query();
+        if ($request->filled('dateFilter')) {
+            $dates = explode(' to ', $request->dateFilter);
+            if(count($dates) === 2){
+                $query->whereBetween('summary_date', [$dates[0], $dates[1]]);
+            } else {
+                $query->where('summary_date', $request->dateFilter);
+            }
+        } else {
+            $query->where('summary_date', $latestDate);
+        }
+
+        return datatables()->of($query)
+            ->editColumn('summary_date', function($row){
+                return $row->summary_date->format('Y-m-d');
+            })
+            ->make(true);
+    }
+
+    return view('superadmin.hourlysummary', compact('latestDate'));
+}
+
+
+
     public function index()
     {
         return view('superadmin.completesales');

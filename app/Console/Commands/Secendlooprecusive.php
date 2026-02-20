@@ -11,15 +11,20 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\JsonResponse;
 use App\Models\Recusivefailed;
+use App\Models\SkipMsisdnModel;
+use App\Models\SecandDailyRecursiveLock;
+use App\Models\DailyRecursiveLock;
+use Illuminate\Database\QueryException;
 
-class MainRecusiveParallel extends Command
+
+class Secendlooprecusive extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = '32qA';
+    protected $signature = 'recursive:secondloop';
 
     /**
      * The console command description.
@@ -43,39 +48,42 @@ class MainRecusiveParallel extends Command
      *
      * @return int
      */
+
+
     public function handle()
     {
         $today = Carbon::now()->toDateString();
 
-        $subscriptions = DB::table('customer_subscriptions')
-            ->select(
-                'subscription_id',
-                DB::raw("CONCAT('92', SUBSTRING(subscriber_msisdn, -10)) AS subscriber_msisdn"),
-                'transaction_amount',
-                'consecutiveFailureCount',
-                'recursive_charging_date',
-                'product_duration',
-                'plan_id',
-                'productId'
-            )
-            ->whereDate('recursive_charging_date', $today)
-            ->where('policy_status', 1)
-            ->whereIn('transaction_amount', [163, 199, 1, 2, 12, 10, 200, 299])
+        $subscriptions = Recusivefailed::select(
+            'subscription_id',
+            DB::raw("CONCAT('92', SUBSTRING(customer_msisdn , -10)) AS customer_msisdn"),
+            'amount',
+            'charging_date',
+            'duration',
+            'plan_id',
+            'product_id'
+        )
+            ->whereDate('created_at', $today)
+            ->where('looping', '1st_loop')
+            ->where('status', '0')
             ->get();
 
+        //dd($subscriptions->count());
+
         // Chunk subscriptions into 20 for parallel requests
-        $chunks = $subscriptions->chunk(20);
+        $chunks = $subscriptions->chunk(50);
+
+
 
         foreach ($chunks as $chunk) {
-            $this->processChunk($chunk->toArray());
-            usleep(500000); // 0.5 sec delay between chunks
+            $this->processChunk($chunk); // ? toArray remove
         }
 
         $data = ['success' => true, 'message' => 'Recursive charging checked successfully'];
         return json_encode($data);
     }
 
-    private function processChunk(array $subscriptions)
+    private function processChunk($subscriptions)
     {
         $mh = curl_multi_init();
         $curlHandles = [];
@@ -84,25 +92,99 @@ class MainRecusiveParallel extends Command
         $iv = 'Myin!tv3ctorjCM@';
 
         foreach ($subscriptions as $subscription) {
-            // Skip if already charged today
-            if (RecusiveChargingModel::where('subscription_id', $subscription->subscription_id)
+
+            try {
+                SecandDailyRecursiveLock::create([
+                    'subscription_id' => $subscription->subscription_id,
+                    'process_date'    => Carbon::today()->toDateString(),
+                ]);
+            } catch (QueryException $e) {
+
+                Log::channel('MainRecusive')->info('DB LOCK: Duplicate subscription blocked.', [
+                    'sub_id' => $subscription->subscription_id,
+                    'msisdn' => $subscription->customer_msisdn,
+                    'date'   => Carbon::today()->toDateString(),
+                ]);
+
+                $this->info(
+                    "LOCKED: Subscription {$subscription->subscription_id} already processed today"
+                );
+
+                continue; // ?? yahin loop skip
+            }
+
+
+
+            $alreadyProcessed = RecusiveChargingModel::where('subscription_id', $subscription->subscription_id)
                 ->whereDate('created_at', Carbon::today())
-                ->exists()
-            ) {
+                ->exists();
+
+            if ($alreadyProcessed) {
                 Log::channel('MainRecusive')->info('Skipping duplicate deduction attempt.', [
                     'sub_id' => $subscription->subscription_id,
-                    'msisdn' => $subscription->subscriber_msisdn,
-                    'note' => 'Already charged today.'
+                    'msisdn' => $subscription->customer_msisdn,
+                    'note' => 'Already charged or failed charged today.'
                 ]);
-                $this->info("Skipping subscription ID {$subscription->subscription_id}, MSISDN: {$subscription->subscriber_msisdn} (already processed today)");
+
+                $this->info("Skipping subscription ID {$subscription->subscription_id}, MSISDN: {$subscription->customer_msisdn} (already processed today)");
                 continue;
             }
+
+
+
+            // Get last successful charge datetime
+            $lastCharge = RecusiveChargingModel::where('subscription_id', $subscription->subscription_id)
+                ->where('duration', 30)
+                ->orderByDesc('created_at')
+                ->value('created_at'); // e.g. 2026-01-07 00:38:43
+
+            // Calculate next charging date
+            $nextChargingDate = $lastCharge
+                ? Carbon::parse($lastCharge)->addDays(30)->toDateString() // ? sirf date
+                : null;
+
+            // Update customer_subscriptions with nextChargingDate
+            DB::table('customer_subscriptions')
+                ->where('subscription_id', $subscription->subscription_id)
+                ->update([
+                    'recursive_charging_date' => $nextChargingDate
+                ]);
+
+            // ? 30-day check (DATE ONLY)
+            if ($lastCharge && Carbon::today()->lt(Carbon::parse($nextChargingDate))) {
+
+                Log::channel('MainRecusive')->info('Skipping duplicate deduction attempt (30-day rule).', [
+                    'sub_id' => $subscription->subscription_id,
+                    'msisdn' => $subscription->customer_msisdn,
+                    'last_charge' => $lastCharge,
+                    'nextcharging' => $nextChargingDate,
+                    'note' => 'Already charged within last 30 days.'
+                ]);
+
+                // Save skipped info
+                $skip = new SkipMsisdnModel();
+                $skip->subscription_id = $subscription->subscription_id;
+                $skip->msisdn = $subscription->customer_msisdn;
+                $skip->lastcharging = $lastCharge;
+                $skip->nextcharging = $nextChargingDate;
+                $skip->reason = "Already charged within last 30 days";
+                $skip->save();
+
+                $this->info(
+                    "Skipping subscription ID {$subscription->subscription_id},
+                         MSISDN: {$subscription->customer_msisdn}
+                              (already processed within 30 days)"
+                );
+
+                continue;
+            }
+
 
             // Calculate amount
             $amount = $this->calculateAmount($subscription);
 
             // Prepare encrypted request data
-            $requestData = $this->prepareRequestData($subscription->subscriber_msisdn, $amount);
+            $requestData = $this->prepareRequestData($subscription->customer_msisdn, $amount);
 
             $ch = curl_init('https://gateway.jazzcash.com.pk/jazzcash/third-party-integration/rest/api/wso2/v1/insurance/sub_autoPayment');
             curl_setopt($ch, CURLOPT_POST, 1);
@@ -121,7 +203,7 @@ class MainRecusiveParallel extends Command
             curl_multi_add_handle($mh, $ch);
             $curlHandles[$subscription->subscription_id] = ['handle' => $ch, 'subscription' => $subscription];
 
-            $this->info("Starting subscription ID {$subscription->subscription_id}, MSISDN: {$subscription->subscriber_msisdn}");
+            $this->info("Starting subscription ID {$subscription->subscription_id}, MSISDN: {$subscription->customer_msisdn}");
         }
 
         // Execute all cURL handles in parallel
@@ -150,10 +232,10 @@ class MainRecusiveParallel extends Command
 
     private function calculateAmount($subscription)
     {
-        if ($subscription->transaction_amount == 2) return 299;
-        if ($subscription->transaction_amount == 1) return $subscription->product_duration == 30 ? 299 : 12;
-        if ($subscription->transaction_amount == 163) return 199;
-        return $subscription->transaction_amount;
+        if ($subscription->amount == 2) return 299;
+        if ($subscription->mount == 1) return $subscription->duration == 30 ? 299 : 12;
+        if ($subscription->amount == 163) return 199;
+        return $subscription->amount;
     }
 
     private function prepareRequestData($msisdn, $amount)
@@ -191,11 +273,11 @@ class MainRecusiveParallel extends Command
         $binaryData = hex2bin($hexEncodedData);
         $data = json_decode(openssl_decrypt($binaryData, 'aes-128-cbc', $key, OPENSSL_RAW_DATA, $iv), true);
 
-        $nextChargingDate = Carbon::parse($subscription->recursive_charging_date)
-            ->addDays($subscription->product_duration)->toDateString();
+
 
         if ($data !== null && isset($data['resultCode']) && $data['resultCode'] === "0") {
 
+            $nextChargingDate = Carbon::today()->addDays($subscription->duration);
             DB::table('customer_subscriptions')
                 ->where('subscription_id', $subscription->subscription_id)
                 ->update([
@@ -208,19 +290,34 @@ class MainRecusiveParallel extends Command
             $rec->reference_id = $data['referenceId'] ?? null;
             $rec->amount = $data['amount'] ?? null;
             $rec->plan_id = $subscription->plan_id;
-            $rec->product_id = $subscription->productId;
+            $rec->product_id = $subscription->product_id;
             $rec->cps_response = $data['resultDesc'] ?? $data['failedReason'] ?? null;
             $rec->charging_date = $nextChargingDate;
-            $rec->customer_msisdn = $subscription->subscriber_msisdn;
-            $rec->duration = $subscription->product_duration;
+            $rec->customer_msisdn = $subscription->customer_msisdn;
+            $rec->duration = $subscription->duration;
+            $rec->looping = "2nd_loop";
             $rec->save();
             Log::channel('MainRecusive')->info('Recusive Charging Api Success.', [
                 'sub_id' => $subscription->subscription_id,
-                'msisdn' => $subscription->subscriber_msisdn,
+                'msisdn' => $subscription->customer_msisdn,
                 'nextchargingdate' => $nextChargingDate
             ]);
 
-            $this->info("SUCCESS: Subscription ID {$subscription->subscription_id}, MSISDN: {$subscription->subscriber_msisdn}, NextChargingDate: {$nextChargingDate}");
+            Log::channel('discount_regular_recusive')->info('Recusive Charging Success.', [
+                'sub_id' => $subscription->subscription_id,
+                'msisdn' => $subscription->customer_msisdn,
+                'nextchargingdate' =>  $nextChargingDate,
+                'duration' => $subscription->duration,
+            ]);
+
+            DB::table('Recusive_failed')
+                ->where('subscription_id', $subscription->subscription_id)
+                ->update([
+                    'status' => "1"
+                ]);
+
+
+            $this->info("SUCCESS: Subscription ID {$subscription->subscription_id},Next Charging date: Charging date {$subscription->recursive_charging_date}, MSISDN: {$subscription->customer_msisdn}, NextChargingDate: {$nextChargingDate}");
         } else if ($data !== null) {
             DB::table('customer_subscriptions')
                 ->where('subscription_id', $subscription->subscription_id)
@@ -236,9 +333,16 @@ class MainRecusiveParallel extends Command
                     ->update(['policy_status' => 0]);
             }
 
+
+            $nextChargingDating = Carbon::today()->addDay(); // aaj se 1 din aage
+
             DB::table('customer_subscriptions')
                 ->where('subscription_id', $subscription->subscription_id)
-                ->update(['recursive_charging_date' => $nextChargingDate]);
+                ->update([
+                    'recursive_charging_date' => $nextChargingDating
+                ]);
+
+
 
             $rec = new Recusivefailed();
             $rec->subscription_id = $subscription->subscription_id;
@@ -246,14 +350,32 @@ class MainRecusiveParallel extends Command
             $rec->reference_id = $data['referenceId'] ?? null;
             $rec->amount = $data['amount'] ?? null;
             $rec->plan_id = $subscription->plan_id;
-            $rec->product_id = $subscription->productId;
+            $rec->product_id = $subscription->product_id;
             $rec->cps_response = $data['resultDesc'] ?? $data['failedReason'] ?? null;
-            $rec->charging_date = $nextChargingDate;
-            $rec->customer_msisdn = $subscription->subscriber_msisdn;
-            $rec->duration = $subscription->product_duration;
+            $rec->charging_date = $nextChargingDating;
+            $rec->customer_msisdn = $subscription->customer_msisdn;
+            $rec->duration = $subscription->duration;
+            $rec->looping = "2nd_loop";
+            $rec->status = "1";
             $rec->save();
 
-            $this->info("FAILED: Subscription ID {$subscription->subscription_id}, MSISDN: {$subscription->subscriber_msisdn}, ConsecutiveFailures: {$updatedSubscription->consecutiveFailureCount}");
+            Log::channel('discount_regular_recusive')->info('Recusive Charging Failed.', [
+                'sub_id' => $subscription->subscription_id,
+                'msisdn' => $subscription->customer_msisdn,
+                'nextchargingdate' => $nextChargingDating,
+                'duration' => $subscription->duration,
+            ]);
+
+            DB::table('Recusive_failed')
+                ->where('subscription_id', $subscription->subscription_id)
+                ->update([
+                    'status' => "1"
+                ]);
+
+
+
+
+            $this->info(" FAILED:Next Charging date: Charging date {$subscription->recursive_charging_date}, FAILED: Subscription ID {$subscription->subscription_id}, MSISDN: {$subscription->customer_msisdn}, ConsecutiveFailures: {$updatedSubscription->consecutiveFailureCount}");
         }
     }
 }
