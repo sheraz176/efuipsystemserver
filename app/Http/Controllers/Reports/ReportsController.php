@@ -85,50 +85,26 @@ class ReportsController extends Controller
         }
 
         $agentId = $agent->agent_id;
-        $currentMonthTotal = CustomerSubscription::where('sales_agent', $agentId)
-            ->whereMonth('subscription_time', Carbon::now()->month)
-            ->sum('transaction_amount');
-
-       // $overallSales = CustomerSubscription::where('sales_agent', $agentId)->sum('transaction_amount');
-
-        $result = CustomerSubscription::where('sales_agent', $agentId)
-            ->selectRaw('SUM(transaction_amount) as total_amount, COUNT(*) as total_count')
-            ->first();
-
-        $overallSales = $result->total_amount;
-        $TotalSalesCount = $result->total_count;
+        $currentMonthTotal = "0";
 
 
-        $currentMonthTotalCount = CustomerSubscription::where('sales_agent', $agentId)
-            ->whereMonth('subscription_time', Carbon::now()->month)
-            ->count();
-            //dd($currentMonthTotal);
-
-        $currentYearTotal = CustomerSubscription::where('sales_agent', $agentId)
-            ->whereYear('subscription_time', Carbon::now()->year)
-            ->sum('transaction_amount');
-
-        $currentDayTotal = CustomerSubscription::where('sales_agent', $agentId)
-            ->whereDate('subscription_time', Carbon::now()->toDateString())
-            ->sum('transaction_amount');
-
-        $currentDayTotalCount = CustomerSubscription::where('sales_agent', $agentId)
-            ->whereDate('subscription_time', Carbon::now()->toDateString())
-            ->count();
+        $result =  "0";
+        $overallSales =  "0";
+        $TotalSalesCount =  "0";
 
 
+        $currentMonthTotalCount =  "0";            //dd($currentMonthTotal);
 
-        $totalFailedTransactionsCount = FailedSubscription::where('agent_id', $agentId)->count();
-        $insufficientBalance = FailedSubscription::where('agent_id', $agentId)->where('resultCode', '2009')->count();
+        $currentYearTotal =  "0";
+        $currentDayTotal =  "0";
+        $currentDayTotalCount =  "0";
 
-        $monthlyFailedTransactionsCount = FailedSubscription::where('agent_id', $agentId)
-        ->whereMonth('timeStamp', now()->month)
-        ->count();
 
-        $dailyFailedTransactionsCount = FailedSubscription::where('agent_id', $agentId)
-        ->whereDate('timeStamp', today())
-        ->count();
+        $totalFailedTransactionsCount =  "0";
+        $insufficientBalance =  "0";
 
+        $monthlyFailedTransactionsCount =  "0";
+        $dailyFailedTransactionsCount =  "0";
 
              return view('basic-agent.overallreport', compact('currentMonthTotal', 'currentYearTotal', 'currentDayTotal','currentMonthTotalCount','currentDayTotalCount',
               'overallSales','TotalSalesCount','totalFailedTransactionsCount','insufficientBalance','monthlyFailedTransactionsCount','dailyFailedTransactionsCount','agent'));
@@ -148,50 +124,27 @@ class ReportsController extends Controller
         }
 
         $agentId = $agent->agent_id;
-        $currentMonthTotal = CustomerSubscription::where('sales_agent', $agentId)
-            ->whereMonth('subscription_time', Carbon::now()->month)
-            ->sum('transaction_amount');
-
-       // $overallSales = CustomerSubscription::where('sales_agent', $agentId)->sum('transaction_amount');
-
-        $result = CustomerSubscription::where('sales_agent', $agentId)
-            ->selectRaw('SUM(transaction_amount) as total_amount, COUNT(*) as total_count')
-            ->first();
-
-        $overallSales = $result->total_amount;
-        $TotalSalesCount = $result->total_count;
+        $agentId = $agent->agent_id;
+        $currentMonthTotal = "0";
 
 
-        $currentMonthTotalCount = CustomerSubscription::where('sales_agent', $agentId)
-            ->whereMonth('subscription_time', Carbon::now()->month)
-            ->count();
-            //dd($currentMonthTotal);
-
-        $currentYearTotal = CustomerSubscription::where('sales_agent', $agentId)
-            ->whereYear('subscription_time', Carbon::now()->year)
-            ->sum('transaction_amount');
-
-        $currentDayTotal = CustomerSubscription::where('sales_agent', $agentId)
-            ->whereDate('subscription_time', Carbon::now()->toDateString())
-            ->sum('transaction_amount');
-
-        $currentDayTotalCount = CustomerSubscription::where('sales_agent', $agentId)
-            ->whereDate('subscription_time', Carbon::now()->toDateString())
-            ->count();
+        $result =  "0";
+        $overallSales =  "0";
+        $TotalSalesCount =  "0";
 
 
+        $currentMonthTotalCount =  "0";            //dd($currentMonthTotal);
 
-        $totalFailedTransactionsCount = FailedSubscription::where('agent_id', $agentId)->count();
-        $insufficientBalance = FailedSubscription::where('agent_id', $agentId)->where('resultCode', '2009')->count();
+        $currentYearTotal =  "0";
+        $currentDayTotal =  "0";
+        $currentDayTotalCount =  "0";
 
-        $monthlyFailedTransactionsCount = FailedSubscription::where('agent_id', $agentId)
-        ->whereMonth('timeStamp', now()->month)
-        ->count();
 
-        $dailyFailedTransactionsCount = FailedSubscription::where('agent_id', $agentId)
-        ->whereDate('timeStamp', today())
-        ->count();
+        $totalFailedTransactionsCount =  "0";
+        $insufficientBalance =  "0";
 
+        $monthlyFailedTransactionsCount =  "0";
+        $dailyFailedTransactionsCount =  "0";
 
              return view('basic-agent-l.overallreport', compact('currentMonthTotal', 'currentYearTotal', 'currentDayTotal','currentMonthTotalCount','currentDayTotalCount',
               'overallSales','TotalSalesCount','totalFailedTransactionsCount','insufficientBalance','monthlyFailedTransactionsCount','dailyFailedTransactionsCount','agent'));

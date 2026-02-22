@@ -33,7 +33,7 @@ class AiBotsController extends Controller
 
             // Retrieve active products associated with the specified plan ID
           $products = ProductModel::where('plan_id', $planId)
-                            ->where('api_status', 1)
+                            ->where('status', 1)
                             ->get();
 
             return response()->json([
@@ -99,7 +99,7 @@ class AiBotsController extends Controller
 
                 $products = ProductModel::where('plan_id', $planId)
                         ->where('product_id', $productId) // Add this line
-                        ->where('api_status', 1)
+                        ->where('status', 1)
                         ->select('fee', 'duration', 'status')
                         ->first();
 

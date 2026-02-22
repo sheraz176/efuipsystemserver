@@ -56,7 +56,9 @@ class SMSDelivary extends Command
 
     public function handle()
     {
-        $smscustomers = SMSMsisdn::where('status', "2")->get();
+        $smscustomers = SMSMsisdn::where('status', "0")->get();
+
+          //dd($smscustomers);
 
         $key = 'mYjC!nc3dibleY3k';         // 16 characters
         $iv = 'Myin!tv3ctorjCM@';          // 16 characters
@@ -65,7 +67,7 @@ class SMSDelivary extends Command
         foreach ($smscustomers as $smscustomer) {
 
             $subscriber_msisdn = ltrim($smscustomer->msisdn, '+'); // Remove + if any
-
+               //dd($smscustomer->msisdn);
             if (substr($subscriber_msisdn, 0, 2) === '92') {
                 // Already starts with 92 - do nothing
             } elseif (substr($subscriber_msisdn, 0, 1) === '0') {
@@ -78,6 +80,7 @@ class SMSDelivary extends Command
             $plan = PlanModel::where('plan_id', $smscustomer->plan_id)->where('status', 1)->first();
             $product = ProductModel::where('plan_id', $smscustomer->plan_id)
                 ->where('product_id', $smscustomer->product_id)->first();
+          //dd($plan);
 
             if (!$plan || !$product) continue;
 
@@ -87,45 +90,94 @@ class SMSDelivary extends Command
             $product_id = $product->product_id ?? null;
             $duration   = $product->duration ?? null;
 
-            $subscription = CustomerSubscription::where('subscriber_msisdn', $smscustomer->msisdn)
-                ->where('plan_id', $plan_id)
-                ->where('productId', $product_id)
-                ->where('policy_status', 1)
-                ->first();
+          // 92 ko 03 me convert for DB match
+$db_msisdn = $smscustomer->msisdn;
+
+if (substr($db_msisdn, 0, 2) === '92') {
+    $db_msisdn = '0' . substr($db_msisdn, 2);
+}
+
+//dd($db_msisdn);
+$subscription = CustomerSubscription::where('subscriber_msisdn', $db_msisdn)
+    ->where('plan_id', $plan_id)
+    ->where('productId', $product_id)
+     ->first();
+           
+             //dd($subscription);
 
             if (!$subscription) {
                 // Handle no subscription found
                 return;
             }
+     
 
             $tid = $subscription->cps_transaction_id ?? '0000000000000';
 
-            // Set SMS content list
-            $smsList = [];
+   //dd($plan_id);
+// Select T&C link based on plan_id
+$tcLink = '';
+if ($plan_id == 1) {
+    $tcLink = 'https://bit.ly/4d0OYD6';
+} elseif ($plan_id == 4) {
+    $tcLink = 'https://bit.ly/4hUgfu8';
+} elseif ($plan_id == 5) {
+    $tcLink = 'https://bit.ly/3YNJOpG';
+}
 
-            // Duration-based messages
-            if ($duration == 365) {
-                $smsList[] = "Shukriya! apka {$plantext} {$fee} mein activate kar diya gaya hai. T&Cs:https://bit.ly/4hUgfu8. TID:{$tid}";
-            } elseif ($duration == 30) {
-                $smsList[] = "Shukriya! apka {$plantext} monthly discounted price {$fee} mein activate kar diya gaya hai. T&Cs: https://bit.ly/4hUgfu8. TID:{$tid}";
-                $smsList[] = "Muaziz Saarif, yaad rahe ke aap ke muntakhib karda plan ke mutabiq Rs.{$fee} aglay mahinay se har mahene apke JazzCash wallet se deduct kiya jaye ga.";
-            } elseif ($duration == 1) {
-                $smsList[] = "Shukriya! apka {$plantext} daily discounted {$fee} mein activate kar diya gaya hai. T&Cs: https://bit.ly/4hUgfu8. TID:{$tid}";
-                $smsList[] = "Muaziz saarif yaad rahay apkay muntakhib karda plan k mutabiq Rs.{$fee} rozana sirf pehlay 30 din k liye lagu hai";
-                $smsList[] = "Muaziz saarif yaad rahay apkay muntakhib karda plan k mutabiq 30 din baad Rs.12 rozana apkay JazzCash wallet se deduct kiye jaengay";
-            }
+// Select T&C link based on plan_id
+$tcLink = '';
+if ($plan_id == 1) {
+    $tcLink = 'https://bit.ly/4d0OYD6';
+} elseif ($plan_id == 4) {
+    $tcLink = 'https://bit.ly/4hUgfu8';
+} elseif ($plan_id == 5) {
+    $tcLink = 'https://bit.ly/4lGPhYj';
+}
 
-            // Common messages
-            $smsList[] = "Aapki EFU insurance deti hai phone par doctor se muft mashwara. Abhi hamare doctor se mashwara lene ke liye 042111333033 par call karein";
-            $smsList[] = "Ab claim karna nihayat asaan hai! Claim ke liye 042111333033 par call karein ya apne claim documents support@efulife.com par email karein";
+// Set SMS content list
+$smsList = [];
 
-            // Refund message if source is AutoDebit or IVR Subscription
-            if ($subscription->api_source == "AutoDebit" || $subscription->api_source == "IVR Subscription") {
-                $smsList[] = "Agar aap {$plantext} se mutmain nahi hain, to 14 dinon k ander 4444 dial karke kisi katoti ke baghair apni raqam wapis le saktay hain";
-            }
+// Duration-based messages
+if ($duration == 365) {
+    if ($plan_id == 1) {
+        $smsList[] = "Shukriya! apka {$plantext} {$fee} mein activate kar diya gaya hai. T&Cs:{$tcLink}. TID:{$tid}";
+        $smsList[] = "EFU Term Life deta hai aapko Rs. 10 lakh tak ka life cover, Rs 10000 ka accidental hospitalization aur Rs 2000 tak ka OPD Cover.";
+    } else {
+        $smsList[] = "Shukriya! apka {$plantext} {$fee} mein activate kar diya gaya hai. T&Cs:{$tcLink}. TID:{$tid}";
+    }
 
-            // Now you can loop through $smsList to send each message
+} elseif ($duration == 30) {
+          $smsList[] = "Shukriya! apka {$plantext} monthly discounted price {$fee} mein activate kar diya gaya hai. T&Cs: {$tcLink}. TID:{$tid}";
+        $smsList[] = "Muaziz Saarif, yaad rahe ke aap ke muntakhib karda plan ke mutabiq Rs.{$fee} aglay mahinay se har mahene apke JazzCash wallet se deduct kiya jaye ga.";
+    
 
+} elseif ($duration == 1) {
+            $smsList[] = "Shukriya! apka {$plantext} daily discounted {$fee} mein activate kar diya gaya hai. T&Cs: {$tcLink}. TID:{$tid}";
+        $smsList[] = "Muaziz saarif yaad rahay apkay muntakhib karda plan k mutabiq Rs.{$fee} rozana sirf pehlay 30 din k liye lagu hai";
+        $smsList[] = "Muaziz saarif yaad rahay apkay muntakhib karda plan k mutabiq 30 din baad Rs.12 rozana apkay JazzCash wallet se deduct kiye jaengay";
+    
+}
+
+
+// Now you can loop through $smsList to send each message
+
+// Benefial SMS based on plan_id
+if ($plan_id == 1) {
+    $smsList[] = "EFU Term Life deta hai aapko Rs. 10 lakh tak ka life cover, Rs 10000 ka accidental hospitalization aur Rs 2000 tak ka OPD Cover.";
+} elseif ($plan_id == 4) {
+    $smsList[] = "EFU Family Health Insurance deta hai Rs 7.5 lakh tak ka family hospitalization cover, C-Section pe Rs 25,000, muft doctor se online mashwara aur bohat kuch.";
+} elseif ($plan_id == 5) {
+    $smsList[] = "EFU Medical Insurance deta hai Rs 8.5 lakh ka hospitalization cover, unlimited online doctor se mashwara aur Rs 10000 tak ka doctor ki fees, dawai aur lab test ka coverage.";
+}
+
+
+// Common messages
+$smsList[] = "Aapki EFU insurance deti hai phone par doctor se muft mashwara. Abhi hamare doctor se mashwara lene ke liye 111-124-444 par call karein";
+$smsList[] = "Ab claim karna nihayat asaan hai! Claim ke liye 111-124-444 par call karein ya apne claim documents jazzcashclaims@efulife.com par email karein";
+
+// Refund message if source is AutoDebit or IVR Subscription
+
+// Now you can loop through $smsList to send each message
 
             foreach ($smsList as $index => $message) {
                 $payload = [

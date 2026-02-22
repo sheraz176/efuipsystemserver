@@ -54,16 +54,24 @@ class DashboardController extends Controller
             ->first();
 
         // Batch queries for CustomerSubscription
-        $subscriptionStats = CustomerSubscription::selectRaw("
-                COUNT(CASE WHEN DATE(created_at) = CURRENT_DATE THEN 1 END) AS todaySubscriptionCount,
-                COUNT(CASE WHEN YEAR(created_at) = YEAR(CURRENT_DATE) AND MONTH(created_at) = MONTH(CURRENT_DATE) THEN 1 END) AS currentMonthSubscriptionCount,
-                COUNT(CASE WHEN YEAR(created_at) = YEAR(CURRENT_DATE) THEN 1 END) AS currentYearSubscriptionCount,
-                SUM(CASE WHEN DATE(created_at) = CURRENT_DATE THEN transaction_amount ELSE 0 END) AS dailyTransactionSum,
-                SUM(CASE WHEN YEAR(created_at) = YEAR(CURRENT_DATE) AND MONTH(created_at) = MONTH(CURRENT_DATE) THEN transaction_amount ELSE 0 END) AS monthlyTransactionSum,
-                SUM(CASE WHEN YEAR(created_at) = YEAR(CURRENT_DATE) THEN transaction_amount ELSE 0 END) AS yearlyTransactionSum
-            ")
-            ->where('company_id', $companyId)
-            ->first();
+
+
+	$subscriptionStats = cache()->remember(
+    'subscription_stats_'.$companyId,
+    600, // cache 600 seconds
+    function () use ($companyId) {
+        return CustomerSubscription::selectRaw("
+            COUNT(CASE WHEN DATE(created_at) = CURRENT_DATE THEN 1 END) AS todaySubscriptionCount,
+            COUNT(CASE WHEN YEAR(created_at) = YEAR(CURRENT_DATE) AND MONTH(created_at) = MONTH(CURRENT_DATE) THEN 1 END) AS currentMonthSubscriptionCount,
+            COUNT(CASE WHEN YEAR(created_at) = YEAR(CURRENT_DATE) THEN 1 END) AS currentYearSubscriptionCount,
+            SUM(CASE WHEN DATE(created_at) = CURRENT_DATE THEN transaction_amount ELSE 0 END) AS dailyTransactionSum,
+            SUM(CASE WHEN YEAR(created_at) = YEAR(CURRENT_DATE) AND MONTH(created_at) = MONTH(CURRENT_DATE) THEN transaction_amount ELSE 0 END) AS monthlyTransactionSum,
+            SUM(CASE WHEN YEAR(created_at) = YEAR(CURRENT_DATE) THEN transaction_amount ELSE 0 END) AS yearlyTransactionSum
+        ")
+        ->where('company_id', $companyId)
+        ->first();
+    }
+);
 
         // Format the results for response
         return response()->json([

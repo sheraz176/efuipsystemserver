@@ -20,7 +20,7 @@
                     <div class="col-md-8">
                         <div class="card-body">
                             <h4 class="fw-bold text-primary">
-                                Welcome {{ session('agent')->username }} 🎉
+                                Welcome {{ session('agent')->username }} ??
                             </h4>
                             <p class="mb-0 text-muted">
                                 Claims dashboard overview & performance insights
@@ -215,7 +215,7 @@ new Chart(rejectionCtx, {
         }]
     },
     options: {
-        indexAxis: 'y',   // 🔥 Horizontal
+        indexAxis: 'y',   // ?? Horizontal
         plugins: {
             legend: { display: false }
         },

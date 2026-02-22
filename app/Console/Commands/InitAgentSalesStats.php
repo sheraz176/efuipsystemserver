@@ -44,9 +44,10 @@ class InitAgentSalesStats extends Command
         $month = now()->format('Y-m');
         $year  = now()->year;
 
-        $agents = CustomerSubscription::select('sales_agent')
-            ->distinct()
-            ->pluck('sales_agent');
+       $agents = CustomerSubscription::select('sales_agent')
+    ->where('sales_agent', '>', 0)  // ignore negative/zero IDs
+    ->distinct()
+    ->pluck('sales_agent');
 
         foreach ($agents as $agentId) {
 

@@ -70,7 +70,7 @@ class MobileApiController extends Controller
             ->setStatusCode(200);
     }
 
-    public function getProducts(Request $request)
+  public function getProducts(Request $request)
 {
     // Validate the request
     // $validator = Validator::make($request->all(), [
@@ -105,6 +105,7 @@ class MobileApiController extends Controller
         'data' => $filteredProducts,
     ], 200);
 }
+
 
 
 

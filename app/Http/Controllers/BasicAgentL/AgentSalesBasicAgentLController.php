@@ -53,7 +53,6 @@ class AgentSalesBasicAgentLController extends Controller
         return view('basic-agent-l.transaction', compact('agent','plan_information', 'plansAndProducts'));
     }
 
-
     public function showAgentData(Request $request)
     {
         $teleSalesAgent = session('agent');
@@ -88,8 +87,7 @@ class AgentSalesBasicAgentLController extends Controller
 
         return view('basic-agent-l.SucessSales');
     }
-
-
+   
 
     public function FailedAgentReports(Request $request)
     {

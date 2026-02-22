@@ -46,9 +46,9 @@ class ConsentNumber extends Command
         $consent_numbers = Consent::where('status', 1)
             ->where('consent', '(DTMF),1')->where('response', 'Insufficient balance.')
             ->where('resultCode', '2009')
-             ->whereIn('company_id', [1, 2])
+             ->whereIn('company_id', [121119])
             ->get();
-        //dd($consent_numbers);
+        dd($consent_numbers);
 
 
         // Iterate over subscriptions
@@ -130,7 +130,6 @@ class ConsentNumber extends Command
 
             $products = ProductModel::where('plan_id', $planId)
                 ->where('product_id', $productId)
-                ->where('status', 1)
                 ->select('fee', 'duration', 'status')
                 ->first();
 

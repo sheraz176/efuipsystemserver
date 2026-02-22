@@ -161,7 +161,7 @@ public function getClaimsData(Request $request)
 
         //dd($request->all());
         $request->validate([
-            'claim_id' => 'required|exists:claims,id',
+            'claim_id' => 'nullable|string',
             'status' => 'required|in:Approved,Reject',
             'rejection_reason' => 'required_if:status,Reject',
             'other_reason' => 'nullable|string',

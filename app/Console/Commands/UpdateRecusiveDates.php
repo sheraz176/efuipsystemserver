@@ -44,9 +44,9 @@ class UpdateRecusiveDates extends Command
         //  dd($today);
          $today = "2024-05-07";
         $subscriptions = DB::table('recusive_charging_data')
-        ->where('amount',4)->where('charging_date', '>=','2024-05-06')
+        ->where('amount',10)->where('charging_date', '>=','2025-08-16')
         ->get();
-        //dd($subscriptions);
+        dd($subscriptions);
         foreach($subscriptions as $subscription){
           $find_sub = RecusiveChargingData::find($subscription->id);
           $find_sub->charging_date = $today;

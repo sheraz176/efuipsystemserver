@@ -34,7 +34,7 @@ class ManagerUnSubscription extends Controller
     $refundResult = $this->refundManager($subscription->cps_transaction_id,$subscription->referenceId,$subscription->subscriber_msisdn);
 
 
-
+     //dd($refundResult);
 
     if ($refundResult['resultCode'] == 0) {
         // Call unsubscribeNow function with referenceId and CPS Transaction ID

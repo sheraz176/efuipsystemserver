@@ -168,7 +168,7 @@
                         data: 'grace_period_time',
                         name: 'grace_period_time'
                     },
-                     {
+                      {
                         data: 'consistent_provider',
                         name: 'consistent_provider'
                     },

@@ -190,6 +190,8 @@ class RecusiveChargingOneRepuee extends Command
                 $data = json_decode($decryptedData, true);
                 //  dd($data);
 
+                  
+
 
                 if ($data !== null && isset($data['resultCode']) && $data['resultCode'] === "0") {
 
@@ -217,6 +219,12 @@ class RecusiveChargingOneRepuee extends Command
                     $recusive_charging_data->customer_msisdn = $subscription->subscriber_msisdn;
                     $recusive_charging_data->duration = $subscription->product_duration;
                     $recusive_charging_data->save();
+
+                       DB::table('customer_subscriptions')
+    ->where('subscription_id', $subscription->subscription_id)
+    ->update([
+        'transaction_amount' => 12,
+    ]);
 
                     // dd($recusive_charging_data);
 
@@ -258,7 +266,17 @@ class RecusiveChargingOneRepuee extends Command
                     $recusive_charging_data->duration = $subscription->product_duration;
                     $recusive_charging_data->save();
                     // dd($recusive_charging_data);
+
+                           DB::table('customer_subscriptions')
+    ->where('subscription_id', $subscription->subscription_id)
+    ->update([
+        'transaction_amount' => 12,
+    ]);
                 }
+                      
+                  // Update database records
+                     
+
             }
             // else
             // {
@@ -266,6 +284,9 @@ class RecusiveChargingOneRepuee extends Command
             //     return json_encode($data);
             // }
         }
+   
+
+     
 
         $data = array('success' => true, 'message' => 'Recursive charging checked successfully');
         return json_encode($data);

@@ -441,15 +441,14 @@ function updateProductsDropdown(planId) {
     // Add options based on the selected plan
     if (plansAndProducts.hasOwnProperty(planId)) {
         plansAndProducts[planId].products.forEach(product => {
-
-
+          
                // Laravel session value ko JS me inject kar rahe hain
-        const companyId = {{ session("agent")->company_id }};
+        //const companyId = {{ session("agent")->company_id }};
 
         // Agar company 1 ya 2 hai aur product_id 4 hai to skip karo
-        if ((companyId === 1 || companyId === 2) && product.product_id === 4) {
-            return; // Skip this product
-        }
+        //if ((companyId === 1 || companyId === 2) && product.product_id === 4) {
+            //return; // Skip this product
+        //}
 
 
             if (product.status === 1) { // Only add active products

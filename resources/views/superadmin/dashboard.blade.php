@@ -586,7 +586,7 @@
 
 
         <!-- Net Enrollment Charts -->
-
+   
 
 
 
@@ -859,7 +859,7 @@
 
                         $('#totalactive').text(data.totalactive);
                         $('#totallive').text(data.totallive);
-
+                             
                           $('#totalWaada').text(data.totalWaada);
                         $('#totalWaada').text(data.totalWaada);
 

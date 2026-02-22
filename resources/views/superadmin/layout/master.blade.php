@@ -20,7 +20,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('/assets/img/favicon/favicon.ico')}}" />
+    <link rel="icon" type="image/x-icon" href="/assets/img/favicon/favicon.ico" />
 
     <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
 
@@ -129,6 +129,11 @@
                 <div data-i18n="Analytics" style="color: black">Dashboard</div>
               </a>
             </li>
+
+       
+
+
+            
 
             {{-- <li class="menu-header small text-uppercase"><span class="menu-header-text">Companies Management</span></li> --}}
             <!-- Cards -->
@@ -285,6 +290,26 @@
                     </a>
                   </li>
 
+                     
+
+                   <li class="menu-item {{ Request::is('super-admin/recusive/counts') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.recusive.counts.index') }}" class="menu-link" onclick="closeSubmenu(this)">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Recursive Charging Counts</div>
+                    </a>
+                  </li>
+
+                      <li class="menu-item {{ Request::is('super-admin/hourly-summary') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.hourly-summary') }}" class="menu-link" onclick="closeSubmenu(this)">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Hourly summary</div>
+                    </a>
+                  </li>
+
+
+                        
+
+
                   <li class="menu-item {{ Request::is('super-admin/recusive/chargingdataindex') ? 'active' : '' }}">
                     <a href="{{ route('superadmin.recusive-charging-data-index') }}" class="menu-link" onclick="closeSubmenu(this)">
                       <i class="menu-icon tf-icons bx bx-collection"></i>
@@ -292,12 +317,13 @@
                     </a>
                   </li>
 
-                  <li class="menu-item {{ Request::is('super-admin/datatable/ConsentData') ? 'active' : '' }}">
+                       <li class="menu-item {{ Request::is('super-admin/datatable/ConsentData') ? 'active' : '' }}">
                     <a href="{{ route('superadmin.ConsentData') }}" class="menu-link">
                       <i class="menu-icon tf-icons bx bx-collection"></i>
                       <div data-i18n="Basic">Low Balance Number</div>
                     </a>
                   </li>
+
 
                 </ul>
               </li>
@@ -427,21 +453,25 @@
                   <div data-i18n="Basic">Information</div>
                 </a>
 
-                <ul class="menu-sub" style="display: {{ Request::is('super-admin/customer/information*') ? 'block' : 'none' }} ;">
+                <ul class="menu-sub" style="display: {{ Request::is('super-admin/customer/information*') ? 'block' : 'none' }};">
 
-                  <li class="menu-item {{ Request::is('super-admin/customer/information')  ? 'active' : '' }}">
+                  <li class="menu-item {{ Request::is('super-admin/customer/information') ? 'active' : '' }}">
                     <a href="{{ route('superadmin.customerinformation') }}" class="menu-link">
                       <i class="menu-icon tf-icons bx bx-collection"></i>
                       <div data-i18n="Basic">Customer Information</div>
                     </a>
                   </li>
 
-
-
-
-
                 </ul>
               </li>
+
+
+   <li class="menu-item {{ Request::is('/command-schedule') ? 'active' : '' }}">
+              <a href="{{ route('schedule.index') }}" class="menu-link">
+                  <i style="color: black" class="menu-icon tf-icons bx bx-time"></i>
+                <div data-i18n="Analytics" style="color: black">Command schedule</div>
+              </a>
+            </li>
 
               <!-- User interface -->
 

@@ -42,17 +42,16 @@ class UpdatelftdAmount extends Command
     {
         // Fetch records based on your given conditions
         $subscriptions = CustomerSubscription::where('pulse', 'LFDT')
-            ->where('api_source', 'LFDT')
-            ->where('company_id', 20)
-            ->where("plan_id", "4")
-            ->where("productId", "9")
-            ->where('policy_status', 1)
-            ->whereBetween('created_at', [
-                '2025-10-30 00:00:00',
-            ])
-            ->get();
+    ->where('api_source', 'LFDT')
+    ->where('company_id', 20)
+    ->where('plan_id', '4')
+    ->where('productId', '4')
+    ->where('transaction_amount', '1950')
+    ->where('policy_status', 1)
+    ->where('created_at', '>=', '2025-10-30 00:00:00')
+    ->get();
 
-            dd($subscriptions->count());
+            //dd($subscriptions->count());
          // Update subscription_time for each record
          foreach ($subscriptions as $subscription) {
             $subscription->update([

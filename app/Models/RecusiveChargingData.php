@@ -11,6 +11,22 @@ class RecusiveChargingData extends Model
 {
     use HasFactory;
     protected $table= 'recusive_charging_data';
+       
+   protected $fillable = [
+        'subscription_id',
+        'tid',
+        'reference_id',
+        'amount',
+        'plan_id',
+        'product_id',
+        'cps_response',
+        'charging_date',
+        'customer_msisdn',
+        'duration',
+        'daily_unique_date',
+         'looping',
+    ];
+
 
     public function plan()
     {

@@ -12,12 +12,51 @@ use App\Models\AgentCount;
 use App\Models\RecusiveChargingData;
 use App\Models\ConsentData;
 use Carbon\CarbonInterval;
+use Illuminate\Support\Facades\Cache;
+use App\Models\MonthlyStat;
 
 
 class Charts extends Controller
 {
 
-    public function getSubscriptionChartData(Request $request)
+
+public function getMonthlySubscriptionUnsubscriptionChartData()
+{
+    $year = 2026; // Testing
+
+    $stats = MonthlyStat::where('year', $year)->first();
+
+    if (!$stats) {
+        return response()->json([
+            'labels' => [],
+            'subscriptions' => [],
+            'unsubscriptions' => []
+        ]);
+    }
+
+    // Decode JSON safely
+    $data = is_string($stats->data) ? json_decode($stats->data, true) : $stats->data;
+
+    $labels = [];
+    $subscriptionValues = [];
+    $unsubscriptionValues = [];
+
+    for ($m = 1; $m <= 12; $m++) {
+        $labels[] = Carbon::create()->month($m)->format('F');
+        $subscriptionValues[] = (int)($data['monthly_sub_unsub'][$m]['subscriptions'] ?? 0);
+        $unsubscriptionValues[] = (int)($data['monthly_sub_unsub'][$m]['unsubscriptions'] ?? 0);
+    }
+
+    return response()->json([
+        'labels' => $labels,
+        'subscriptions' => $subscriptionValues,
+        'unsubscriptions' => $unsubscriptionValues,
+    ]);
+}
+
+
+
+public function getSubscriptionChartData(Request $request)
 {
     $timeRange = $request->input('time_range');
     $labels = [];
@@ -39,35 +78,31 @@ class Charts extends Controller
 
         case 'this_year':
             $year = Carbon::now()->year;
+
+            // Direct DB query for monthly active subscriptions (policy_status = 1)
             $data = CustomerSubscription::whereYear('subscription_time', $year)
-                ->selectRaw("DATE_FORMAT(subscription_time, '%m-%Y') as label, COUNT(*) as count")
-                ->groupBy('label')
-                ->get();
+                ->where('policy_status', 1)
+                ->selectRaw("MONTH(subscription_time) as month, COUNT(*) as count")
+                ->groupBy('month')
+                ->pluck('count', 'month');
 
-            // Generate monthly labels
-            for ($month = 1; $month <= 12; $month++) {
-                $monthLabel = str_pad($month, 2, '0', STR_PAD_LEFT) . '-' . $year;
-                $labels[] = $monthLabel;
-                $values[$monthLabel] = 0;
-            }
-
-            // Fill in counts
-            foreach ($data as $subscription) {
-                $values[$subscription->label] = $subscription->count;
+            for ($m = 1; $m <= 12; $m++) {
+                $labels[] = str_pad($m, 2, '0', STR_PAD_LEFT) . '-' . $year;
+                $values[] = $data[$m] ?? 0;
             }
 
             return response()->json([
-                'labels' => array_keys($values),
-                'values' => array_values($values)
+                'labels' => $labels,
+                'values' => $values
             ]);
 
         case 'last_7_days':
-            $start = Carbon::now()->subDays(6)->startOfDay(); // include today
+            $start = Carbon::now()->subDays(6)->startOfDay();
             $end = Carbon::now()->endOfDay();
             break;
 
         case 'last_30_days':
-            $start = Carbon::now()->subDays(29)->startOfDay(); // include today
+            $start = Carbon::now()->subDays(29)->startOfDay();
             $end = Carbon::now()->endOfDay();
             break;
 
@@ -85,7 +120,7 @@ class Charts extends Controller
             return response()->json(['error' => 'Invalid time range']);
     }
 
-    // Fetch counts from DB
+    // Default query for other ranges
     $dateFormat = $interval === 'hour' ? '%Y-%m-%d %H:00:00' : '%Y-%m-%d';
     $data = CustomerSubscription::whereBetween('subscription_time', [$start, $end])
         ->selectRaw("DATE_FORMAT(subscription_time, '$dateFormat') as label, COUNT(*) as count")
@@ -115,29 +150,30 @@ class Charts extends Controller
 
 
 
+    
 
 
-
-
- public function getMonthlyActiveSubscriptionChartData()
+public function getMonthlyActiveSubscriptionChartData()
 {
-    // Fetch month-wise subscription counts for the current year
-    $monthlyData = CustomerSubscription::where('policy_status', "1")
-        ->whereBetween('subscription_time', [
-            now()->startOfYear(),
-            now()->endOfYear()
-        ])
-        ->selectRaw('MONTH(subscription_time) as month, COUNT(*) as count')
-        ->groupBy('month')
-        ->pluck('count', 'month'); // pluck into [month => count] format
+    $year = now()->year; // Current year
+    $stats = MonthlyStat::where('year', $year)->first();
+
+    if (!$stats) {
+        return response()->json([
+            'labels' => [],
+            'values' => []
+        ]);
+    }
+
+    // Decode JSON safely
+    $data = is_string($stats->data) ? json_decode($stats->data, true) : $stats->data;
 
     $labels = [];
     $values = [];
 
-    // Loop through all months (1 to 12)
-    foreach (range(1, 12) as $month) {
-        $labels[] = Carbon::create()->month($month)->format('F'); // Month name
-        $values[] = $monthlyData->get($month, 0); // Get count or default 0
+    for ($m = 1; $m <= 12; $m++) {
+        $labels[] = Carbon::create()->month($m)->format('F');
+        $values[] = (int)($data['monthly_active'][$m] ?? 0);
     }
 
     return response()->json([
@@ -148,42 +184,9 @@ class Charts extends Controller
 
 
 
-public function getMonthlySubscriptionUnsubscriptionChartData()
-{
-    $currentYear = now()->year;
 
-    // Fetch monthly grouped subscription and unsubscription counts in one query
-    $data = CustomerSubscription::selectRaw('
-            MONTH(subscription_time) as month,
-            COUNT(CASE WHEN policy_status = "1" THEN 1 END) as subscriptions,
-            COUNT(CASE WHEN policy_status = "0" THEN 1 END) as unsubscriptions
-        ')
-        ->whereBetween('subscription_time', [
-            Carbon::create($currentYear, 1, 1)->startOfDay(),
-            Carbon::create($currentYear, 12, 31)->endOfDay()
-        ])
-        ->groupBy('month')
-        ->orderBy('month')
-        ->get()
-        ->keyBy('month');
 
-    $labels = [];
-    $subscriptionValues = [];
-    $unsubscriptionValues = [];
 
-    // Fill chart data for all 12 months (even if there's no record for that month)
-    for ($month = 1; $month <= 12; $month++) {
-        $labels[] = Carbon::create()->month($month)->format('F');
-        $subscriptionValues[] = $data->has($month) ? $data[$month]->subscriptions : 0;
-        $unsubscriptionValues[] = $data->has($month) ? $data[$month]->unsubscriptions : 0;
-    }
-
-    return response()->json([
-        'labels' => $labels,
-        'subscriptions' => $subscriptionValues,
-        'unsubscriptions' => $unsubscriptionValues,
-    ]);
-}
 
 
 public function getChartData(Request $request)

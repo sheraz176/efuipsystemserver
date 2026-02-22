@@ -56,10 +56,10 @@ class RecusiveMonthly extends Command
         ->where('plan_id', 4)
         ->where('productId', 10)
         ->where('policy_status', 1)
-        ->whereDate('subscription_time', $targetDate)
+        //->whereDate('recursive_charging_date', '=', $today)
         ->get();
 
-        //dd($subscriptions);
+        dd($subscriptions->count());
 
         // Iterate over subscriptions
         foreach ($subscriptions as $subscription) {
@@ -217,6 +217,13 @@ class RecusiveMonthly extends Command
                     $recusive_charging_data->duration = $subscription->product_duration;
                     $recusive_charging_data->save();
 
+                               DB::table('customer_subscriptions')
+                        ->where('subscription_id', $subscription->subscription_id)
+                        ->update([
+                            'transaction_amount' => 12,
+                        ]);
+
+
                     // dd($recusive_charging_data);
 
                 } else if ($data !== null) {
@@ -257,7 +264,15 @@ class RecusiveMonthly extends Command
                     $recusive_charging_data->duration = $subscription->product_duration;
                     $recusive_charging_data->save();
                     // dd($recusive_charging_data);
+
+                              DB::table('customer_subscriptions')
+                        ->where('subscription_id', $subscription->subscription_id)
+                        ->update([
+                            'transaction_amount' => 12,
+                        ]);
+
                 }
+
             }
             // else
             // {
@@ -265,6 +280,10 @@ class RecusiveMonthly extends Command
             //     return json_encode($data);
             // }
         }
+
+
+
+       
 
         $data = array('success' => true, 'message' => 'Recursive charging checked successfully');
         return json_encode($data);

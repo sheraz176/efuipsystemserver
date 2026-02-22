@@ -15,6 +15,8 @@ use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Yajra\DataTables\DataTables;
 use App\Models\ConsentData;
+use App\Models\RecusiveCounts;
+use App\Models\Recusivefailed;
 use App\Models\HourlyTransactionSummary;
 
 
@@ -123,18 +125,92 @@ public function hourlySummary(Request $request)
 }
 
 
+   public function recusivecountsgetdata(Request $request)
+{
+    $query = RecusiveCounts::where('status', 1);
 
+    /* ===== DATE FILTER (date column) ===== */
+    if ($request->dateFilter) {
+        [$from, $to] = explode(' to ', $request->dateFilter);
+        $query->whereBetween('date', [$from, $to]);
+    }
+
+    $query->orderBy('date', 'desc');
+
+    /* ============== CSV EXPORT ============== */
+    if ($request->export === 'csv') {
+
+        $filename = 'recursive_charging_' . now()->format('Ymd_His') . '.csv';
+
+        return response()->stream(function () use ($query) {
+
+            $file = fopen('php://output', 'w');
+
+            fputcsv($file, [
+                'Date',
+                'Today Recursive',
+                'Success Total',
+                'Failed Total',
+                'Term Life Daily Success',
+                'Term Life Monthly Success',
+                'Family Health Daily Success',
+                'Family Health Monthly Success',
+                'Term Life Daily Amount',
+                'Term Life Monthly Amount',
+                'Family Health Daily Amount',
+                'Family Health Monthly Amount',
+            ]);
+
+            foreach ($query->get() as $row) {
+                fputcsv($file, [
+                    $row->date,
+                    $row->total_recursive_today,
+                    $row->success_total,
+                    $row->failed_total,
+                    $row->term_life_daily_count,
+                    $row->term_life_monthly_count,
+                    $row->family_health_daily_count,
+                    $row->family_health_monthly_count,
+                    $row->term_life_daily_amount,
+                    $row->term_life_monthly_amount,
+                    $row->family_health_daily_amount,
+                    $row->family_health_monthly_amount,
+                ]);
+            }
+
+            fclose($file);
+
+        }, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=$filename",
+        ]);
+    }
+
+    /* ============== DATATABLE RESPONSE ============== */
+    return DataTables::of($query)
+        ->addIndexColumn()
+        ->editColumn('date', fn($row) => $row->date)
+        ->make(true);
+}
+
+  
+ 
     public function index()
     {
         return view('superadmin.completesales');
     }
 
+    public function recusivecountsindex()
+    {
+        return view('superadmin.recusivecountsindex');
+    }
+    
 
-     public function refundagentindex()
+
+    public function refundagentindex()
     {
         return view('super_agent_Interested.netenrollment');
     }
-
 
     public function getData(Request $request)
 {
@@ -427,12 +503,13 @@ public function get_active_subscription_data(Request $request)
               ->addColumn('product_name', function($data){
                   return $data->products->product_name;
               })
-                ->addColumn('consistent_provider', function($data){
+                 ->addColumn('consistent_provider', function($data){
                 return $data->consent;
              })
 
               ->rawColumns(['company_name', 'plan_name', 'product_name','consistent_provider'])
               ->make(true);
+
       }
 
     }
@@ -444,12 +521,13 @@ public function get_active_subscription_data(Request $request)
     return view('superadmin.recusive-charging.index',compact('recusiveChargingDatacount'));
     }
 
-     public function agent_recusive_charging_data_index()
+ public function agent_recusive_charging_data_index()
     {
         $recusiveChargingDatacount = RecusiveChargingData::whereDate('created_at', Carbon::today())
         ->count();
       return view('super_agent_Interested.recusivechargingindex',compact('recusiveChargingDatacount'));
     }
+
 
 
     public function get_recusive_charging_data(Request $request)

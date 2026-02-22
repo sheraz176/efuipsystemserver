@@ -53,7 +53,7 @@ class oldnumberrecusive extends Command
         ->where('policy_status', 0)
         ->get();
 
-        //dd($subscriptions);
+        //dd($subscriptions->count());
 
         // Iterate over subscriptions
         foreach ($subscriptions as $subscription) {
@@ -125,7 +125,7 @@ class oldnumberrecusive extends Command
             $response = curl_exec($ch);
 
 
-            Log::channel('recusive_charging_new_one_rupee')->info('Recusive Charging Api New.', [
+            Log::channel('recusive_charging_old_policy')->info('Recusive Charging .', [
                'product_id' => "13",
                 'plan' => "monthly",
                 'msisdn' => $msisdn,

@@ -37,25 +37,51 @@ class UpdateRRDate extends Command
      *
      * @return int
      */
-    public function handle()
+ public function handle()
     {
-        $todayEnd = Carbon::today()->endOfDay(); // 2025-12-18 23:59:59
-        $nextDay  = Carbon::tomorrow()->startOfDay(); // 2025-12-19 00:00:00
+        $todayEnd = Carbon::today()->endOfDay();        // today 23:59:59
+        $nextDay  = Carbon::tomorrow()->startOfDay();  // tomorrow 00:00:00
 
-        DB::table('customer_subscriptions')
+        // ?? Dry run count (for logs)
+        $count = DB::table('customer_subscriptions')
             ->where('policy_status', 1)
             ->whereIn('transaction_amount', [1, 2, 10, 12, 200, 299, 163])
             ->whereBetween('created_at', [
                 '2025-10-01 00:00:00',
                 $todayEnd
             ])
-            ->where('recursive_charging_date', '<', $todayEnd)
+            ->where(function ($q) use ($todayEnd) {
+                $q->whereNull('recursive_charging_date')
+                  ->orWhere('recursive_charging_date', '<', $todayEnd);
+            })
+            ->count();
+
+        if ($count === 0) {
+            $this->info('No records found to update.');
+            return Command::SUCCESS;
+        }
+
+        // ? Actual update
+        $updated = DB::table('customer_subscriptions')
+            ->where('policy_status', 1)
+            ->whereIn('transaction_amount', [1, 2, 10, 12, 200, 299, 163])
+            ->whereBetween('created_at', [
+                '2025-10-01 00:00:00',
+                $todayEnd
+            ])
+            ->where(function ($q) use ($todayEnd) {
+                $q->whereNull('recursive_charging_date')
+                  ->orWhere('recursive_charging_date', '<', $todayEnd);
+            })
             ->update([
-                'recursive_charging_date' => $nextDay
+                'recursive_charging_date' => $nextDay,
+                'updated_at' => now()
             ]);
 
-        $this->info('Recursive charging date updated successfully');
+        $this->info("Recursive charging date updated successfully. Rows affected: {$updated}");
 
         return Command::SUCCESS;
     }
+
+
 }

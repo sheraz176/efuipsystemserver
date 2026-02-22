@@ -256,6 +256,32 @@
     });
 });
 
+$(document).on('click', '.approve-btn', function () {
+    let claimId = $(this).data('id');
+
+    if (!confirm('Are you sure you want to approve this claim?')) {
+        return;
+    }
+
+    $.ajax({
+        url: '{{ route("claim.update.status") }}',
+        type: 'POST',
+        data: {
+            _token: '{{ csrf_token() }}',
+            claim_id: claimId,
+            status: 'Approved'
+        },
+        success: function (response) {
+            toastr.success(response.message);
+            $('#myTables').DataTable().ajax.reload(null, false);
+        },
+        error: function () {
+            toastr.error('Failed to approve claim.');
+        }
+    });
+});
+
+
 
         // Edit Claim Amount Modal
         $(document).on('click', '.edit-amount-btn', function() {

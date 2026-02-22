@@ -44,16 +44,10 @@ class delInterestedCustomer extends Command
         DB::enableQueryLog();
         $InterestedCustomers = InterestedCustomer::where('company_id', 12)
     ->where('deduction_applied', 0)
-    ->whereBetween('created_at', ['2024-06-01', '2024-06-24'])
-    ->get();
-
-    $InterestedCustomers = InterestedCustomer::where('company_id', 12)
-    ->where('deduction_applied', 0)
     ->where('created_at', '>=', '2024-06-25')
-    ->get();
-        // dd(DB::getQueryLog());
-            dd($InterestedCustomers);
-
+    ->get();           
+        
+       dd($InterestedCustomers);
 
         foreach($InterestedCustomers  as $InterestedCustomer){
 

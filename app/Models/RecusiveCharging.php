@@ -14,6 +14,21 @@ class RecusiveCharging extends Model
     protected $table= 'recusive_charging_data';
 
 
+protected $fillable = [
+        'subscription_id',
+        'tid',
+        'reference_id',
+        'amount',
+        'plan_id',
+        'product_id',
+        'cps_response',
+        'charging_date',
+        'customer_msisdn',
+        'duration',
+        'daily_unique_date',
+    ];
+
+
     public function products()
     {
         return $this->belongsTo(ProductModel::class ,'productId');

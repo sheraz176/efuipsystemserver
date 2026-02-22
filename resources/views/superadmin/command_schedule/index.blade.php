@@ -29,28 +29,31 @@
                     @endif
 
 
-                        <form method="POST" action="{{ route('schedule.update') }}">
-        @csrf
-        <div class="mb-3">
-            <label>Command Time</label>
-            <input type="time" name="run_time" value="{{ $command->run_time }}" class="form-control" required>
-        </div>
+@foreach($commands as $command)
+<form method="POST" action="{{ route('schedule.update') }}" class="mb-4">
+    @csrf
 
-        <div class="mb-3">
-            <label>Status</label>
-            <select name="is_active" class="form-control">
-                <option value="1" {{ $command->is_active ? 'selected' : '' }}>Active</option>
-                <option value="0" {{ !$command->is_active ? 'selected' : '' }}>Inactive</option>
-            </select>
-        </div>
+    <input type="hidden" name="command_name" value="{{ $command->command_name }}">
 
-        <button type="submit" class="btn btn-primary">Update</button>
-    </form>
+    <h5>{{ $command->command_name }}</h5>
 
-    <form method="POST" action="{{ route('schedule.runNow') }}" class="mt-3">
-        @csrf
-        <button type="submit" class="btn btn-success">Run Command Now</button>
-    </form>
+    <div class="mb-2">
+        <label>Command Time</label>
+        <input type="time" name="run_time" value="{{ $command->run_time }}" class="form-control" required>
+    </div>
+
+    <div class="mb-2">
+        <label>Status</label>
+        <select name="is_active" class="form-control">
+            <option value="1" {{ $command->is_active ? 'selected' : '' }}>Active</option>
+            <option value="0" {{ !$command->is_active ? 'selected' : '' }}>Inactive</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>
+@endforeach
+    
 
                 </div>
             </div>

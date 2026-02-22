@@ -38,9 +38,10 @@ class logoutAgent extends Command
      */
     public function handle()
     {
-        // $telesalesAgents = TelesalesAgent::where('company_id',11)->get();
-        $telesalesAgents = TelesalesAgent::get();
-            // dd($telesalesAgents);
+        //$telesalesAgents = TelesalesAgent::where('company_id',11)->get();
+         $telesalesAgents = TelesalesAgent::get();
+             //dd($telesalesAgents);
+            
        foreach($telesalesAgents as $telesalesAgent){
         $telesalesAgent->islogin = "0";
         $telesalesAgent->today_logout_time = now();

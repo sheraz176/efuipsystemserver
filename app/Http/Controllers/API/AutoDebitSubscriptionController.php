@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Http;
 use App\Models\SMSMsisdn;
 use App\Models\AutoDebitRequest;
 use App\Models\DefaultAgents;
+use App\Models\AgentSalesStat;
 
 
 class AutoDebitSubscriptionController extends Controller
@@ -40,6 +41,9 @@ class AutoDebitSubscriptionController extends Controller
             // Add validation rules for any other new parameters
         ]);
 
+
+
+      
         // Check if validation fails
         if ($validator->fails()) {
             return response()->json([
@@ -429,6 +433,7 @@ class AutoDebitSubscriptionController extends Controller
                             $checking_request_number->update();
 
                             // SMS Code
+                           
 
                             $sms = new SMSMsisdn();
                             $sms->msisdn = $subscriber_msisdn;
@@ -437,6 +442,30 @@ class AutoDebitSubscriptionController extends Controller
                             $sms->status = "0";
                             $sms->save();
 
+       $agentId = $request->input('agent_id');
+if ($agentId > 0) {
+    $agentStat = AgentSalesStat::where('agent_id', $agentId)->first();
+
+    if ($agentStat) {
+        // ? Increment counts safely
+        $agentStat->increment('today_sales');
+        $agentStat->increment('month_sales');
+        $agentStat->increment('year_sales');
+    } else {
+        AgentSalesStat::create([
+            'agent_id'    => $agentId,
+            'today_sales' => 1,
+            'month_sales' => 1,
+            'year_sales'  => 1,
+            'stat_date'   => now()->toDateString(),
+            'stat_month'  => now()->format('Y-m'),
+            'stat_year'   => now()->year,
+        ]);
+    }
+}
+
+                           
+        
 
                             // End SMS Code
                             return response()->json([

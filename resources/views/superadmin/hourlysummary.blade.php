@@ -8,7 +8,9 @@
 
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb pl-0">
-                    <li class="breadcrumb-item"><a href="{{ route('superadmin.dashboard') }}">Home</a></li>
+                    <li class="breadcrumb-item">
+                        <a href="{{ route('superadmin.dashboard') }}">Home</a>
+                    </li>
                     <li class="breadcrumb-item active">Hourly Transaction Summary</li>
                 </ol>
             </nav>
@@ -18,9 +20,9 @@
                     <div class="row mb-3">
                         <div class="col-md-6">
                             <form method="GET" action="{{ route('superadmin.hourly-summary') }}">
-                                <label for="dateFilter">Filter by Date:</label>
+                                <label>Filter by Date:</label>
                                 <input type="text" id="dateFilter" name="dateFilter" class="form-control"
-                                       placeholder="Select date range" value="{{ request('dateFilter') }}">
+                                       value="{{ request('dateFilter') }}">
                         </div>
                         <div class="col-md-6 mt-4">
                             <button type="submit" class="btn btn-primary btn-sm">Filter</button>
@@ -29,6 +31,7 @@
                         </div>
                     </div>
                 </div>
+
                 <div class="ms-panel-body">
                     <table id="hourlySummaryTable" class="display" style="width:100%">
                         <thead>
@@ -55,56 +58,67 @@
     </div>
 </div>
 
-<script type="text/javascript">
+<script>
 $(function() {
-    // Date range picker
+
+    var today = moment().format('YYYY-MM-DD');
+
     $('#dateFilter').daterangepicker({
         opens: 'left',
-        autoUpdateInput: false,
+        autoUpdateInput: true,
+        startDate: moment(),
+        endDate: moment(),
         locale: {
             format: 'YYYY-MM-DD',
-            separator: ' to ',
-            applyLabel: 'Apply',
-            cancelLabel: 'Clear'
+            separator: ' to '
         }
     });
 
-    $('#dateFilter').on('apply.daterangepicker', function(ev, picker) {
-        $(this).val(picker.startDate.format('YYYY-MM-DD') + ' to ' + picker.endDate.format('YYYY-MM-DD'));
-        table.ajax.reload();
-    });
-
-    $('#dateFilter').on('cancel.daterangepicker', function(ev, picker) {
-        $(this).val('');
-        table.ajax.reload();
-    });
+    // Default aaj ki date agar empty ho
+    if (!$('#dateFilter').val()) {
+        $('#dateFilter').val(today + ' to ' + today);
+    }
 
     var table = $('#hourlySummaryTable').DataTable({
         processing: true,
         serverSide: true,
         responsive: true,
+        pageLength: 30,
+        lengthMenu: [[30, 50, 100, -1], [30, 50, 100, "All"]],
+
         ajax: {
             url: "{{ route('superadmin.hourly-summary') }}",
             type: 'GET',
             data: function(d) {
-                d.dateFilter = $('#dateFilter').val();
+                d.dateFilter = $('#dateFilter').val() || (today + ' to ' + today);
             }
         },
+
         columns: [
             { data: 'hour', name: 'hour' },
             { data: 'call_center_count', name: 'call_center_count' },
-            { data: 'call_center_amount', name: 'call_center_amount' },
+            { data: 'call_center_amount', name: 'call_center_amount',
+                render: data => parseFloat(data || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) },
             { data: 'ivr_count', name: 'ivr_count' },
-            { data: 'ivr_amount', name: 'ivr_amount' },
+            { data: 'ivr_amount', name: 'ivr_amount',
+                render: data => parseFloat(data || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) },
             { data: 'merchant_count', name: 'merchant_count' },
-            { data: 'merchant_amount', name: 'merchant_amount' },
+            { data: 'merchant_amount', name: 'merchant_amount',
+                render: data => parseFloat(data || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) },
             { data: 'app_count', name: 'app_count' },
-            { data: 'app_amount', name: 'app_amount' },
+            { data: 'app_amount', name: 'app_amount',
+                render: data => parseFloat(data || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) },
             { data: 'recursive_count', name: 'recursive_count' },
-            { data: 'recursive_amount', name: 'recursive_amount' },
+            { data: 'recursive_amount', name: 'recursive_amount',
+                render: data => parseFloat(data || 0).toLocaleString('en-US', { minimumFractionDigits: 2 }) },
             { data: 'summary_date', name: 'summary_date' }
         ]
     });
+
+    $('#dateFilter').on('apply.daterangepicker', function() {
+        table.ajax.reload();
+    });
+
 });
 </script>
 

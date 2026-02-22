@@ -58,23 +58,28 @@ class ProcessBulkFile extends Command
             $msisdn = $row[0];
             $amount = $row[1];
             $todayDate = Carbon::now()->toDateString();
-
+             
               // Remove the country code '92' and add leading zero '0'
              if (substr($msisdn, 0, 2) == '92') {
                 $msisdn = '0' . substr($msisdn, 2);
-            }
+            } 
 
             $subscriptions = CustomerSubscription::where('subscriber_msisdn', $msisdn)
                 ->where('transaction_amount',$amount)
                 ->where('grace_period_time', '>=', $todayDate)
                 ->where('policy_status', 1)
                 ->get();
+
+           
+
             if ($subscriptions->isEmpty()) {
                 $this->error("Subscription Not Found for MSISDN: $msisdn.");
                  $logs = logs::create([
                     'msisdn' => $msisdn,
                     'cps_response' => "Subscription Not Found for MSISDN",
                     'source' => "BulkRefundManager",
+                    'agent_id' => "002",
+
                     ]);
                 continue; // Skip to the next MSISDN
             }
@@ -254,6 +259,7 @@ class ProcessBulkFile extends Command
                 'cps_response' => $cps_response,
                 'api_url' => $api_url,
                 'source' => "BulkRefundManager",
+                'agent_id' => "002",
                 ]);
 
 

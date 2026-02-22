@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\TeleSalesAgent;
 use Illuminate\Support\Facades\Log;
+use App\Models\AgentSalesStat;
+
 
 class AgentAuthBasicAgentLController extends Controller
 {
@@ -105,8 +107,9 @@ class AgentAuthBasicAgentLController extends Controller
 
     }
 
-    public function getDashboardData(Request $request)
-  {
+public function getDashboardData(Request $request)
+{
+    // ?? Get agent from session
     $agent = session('agent');
 
     if (!$agent) {
@@ -118,28 +121,17 @@ class AgentAuthBasicAgentLController extends Controller
 
     $agentId = $agent->agent_id;
 
-    $data = CustomerSubscription::select(
-        DB::raw("COUNT(CASE WHEN DATE(created_at) = CURRENT_DATE THEN 1 END) AS todaySubscriptionCount"),
-        DB::raw("COUNT(CASE WHEN YEAR(created_at) = YEAR(CURRENT_DATE) AND MONTH(created_at) = MONTH(CURRENT_DATE) THEN 1 END) AS currentMonthSubscriptionCount"),
-        DB::raw("COUNT(CASE WHEN YEAR(created_at) = YEAR(CURRENT_DATE) THEN 1 END) AS currentYearSubscriptionCount")
-    )
-    ->where('sales_agent', $agentId) // Filter by sales agent
-    ->first();
-
-    // Access the results
-    $todaySubscriptionCount = $data->todaySubscriptionCount;
-    $currentMonthSubscriptionCount = $data->currentMonthSubscriptionCount;
-    $currentYearSubscriptionCount = $data->currentYearSubscriptionCount;
+    // ?? Fetch agent stats
+    $stats = AgentSalesStat::where('agent_id', $agentId)->first();
 
     return response()->json([
         'status' => 'success',
         'data' => [
-            'todaySalesCount' => $todaySubscriptionCount,
-            'currentMonthTotalCount' => $currentMonthSubscriptionCount,
-            'currentYearTotal' => $currentYearSubscriptionCount,
+            'todaySalesCount'        => $stats ? $stats->today_sales : 0,
+            'currentMonthTotalCount' => $stats ? $stats->month_sales : 0,
+            'currentYearTotal'       => $stats ? $stats->year_sales : 0,
         ],
     ]);
-   }
-
+}
 
 }

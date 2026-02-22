@@ -54,7 +54,7 @@ class RefundedController extends Controller
         // dd($subscription);
         // Call refundManager function with referenceId and CPSTransaction ID
         $refundResult = $this->refundManager($subscription->cps_transaction_id,$subscription->referenceId,$subscription->subscriber_msisdn);
-
+         //dd($refundResult);
         if ($refundResult['resultCode'] == 0) {
             // Call unsubscribeNow function with referenceId and CPS Transaction ID
             $subscription->update(['policy_status' => 0]);
@@ -90,10 +90,10 @@ class RefundedController extends Controller
         else {
             // Handle the case when refundManager fails
             return response()->json([
-                'error' => 'Refund failed',
-                'resultCode' => $refundResult['resultCode'],
-                'resultDesc' => $refundResult['resultDesc']
-            ], 500);
+            'error' => 'Refund failed',
+              'resultCode' => $refundResult['resultCode'],
+              'resultDesc' => $refundResult['resultDesc']
+             ], 500);
          }
 
 

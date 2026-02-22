@@ -39,35 +39,50 @@ class LFDTDate extends Command
      * @return int
      */
 
-      public function handle()
-    {
-        // Fetch records based on your given conditions
-        $subscriptions = CustomerSubscription::where('pulse', 'LFDT')
-            ->where('api_source', 'LFDT')
-            ->where('company_id', 20)
-            ->where('policy_status', 1)
-            ->whereBetween('created_at', [
-                '2025-09-30 00:00:00',
-                '2025-10-09 00:00:00',
-            ])
-            ->get();
+public function handle()
+{
+    // Fetch records based on given conditions
+    $subscriptions = CustomerSubscription::where('pulse', 'LFDT')
+        ->where('api_source', 'LFDT')
+        ->where('company_id', 20)
+        ->where('policy_status', 1)
+        ->whereBetween('created_at', [
+            '2025-10-01 00:00:00',
+            '2025-10-09 00:00:00',
+        ])
+        ->get();
+  dd($subscriptions->count());
+    $count = $subscriptions->count();
+    $this->info("Total records found: $count");
 
-            dd($subscriptions->count());
-        // Update subscription_time for each record
-        foreach ($subscriptions as $subscription) {
-            $subscription->update([
-                'subscription_time' => '2025-09-30 23:08:20',
-            ]);
-
-               Log::channel('sms_api')->error("date update successfully", [
-                   'subscription_id' => $subscription->subscription_id,
-                    'MobileNo' => $subscription->subscriber_msisdn,
-
-                ]);
-        }
-
-        $this->info('Subscription time updated successfully for ' . $subscriptions->count() . ' records.');
-
+    if ($count === 0) {
+        $this->info('No records found for the given conditions.');
         return 0;
     }
+
+    $i = 1;
+    foreach ($subscriptions as $subscription) {
+        $subscription->update([
+            'subscription_time' => '2025-09-30 23:08:20',
+            'created_at' => '2025-09-30 23:08:20',
+            'updated_at' => '2025-09-30 23:08:20',
+        ]);
+
+        // Log file entry
+        Log::channel('sms_api')->error("Date updated successfully", [
+            'subscription_id' => $subscription->subscription_id,
+            'MobileNo' => $subscription->subscriber_msisdn,
+        ]);
+
+        // Terminal output
+        $this->info("[$i] Updated MSISDN: {$subscription->subscriber_msisdn} | Subscription ID: {$subscription->subscription_id}");
+        $i++;
+    }
+
+    $this->info("? All $count records updated successfully.");
+
+    return 0;
 }
+
+
+    }

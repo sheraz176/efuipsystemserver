@@ -110,7 +110,8 @@
                         </div>
                     </div>
                     <!-- Add other form fields as needed -->
-                    <div class="d-flex gap-2">
+
+                         <div class="d-flex gap-2">
                         <button id="consent" class="btn btn-danger" type="button">
                             Check Consent (DTMF)
                         </button>
@@ -119,16 +120,6 @@
                     </div>
 
                     <div id="consentMessage" style="color: #1d1a1e"></div>
-
-
-                    {{-- <button id="consent" class="btn btn-danger" type="button">Check Consent (DTMF) </button> --}}
-
-
-                    {{-- <button id="autoDebitButton" class="btn btn-primary" type="button" disabled>
-                        <span id="buttonText">Proceed to Auto Debit</span>
-                        <span id="buttonLoader" class="spinner-border spinner-border-sm" role="status"
-                            aria-hidden="true" style="display: none;"></span>
-                    </button> --}}
 
 
 
@@ -140,8 +131,8 @@
                 <label for="error" class="text-danger" id="errorMessage">The customer wasn't found or the deduction
                     has already been attempted by the super-agent. According to the rule, only one attempt can be made on
                     the customer's JazzCash wallet <br>
-                    Ù…ÙˆØµÙˆÙ„Û Ú¯Ø§ÛÚ© Ù†ÛÛŒÚº Ù…Ù„Ø§ ÛŒØ§ Ú©Ù… Ú©Ø±Ù†Û’ Ú©Ø§ Ú©ÙˆØ´Ø´ Ú©Ø± Ú†Ú©Ø§ ÛÛ’ Ø³Ù¾Ø± Ø§ÛŒØ¬Ù†Ù¹ Ù†Û’Û” Ù‚Ø§Ø¹Ø¯Û’ Ú©Û’ Ù…Ø·Ø§Ø¨Ù‚ØŒ Ú¯Ø§ÛÚ© Ú©ÛŒ Ø¬Ø§Ø² Ú©ÛŒØ´ ÙˆØ§Ù„Ù¹ Ù¾Ø±
-                    ØµØ±Ù Ø§ÛŒÚ© Ú©ÙˆØ´Ø´ Ú©ÛŒ Ø¬Ø§ Ø³Ú©ØªÛŒ ÛÛ’Û”</label>
+                    موصولہ گاہک نہیں ملا یا کم کرنے کا کوشش کر چکا ہے سپر ایجنٹ نے۔ قاعدے کے مطابق، گاہک کی جاز کیش والٹ پر
+                    صرف ایک کوشش کی جا سکتی ہے۔</label>
             </div>
         </div>
 
@@ -223,7 +214,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
-    <script>
+     <script>
         $(document).ready(function() {
             $('#consent').click(function() {
                 var msisdn = $('#customerMsisdn').val();
@@ -333,38 +324,6 @@
         });
     </script>
 
-{{-- <script>
-    $(document).ready(function() {
-        $('#consent').click(function() {
-            // Assume MSISDN is fetched or available
-            var msisdn = $('#customerMsisdn').val(); // Replace with the actual MSISDN value
-
-            $.ajax({
-                url: '{{ route('basic-agent-l.consent_check') }}', // Your backend route to check consent
-                method: 'POST',
-                data: {
-                    msisdn: msisdn,
-                    _token: '{{ csrf_token() }}' // CSRF token for Laravel
-                },
-                success: function(response) {
-                    if (response.consistent_provider == 1) {
-                        $('#autoDebitButton').prop('disabled', false); // Enable the button
-                    } else {
-                        $('#autoDebitButton').prop('disabled', true); // Disable the button
-                    }
-
-                    // Display the message
-                    $('#consentMessage').text(response.message);
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error:', error);
-                }
-            });
-        });
-    });
-</script> --}}
-
-
     <script>
         var agentId;
         var companyId;
@@ -426,14 +385,14 @@
                         // Display 'Data not found' if response is empty
                         $('#customerDataSection').hide();
 
-                        $('#errorMessageSection').text("The customer wasn't found or the deduction has already been attempted by the super-agent. According to the rule, only one attempt can be made on the customer's JazzCash wallet.\nÙ…ÙˆØµÙˆÙ„Û Ú¯Ø§ÛÚ© Ù†ÛÛŒÚº Ù…Ù„Ø§ ÛŒØ§ Ú©Ù… Ú©Ø±Ù†Û’ Ú©Ø§ Ú©ÙˆØ´Ø´ Ú©Ø± Ú†Ú©Ø§ ÛÛ’ Ø³Ù¾Ø± Ø§ÛŒØ¬Ù†Ù¹ Ù†Û’Û” Ù‚Ø§Ø¹Ø¯Û’ Ú©Û’ Ù…Ø·Ø§Ø¨Ù‚ØŒ Ú¯Ø§ÛÚ© Ú©ÛŒ Ø¬Ø§Ø² Ú©ÛŒØ´ ÙˆØ§Ù„Ù¹ Ù¾Ø± ØµØ±Ù Ø§ÛŒÚ© Ú©ÙˆØ´Ø´ Ú©ÛŒ Ø¬Ø§ Ø³Ú©ØªÛŒ ÛÛ’Û”");
+                        $('#errorMessageSection').text("The customer wasn't found or the deduction has already been attempted by the super-agent. According to the rule, only one attempt can be made on the customer's JazzCash wallet.\nموصولہ گاہک نہیں ملا یا کم کرنے کا کوشش کر چکا ہے سپر ایجنٹ نے۔ قاعدے کے مطابق، گاہک کی جاز کیش والٹ پر صرف ایک کوشش کی جا سکتی ہے۔");
 
                     }
                 },
                 error: function(xhr, textStatus, errorThrown) {
                     // Hide the customer data section and show error
                     $('#customerDataSection').hide();
-                    $('#errorMessageSection').text("The customer wasn't found or the deduction has already been attempted by the super-agent. According to the rule, only one attempt can be made on the customer's JazzCash wallet.\nÙ…ÙˆØµÙˆÙ„Û Ú¯Ø§ÛÚ© Ù†ÛÛŒÚº Ù…Ù„Ø§ ÛŒØ§ Ú©Ù… Ú©Ø±Ù†Û’ Ú©Ø§ Ú©ÙˆØ´Ø´ Ú©Ø± Ú†Ú©Ø§ ÛÛ’ Ø³Ù¾Ø± Ø§ÛŒØ¬Ù†Ù¹ Ù†Û’Û” Ù‚Ø§Ø¹Ø¯Û’ Ú©Û’ Ù…Ø·Ø§Ø¨Ù‚ØŒ Ú¯Ø§ÛÚ© Ú©ÛŒ Ø¬Ø§Ø² Ú©ÛŒØ´ ÙˆØ§Ù„Ù¹ Ù¾Ø± ØµØ±Ù Ø§ÛŒÚ© Ú©ÙˆØ´Ø´ Ú©ÛŒ Ø¬Ø§ Ø³Ú©ØªÛŒ ÛÛ’Û”");
+                    $('#errorMessageSection').text("The customer wasn't found or the deduction has already been attempted by the super-agent. According to the rule, only one attempt can be made on the customer's JazzCash wallet.\nموصولہ گاہک نہیں ملا یا کم کرنے کا کوشش کر چکا ہے سپر ایجنٹ نے۔ قاعدے کے مطابق، گاہک کی جاز کیش والٹ پر صرف ایک کوشش کی جا سکتی ہے۔");
 
                 }
             });
@@ -466,5 +425,5 @@
 
 
 
-    </script>
+           </script>
 @endpush

@@ -24,7 +24,7 @@ class Secendlooprecusive extends Command
      *
      * @var string
      */
-    protected $signature = 'recursive:secondloop';
+    protected $signature = '2nd:loop';
 
     /**
      * The console command description.

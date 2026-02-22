@@ -856,7 +856,7 @@ class PolicyController extends Controller
     private function sendMedicalSMS($subscriber_msisdn, $planId, $productId, $amount)
     {
         $smsList = [
-            "JazzCash khaas offer! Apko muntakhib medical insurance mil rahi hai bina izafi charges. Aaj hi dawai ka bill refund muft hasil karein. Call 042111333033”",
+            "JazzCash khaas offer! Apko muntakhib medical insurance mil rahi hai bina izafi charges. Aaj hi dawai ka bill refund muft hasil karein. Call 042111333033�",
             "EFU Medical Insurance deta hai Rs 8.5 lakh ka hospitalization cover, unlimited online doctor se mashwara aur Rs 10000 tak ka doctor ki fees, dawai aur lab test ka coverage.",
             "Aapki EFU insurance deti hai phone par doctor se muft mashwara. Abhi hamare doctor se mashwara lene ke liye 042111333033 par call karein",
         ];
@@ -1046,7 +1046,7 @@ class PolicyController extends Controller
         $sms->save();
 
 
-        // âœ… Send SMS only if plan_id = 4
+        // ✅ Send SMS only if plan_id = 4
         // if ($planId == 4) {
         //     $plan = PlanModel::where('plan_id', $planId)->where('status', 1)->first();
         //     $product = ProductModel::where('plan_id', $planId)
@@ -1230,7 +1230,7 @@ class PolicyController extends Controller
             'code' => "2010",
         ]);
 
-        // âœ… Send SMS only if plan_id = 4
+        // ✅ Send SMS only if plan_id = 4
         if ($planId == 4) {
             $plan = PlanModel::where('plan_id', $planId)->where('status', 1)->first();
             $product = ProductModel::where('plan_id', $planId)
@@ -1571,7 +1571,7 @@ Aap ka bharosa wapis jeetnay ke liye JazzCash ne aapka Family Health Insurance b
             'amount' => $fee,
         ]);
 
-        // âœ… Send SMS only if plan_id = 5
+        // ✅ Send SMS only if plan_id = 5
         if ($planId == 5) {
             $plan = PlanModel::where('plan_id', $planId)->where('status', 1)->first();
             $product = ProductModel::where('plan_id', $planId)
@@ -1597,7 +1597,7 @@ Aap ka bharosa wapis jeetnay ke liye JazzCash ne aapka Family Health Insurance b
                     [
                         'MobileNo' => $subscriber_msisdn,
                         'sender' => 'EFU-LIFE',
-                        'SMS' => "Dear Customer, youâ€™ve successfully subscribed to {$plantext} for PKR {$fee}/-. T&Cs: {$link}",
+                        'SMS' => "Dear Customer, you’ve successfully subscribed to {$plantext} for PKR {$fee}/-. T&Cs: {$link}",
                     ],
                     [
                         'MobileNo' => $subscriber_msisdn,

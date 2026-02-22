@@ -134,10 +134,10 @@
               </a>
             </li>
 
+             
+             
+               @if(in_array(session('agent')->username, ['Waheed.safdar.reports.agent', 'Bilal.Reports.agent.2025']))
 
-
-
-               @if(session('agent')->username == "reportagent2025")
 
                  <li class="menu-header small text-uppercase"><span class="menu-header-text">Reports</span></li>
             <!-- Cards -->
@@ -175,16 +175,14 @@
               </a>
             </li>
 
-
-              <li class="menu-item">
+    <li class="menu-item">
               <a href="{{ route('calims.indexclaim') }}" id = "salespagebutton" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Upload Claims</div>
               </a>
               </li>
 
-
-                 <li class="menu-item">
+       <li class="menu-item">
               <a href="{{ route('claims.indexclaimcsv') }}" id = "salespagebutton" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-collection"></i>
                 <div data-i18n="Basic">Upload Claims File</div>
@@ -199,12 +197,7 @@
               </li>
 
 
-
-
-
 @endif
-
-
 
 
 
@@ -359,7 +352,7 @@
             <footer class="content-footer footer bg-footer-theme">
               <div class="container-fluid d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
                 <div class="mb-2 mb-md-0">
-                  Â©
+                  ©
                   <script>
                     document.write(new Date().getFullYear());
                   </script>

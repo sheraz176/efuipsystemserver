@@ -29,8 +29,8 @@ class ConsentNumber extends Model
         'productId',
         'amount',
 
-    ];
 
+    ];
 
 
 

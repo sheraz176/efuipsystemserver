@@ -163,7 +163,8 @@ class AgentAuthController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function dashboard()
+   
+     public function dashboard()
     {
 
 
@@ -199,4 +200,5 @@ class AgentAuthController extends Controller
             return view('basic-agent.dashboard', compact('currentMonthTotal', 'currentYearTotal', 'currentDayTotal', 'currentMonthTotalCount', 'currentDayTotalCount', 'agent'));
         }
     }
+
 }

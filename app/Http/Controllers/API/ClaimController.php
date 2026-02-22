@@ -202,13 +202,11 @@ private function getExtensionFromMimeType($mimeType)
 {
     $request->validate([
         'msisdn' => 'required|digits_between:10,13', // Validate MSISDN is provided and is of valid length
-        'subscription_id ' => 'required', // Validate MSISDN is provided and is of valid length
     ]);
 
     // Check if the claim MSISDN exists in the CustomerSubscription table
     $claim_msisdn = CustomerSubscription::whereIn('plan_id', [4, 5])
     ->where('subscriber_msisdn', $request->msisdn)
-    ->where('subscription_id', $request->subscription_id)
     ->where('policy_status', 1)
     ->first();
      //dd($claim_msisdn);
@@ -231,19 +229,19 @@ private function getExtensionFromMimeType($mimeType)
     //dd($product);
 
     // Initialize base amounts
-    $baseHospitalizationAmount = 20000;
+    $baseHospitalizationAmount = 750000;
 
     //dd($baseHospitalizationAmount);
     //$baseMedicalExpenseAmount = 10000;
-
+   
    if($claim_msisdn->plan_id == "4"){
-         $baseMedicalExpenseAmount = 750000;
+         $baseMedicalExpenseAmount = 20000;
     }
     else{
          $baseMedicalExpenseAmount = 850000;
     }
 
-
+  
     // If no existing claims found, return response with base amounts and zero claims
     if ($existingClaims->isEmpty()) {
       //dd('hi');
@@ -286,7 +284,7 @@ private function getExtensionFromMimeType($mimeType)
             ]);
         }
     }
-
+ 
  return response()->json([
     'msisdn' => $request->msisdn ?? 0,
     'plan_id' => $claim_msisdn->plan_id ?? 0,

@@ -37,8 +37,9 @@ class AutoDebitProcessController extends Controller
 
 
         $autoDebitRequestData = AutoDebitRequest::where('msisdn', $request->customer_msisdn)
-        ->whereDate('created_at', Carbon::today())
-        ->first();
+    			->whereBetween('created_at', [Carbon::today()->startOfDay(), Carbon::today()->endOfDay()])
+   	 ->first();
+
 
         if (!$autoDebitRequestData) {
             return response()->json(['error' => 'Customer not found'], 404);

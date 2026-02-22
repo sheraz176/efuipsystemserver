@@ -11,8 +11,10 @@ class MonthlyStat extends Model
 
        protected $table= 'monthly_stats';
 
-    protected $fillable = ['year', 'data'];
-    protected $casts = ['data' => 'array'];
+       protected $fillable = ['year', 'data'];
 
+    protected $casts = [
+        'data' => 'array'
+    ];
 
 }

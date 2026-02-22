@@ -68,7 +68,7 @@ class DiscountMonthlyRecusive extends Command
     ->where('policy_status', 1)
     ->whereIn('transaction_amount', [2]) // simplified
     ->get();
-           //dd($subscriptions);
+           //dd($subscriptions->count());
 
             // Iterate over subscriptions
             foreach ($subscriptions as $subscription) {

@@ -353,7 +353,7 @@ public function unsubscribeactiveplan(Request $request)
     }
 
     // Handle non-refundable amounts
-    $nonRefundableAmounts = ['4','9','133','199', '163', '5', '10', '200', '2000','1950', '1600','5000','12','300','3000','2950','299','2900'];
+    $nonRefundableAmounts = ['4','9','133','199', '163', '5', '10', '200', '2000','1950', '1600','5000','12','300','3000','2950','299','2900','1','2','1500'];
     if (in_array($subscription->transaction_amount, $nonRefundableAmounts)) {
         $this->handleUnsubscription($subscription, $subscriber_msisdn);
         return response()->json([

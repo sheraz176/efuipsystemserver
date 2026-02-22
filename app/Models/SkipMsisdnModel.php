@@ -15,6 +15,7 @@ class SkipMsisdnModel extends Model
         'id',
         'lastcharging',
         'subscription_id',
+        'nextcharging',
         'msisdn',
         'reason',
     ];

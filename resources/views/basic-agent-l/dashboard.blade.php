@@ -14,10 +14,10 @@
                     <div class="d-flex align-items-end row">
                       <div class="col-sm-7">
                         <div class="card-body">
-                          <h5 class="card-title text-primary">Welcome {{ session('agent')->username }}🎉</h5>
+                          <h5 class="card-title text-primary">Welcome {{ session('agent')->username }}??</h5>
 
                           <p class="mb-4">
-                            You have done <span class="fw-medium">72%</span> more sales today. Check your new badge in
+                            You have done <span class="fw-medium">0%</span> more sales today. Check your new badge in
                             your profile.
                           </p>
 
@@ -67,7 +67,7 @@
                           </div>
                           <span class="fw-medium d-block mb-1">Today Sales</span>
                           <h3 class="card-title mb-2"><span id="todaySalesCount">0</span> </h3>
-                          <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +10.50%</small>
+                          <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +0%</small>
                         </div>
                       </div>
                     </div>
@@ -99,7 +99,7 @@
                           </div>
                           <span>Current Month</span>
                           <h3 class="card-title text-nowrap mb-1"><span id="currentMonthTotalCount">0</span></h3>
-                          <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +28.42%</small>
+                          <small class="text-success fw-medium"><i class="bx bx-up-arrow-alt"></i> +0%</small>
                         </div>
                       </div>
                     </div>
@@ -124,7 +124,7 @@
                                 data-bs-toggle="dropdown"
                                 aria-haspopup="true"
                                 aria-expanded="false">
-                                2025
+                                2026
                               </button>
                               <div class="dropdown-menu dropdown-menu-end" aria-labelledby="growthReportId">
 
@@ -133,7 +133,7 @@
                           </div>
                         </div>
                         <div id="growthChart"></div>
-                        <div class="text-center fw-medium pt-3 mb-2">62% EFU LIFE Inclusive Growth</div>
+                        <div class="text-center fw-medium pt-3 mb-2">0% EFU LIFE Inclusive Growth</div>
 
                         <div class="d-flex px-xxl-4 px-lg-2 p-4 gap-xxl-3 gap-lg-1 gap-3 justify-content-between">
                           <div class="d-flex">
@@ -172,11 +172,11 @@
                             <div class="d-flex flex-sm-column flex-row align-items-start justify-content-between">
                               <div class="card-title">
                                 <h5 class="text-nowrap mb-2">{{ session('agent')->first_name }}'s Total This Year Sales</h5>
-                                <span class="badge bg-label-warning rounded-pill">Year 2025</span>
+                                <span class="badge bg-label-warning rounded-pill">Year 2026</span>
                               </div>
                               <div class="mt-sm-auto">
                                 <small class="text-success text-nowrap fw-medium"
-                                  ><i class="bx bx-chevron-up"></i> 68.2%</small
+                                  ><i class="bx bx-chevron-up"></i> 0%</small
                                 >
                                 <h3 class="mb-0"> <span id="currentYearTotal">0</span></h3>
                               </div>

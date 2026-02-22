@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Log;
 use App\Models\RecusiveChargingData;
 use App\Models\ConsentData;
 use App\Models\SuperDash;
+use Illuminate\Support\Facades\DB;
+
 
 class SuperAdminAuth extends Controller
 {
@@ -73,66 +75,70 @@ class SuperAdminAuth extends Controller
         return redirect()->route('superadmin.login');
     }
 
-    public function getStats()
+   
+     public function getStats()
     {
-        $stats = [
+           $todayStart = Carbon::today()->startOfDay();
+    $todayEnd = Carbon::today()->endOfDay();
 
-            'totalTsm' => TeleSalesAgent::where('company_id', '11')->where('category', '0')->where('status','1')->count(),
-            'activeTsm' => TeleSalesAgent::where('company_id', '11')->where('category', '0')->where('islogin', '1')->count(),
+    $monthStart = Carbon::now()->startOfMonth();
+    $monthEnd = Carbon::now()->endOfMonth();
 
-            'totalTsmWfh' => TeleSalesAgent::where('company_id', '11')->where('category', '1')->where('status','1')->count(),
-            'activeTsmWfh' => TeleSalesAgent::where('company_id', '11')->where('category', '1')->where('islogin', '1')->count(),
+    $yearStart = Carbon::now()->startOfYear();
+    $yearEnd = Carbon::now()->endOfYear();
 
+    $stats = [
 
-            'totalIbex' => TeleSalesAgent::where('company_id', '1')->where('status','1')->count(),
-            'activeIbex' => TeleSalesAgent::where('company_id', '1')->where('islogin', '1')->count(),
+        // TSM Stats
+        'totalTsm' => TeleSalesAgent::where('company_id', '11')->where('category', '0')->where('status','1')->count(),
+        'activeTsm' => TeleSalesAgent::where('company_id', '11')->where('category', '0')->where('islogin', '1')->count(),
 
-            'totalAbacus' => TeleSalesAgent::where('company_id', '2')->where('status','1')->count(),
-            'activeAbacus' => TeleSalesAgent::where('company_id', '2')->where('islogin', '1')->count(),
+        'totalTsmWfh' => TeleSalesAgent::where('company_id', '11')->where('category', '1')->where('status','1')->count(),
+        'activeTsmWfh' => TeleSalesAgent::where('company_id', '11')->where('category', '1')->where('islogin', '1')->count(),
 
-            'totalSybrid' => TeleSalesAgent::where('company_id', '12')->where('status','1')->count(),
-            'activeSybrid' => TeleSalesAgent::where('company_id', '12')->where('islogin', '1')->count(),
+        'totalIbex' => TeleSalesAgent::where('company_id', '1')->where('status','1')->count(),
+        'activeIbex' => TeleSalesAgent::where('company_id', '1')->where('islogin', '1')->count(),
 
-            'totalJazzIVR' => TeleSalesAgent::where('company_id', '14')->where('status','1')->count(),
-            'activeJazzIVR' => TeleSalesAgent::where('company_id', '14')->where('islogin', '1')->count(),
+        'totalAbacus' => TeleSalesAgent::where('company_id', '2')->where('status','1')->count(),
+        'activeAbacus' => TeleSalesAgent::where('company_id', '2')->where('islogin', '1')->count(),
 
-            'totalWaada' => TeleSalesAgent::where('company_id', '19')->where('status','1')->count(),
-            'activeWaadaIVR' => TeleSalesAgent::where('company_id', '19')->where('islogin', '1')->count(),
+        'totalSybrid' => TeleSalesAgent::where('company_id', '12')->where('status','1')->count(),
+        'activeSybrid' => TeleSalesAgent::where('company_id', '12')->where('islogin', '1')->count(),
 
-            'totalactive' => TeleSalesAgent::where('status','1')->count(),
-            'totallive' => TeleSalesAgent::where('islogin', '1')->count(),
+        'totalJazzIVR' => TeleSalesAgent::where('company_id', '14')->where('status','1')->count(),
+        'activeJazzIVR' => TeleSalesAgent::where('company_id', '14')->where('islogin', '1')->count(),
 
-            'netentrollmentrevinus' => number_format(CustomerSubscription::where('policy_status', '1')->sum('transaction_amount'), 2),
+        'totalWaada' => TeleSalesAgent::where('company_id', '19')->where('status','1')->count(),
+        'activeWaadaIVR' => TeleSalesAgent::where('company_id', '19')->where('islogin', '1')->count(),
 
-            'todaySubscriptionCount' => number_format(CustomerSubscription::whereDate('created_at', Carbon::today())->count()),
-            'currentMonthSubscriptionCount' => number_format(CustomerSubscription::whereYear('created_at', Carbon::now()->year)
-            ->whereMonth('created_at', Carbon::now()->month)
-             ->count()),
+        'totalactive' => TeleSalesAgent::where('status','1')->count(),
+        'totallive' => TeleSalesAgent::where('islogin', '1')->count(),
 
-            'currentYearSubscriptionCount' => number_format(CustomerSubscription::whereYear('created_at', Carbon::now()->year)->count()),
-            'NetEnrollmentCount' => number_format(CustomerSubscription::where('policy_status', '1')->count()),
-            'dailyTransactionSum' => number_format(CustomerSubscription::whereDate('created_at', Carbon::today())->sum('transaction_amount')),
-            'monthlyTransactionSum' => number_format(CustomerSubscription::whereYear('created_at', Carbon::now()->year)
-             ->whereMonth('created_at', Carbon::now()->month)
-             ->sum('transaction_amount')),
+        // Subscription Stats
+        'netentrollmentrevinus' => number_format(CustomerSubscription::where('policy_status', '1')->sum('transaction_amount'), 2),
 
-            'yearlyTransactionSum' => number_format(CustomerSubscription::whereYear('created_at', Carbon::now()->year)->sum('transaction_amount')),
-            'TotalRecusiveChargingCount' => number_format(RecusiveChargingData::count()),
-            'TodayRecusiveChargingCount' => number_format(RecusiveChargingData::whereDate('created_at', now()->toDateString())
-              ->where('cps_response', 'Process service request successfully.')
-              ->count()),
+        'todaySubscriptionCount' => number_format(CustomerSubscription::whereBetween('created_at', [$todayStart, $todayEnd])->count()),
+        'currentMonthSubscriptionCount' => number_format(CustomerSubscription::whereBetween('created_at', [$monthStart, $monthEnd])->count()),
+        'currentYearSubscriptionCount' => number_format(CustomerSubscription::whereBetween('created_at', [$yearStart, $yearEnd])->count()),
 
-            'LastMonthRecusiveChargingCount' => number_format(RecusiveChargingData::whereMonth('created_at', now()->subMonth()->month)
-                ->whereYear('created_at', now()->subMonth()->year)
-                ->count()),
+        'NetEnrollmentCount' => number_format(CustomerSubscription::where('policy_status', '1')->count()),
 
-             'TodaySubscriptionsCount' => number_format(ConsentData::whereDate('created_at', now()->toDateString())->where('status', 'Success')->count()),
-             'TotalSubscriptionCount' => number_format(ConsentData::where('status', 'Success')->count()),
-             'TotalCount' => number_format(ConsentData::whereDate('created_at', now()->toDateString())->count()),
+        'dailyTransactionSum' => number_format(CustomerSubscription::whereBetween('created_at', [$todayStart, $todayEnd])->sum('transaction_amount')),
+        'monthlyTransactionSum' => number_format(CustomerSubscription::whereBetween('created_at', [$monthStart, $monthEnd])->sum('transaction_amount')),
+        'yearlyTransactionSum' => number_format(CustomerSubscription::whereBetween('created_at', [$yearStart, $yearEnd])->sum('transaction_amount')),
 
+        // Recursive Charging Stats
+        'TotalRecusiveChargingCount' => "0",
+        'TodayRecusiveChargingCount' => "0",
+        'LastMonthRecusiveChargingCount' => "0",
 
+        // Consent Stats
+        'TodaySubscriptionsCount' => number_format(ConsentData::whereBetween('created_at', [$todayStart, $todayEnd])
+            ->where('status', 'Success')->count()),
+        'TotalSubscriptionCount' => number_format(ConsentData::where('status', 'Success')->count()),
+        'TotalCount' => number_format(ConsentData::whereBetween('created_at', [$todayStart, $todayEnd])->count()),
+    ];
 
-        ];
 
               // Check if a record already exists in SuperDash
     $superDashRecord = SuperDash::first();
@@ -148,5 +154,5 @@ class SuperAdminAuth extends Controller
         return response()->json($stats);
     }
 
-
+ 
 }

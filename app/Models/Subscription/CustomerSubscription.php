@@ -41,7 +41,11 @@ class CustomerSubscription extends Model
                             'company_id',
                             'consent',
                             'marchant_id',
-                            'Imei_number'
+                            'Imei_number',
+                             'dob',
+                             'consecutiveFailureCount',
+                               'created_at',
+                             'updated_at',
                         ];
 
 

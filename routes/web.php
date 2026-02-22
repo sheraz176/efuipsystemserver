@@ -52,6 +52,9 @@ use App\Http\Controllers\Agent\AgentBulkManagerController;
 use App\Http\Controllers\Agent\AgentbulkFileController;
 use App\Http\Controllers\Agent\AgentprocessBulkRefund;
 use App\Http\Controllers\claims\ClaimsController;
+use App\Http\Controllers\API\NetEntrollmentApiController;
+use App\Http\Controllers\CommandScheduleController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -63,6 +66,18 @@ use App\Http\Controllers\claims\ClaimsController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+ 
+  
+
+Route::get('/dailyCounts', [NetEntrollmentApiController::class, 'dailyCount']);
+Route::get('/dailyCountSecendloop', [NetEntrollmentApiController::class, 'dailyCount2ndloop']);
+Route::get('/dailyCountThirdloop', [NetEntrollmentApiController::class, 'dailyCount3rdloop']);
+
+
+
+Route::get('/command-schedule', [CommandScheduleController::class, 'index'])->name('schedule.index');
+Route::post('/command-schedule/update', [CommandScheduleController::class, 'update'])->name('schedule.update');
+Route::post('/command-schedule/run-now', [CommandScheduleController::class, 'runNow'])->name('schedule.runNow');
 
 Route::get('/', function () {
     return view('welcome');
@@ -80,13 +95,19 @@ Route::get('/', function () {
 */
 // Cache Routes
 Route::get('/clear', function () {
-    Artisan::call('config:cache');
- Artisan::call('cache:clear');
- Artisan::call('route:clear');
- Artisan::call('view:clear');
-   return 'All cache cleared';
-});
 
+    Artisan::call('cache:clear');
+    Artisan::call('config:clear');
+    Artisan::call('config:cache');
+    Artisan::call('route:clear');
+    Artisan::call('view:clear');
+    Artisan::call('optimize:clear');
+
+    return response()->json([
+        'status' => true,
+        'message' => 'All cache, config, routes, views cleared successfully'
+    ]);
+});
 
 
 Route::prefix('refund-agent')->group(function () {
@@ -95,14 +116,23 @@ Route::prefix('refund-agent')->group(function () {
 
     Route::middleware(['web', 'agent'])->group(function () {
         Route::get('/dashboard', [AgentAuthController::class, 'dashboard'])->name('agent.dashboard');
+        Route::get('/sales', [AgentSalesController::class, 'sales'])->name('agent.sales');
+        Route::get('/transaction', [AgentSalesController::class, 'transaction'])->name('agent.transaction');
         Route::post('/logout', [AgentAuthController::class, 'logout'])->name('agent.logout');
+        Route::get('/sucesssales', [AgentSalesController::class, 'showAgentData'])->name('agent.sucesssales');
+        Route::get('/Failedsucesssales', [AgentSalesController::class, 'FailedAgentReports'])->name('agent.Failedsucesssales');
 
+        Route::post('/transaction-controller-route', [PaymentController::class, 'transactionController'])->name('transaction-controller-route');
 
-        Route::get('/Refunded/Customer', [AgentRefundedController::class,'index'])->name('agent.refunded.customer');
+        Route::post('/sms-delivery-route', [SmsDelivery::class, 'smsDelivery'])->name('sms-delivery-route');
+        Route::post('/check-subscription', [SubscriptionController::class, 'checkSubscription'])->name('check-subscription');
+        Route::get('/overall-reports', [ReportsController::class, 'overall_report'])->name('agent.overall-reports');
+
+         Route::get('/Refunded/Customer', [AgentRefundedController::class,'index'])->name('agent.refunded.customer');
         Route::get('/Refunded/Customer/Search', [AgentRefundedController::class,'search'])->name('agent.refunded.customer.search');
         Route::post('/refund/process', [AgentRefundedController::class, 'processRefund'])->name('agent.refund.process');
-
-         //Start BulkManagerController
+            
+          //Start BulkManagerController
          Route::get('bulk/file/upload/index', [AgentBulkManagerController::class, 'index'])->name('agent.builkmanager.index');
          Route::get('bulk/file/upload/create', [AgentBulkManagerController::class, 'create'])->name('agent.builkmanager.create');
          Route::post('bulk/file/upload/store', [AgentBulkManagerController::class, 'store'])->name('agent.builkmanager.store');
@@ -120,27 +150,7 @@ Route::prefix('refund-agent')->group(function () {
           Route::get('bulk/file/upload/logsData', [LogsController::class, 'agentbulkmanagerlogsData'])->name('agent.builkmanager.logsData');
 
 
-
-        Route::get('claim/customer/information', [ClaimsController::class,'index'])->name('superadmin.claim.customerinformation');
-        Route::get('claim/customer/information/Search', [ClaimsController::class,'search'])->name('superadmin.claim.customerinformation.search');
-        Route::post('/submit-claim', [ClaimsController::class, 'SubmitClaim'])->name('superadmin.claim.submit');
-
-
-
           //END BulkManagerController
-
-
-
-        // Route::get('/sales', [AgentSalesController::class, 'sales'])->name('agent.sales');
-        // Route::get('/transaction', [AgentSalesController::class, 'transaction'])->name('agent.transaction');
-        // Route::get('/sucesssales', [AgentSalesController::class, 'showAgentData'])->name('agent.sucesssales');
-        // Route::get('/Failedsucesssales', [AgentSalesController::class, 'FailedAgentReports'])->name('agent.Failedsucesssales');
-        // Route::post('/transaction-controller-route', [PaymentController::class, 'transactionController'])->name('transaction-controller-route');
-        // Route::post('/sms-delivery-route', [SmsDelivery::class, 'smsDelivery'])->name('sms-delivery-route');
-        // Route::post('/check-subscription', [SubscriptionController::class, 'checkSubscription'])->name('check-subscription');
-        // Route::get('/overall-reports', [ReportsController::class, 'overall_report'])->name('agent.overall-reports');
-
-
 
     });
 });
@@ -176,6 +186,7 @@ Route::prefix('basic-agent-l')->group(function () {
     Route::group(['middleware' => ['auth:agent', 'check.agent.login']], function () {
         Route::get('/dashboard', [AgentAuthBasicAgentLController::class, 'dashboard'])->name('basic-agent-l.dashboard');
         Route::get('/agent/dashboard-data', [AgentAuthBasicAgentLController::class, 'getDashboardData'])->name('agent.dashboard.data');
+
         Route::get('/sales', [AgentSalesBasicAgentLController::class, 'sales'])->name('basic-agent-l.sales');
         Route::get('/transaction', [AgentSalesBasicAgentLController::class, 'transaction'])->name('basic-agent-l.transaction');
         Route::post('/logout', [AgentAuthBasicAgentLController::class, 'logout'])->name('basic-agent-l.logout');
@@ -183,7 +194,7 @@ Route::prefix('basic-agent-l')->group(function () {
         Route::get('/Failedsucesssales', [AgentSalesBasicAgentLController::class, 'FailedAgentReports'])->name('basic-agent-l.Failedsucesssales');
         // routes/web.php
         Route::post('/save-customer', [CustomerBasicAgentLController::class, 'saveCustomer'])->name('save-customer');
-        Route::post('/check-subscription', [SubscriptionController::class, 'checkSubscription'])->name('check-subscription');
+        Route::post('/check-subscription', [SubscriptionController::class, 'checkSubscription'])->name('check-subscription-basic');
         Route::get('/overall-reports', [ReportsController::class, 'overall_report_basic_agent_l'])->name('basic-agent-l.overall-reports');
 
         Route::get('/auto/debit/index', [AutoDebitProcessController::class, 'index'])->name('basic-agent-l.index');
@@ -200,6 +211,7 @@ Route::prefix('basic-agent-l')->group(function () {
 });
 
 
+
 Route::prefix('super-admin')->group(function () {
     Route::get('/login', [SuperAdminAuth::class, 'showLoginForm'])->name('superadmin.login');
     Route::post('/login', [SuperAdminAuth::class, 'login']);
@@ -209,11 +221,14 @@ Route::prefix('super-admin')->group(function () {
         Route::post('/logout', [SuperAdminAuth::class, 'logout'])->name('superadmin.logout');
 
         Route::get('/dashboard/stats', [SuperAdminAuth::class, 'getStats'])->name('dashboard.stats');
+       
 
+           Route::get('/hourly-summary', [SuperAdminReports::class, 'hourlySummary'])
+    ->name('superadmin.hourly-summary');
 
             //Export all Data
             Route::post('export/active/subription', [ExportController::class, 'exportactivesubription'])->name('superadmin.export-active-subription');
-            Route::post('export/complete/sale', [ExportController::class, 'exportcomplatesale'])->name('superadmin.export-complete.sale');
+            Route::post('export/complete/sale', [ExportController::class, 'exportcomplatesale'])->name('superadmin.export-complete.sale');\
             Route::post('export/failed/data', [ExportController::class, 'exportgetFailedData'])->name('superadmin.export.failed-data');
             Route::post('export/companies/cancelled_data_export', [ExportController::class, 'companies_cancelled_data_export'])->name('superadmin.companies.cancelled-data-export');
             Route::post('export/RefundedDataExport', [ExportController::class, 'RefundedDataExport'])->name('superadmin.RefundedDataExport');
@@ -224,6 +239,7 @@ Route::prefix('super-admin')->group(function () {
             Route::post('export/companies/failed_data_export', [ExportController::class, 'companies_failed_data_export'])->name('superadmin.companies-failed-data-export');
             Route::post('export/export-recusive-charging-data', [ExportController::class, 'export_recusive_charing_data'])->name('superadmin.export-recusive-charging-data');
             Route::post('export/export-consent-number-data', [ExportController::class, 'export_consent_number_data'])->name('superadmin.export-consent-number-data');
+
 
             //END Export all Data
 
@@ -239,7 +255,7 @@ Route::prefix('super-admin')->group(function () {
          Route::post('/file-upload', [bulkFileController::class, 'upload'])->name('superadmin.file.upload');
 
           //END BulkManagerController
-
+          
            //Start ProcessBulkSubController
            Route::get('bulk/processSubfile', [ProcessBulkSubController::class, 'processSubfile'])->name('superadmin.Subbuilkmanager.processSubfile');
            Route::post('ProcessSubfile/file/upload', [ProcessBulkSubController::class, 'upload'])->name('superadmin.Subbuilkmanager.upload');
@@ -266,7 +282,11 @@ Route::prefix('super-admin')->group(function () {
         Route::get('bulk/sub/api', [LogsController::class, 'bulksubapilogs'])->name('superadmin.bulk.sub.api');
         Route::get('bulk/sub/index', [LogsController::class, 'bulksubapilogsindex'])->name('superadmin.bulk.sub.index');
 
+
         //End Logs
+        Route::get('recusive/counts', [SuperAdminReports::class, 'recusivecountsindex'])->name('superadmin.recusive.counts.index');
+        Route::get('recusive/counts/getFailedData', [SuperAdminReports::class, 'recusivecountsgetdata'])->name('superadmin.recusive.counts.getdata');
+ 
 
         Route::get('datatable-failed', [SuperAdminReports::class, 'failed_transactions'])->name('superadmin.datatable-failed');
         Route::get('datatable-failed/getFailedData', [SuperAdminReports::class, 'getFailedData'])->name('datatable-failed.getFailedData');
@@ -287,8 +307,8 @@ Route::prefix('super-admin')->group(function () {
         Route::get('telesales-agents-emp/edit/{id}', [TesalesAgentsController::class, 'edit'])->name('superadmin.telesales-agents-emp.edit');
         Route::post('telesales-agents/update/emp', [TesalesAgentsController::class, 'update'])->name('superadmin.telesales-agents.update.emp');
         Route::get('telesales-agents-logout/edit/{id}', [TesalesAgentsController::class, 'Agentlogout'])->name('superadmin.telesales-agents-logout.edit');
-        Route::get('telesales-agents-lnActive/edit/{id}', [TesalesAgentsController::class, 'InActive'])->name('superadmin.telesales-agents-Inactive.edit');
         Route::get('datatable/basic/agent/data', [TesalesAgentsController::class, 'AgentData'])->name('superadmin.basic.agent.data');
+        Route::get('telesales-agents-lnActive/edit/{id}', [TesalesAgentsController::class, 'InActive'])->name('superadmin.telesales-agents-Inactive.edit');
         //End Telsales Emp Code Update
 
 
@@ -340,10 +360,8 @@ Route::prefix('super-admin')->group(function () {
         Route::get('/chart-data', [Charts::class, 'getChartData'])->name('chart.data');
         Route::get('/Line/chart-data', [Charts::class, 'getLineChartData'])->name('superadmin.revinuechart');
 
-        Route::get('/Line/chart/Recusive/Charging', [Charts::class, 'RecusiveChargingChart'])->name('superadmin.recusive.charging');
-        Route::get('/Line/chart/low/balance', [Charts::class, 'LowBalaceChart'])->name('superadmin.low.balance');
-
-
+         Route::get('/Line/chart/Recusive/Charging', [Charts::class, 'RecusiveChargingChart'])->name('superadmin.recusive.charging');
+         Route::get('/Line/chart/low/balance', [Charts::class, 'LowBalaceChart'])->name('superadmin.low.balance');
 
 
         Route::get('getMonthlyActiveSubscriptionChartData', [Charts::class, 'getMonthlyActiveSubscriptionChartData'])->name('superadmin.getMonthlyActiveSubscriptionChartData');
@@ -356,11 +374,11 @@ Route::prefix('super-admin')->group(function () {
           Route::get('/process/bulk/refund/File', [processBulkRefund::class, 'processfile'])->name('process.bulk.refund.file');
           Route::post('/process/bulk/refund', [processBulkRefund::class, 'bilkulfileRun'])->name('process.bulk.refund');
           Route::get('/get-processed-results', [processBulkRefund::class, 'getProcessedResults'])->name('getProcessedResults');
-
+            
+          
           Route::get('/Refunded/Customer', [RefundedController::class,'index'])->name('superadmin.refunded.customer');
           Route::get('/Refunded/Customer/Search', [RefundedController::class,'search'])->name('superadmin.refunded.customer.search');
           Route::post('/refund/process', [RefundedController::class, 'processRefund'])->name('superadmin.refund.process');
-
 
 
 
@@ -375,18 +393,18 @@ Route::prefix('company-manager')->group(function () {
     Route::middleware(['auth.company_manager'])->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('company-manager-dashboard');
         Route::post('logout', [CompanyManagerAuthController::class, 'logout'])->name('company.manager.logout');
-
+         
+         
         Route::get('ActiveAgent', [DashboardController::class, 'ActiveAgent'])->name('company-manager-ActiveAgent');
         Route::get('active/agent/Data', [DashboardController::class, 'AgentData'])->name('company.manager.agent.data');
-
-         // Refundes Route
+         
+               // Refundes Route
         Route::get('refunded/new/unsubscribe-now/{subscriptionId}', [ManagerUnSubscription::class,'unsubscribeNow'])->name('refunded.unsubscribe-now-new');
 
-
+                    
         Route::get('dashboard/ajex', [DashboardController::class, 'ajex'])->name('company.manager.ajex');
         Route::get('netentrooment/chart', [DashboardController::class, 'NetEnrollment'])->name('company.manager.netenrollment.chart');
         Route::get('refundedCustomers/chart', [DashboardController::class, 'RefundedCustomers'])->name('company.manager.refundedcustomers.chart');
-
 
         // Company Manager Intersted Customer
         Route::get('today/customer', [DashboardController::class, 'today_interested_customer'])->name('company-manager.today-interested-customer');
@@ -444,6 +462,7 @@ Route::prefix('company-manager')->group(function () {
            Route::post('export/companies/failed_data_export', [CMExportController::class, 'companies_failed_data_export'])->name('company-manager.companies-failed-data-export');
            Route::post('export/export-recusive-charging-data', [CMExportController::class, 'export_recusive_charing_data'])->name('company-manager.export-recusive-charging-data');
 
+
            //END Export all Data
 
              // customer search info
@@ -469,8 +488,6 @@ Route::prefix('super-agent')->group(function () {
         Route::get('/dashboard', [SuperAgentDashboardController::class, 'index'])->name('super_agent.dashboard');
         Route::get('/customer-form', [CustomerData::class, 'showForm'])->name('super_agent.showForm');;
         Route::post('/fetch-customer-data', [CustomerData::class, 'fetchCustomerData'])->name('super_agent.fetch_customer_data');
-
-
     });
 });
 
@@ -495,8 +512,7 @@ Route::prefix('super-agent-l')->group(function () {
 
  // Route group for super-agent-Interested dashboard requiring authentication
 
-
- Route::prefix('claims')->group(function () {
+Route::prefix('claims')->group(function () {
     Route::get('/login', [SuperAgentAuthControllerInterested::class, 'showLoginForm'])->name('super_agent_interested.login');
     Route::post('/login', [SuperAgentAuthControllerInterested::class, 'login'])->name('super_agent_interested.login.submit');
     Route::post('/logout', [SuperAgentAuthControllerInterested::class, 'logout'])->name('super_agent_interested.logout');
@@ -508,7 +524,19 @@ Route::prefix('super-agent-l')->group(function () {
         Route::post('/Interested/fetch-customer-data', [CustomerDataInterested::class, 'fetchCustomerData'])->name('super_agent_interested.fetch_customer_data');
         Route::post('/Interested/Interested-customer-data', [CustomerDataInterested::class, 'interestedCustomerData'])->name('super_agent_interested.interested_customer_data');
 
+        Route::get('claims', [ClaimsController::class, 'showClaimIndex'])->name('superadmin.claims');
+        Route::get('get-claims-data', [ClaimsController::class, 'getClaimsData'])->name('superadmin.get-claims-data');
+        Route::post('export-recusive-charging-data', [ClaimsController::class, 'export'])->name('superadmin.export-claim-data'); // make sure this exists
+        Route::post('/claim/update-status', [ClaimsController::class, 'updateClaimStatus'])->name('claim.update.status');
+        Route::post('/claim/update-amount', [ClaimsController::class, 'updateAmount'])->name('claim.update.amount');
 
+            Route::get('/claim/upload/get', [ClaimsController::class, 'indexclaim'])
+       ->name('calims.indexclaim');
+        Route::post('/claims/upload', [ClaimsController::class, 'UploadClaim'])
+          ->name('claims.upload');
+
+
+      
       Route::get('/claim/indexclaimcsv', [ClaimsController::class, 'indexclaimcsv'])->name('claims.indexclaimcsv');
         Route::get('/claims/dummy-csv', [ClaimsController::class, 'downloadDummyCsv'])->name('claims.download.dummy.csv.two');
       Route::post('/claims/bulk-upload', [ClaimsController::class, 'bulkUpload'])
@@ -516,59 +544,28 @@ Route::prefix('super-agent-l')->group(function () {
      Route::get('/claim/indexclaimcsv/status/update', [ClaimsController::class, 'indexstatus'])->name('claims.status.indexclaimcsv');
       Route::post('/claims/bulk-status-update', [ClaimsController::class, 'bulkStatusUpdate'])
     ->name('claims.bulk.status.update');
-Route::get('/claims/dummy-status-csv', [ClaimsController::class, 'downloadStatusDummyCsv'])
+     Route::get('/claims/dummy-status-csv', [ClaimsController::class, 'downloadStatusDummyCsv'])
     ->name('claims.download.dummy.csv');
 
 
 
+      
+        Route::get('Netenrollment', [SuperAdminReports::class, 'refundagentindex'])->name('refundagent.netenrollment');
+        Route::get('Netenrollment/getData', [SuperAdminReports::class, 'getData'])->name('refundagent.getData');
+        Route::post('refund/export/complete/sale', [ExportController::class, 'exportcomplatesale'])->name('refund.export-complete.sale');
 
-       Route::get('/claim/upload/get', [ClaimsController::class, 'indexclaim'])
-       ->name('calims.indexclaim');
-
-        Route::post('/claims/upload', [ClaimsController::class, 'UploadClaim'])
-          ->name('claims.upload');
-
-        Route::get('claims', [ClaimsController::class, 'showClaimIndex'])->name('superadmin.claims');
-        Route::get('get-claims-data', [ClaimsController::class, 'getClaimsData'])->name('superadmin.get-claims-data');
-        Route::post('export-recusive-charging-data', [ClaimsController::class, 'export'])->name('superadmin.export-claim-data'); // make sure this exists
-        Route::post('/claim/update-status', [ClaimsController::class, 'updateClaimStatus'])->name('claim.update.status');
-        Route::post('/claim/update-amount', [ClaimsController::class, 'updateAmount'])->name('claim.update.amount');
-
-             Route::get('Netenrollment', [SuperAdminReports::class, 'refundagentindex'])->name('refundagent.netenrollment');
-           Route::get('Netenrollment/getData', [SuperAdminReports::class, 'getData'])->name('refundagent.getData');
-          Route::post('refund/export/complete/sale', [ExportController::class, 'exportcomplatesale'])->name('refund.export-complete.sale');
-
-       Route::get('agent/refunds-reports', [ManageRefunds::class, 'refundReportsagent'])->name('agent.refunds-reports');
+        Route::get('agent/refunds-reports', [ManageRefunds::class, 'refundReportsagent'])->name('agent.refunds-reports');
         Route::get('agent/manage-refunds/getRefundedData', [ManageRefunds::class, 'getRefundedData'])->name('agent.manage-refunds.getRefundedData');
-         Route::post('agent/export/RefundedDataExport', [ExportController::class, 'RefundedDataExport'])->name('agent.RefundedDataExport');
+        Route::post('agent/export/RefundedDataExport', [ExportController::class, 'RefundedDataExport'])->name('agent.RefundedDataExport');
 
-           Route::get('agent/recusive/chargingdataindex', [SuperAdminReports::class, 'agent_recusive_charging_data_index'])->name('agent.recusive-charging-data-index');
+        Route::get('agent/recusive/chargingdataindex', [SuperAdminReports::class, 'agent_recusive_charging_data_index'])->name('agent.recusive-charging-data-index');
         Route::get('agent/recusive/getchargingdataindex', [SuperAdminReports::class, 'get_recusive_charging_data'])->name('agent.get-recusive-charging-data');
-                 Route::post('agent/export/export-recusive-charging-data', [ExportController::class, 'export_recusive_charing_data'])->name('agent.export-recusive-charging-data');
-
+        Route::post('agent/export/export-recusive-charging-data', [ExportController::class, 'export_recusive_charing_data'])->name('agent.export-recusive-charging-data');
 
 
 
     });
 });
-
-
-
-// Route::prefix('super-agent-Interested')->group(function () {
-//     Route::get('/Interested/login', [SuperAgentAuthControllerInterested::class, 'showLoginForm'])->name('super_agent_interested.login');
-//     Route::post('/Interested/login', [SuperAgentAuthControllerInterested::class, 'login'])->name('super_agent_interested.login.submit');
-//     Route::post('/Interested/logout', [SuperAgentAuthControllerInterested::class, 'logout'])->name('super_agent_interested.logout');
-
-
-//     Route::middleware(['super_agent_auth'])->group(function () {
-//         Route::get('/Interested/dashboard', [SuperAgentDashboardControllerInterested::class, 'index'])->name('super_agent_interested.dashboard');
-//         Route::get('/Interested/customer-form', [CustomerDataInterested::class, 'showForm'])->name('super_agent_interested.showForm');;
-//         Route::post('/Interested/fetch-customer-data', [CustomerDataInterested::class, 'fetchCustomerData'])->name('super_agent_interested.fetch_customer_data');
-//         Route::post('/Interested/Interested-customer-data', [CustomerDataInterested::class, 'interestedCustomerData'])->name('super_agent_interested.interested_customer_data');
-
-//     });
-// });
-
 
 
 
