@@ -148,6 +148,21 @@
 </div>
 
 
+  {{-- BAR --}}
+   <div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Channels Name</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="channelsChart" height="120"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 </div>
 
 {{-- Chart.js --}}
@@ -235,5 +250,50 @@ new Chart(rejectionCtx, {
 </script>
 
 
+
+<script>
+const channelsCtx = document.getElementById('channelsChart');
+
+new Chart(channelsCtx, {
+    type: 'bar',
+    data: {
+        labels: @json($channels->pluck('chanel_name')),
+        datasets: [{
+            label: 'Total Claims',
+            data: @json($channels->pluck('total')),
+            backgroundColor: [
+                '#2F80ED',
+                '#9E9E9E',
+                '#EB5757',
+                '#27AE60',
+                '#F2994A'
+            ],
+            borderRadius: 6,
+            barThickness: 24
+        }]
+    },
+    options: {
+        indexAxis: 'y',
+        plugins: {
+            legend: { display: false },
+
+            // ✅ Tooltip configuration
+            tooltip: {
+                enabled: true,
+                callbacks: {
+                    label: function(context) {
+                        return ' Total Claims: ' + context.raw;
+                    }
+                }
+            }
+        },
+        scales: {
+            x: {
+                beginAtZero: true
+            }
+        }
+    }
+});
+</script>
 
 @endsection

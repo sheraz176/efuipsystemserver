@@ -44,21 +44,22 @@ class TsmAgent extends Command
     {
 
 
-      $agentsData = [
-    ['Nimra', 'Stephen', 'Nimra.Stephen.tsm.2026', 'Nimra#Stephen#tsm#2026', 'HD1561'],
-    ['Abdul', 'Wasi', 'Abdul.Wasi.tsm.2026', 'Abdul#Wasi#tsm#2026', 'HD1562'],
-    ['Muhammad', 'Javed', 'Muhammad.Javed.tsm.2026', 'Muhammad#Javed#tsm#2026', 'HD1563'],
-    ['Namra', 'Tariq', 'Namra.Tariq.tsm.2026', 'Namra#Tariq#tsm#2026', 'HD1564'],
-    ['Ali', 'Haider', 'Ali.Haider.tsm.2026', 'Ali#Haider#tsm#2026', 'HD1565'],
-    ['Muhammad', 'Arslan', 'Muhammad.Arslan.tsm.2026', 'Muhammad#Arslan#tsm#2026', 'HD1566'],
-    ['Muhammad', 'Faizan', 'Muhammad.Faizan.tsm.2026', 'Muhammad#Faizan#tsm#2026', 'HD1567'],
-    ['Muhammad', 'Saifullah', 'Muhammad.Saifullah.tsm.2026', 'Muhammad#Saifullah#tsm#2026', 'HD1568'],
-    ['Muhammad Faizan', 'Akbar', 'MuhammadFaizan.Akbar.tsm.2026', 'Muhammad Faizan#Akbar#tsm#2026', 'HD1569'],
-    ['Arooj', 'Shahbaz', 'Arooj.Shahbaz.tsm.2026', 'Arooj#Shahbaz#tsm#2026', 'HD1570'],
-    ['Urwa', 'Allah Ditta', 'Urwa.AllahDitta.tsm.2026', 'Urwa#Allah Ditta#tsm#2026', 'HD1571'],
+   $agentsData = [
+    ['Natasha', 'Ashraf', 'Natasha.Ashraf.tsm.2026', 'Natasha#Ashraf#tsm#2026', 'HD1616'],
+    ['Aleesha', 'Zia', 'Aleesha.Zia.tsm.2026', 'Aleesha#Zia#tsm#2026', 'HD1617'],
+    ['Hammad', 'Ali', 'Hammad.Ali.tsm.2026', 'Hammad#Ali#tsm#2026', 'HD1618'],
+    ['Shafqat Ullah', 'Khan', 'ShafqatUllah.Khan.tsm.2026', 'Shafqat Ullah#Khan#tsm#2026', 'HD1619'],
+    ['Laaraib', 'Imran', 'Laaraib.Imran.tsm.2026', 'Laaraib#Imran#tsm#2026', 'HD1620'],
+    ['Hadia', 'Nadeem', 'Hadia.Nadeem.tsm.2026', 'Hadia#Nadeem#tsm#2026', 'HD1621'],
+    ['Rimsha', 'Hafeez', 'Rimsha.Hafeez.tsm.2026', 'Rimsha#Hafeez#tsm#2026', 'HD1622'],
+    ['Saher', 'Safarish', 'Saher.Safarish.tsm.2026', 'Saher#Safarish#tsm#2026', 'HD1623'],
+    ['Muhammad Zulfaqar', 'Khan', 'MuhammadZulfaqar.Khan.tsm.2026', 'Muhammad Zulfaqar#Khan#tsm#2026', 'HD1624'],
+    ['Saif Ullah', 'Qureshi', 'SaifUllah.Qureshi.tsm.2026', 'Saif Ullah#Qureshi#tsm#2026', 'HD1625'],
+    ['Arooj', 'Aslam', 'Arooj.Aslam.tsm.2026', 'Arooj#Aslam#tsm#2026', 'HD1626'],
+    ['Areeb', 'Ramzan', 'Areeb.Ramzan.tsm.2026', 'Areeb#Ramzan#tsm#2026', 'HD1627'],
+    ['Saqib', 'Khan', 'Saqib.Khan.tsm.2026', 'Saqib#Khan#tsm#2026', 'HD1628'],
+    ['Muhammad Arif', 'Zia', 'MuhammadArif.Zia.tsm.2026', 'Muhammad Arif#Zia#tsm#2026', 'HD1629'],
 ];
-
-
 
 
 

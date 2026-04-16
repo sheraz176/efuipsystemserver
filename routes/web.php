@@ -66,8 +66,8 @@ use App\Http\Controllers\CommandScheduleController;
 | contains the "web" middleware group. Now create something great!
 |
 */
- 
-  
+
+
 
 Route::get('/dailyCounts', [NetEntrollmentApiController::class, 'dailyCount']);
 Route::get('/dailyCountSecendloop', [NetEntrollmentApiController::class, 'dailyCount2ndloop']);
@@ -131,7 +131,7 @@ Route::prefix('refund-agent')->group(function () {
          Route::get('/Refunded/Customer', [AgentRefundedController::class,'index'])->name('agent.refunded.customer');
         Route::get('/Refunded/Customer/Search', [AgentRefundedController::class,'search'])->name('agent.refunded.customer.search');
         Route::post('/refund/process', [AgentRefundedController::class, 'processRefund'])->name('agent.refund.process');
-            
+
           //Start BulkManagerController
          Route::get('bulk/file/upload/index', [AgentBulkManagerController::class, 'index'])->name('agent.builkmanager.index');
          Route::get('bulk/file/upload/create', [AgentBulkManagerController::class, 'create'])->name('agent.builkmanager.create');
@@ -221,7 +221,7 @@ Route::prefix('super-admin')->group(function () {
         Route::post('/logout', [SuperAdminAuth::class, 'logout'])->name('superadmin.logout');
 
         Route::get('/dashboard/stats', [SuperAdminAuth::class, 'getStats'])->name('dashboard.stats');
-       
+
 
            Route::get('/hourly-summary', [SuperAdminReports::class, 'hourlySummary'])
     ->name('superadmin.hourly-summary');
@@ -255,7 +255,7 @@ Route::prefix('super-admin')->group(function () {
          Route::post('/file-upload', [bulkFileController::class, 'upload'])->name('superadmin.file.upload');
 
           //END BulkManagerController
-          
+
            //Start ProcessBulkSubController
            Route::get('bulk/processSubfile', [ProcessBulkSubController::class, 'processSubfile'])->name('superadmin.Subbuilkmanager.processSubfile');
            Route::post('ProcessSubfile/file/upload', [ProcessBulkSubController::class, 'upload'])->name('superadmin.Subbuilkmanager.upload');
@@ -286,7 +286,7 @@ Route::prefix('super-admin')->group(function () {
         //End Logs
         Route::get('recusive/counts', [SuperAdminReports::class, 'recusivecountsindex'])->name('superadmin.recusive.counts.index');
         Route::get('recusive/counts/getFailedData', [SuperAdminReports::class, 'recusivecountsgetdata'])->name('superadmin.recusive.counts.getdata');
- 
+
 
         Route::get('datatable-failed', [SuperAdminReports::class, 'failed_transactions'])->name('superadmin.datatable-failed');
         Route::get('datatable-failed/getFailedData', [SuperAdminReports::class, 'getFailedData'])->name('datatable-failed.getFailedData');
@@ -374,8 +374,8 @@ Route::prefix('super-admin')->group(function () {
           Route::get('/process/bulk/refund/File', [processBulkRefund::class, 'processfile'])->name('process.bulk.refund.file');
           Route::post('/process/bulk/refund', [processBulkRefund::class, 'bilkulfileRun'])->name('process.bulk.refund');
           Route::get('/get-processed-results', [processBulkRefund::class, 'getProcessedResults'])->name('getProcessedResults');
-            
-          
+
+
           Route::get('/Refunded/Customer', [RefundedController::class,'index'])->name('superadmin.refunded.customer');
           Route::get('/Refunded/Customer/Search', [RefundedController::class,'search'])->name('superadmin.refunded.customer.search');
           Route::post('/refund/process', [RefundedController::class, 'processRefund'])->name('superadmin.refund.process');
@@ -393,15 +393,15 @@ Route::prefix('company-manager')->group(function () {
     Route::middleware(['auth.company_manager'])->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('company-manager-dashboard');
         Route::post('logout', [CompanyManagerAuthController::class, 'logout'])->name('company.manager.logout');
-         
-         
+
+
         Route::get('ActiveAgent', [DashboardController::class, 'ActiveAgent'])->name('company-manager-ActiveAgent');
         Route::get('active/agent/Data', [DashboardController::class, 'AgentData'])->name('company.manager.agent.data');
-         
+
                // Refundes Route
         Route::get('refunded/new/unsubscribe-now/{subscriptionId}', [ManagerUnSubscription::class,'unsubscribeNow'])->name('refunded.unsubscribe-now-new');
 
-                    
+
         Route::get('dashboard/ajex', [DashboardController::class, 'ajex'])->name('company.manager.ajex');
         Route::get('netentrooment/chart', [DashboardController::class, 'NetEnrollment'])->name('company.manager.netenrollment.chart');
         Route::get('refundedCustomers/chart', [DashboardController::class, 'RefundedCustomers'])->name('company.manager.refundedcustomers.chart');
@@ -535,8 +535,9 @@ Route::prefix('claims')->group(function () {
         Route::post('/claims/upload', [ClaimsController::class, 'UploadClaim'])
           ->name('claims.upload');
 
+         Route::post('/claim/send-sms', [ClaimsController::class, 'sendSms'])
+    ->name('claim.send.sms');
 
-      
       Route::get('/claim/indexclaimcsv', [ClaimsController::class, 'indexclaimcsv'])->name('claims.indexclaimcsv');
         Route::get('/claims/dummy-csv', [ClaimsController::class, 'downloadDummyCsv'])->name('claims.download.dummy.csv.two');
       Route::post('/claims/bulk-upload', [ClaimsController::class, 'bulkUpload'])
@@ -549,7 +550,7 @@ Route::prefix('claims')->group(function () {
 
 
 
-      
+
         Route::get('Netenrollment', [SuperAdminReports::class, 'refundagentindex'])->name('refundagent.netenrollment');
         Route::get('Netenrollment/getData', [SuperAdminReports::class, 'getData'])->name('refundagent.getData');
         Route::post('refund/export/complete/sale', [ExportController::class, 'exportcomplatesale'])->name('refund.export-complete.sale');

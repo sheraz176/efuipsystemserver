@@ -28,6 +28,9 @@ class Claim extends Model
         'remaining_amount',
          'agent_id',
           'chanel_name',
+          'last_sms_sent_at',
+          'last_sms',
+          'rejection_reason'
     ];
 
 }

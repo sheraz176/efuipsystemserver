@@ -14,13 +14,13 @@
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
 
-    <title>EFU TeleSales Insurance Portal</title>
+    <title>Zindigi Portal</title>
 
     <meta name="description" content="" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/assets/img/favicon/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="{{ asset('newdes/icon.png') }}" />
     <link rel="stylesheet" href="//cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
 
     <!-- Fonts -->
@@ -43,7 +43,87 @@
 
     <!-- Data Tables -->
 
+<style>
+.bg-menu-theme .menu-inner > .menu-item.active > .menu-link {
+    background-color: #81CECA !important;
+    color: #fff !important;
+}
 
+.bg-menu-theme .menu-inner > .menu-item.active > .menu-link i {
+    color: #fff !important;
+}
+</style>
+
+<style>
+/* Primary buttons */
+.btn-primary {
+    background-color: #81CECA !important;
+    border-color: #81CECA !important;
+    color: #fff !important;
+}
+
+/* Outline buttons */
+.btn-outline-primary {
+    color: #81CECA !important;
+    border-color: #81CECA !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: #81CECA !important;
+    color: #fff !important;
+}
+
+/* Text primary */
+.text-primary {
+    color: #81CECA !important;
+}
+
+/* Background labels / badges */
+.bg-label-primary {
+    background-color: #81CECA !important;
+    color: #fff !important;
+}
+
+/* Solid badges */
+.bg-primary {
+    background-color: #81CECA !important;
+}
+
+/* Icons */
+.text-primary i,
+.menu-icon.text-primary {
+    color: #81CECA !important;
+}
+
+/* Links */
+a.text-primary {
+    color: #81CECA !important;
+}
+
+/* Dropdown active / focus */
+.dropdown-item:active {
+    background-color: #81CECA !important;
+}
+
+/* Pagination / datatable (optional) */
+.page-item.active .page-link {
+    background-color: #81CECA !important;
+    border-color: #81CECA !important;
+}
+
+.app-brand .layout-menu-toggle {
+    background-color: #81CECA !important; /* desired background */
+    border: 7px solid #f5f5f9 !important;   /* desired border */
+    color: #000 !important;                 /* optional: text/icon color */
+    transition: background-color 0.3s, border-color 0.3s !important; /* smooth effect */
+}
+
+.app-brand .layout-menu-toggle:hover {
+    background-color: #81CECA !important; /* slightly darker on hover */
+    border-color: #e0e0e0 !important;     /* optional hover border */
+}
+
+</style>
 
 
 
@@ -72,16 +152,22 @@
         <!-- Menu -->
 
         <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
-          <div class="app-brand demo" style= "height:90px">
-            <a href="#" class="app-brand-link">
-            <img src="{{ asset('/assets/img/logo.png')}}" alt="Your Logo">
-            </a>
+    <div class="app-brand demo" style="height:90px; overflow:hidden;">
 
-            <a href="javascript:void(0);" class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
-              <i class="bx bx-chevron-left bx-sm align-middle"></i>
-            </a>
-          </div>
+    <a href="#" class="app-brand-link"
+       style="display:flex; justify-content:center; align-items:center; height:100%;">
 
+        <img src="{{ asset('newdes/zindgi.png') }}"
+             alt="Your Logo"
+             style="max-height:80px; max-width:100%; object-fit:contain;">
+    </a>
+
+    <a href="javascript:void(0);"
+       class="layout-menu-toggle menu-link text-large ms-auto d-block d-xl-none">
+        <i class="bx bx-chevron-left bx-sm align-middle"></i>
+    </a>
+
+</div>
           <div class="menu-inner-shadow"></div>
 
           <li class="menu-header small text-uppercase"><span class="menu-header-text">Side MenuBar</span></li>
@@ -186,17 +272,18 @@
 
               <ul class="navbar-nav flex-row align-items-center ms-auto">
                 <!-- Place this tag where you want the button to render. -->
-                <li class="nav-item lh-1 me-3">
-                  <a
-                    class="github-button"
-                    href="#"
-                    data-icon="octicon-star"
-                    data-size="large"
-                    data-show-count="true"
-                    aria-label=""
-                    >Agent Name: {{ session('agent')->first_name }}</a
-                  >
-                </li>
+               <li class="nav-item lh-1 me-3">
+  <a
+    class="github-button"
+    href="#"
+    style="background-color:#81CECA; border:1px solid #81CECA; color:#fff; padding:5px 10px; display:inline-block; border-radius:4px; text-decoration:none;"
+    onmouseover="this.style.backgroundColor='#6bbab6'; this.style.borderColor='#6bbab6';"
+    onmouseout="this.style.backgroundColor='#81CECA'; this.style.borderColor='#81CECA';"
+    aria-label=""
+  >
+    Agent Name: {{ session('agent')->first_name }}
+  </a>
+</li>
 
                 <!-- User -->
                 <li class="nav-item navbar-dropdown dropdown-user dropdown">

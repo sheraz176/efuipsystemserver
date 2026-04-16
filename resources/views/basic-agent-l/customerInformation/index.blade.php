@@ -23,9 +23,16 @@
                             <input type="text" id="msisdn" class="form-control" placeholder="Enter MSISDN">
                         </div>
                         <div class="col-md-2 mt-8" style="margin-top: 2%; margin-left: -20%">
-                            <button type="button" id="search-button" class="btn btn-danger btn-sm">
-                                <i class='bx bx-down-arrow-alt'></i>Search
-                            </button>
+                            <button
+    type="button"
+    id="search-button"
+    class="btn btn-submit btn-sm"
+    style="background-color:#81CECA; border-color:#81CECA; color:#fff;"
+    onmouseover="this.style.backgroundColor='#6bbab6'; this.style.borderColor='#6bbab6';"
+    onmouseout="this.style.backgroundColor='#81CECA'; this.style.borderColor='#81CECA';"
+>
+    <i class='bx bx-down-arrow-alt'></i> Search
+</button>
                         </div>
 
                         <div class="col-md-4 mt-6" style="margin-left: -40%">

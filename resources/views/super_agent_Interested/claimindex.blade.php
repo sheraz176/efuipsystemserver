@@ -79,6 +79,8 @@
                             <th>Claim Amount</th>
                             <th>Update Claim Amount</th>
                             <th>Status Action</th>
+                            <th>Send SMS</th>
+                            <th>Last SMS</th>
                         </tr>
                     </thead>
                 </table>
@@ -148,6 +150,32 @@
 </div>
 
 
+<div class="modal fade" id="sendSmsModal">
+    <div class="modal-dialog">
+        <form id="sendSmsForm">
+            @csrf
+            <input type="hidden" name="claim_id" id="sms_claim_id">
+            <input type="hidden" name="msisdn" id="sms_msisdn">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Send SMS</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <label>Message</label>
+                    <textarea name="message" class="form-control" required></textarea>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Send</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
     <script>
     $(function() {
         // Date Picker Init
@@ -207,6 +235,8 @@
                 { data: 'claim_amount', name: 'claim_amount' },
                 { data: 'edit_amount', name: 'edit_amount', orderable: false, searchable: false },
                 { data: 'status_action', name: 'status_action', orderable: false, searchable: false },
+                { data: 'send_sms', name: 'send_sms', orderable: false, searchable: false },
+                { data: 'last_sms', name: 'last_sms', orderable: false, searchable: false },
             ]
         });
 
@@ -310,6 +340,31 @@ $(document).on('click', '.approve-btn', function () {
         // Placeholder for search box
         $('.dataTables_filter input').attr('placeholder', 'Search by name');
     });
+
+
+
+    $(document).on('click', '.send-sms-btn', function () {
+    $('#sms_claim_id').val($(this).data('id'));
+    $('#sms_msisdn').val($(this).data('msisdn'));
+    $('#sendSmsModal').modal('show');
+});
+
+$('#sendSmsForm').on('submit', function (e) {
+    e.preventDefault();
+
+    $.ajax({
+        url: '{{ route("claim.send.sms") }}',
+        type: 'POST',
+        data: $(this).serialize(),
+        success: function (response) {
+            toastr.success(response.message);
+            $('#sendSmsModal').modal('hide');
+        },
+        error: function () {
+            toastr.error('SMS sending failed');
+        }
+    });
+});
 </script>
 
 

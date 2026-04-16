@@ -112,9 +112,16 @@
                     <!-- Add other form fields as needed -->
 
                          <div class="d-flex gap-2">
-                        <button id="consent" class="btn btn-danger" type="button">
-                            Check Consent (DTMF)
-                        </button>
+                        <button
+    id="consent"
+    class="btn btn-submit"
+    type="button"
+    style="background-color:#81CECA; border-color:#81CECA; color:#fff;"
+    onmouseover="this.style.backgroundColor='#6bbab6'; this.style.borderColor='#6bbab6';"
+    onmouseout="this.style.backgroundColor='#81CECA'; this.style.borderColor='#81CECA';"
+>
+    Check Consent (DTMF)
+</button>
 
                         <div id="autoDebitWrapper"></div>
                     </div>

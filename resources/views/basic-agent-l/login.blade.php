@@ -17,12 +17,12 @@
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
 
-    <title>Tele Sales EFU LIFE </title>
+    <title>Seamless, secure, and tailored for the modern professional. Take control of your financial future with Zindigi.</title>
 
     <meta name="description" content="" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('agent/assets/img/favicon/favicon.ico') }}" />
+    <link rel="icon" type="image/x-icon" href="{{ asset('newdes/icon.png') }}" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -66,13 +66,13 @@
               <!-- Logo -->
               <div class="app-brand justify-content-center">
                 <a href="#" class="app-brand-link gap-2">
-                <img src="../assets/img/logo.png" alt="Your Logo">
+                <img src="{{ asset('newdes/zindgi.png') }}" alt="Your Logo">
 
                 </a>
               </div>
               <!-- /Logo -->
-              <h4 class="mb-2">Welcome to Telesales Portal! 👋</h4>
-              <p class="mb-4">Please sign-in to your Basic Agent L account credentials Provied by IT Support</p>
+              <h4 class="mb-2">Welcome to Zindigi Portal! 👋</h4>
+              <p class="mb-4">Please sign-in to your Basic Agent account credentials Provied by IT Support</p>
               @if(session('status'))
               <div class="alert alert-success">
                       {{ session('status') }}
@@ -132,7 +132,9 @@
                   </div>
                 </div>
                 <div class="mb-3">
-                  <button class="btn btn-primary d-grid w-100" type="submit">Sign in</button>
+                  <button class="btn d-grid w-100" type="submit" style="background-color:#81CECA; border-color:#81CECA; color:#fff;">
+    Sign in
+</button>
                 </div>
               </form>
             </div>

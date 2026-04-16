@@ -133,7 +133,7 @@
                           </div>
                         </div>
                         <div id="growthChart"></div>
-                        <div class="text-center fw-medium pt-3 mb-2">0% EFU LIFE Inclusive Growth</div>
+                        <div class="text-center fw-medium pt-3 mb-2">0% Zindigi Inclusive Growth</div>
 
                         <div class="d-flex px-xxl-4 px-lg-2 p-4 gap-xxl-3 gap-lg-1 gap-3 justify-content-between">
                           <div class="d-flex">
@@ -197,7 +197,7 @@
 
 
             <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-            <script>
+            {{-- <script>
                 $(document).ready(function () {
                     function fetchDashboardData() {
                         $.ajax({
@@ -230,7 +230,7 @@
                     // Optionally, set up an interval to refresh data periodically
                     setInterval(fetchDashboardData, 60000); // Refresh every 60 seconds
                 });
-            </script>
+            </script> --}}
 
 
 @endsection()

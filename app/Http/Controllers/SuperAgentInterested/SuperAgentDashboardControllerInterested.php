@@ -48,6 +48,10 @@ public function index()
         ->groupBy('rejection_reason')
         ->get();
 
+        $channels = Claim::select('chanel_name', DB::raw('count(*) as total'))
+            ->groupBy('chanel_name')
+            ->get();
+
     return view('super_agent_Interested.dashboard', compact(
         'totalClaims',
         'approved',
@@ -56,7 +60,8 @@ public function index()
         'avgTat',
         'statusData',
         'tatChart',
-        'rejectionReasons'
+        'rejectionReasons',
+        'channels'
     ));
 }
 

@@ -714,62 +714,145 @@ public function agents_get_data_export(Request $request)
 
 public function export_recusive_charing_data(Request $request)
 {
+    $fileName = 'RecusiveChargingReport.csv';
 
-    $query = RecusiveChargingData::select([
-        'recusive_charging_data.*', // Select all columns from recusive_charging_data table
-        'plans.plan_name', // Select the plan_name column from the plans table
-        'products.product_name', // Select the product_name column from the products table
-    ])
-    ->join('plans', 'recusive_charging_data.plan_id', '=', 'plans.plan_id')
-    ->join('products', 'recusive_charging_data.product_id', '=', 'products.product_id')
-    ->with(['plan', 'product']); // Eager load related models
+    $headers = [
+        "Content-type"        => "text/csv",
+        "Content-Disposition" => "attachment; filename=$fileName",
+        "Pragma"              => "no-cache",
+        "Cache-Control"       => "must-revalidate",
+        "Expires"             => "0"
+    ];
 
+    return response()->stream(function () use ($request) {
 
-     if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
-         $dateRange = explode(' to ', $request->input('dateFilter'));
-         $startDate = $dateRange[0];
-         $endDate = $dateRange[1];
-         $query->whereDate('recusive_charging_data.created_at', '>=', $startDate)
-         ->whereDate('recusive_charging_data.created_at', '<=', $endDate);
+        $file = fopen('php://output', 'w');
 
-     }
+        // CSV Header
+        fputcsv($file, [
+            'Subscription ID', 'Customer MSISDN', 'Plan Name',
+            'Product Name', 'Transaction ID','Reference ID',
+            'Amount','Cps Response','Next Charging Date',
+            'Duration','Created at'
+        ]);
 
-    $data = $query->get();
-        //  dd($data);
-               // Define headers
-               $headers = ['Subscription ID', 'Customer MSISDN', 'Plan Name', 'Product Name', 'Transaction ID','Reference ID', 'Amount',
-               'Cps Response','Next Charging Date', 'Duration','Created at']; // Replace with your actual column names
-                // Prepare the data with headers
-              $rows[] = $headers;
-              foreach ($data as $item) {
-               $rows[] = [
-                  $item->subscription_id,
-                  $item->customer_msisdn,
-                  $item->plan_name,
-                  $item->product_name,
-                  $item->tid,
-                  $item->reference_id,
-                  $item->amount,
-                  $item->cps_response,
-                  $item->charging_date,
-                  $item->duration,
-                  $item->created_at,
+        $query = RecusiveChargingData::select([
+                'recusive_charging_data.subscription_id',
+                'recusive_charging_data.customer_msisdn',
+                'plans.plan_name',
+                'products.product_name',
+                'recusive_charging_data.tid',
+                'recusive_charging_data.reference_id',
+                'recusive_charging_data.amount',
+                'recusive_charging_data.cps_response',
+                'recusive_charging_data.charging_date',
+                'recusive_charging_data.duration',
+                'recusive_charging_data.created_at',
+                'recusive_charging_data.id' // IMPORTANT for chunkById
+            ])
+            ->join('plans', 'recusive_charging_data.plan_id', '=', 'plans.plan_id')
+            ->join('products', 'recusive_charging_data.product_id', '=', 'products.product_id');
 
+        // Date filter
+        if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+            $dateRange = explode(' to ', $request->input('dateFilter'));
+            $query->whereDate('recusive_charging_data.created_at', '>=', $dateRange[0])
+                  ->whereDate('recusive_charging_data.created_at', '<=', $dateRange[1]);
+        }
 
-              ];
-             }
+        // 🔥 Chunking (NO MEMORY ISSUE)
+        $query->orderBy('recusive_charging_data.id')
+              ->chunkById(5000, function ($rows) use ($file) {
 
-             // Generate XLS file
-             $filePath = storage_path('app/RecusiveChargingReport.xls');
-             $file = fopen($filePath, 'w');
-             foreach ($rows as $row) {
-              fputcsv($file, $row, "\t"); // Tab-delimited for Excel
-              }
-              fclose($file);
+            foreach ($rows as $item) {
+                fputcsv($file, [
+                    $item->subscription_id,
+                    $item->customer_msisdn,
+                    $item->plan_name,
+                    $item->product_name,
+                    $item->tid,
+                    $item->reference_id,
+                    $item->amount,
+                    $item->cps_response,
+                    $item->charging_date,
+                    $item->duration,
+                    $item->created_at,
+                ]);
+            }
 
-             // Download the file
-             return response()->download($filePath)->deleteFileAfterSend(true);
+            // flush buffer (IMPORTANT for streaming)
+            flush();
+        });
+
+        fclose($file);
+
+    }, 200, $headers);
 }
+
+
+
+// public function export_recusive_charing_data(Request $request)
+// {
+
+//     $query = RecusiveChargingData::select([
+//         'recusive_charging_data.*', // Select all columns from recusive_charging_data table
+//         'plans.plan_name', // Select the plan_name column from the plans table
+//         'products.product_name', // Select the product_name column from the products table
+//     ])
+//     ->join('plans', 'recusive_charging_data.plan_id', '=', 'plans.plan_id')
+//     ->join('products', 'recusive_charging_data.product_id', '=', 'products.product_id')
+//     ->with(['plan', 'product']); // Eager load related models
+
+
+//      if ($request->has('dateFilter') && $request->input('dateFilter') != '') {
+//          $dateRange = explode(' to ', $request->input('dateFilter'));
+//          $startDate = $dateRange[0];
+//          $endDate = $dateRange[1];
+//          $query->whereDate('recusive_charging_data.created_at', '>=', $startDate)
+//          ->whereDate('recusive_charging_data.created_at', '<=', $endDate);
+
+//      }
+
+//     $data = $query->get();
+//         //  dd($data);
+//                // Define headers
+//                $headers = ['Subscription ID', 'Customer MSISDN', 'Plan Name', 'Product Name', 'Transaction ID','Reference ID', 'Amount',
+//                'Cps Response','Next Charging Date', 'Duration','Created at']; // Replace with your actual column names
+//                 // Prepare the data with headers
+//               $rows[] = $headers;
+//               foreach ($data as $item) {
+//                $rows[] = [
+//                   $item->subscription_id,
+//                   $item->customer_msisdn,
+//                   $item->plan_name,
+//                   $item->product_name,
+//                   $item->tid,
+//                   $item->reference_id,
+//                   $item->amount,
+//                   $item->cps_response,
+//                   $item->charging_date,
+//                   $item->duration,
+//                   $item->created_at,
+
+
+//               ];
+//              }
+
+//              // Generate XLS file
+//              $filePath = storage_path('app/RecusiveChargingReport.xls');
+//              $file = fopen($filePath, 'w');
+//              foreach ($rows as $row) {
+//               fputcsv($file, $row, "\t"); // Tab-delimited for Excel
+//               }
+//               fclose($file);
+
+//              // Download the file
+//              return response()->download($filePath)->deleteFileAfterSend(true);
+// }
+
+
+
+
 
 public function export_consent_number_data(Request $request)
 {

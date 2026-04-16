@@ -170,7 +170,15 @@
                                   <button class="btn btn-primary btn-prev"> <i class="bx bx-chevron-left bx-sm ms-sm-n2"></i>
                                     <span class="align-middle d-sm-inline-block d-none">Previous</span>
                                   </button>
-                                  <button class="btn btn-success btn-submit" onclick="makeAjaxRequest()">Submit</button>
+                                  <button
+    class="btn btn-submit"
+    style="background-color:#81CECA; border-color:#81CECA; color:#fff;"
+    onmouseover="this.style.backgroundColor='#6bbab6'; this.style.borderColor='#6bbab6';"
+    onmouseout="this.style.backgroundColor='#81CECA'; this.style.borderColor='#81CECA';"
+    onclick="makeAjaxRequest()"
+>
+    Submit
+</button>
                                 </div>
                               </div>
                             </div>
@@ -186,15 +194,15 @@
     <form class="modal-content">
       <div class="modal-header justify-content-center"> <!-- Centering the modal header content -->
         <h5 class="modal-title"> <!-- Remove id attribute to avoid duplication -->
-            <i class="menu-icon tf-icons bx bx-checkbox-checked" style="color: green; font-size: 40px;"></i>
+            <i class="menu-icon tf-icons bx bx-checkbox-checked" style="color: rgb(5, 187, 237); font-size: 40px;"></i>
 
-          <i class="bi bi-check-circle" style="font-size: 2rem; color: #28a745; vertical-align: middle;"></i> <!-- Success icon -->
+          <i class="bi bi-check-circle" style="font-size: 2rem; color: rgb(5, 187, 237);; vertical-align: middle;"></i> <!-- Success icon -->
           Data has been successfully submitted for deduction.
         </h5>
 
       </div>
       <div class="modal-body text-center">
-        <i class="bi bi-check-circle" style="font-size: 4rem; color: #28a745;"></i> <!-- Success icon -->
+        <i class="bi bi-check-circle" style="font-size: 4rem; color: rgb(5, 187, 237);;"></i> <!-- Success icon -->
         <!-- Add your success message here -->
         <p class="mt-3">Now, please inform the customer that they will need to press '1' to confirm the deduction when transferred to the IVR. After explaining this to the customer, go ahead and transfer the call to the IVR for digital consent.<br>
             ڈیٹا کٹوتی کے لیے کامیابی سے جمع کر دیا گیا ہے۔ اب براہ کرم کسٹمر کو آگاہ کریں کہ جب کال
@@ -218,13 +226,13 @@
             <i class="menu-icon tf-icons bx bx-error" style="color: red; font-size: 50px;"></i>
 
 
-            <i class="bi bi-check-circle" style="font-size: 2rem; color: #28a745; vertical-align: middle;"></i> <!-- Success icon -->
+            <i class="bi bi-check-circle" style="font-size: 2rem; color: rgb(5, 187, 237);; vertical-align: middle;"></i> <!-- Success icon -->
             Duplicate Number Alert for Deduction
           </h5>
 
         </div>
         <div class="modal-body text-center">
-          <i class="bi bi-check-circle" style="font-size: 4rem; color: #28a745;"></i> <!-- Success icon -->
+          <i class="bi bi-check-circle" style="font-size: 4rem; color: rgb(5, 187, 237);;"></i> <!-- Success icon -->
           <!-- Add your success message here -->
           <p class="mt-3">You have already sent this number for deduction to the Super-Agent today. Please complete the deduction process first.<br>
             عنوان: نمبر کی دوبارہ بھیجنے کی اطلاع
@@ -441,7 +449,7 @@ function updateProductsDropdown(planId) {
     // Add options based on the selected plan
     if (plansAndProducts.hasOwnProperty(planId)) {
         plansAndProducts[planId].products.forEach(product => {
-          
+
                // Laravel session value ko JS me inject kar rahe hain
         //const companyId = {{ session("agent")->company_id }};
 
