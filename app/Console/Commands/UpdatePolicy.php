@@ -1,117 +1,113 @@
 <?php
 
 namespace App\Console\Commands;
+
 use App\Models\Subscription\CustomerSubscription;
 use App\Models\Unsubscription\CustomerUnSubscription;
-use App\Models\Refund\RefundedCustomer;
-use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Collection;
 
 class UpdatePolicy extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'update:policy';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Command description';
+    protected $description = 'Update policy in chunks';
 
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        parent::__construct();
-    }
-
-    /**
-     * Execute the console command.
-     *
-     * @return int
-     */
     public function handle()
     {
-        DB::enableQueryLog();
-        $subscriptions = CustomerSubscription::whereIn('subscriber_msisdn', [
-'03245857676',
-'03230329358',
-'03111414556',
-'03092021828',
-'03026304261',
-'03280590151',
-'03455164041',
-'03248382791',
-'03052411263',
-'03008065312',
-'03065175565',
-'03103463598',
-'03035750955',
-'03082277496',
-'03045445445',
-'03457929669',
-'03286529205',
-'03216480690',
-'03336103898',
-'03178488185',
-'03269908125',
-'03353259232',
-'03034618535',
-'03158088589',
-'03261742645',
-'03270106531',
-'03021321900',
-'03256112419',
-'03078609044',
-'03064482647',
-'03093865137',
-'03034622040'
-])->get();
-        // dd(DB::getQueryLog());
-         dd($subscriptions);
 
+        $file = storage_path('app/NetEnrollmentReport.csv');
 
-        foreach($subscriptions as $subscription){
-            // dd($subscription);
-          $find_sub = CustomerSubscription::find($subscription->subscription_id);
-          $find_sub->policy_status = '0';
-          $find_sub->update();
-
-          $refundedCustomer=RefundedCustomer::create([
-            'subscription_id' => $subscription->subscription_id,
-            'unsubscription_id' => 2,
-            'transaction_id' => $subscription->cps_transaction_id,
-            'reference_id' => $subscription->referenceId,
-            'cps_response' => $subscription->cps_response_text,
-            'result_description' => $subscription->cps_response_text,
-            'result_code' => 0,
-            'refunded_by' => 'Danish2024',
-            'medium' => 'Bank Refund',
-            ]);
-
-
-          $CustomerUnSub= CustomerUnSubscription::create([
-            'unsubscription_datetime' => now(),
-            'medium' => "Bank Refund",
-            'subscription_id' => $subscription->subscription_id,
-            'refunded_id' => $refundedCustomer->refund_id,
-             ]);
-
+        if (!file_exists($file)) {
+            $this->error('CSV file not found.');
+            return Command::FAILURE;
         }
 
+        $handle = fopen($file, 'r');
 
-    //  dd($subscriptions);
-        return 'success';
-        return 0;
+        // Skip header
+        fgetcsv($handle);
+
+        $records = [];
+
+        while (($row = fgetcsv($handle, 1000, ",")) !== false) {
+
+            $records[] = [
+                'msisdn' => trim($row[0] ?? ''),
+                'amount' => trim($row[2] ?? ''),
+            ];
+        }
+
+        fclose($handle);
+
+        // Collection chunks
+        collect($records)->chunk(100)->each(function ($chunk, $chunkIndex) {
+
+            $this->line("==================================");
+            $this->info("Processing Chunk: " . ($chunkIndex + 1));
+            $this->line("==================================");
+
+            foreach ($chunk as $record) {
+
+                $formattedMsisdn = '0' . preg_replace('/[^0-9]/', '', $record['msisdn']);
+
+                $formattedAmount = str_replace(',', '', $record['amount']);
+
+                $subscription = CustomerSubscription::where('subscriber_msisdn', $formattedMsisdn)
+    ->where('transaction_amount', $formattedAmount)
+    ->where('product_duration', 365)
+    ->where('policy_status', 1)
+    ->whereBetween('subscription_time', [
+        '2025-03-01 00:00:00',
+        '2025-03-31 23:59:59'
+    ])
+    ->first();
+
+
+                if (!$subscription) {
+
+                    $this->warn("NOT FOUND => {$formattedMsisdn}");
+                    continue;
+                }
+
+                // Update policy
+                $subscription->policy_status = 0;
+                $subscription->save();
+
+                // Check already unsubscribed
+$alreadyUnsub = CustomerUnSubscription::where('subscription_id', $subscription->subscription_id)
+    ->exists();
+
+if ($alreadyUnsub) {
+    $this->warn("ALREADY UNSUB => {$formattedMsisdn}");
+    continue;
+}
+
+                // Create unsub record
+                CustomerUnSubscription::create([
+                    'unsubscription_datetime' => now(),
+                    'medium' => 'expired',
+                    'subscription_id' => $subscription->subscription_id,
+                    'refunded_id' => '1',
+                ]);
+
+                $this->info("UPDATED => {$formattedMsisdn}");
+
+                Log::channel('unsub_number_log')->info('Policy Expired.', [
+                    'Sub-ID' => $subscription->subscription_id,
+                    'MSISDN' => $subscription->subscriber_msisdn,
+                    'transaction_amount' => $subscription->transaction_amount,
+                    'policy_status' => $subscription->policy_status,
+                ]);
+            }
+
+            // Optional pause
+            sleep(2);
+        });
+
+        $this->info("PROCESS COMPLETED");
+
+        return Command::SUCCESS;
     }
 }

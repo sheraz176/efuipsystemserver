@@ -130,10 +130,10 @@
               </a>
             </li>
 
-       
 
 
-            
+
+
 
             {{-- <li class="menu-header small text-uppercase"><span class="menu-header-text">Companies Management</span></li> --}}
             <!-- Cards -->
@@ -290,7 +290,7 @@
                     </a>
                   </li>
 
-                     
+
 
                    <li class="menu-item {{ Request::is('super-admin/recusive/counts') ? 'active' : '' }}">
                     <a href="{{ route('superadmin.recusive.counts.index') }}" class="menu-link" onclick="closeSubmenu(this)">
@@ -307,7 +307,7 @@
                   </li>
 
 
-                        
+
 
 
                   <li class="menu-item {{ Request::is('super-admin/recusive/chargingdataindex') ? 'active' : '' }}">
@@ -345,6 +345,15 @@
                       <div data-i18n="Basic">Manage Refunds</div>
                     </a>
                   </li>
+
+                    <li class="menu-item {{ Request::is('super-admin/cashback') ? 'active' : '' }}">
+                    <a href="{{ route('superadmin.cashback') }}" class="menu-link">
+                      <i class="menu-icon tf-icons bx bx-collection"></i>
+                      <div data-i18n="Basic">Cashback</div>
+                    </a>
+                  </li>
+
+
 
                   <li class="menu-item {{ Request::is('super-admin/Refunded/Customer') ? 'active' : '' }}">
                     <a href="{{ route('superadmin.refunded.customer') }}" class="menu-link">

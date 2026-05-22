@@ -166,9 +166,22 @@
                 {
                     data: 'subscription_id', // Assuming 'subscription_id' is the ID of the subscription
                     name: 'action',
-                    render: function(data, type, full, meta) {
-                        return '<a href="{{ route('refunded.unsubscribe-now', '') }}/' + data + '" class="btn btn-danger">Refund</a>';
-                    }
+                        render: function(data, type, full, meta) {
+
+    let refundDisabled = full.is_cashback == 1 ? 'disabled' : '';
+    let cashbackDisabled = full.is_cashback == 1 ? 'disabled' : '';
+
+    return `
+        <a href="{{ route('refunded.unsubscribe-now', '') }}/${data}"
+           class="btn btn-danger ${refundDisabled}">Refund</a>
+
+        <button class="btn btn-success cashback-btn ${cashbackDisabled}"
+            data-id="${data}">
+            Cashback
+        </button>
+    `;
+}
+
                 },
             ],
         });
@@ -180,6 +193,32 @@
             Element.placeholder = 'Search by name';
         });
     });
+
+
+
+    $(document).on('click', '.cashback-btn', function() {
+    let id = $(this).data('id');
+
+    if(confirm('Are you sure you want to process cashback?')) {
+        $.ajax({
+            url: "{{ route('cashback.process') }}",
+            type: "POST",
+            data: {
+                _token: "{{ csrf_token() }}",
+                subscription_id: id
+            },
+            success: function(response) {
+                toastr.success('Cashback processed successfully');
+                $('#myTables').DataTable().ajax.reload();
+            },
+            error: function() {
+                toastr.error('Something went wrong');
+            }
+        });
+    }
+});
+
+
 </script>
 
 

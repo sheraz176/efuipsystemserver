@@ -39,23 +39,23 @@ class downloadagent extends Command
     public function handle()
 {
 
-$agentsData = [
-    ['Natasha', 'Ashraf', 'Natasha.Ashraf.tsm.2026', 'Natasha#Ashraf#tsm#2026', 'HD1616'],
-    ['Aleesha', 'Zia', 'Aleesha.Zia.tsm.2026', 'Aleesha#Zia#tsm#2026', 'HD1617'],
-    ['Hammad', 'Ali', 'Hammad.Ali.tsm.2026', 'Hammad#Ali#tsm#2026', 'HD1618'],
-    ['Shafqat Ullah', 'Khan', 'ShafqatUllah.Khan.tsm.2026', 'Shafqat Ullah#Khan#tsm#2026', 'HD1619'],
-    ['Laaraib', 'Imran', 'Laaraib.Imran.tsm.2026', 'Laaraib#Imran#tsm#2026', 'HD1620'],
-    ['Hadia', 'Nadeem', 'Hadia.Nadeem.tsm.2026', 'Hadia#Nadeem#tsm#2026', 'HD1621'],
-    ['Rimsha', 'Hafeez', 'Rimsha.Hafeez.tsm.2026', 'Rimsha#Hafeez#tsm#2026', 'HD1622'],
-    ['Saher', 'Safarish', 'Saher.Safarish.tsm.2026', 'Saher#Safarish#tsm#2026', 'HD1623'],
-    ['Muhammad Zulfaqar', 'Khan', 'MuhammadZulfaqar.Khan.tsm.2026', 'Muhammad Zulfaqar#Khan#tsm#2026', 'HD1624'],
-    ['Saif Ullah', 'Qureshi', 'SaifUllah.Qureshi.tsm.2026', 'Saif Ullah#Qureshi#tsm#2026', 'HD1625'],
-    ['Arooj', 'Aslam', 'Arooj.Aslam.tsm.2026', 'Arooj#Aslam#tsm#2026', 'HD1626'],
-    ['Areeb', 'Ramzan', 'Areeb.Ramzan.tsm.2026', 'Areeb#Ramzan#tsm#2026', 'HD1627'],
-    ['Saqib', 'Khan', 'Saqib.Khan.tsm.2026', 'Saqib#Khan#tsm#2026', 'HD1628'],
-    ['Muhammad Arif', 'Zia', 'MuhammadArif.Zia.tsm.2026', 'Muhammad Arif#Zia#tsm#2026', 'HD1629'],
-];
 
+$agentsData = [
+    ['Muskan', 'Fatima', 'muskan.fatima.abacus', 'Muskan#Fatima##abacus#2026', 'muskan.fatima@gmail.com'],
+    ['Areesha', 'Naeem', 'areesha.naeem.abacus', 'Areesha#Naeem##abacus#2026', 'areesha.naeem@gmail.com'],
+    ['Javaria', 'Jamil', 'javaria.jamil.abacus', 'Javaria#Jamil##abacus#2026', 'javaria.jamil@gmail.com'],
+    ['Faria', 'Ashraf', 'faria.ashraf.abacus', 'Faria#Ashraf##abacus#2026', 'faria.ashraf@gmail.com'],
+    ['Tasbeeha', 'Shahzadi', 'tasbeeha.shahzadi.abacus', 'Tasbeeha#Shahzadi##abacus#2026', 'tasbeeha.shahzadi@gmail.com'],
+    ['Nimra', 'Bukhari', 'nimra.bukhari.abacus', 'Nimra#Bukhari##abacus#2026', 'nimra.bukhari@gmail.com'],
+    ['Maiyla', 'Mukhtar', 'maiyla.mukhtar.abacus', 'Maiyla#Mukhtar##abacus#2026', 'maiyla.mukhtar@gmail.com'],
+    ['Eisha', 'Iftikhar', 'eisha.iftikhar.abacus', 'Eisha#Iftikhar##abacus#2026', 'eisha.iftikhar@gmail.com'],
+    ['Alisha', 'Tasleem', 'alisha.tasleem.abacus', 'Alisha#Tasleem##abacus#2026', 'alisha.tasleem@gmail.com'],
+    ['Sana', 'Faisal', 'sana.faisal.abacus', 'Sana#Faisal##abacus#2026', 'sana.faisal@gmail.com'],
+    ['Syeda', 'Attiqa', 'syeda.attiqa.abacus', 'Syeda#Attiqa##abacus#2026', 'syeda.attiqa@gmail.com'],
+    ['Amna', 'Noor', 'amna.noor.abacus', 'Amna#Noor##abacus#2026', 'amna.noor@gmail.com'],
+    ['Muqadas', 'Ashraf', 'muqadas.ashraf.abacus', 'Muqadas#Ashraf##abacus#2026', 'muqadas.ashraf@gmail.com'],
+    ['Komal', 'Shahzadi', 'komal.shahzadi.abacus', 'Komal#Shahzadi##abacus#2026', 'komal.shahzadi@gmail.com'],
+];
 
 
 

@@ -105,6 +105,18 @@
                             <label for="policy_status">Consent</label>
                             <input type="text" class="form-control" id="consent" value="{{ $customer->consent }}" readonly disabled>
                         </div>
+
+                         <div class="form-group">
+                            <label for="policy_status">Beneficiary Name</label>
+                            <input type="text" class="form-control" id="beneficiary_name" value="{{ $customer->beneficiary_name }}" readonly disabled>
+                        </div>
+
+                         <div class="form-group">
+                            <label for="policy_status">Beneficiary MSISDN</label>
+                            <input type="text" class="form-control" id="beneficiary_msisdn" value="{{ $customer->beneficiary_msisdn }}" readonly disabled>
+                        </div>
+
+
                     </div>
                 </div>
             </div>

@@ -12,13 +12,13 @@
                     <ol class="breadcrumb pl-0">
                         <li class="breadcrumb-item"><a href="{{ route('superadmin.dashboard') }}"><i class="material-icons"></i>Home</a></li>
                         <li class="breadcrumb-item"><a href="{{ route('superadmin.dashboard') }}">Dashboard</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Net Enrollment Report</li>
+                        <li class="breadcrumb-item active" aria-current="page">Cash Back Report</li>
                     </ol>
                 </nav>
                 <div class="ms-panel">
 
 
-                    <div class="ms-panel-header ms-panel-custome align-items-center">
+                    {{-- <div class="ms-panel-header ms-panel-custome align-items-center">
                         <div class="row mb-3">
                         </div>
                         <div class="col-md-6">
@@ -35,7 +35,7 @@
 
                            </form>
 
-                    </div>
+                    </div> --}}
                 </div>
             </div>
             <div class="col-xl-12 col-md-12">
@@ -107,7 +107,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: "{{ route('datatable.getData') }}",
+                    url: "{{ route('cashback.getData') }}",
                     data: function (d) {
                         var dateFilter = $('#dateFilter').val();
                         if (dateFilter) {

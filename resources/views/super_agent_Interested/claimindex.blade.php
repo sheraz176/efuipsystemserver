@@ -75,8 +75,13 @@
                             <th>Existing Amount</th>
                             <th>Remaining Amount</th>
                             <th>chanel_name</th>
+                            
+                             <th>Pending Case Remarks</th>
+                             <th>Update Remarks</th>
+                             
                             <th>Amount</th>
                             <th>Claim Amount</th>
+                           
                             <th>Update Claim Amount</th>
                             <th>Status Action</th>
                             <th>Send SMS</th>
@@ -114,6 +119,11 @@
     </div>
 
 
+ 
+
+
+
+
 <!-- Reject Reason Modal -->
 <div class="modal fade" id="rejectReasonModal" tabindex="-1" aria-labelledby="rejectReasonModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -143,6 +153,33 @@
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-danger">Reject Claim</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- Pending Case Remarks Modal -->
+<div class="modal fade" id="editPendingModal">
+    <div class="modal-dialog">
+        <form id="updatePendingForm">
+            @csrf
+            <input type="hidden" name="claim_id" id="pending_claim_id">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Pending Remarks</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <label>Remarks</label>
+                    <input type="text" name="pending_case_remarks" id="pending_case_remarks" class="form-control" required>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Update</button>
                 </div>
             </div>
         </form>
@@ -231,8 +268,13 @@
                 { data: 'existingamount', name: 'existingamount' },
                 { data: 'remaining_amount', name: 'remaining_amount' },
                 { data: 'chanel_name', name: 'chanel_name' },
+
+                    { data: 'pending_case_remarks', name: 'pending_case_remarks' },
+{ data: 'pending_case_action', name: 'pending_case_action', orderable: false, searchable: false },
+
                 { data: 'amount', name: 'amount' },
-                { data: 'claim_amount', name: 'claim_amount' },
+              
+                 { data: 'claim_amount', name: 'claim_amount' },
                 { data: 'edit_amount', name: 'edit_amount', orderable: false, searchable: false },
                 { data: 'status_action', name: 'status_action', orderable: false, searchable: false },
                 { data: 'send_sms', name: 'send_sms', orderable: false, searchable: false },
@@ -336,6 +378,34 @@ $(document).on('click', '.approve-btn', function () {
                 }
             });
         });
+
+         // Open Modal
+$(document).on('click', '.edit-pending-btn', function() {
+    $('#pending_claim_id').val($(this).data('id'));
+    $('#pending_case_remarks').val($(this).data('remarks'));
+    $('#editPendingModal').modal('show');
+});
+
+// Submit AJAX
+$('#updatePendingForm').on('submit', function(e) {
+    e.preventDefault();
+
+    $.ajax({
+        url: '{{ route("claim.update.amount.pending") }}',
+        type: 'POST',
+        data: $(this).serialize(),
+        success: function(response) {
+            toastr.success(response.message);
+            $('#editPendingModal').modal('hide');
+            $('#myTables').DataTable().ajax.reload(null, false);
+        },
+        error: function() {
+            toastr.error('Failed to update remarks');
+        }
+    });
+});
+ 
+
 
         // Placeholder for search box
         $('.dataTables_filter input').attr('placeholder', 'Search by name');

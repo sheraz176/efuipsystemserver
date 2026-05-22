@@ -30,6 +30,10 @@ class ManagerUnSubscription extends Controller
     // Fetch the customer subscription record
     $subscription = CustomerSubscription::findOrFail($subscriptionId);
 
+    if ($subscription->is_cashback == 1) {
+    return back()->with('error', 'Cashback already processed, cannot refund');
+    }
+
     // Call refundManager function with referenceId and CPSTransaction ID
     $refundResult = $this->refundManager($subscription->cps_transaction_id,$subscription->referenceId,$subscription->subscriber_msisdn);
 
