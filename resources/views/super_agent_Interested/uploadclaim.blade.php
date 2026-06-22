@@ -18,9 +18,18 @@
                         <input  type="hidden"  name="agent_id"  value="{{ session('agent')->username }} ">
 
                         <div class="form-group">
-                            <label>MSISDN</label>
-                            <input type="text" name="msisdn" class="form-control" required>
-                        </div>
+    <label>MSISDN</label>
+    <input type="text" id="msisdn" name="msisdn" class="form-control" required>
+</div>
+
+<div id="planMessage"></div>
+
+<div class="form-group">
+    <label>Select Plan <span class="text-danger">*</span></label>
+    <select id="plan_id" name="plan_id" class="form-control" required>
+        <option value="">Select Plan</option>
+    </select>
+</div>
 
                         <div class="form-group">
                             <label>Claim Amount</label>
@@ -80,6 +89,7 @@ document.getElementById('claimForm').addEventListener('submit', function (e) {
         claim_amount: document.querySelector('[name="claim_amount"]').value,
         type: document.querySelector('[name="type"]').value,
         agent_id: document.querySelector('[name="agent_id"]').value,
+        plan_id: document.querySelector('[name="plan_id"]').value,
     };
 
     const files = ['doctor_prescription', 'medical_bill', 'lab_bill', 'other'];
@@ -125,6 +135,64 @@ function toBase64(file) {
         reader.onerror = error => reject(error);
     });
 }
+
+document.getElementById('msisdn').addEventListener('keyup', function () {
+    let msisdn = this.value;
+
+    if (msisdn.length < 10) return;
+
+    fetch("{{ route('msisdn.search.plans') }}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        },
+        body: JSON.stringify({ msisdn: msisdn })
+    })
+    .then(res => res.json())
+    .then(data => {
+
+        let planSelect = document.getElementById('plan_id');
+        let messageBox = document.getElementById('planMessage');
+
+        planSelect.innerHTML = `<option value="">Select Plan</option>`;
+        messageBox.innerHTML = "";
+
+        if (data.plans.length > 0) {
+
+            data.plans.forEach(item => {
+                planSelect.innerHTML += `
+                    <option value="${item.plan_id}">
+                        ${item.plan_name}
+                    </option>
+                `;
+
+                messageBox.innerHTML += `
+                    <div style="color: green; font-weight: 600;">
+                        Subscribed for: ${item.plan_name}
+                    </div>
+                `;
+            });
+
+        } else {
+            messageBox.innerHTML = `
+                <div style="color: red; font-weight: 600;">
+                    No active plan for this MSISDN
+                </div>
+            `;
+        }
+    });
+});
+
+document.getElementById('claimForm').addEventListener('submit', function (e) {
+    let planId = document.getElementById('plan_id').value;
+
+    if (!planId) {
+        e.preventDefault();
+        alert("Please select a plan before submitting claim.");
+        return false;
+    }
+});
 </script>
 
 @endsection

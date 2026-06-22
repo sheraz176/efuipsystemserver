@@ -30,7 +30,10 @@ class Claim extends Model
           'chanel_name',
           'last_sms_sent_at',
           'last_sms',
-          'rejection_reason'
+          'rejection_reason',
+          'agent_upload',
+          'sub_id',
+
     ];
 
 }

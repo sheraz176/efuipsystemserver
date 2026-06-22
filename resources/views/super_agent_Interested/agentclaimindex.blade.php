@@ -14,7 +14,7 @@
             </nav>
             <div class="ms-panel">
     <div class="ms-panel-header ms-panel-custome align-items-center">
-        <form method="POST" action="{{ route('superadmin.export-claim-data') }}">
+        <form method="POST" action="{{ route('agent.export-claim-data') }}">
             @csrf
             <div class="row">
 
@@ -61,6 +61,8 @@
                     <thead>
                         <tr>
                             <th>#</th>
+                           <th>Agent Name</th>
+                           <th>Sub Id</th>
                             <th>MSISDN</th>
                             <th>Plan ID</th>
                             <th>Product ID</th>
@@ -245,7 +247,7 @@
             processing: true,
             serverSide: true,
             ajax: {
-                url: "{{ route('superadmin.get-claims-data') }}",
+                url: "{{ route('agent.get-claims-data') }}",
                 data: function(d) {
                     d.dateFilter = $('#dateFilter').val();
                     d.status = $('#statusFilter').val();
@@ -254,6 +256,8 @@
             },
             columns: [
                 { data: 'id', name: 'id' },
+                { data: 'agent_id', name: 'agent_id' },
+                { data: 'sub_id', name: 'sub_id' },
                 { data: 'msisdn', name: 'msisdn' },
                 { data: 'plan_name', name: 'plan_name' },
                 { data: 'product_name', name: 'product_name' },

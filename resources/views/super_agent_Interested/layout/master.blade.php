@@ -134,8 +134,8 @@
               </a>
             </li>
 
-             
-             
+
+
                @if(in_array(session('agent')->username, ['Waheed.safdar.reports.agent', 'Bilal.Reports.agent.2025']))
 
 
@@ -183,12 +183,7 @@
               </li>
 
 
-    <li class="menu-item">
-              <a href="{{ route('calims.indexclaim') }}" id = "salespagebutton" class="menu-link">
-                <i class="menu-icon tf-icons bx bx-collection"></i>
-                <div data-i18n="Basic">Upload Claims</div>
-              </a>
-              </li>
+
 
 
 
@@ -207,6 +202,43 @@
                 <div data-i18n="Basic">Upload Claims Status</div>
               </a>
               </li>
+
+                <li class="menu-item">
+              <a href="{{ route('calims.indexclaim') }}" id = "salespagebutton" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-collection"></i>
+                <div data-i18n="Basic">Upload Claims </div>
+              </a>
+              </li>
+
+               <li class="menu-item">
+              <a href="{{ route('agent.new.claims') }}" id = "salespagebutton" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-collection"></i>
+                <div data-i18n="Basic">Agents Claims</div>
+              </a>
+            </li>
+
+               <li class="menu-item">
+              <a href="{{ route('customer.sendcustomersms') }}" id = "salespagebutton" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-collection"></i>
+                <div data-i18n="Basic">Customer Send SMS</div>
+              </a>
+            </li>
+
+             <li class="menu-item">
+              <a href="{{ route('customer.new.claims') }}" id = "salespagebutton" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-collection"></i>
+                <div data-i18n="Basic">Customer Claims</div>
+              </a>
+            </li>
+
+
+
+
+
+
+
+
+
 
 
 @endif
@@ -364,7 +396,7 @@
             <footer class="content-footer footer bg-footer-theme">
               <div class="container-fluid d-flex flex-wrap justify-content-between py-2 flex-md-row flex-column">
                 <div class="mb-2 mb-md-0">
-                  ©
+                  ï¿½
                   <script>
                     document.write(new Date().getFullYear());
                   </script>

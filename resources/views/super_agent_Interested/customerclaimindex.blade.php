@@ -14,7 +14,7 @@
             </nav>
             <div class="ms-panel">
     <div class="ms-panel-header ms-panel-custome align-items-center">
-        <form method="POST" action="{{ route('superadmin.export-claim-data') }}">
+        <form method="POST" action="{{ route('agent.export-claim-data') }}">
             @csrf
             <div class="row">
 
@@ -57,10 +57,13 @@
 
         <div class="card">
             <div class="card-body">
-                <table id="myTables" class="table table-striped table-bordered dt-responsive nowrap w-100">
+                <table id="myTabless" class="table table-striped table-bordered dt-responsive nowrap w-100">
                     <thead>
                         <tr>
                             <th>#</th>
+                             <th>Customer Name</th>
+                              <th>Sub Id</th>
+
                             <th>MSISDN</th>
                             <th>Plan ID</th>
                             <th>Product ID</th>
@@ -240,12 +243,12 @@
             table.ajax.reload();
         });
 
-        var table = $('#myTables').DataTable({
+        var table = $('#myTabless').DataTable({
             responsive: true,
             processing: true,
             serverSide: true,
             ajax: {
-                url: "{{ route('superadmin.get-claims-data') }}",
+                url: "{{ route('customer.claims.get-claims-data') }}",
                 data: function(d) {
                     d.dateFilter = $('#dateFilter').val();
                     d.status = $('#statusFilter').val();
@@ -254,6 +257,8 @@
             },
             columns: [
                 { data: 'id', name: 'id' },
+                  { data: 'agent_id', name: 'agent_id' },
+                { data: 'sub_id', name: 'sub_id' },
                 { data: 'msisdn', name: 'msisdn' },
                 { data: 'plan_name', name: 'plan_name' },
                 { data: 'product_name', name: 'product_name' },
@@ -320,7 +325,7 @@
         success: function(response) {
             toastr.success(response.message);
             $('#rejectReasonModal').modal('hide');
-            $('#myTables').DataTable().ajax.reload(null, false);
+            $('#myTabless').DataTable().ajax.reload(null, false);
         },
         error: function(xhr) {
             toastr.error('Failed to update status.');
@@ -345,7 +350,7 @@ $(document).on('click', '.approve-btn', function () {
         },
         success: function (response) {
             toastr.success(response.message);
-            $('#myTables').DataTable().ajax.reload(null, false);
+            $('#myTabless').DataTable().ajax.reload(null, false);
         },
         error: function () {
             toastr.error('Failed to approve claim.');
@@ -397,7 +402,7 @@ $('#updatePendingForm').on('submit', function(e) {
         success: function(response) {
             toastr.success(response.message);
             $('#editPendingModal').modal('hide');
-            $('#myTables').DataTable().ajax.reload(null, false);
+            $('#myTabless').DataTable().ajax.reload(null, false);
         },
         error: function() {
             toastr.error('Failed to update remarks');
